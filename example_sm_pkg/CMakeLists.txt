@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(moveit_grasping_testing)
+project(example_sm_pkg)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -50,7 +50,7 @@ find_package(catkin REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES moveit_grasping_testing
+#  LIBRARIES example_sm_pkg
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -64,19 +64,19 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a cpp library
-# add_library(moveit_grasping_testing
-#   src/${PROJECT_NAME}/moveit_grasping_testing.cpp
+# add_library(example_sm_pkg
+#   src/${PROJECT_NAME}/example_sm_pkg.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(moveit_grasping_testing_node src/moveit_grasping_testing_node.cpp)
+# add_executable(example_sm_pkg_node src/example_sm_pkg_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(moveit_grasping_testing_node moveit_grasping_testing_generate_messages_cpp)
+# add_dependencies(example_sm_pkg_node example_sm_pkg_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(moveit_grasping_testing_node
+# target_link_libraries(example_sm_pkg_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -95,7 +95,7 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS moveit_grasping_testing moveit_grasping_testing_node
+# install(TARGETS example_sm_pkg example_sm_pkg_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -120,7 +120,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_moveit_grasping_testing.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_example_sm_pkg.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
