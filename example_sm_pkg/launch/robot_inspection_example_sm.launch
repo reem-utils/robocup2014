@@ -1,0 +1,11 @@
+<launch>
+
+
+  <!-- robot_inspection_example SMACH -->
+  <node pkg ="example_sm_pkg"
+        type="robot_inspection_example.py"
+        name="robot_inspection_example"
+        output="screen">
+  </node>
+
+</launch>

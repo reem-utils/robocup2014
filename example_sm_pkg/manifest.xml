@@ -1,0 +1,28 @@
+<package>
+  <description brief="example_sm_pkg">
+
+     example_sm_pkg
+
+  </description>
+  <author>Sam Pfeiffer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="actionlib"/>
+  <depend package="rospy"/>
+  <depend package="smach"/>
+  <depend package="smach_ros"/>
+  
+  <depend package="geometry_msgs"/>
+  <depend package="std_msgs"/>
+  <depend package="actionlib_msgs" />
+  <!-- <depend package="tf" /> -->
+  <depend package="std_srvs" />
+
+  
+  <!-- Other packages -->
+
+
+</package>
+
+
