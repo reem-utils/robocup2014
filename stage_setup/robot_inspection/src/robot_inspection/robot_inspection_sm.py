@@ -53,7 +53,7 @@ class RobotInspectionSM(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.nav_to_coord_goal = [0.5, 0.5, 0.0]
+            self.userdata.nav_to_coord_goal = [9.5, 9.5, 0.0]
             smach.StateMachine.add(
                 'enter_room',
                 DummyStateMachine(),
