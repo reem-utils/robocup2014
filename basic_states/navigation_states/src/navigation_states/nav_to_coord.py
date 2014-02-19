@@ -21,7 +21,38 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 
 # Constants
-NAVIGATION_TOPIC_NAME = '\move_base'
+NAVIGATION_TOPIC_NAME = '/move_base'
+
+
+
+class createNavGoal(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal'])
+
+    def execute(self, userdata):
+        # TODO: try catch de esto apra ver si peta y return aborted si peta con la userdata key que toca con el comentario
+        nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
+									userdata.nav_to_coord_goal[1], 
+									userdata.nav_to_coord_goal[2])
+		
+        userdata.navigation_goal = nav_goal
+        return 'succeeded'
+	    
+    def create_nav_goal(self, x, y, yaw):
+		"""Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
+		Returns a MoveBaseGoal"""
+		mb_goal = MoveBaseGoal()
+		mb_goal.target_pose.header.frame_id = '/map' # Note: the frame_id must be map
+		mb_goal.target_pose.pose.position.x = x
+		mb_goal.target_pose.pose.position.y = y
+		mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
+		 
+		# Orientation of the robot is expressed in the yaw value of euler angles
+		quat = quaternion_from_euler(0.0, 0.0, yaw) # roll, pitch, yaw
+		mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
+		 
+		return mb_goal
 
 class nav_to_coord(smach.StateMachine):
 
@@ -37,20 +68,7 @@ class nav_to_coord(smach.StateMachine):
 
     
     """
-    def create_nav_goal(self, x, y, yaw):
-        """Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
-        Returns a MoveBaseGoal"""
-        mb_goal = MoveBaseGoal()
-        mb_goal.target_pose.header.frame_id = '/map' # Note: the frame_id must be map
-        mb_goal.target_pose.pose.position.x = x
-        mb_goal.target_pose.pose.position.y = y
-        mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
-         
-        # Orientation of the robot is expressed in the yaw value of euler angles
-        quat = quaternion_from_euler(0.0, 0.0, yaw) # roll, pitch, yaw
-        mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
-         
-        return mb_goal
+
     
     def __init__(self):
         """
@@ -63,9 +81,12 @@ class nav_to_coord(smach.StateMachine):
 
         with self: #Adding states to the container
 
-            nav_goal = self.create_nav_goal(self.userdata.nav_to_coord_goal.x, self.userdata.nav_to_coord_goal.y, self.userdata.nav_to_coord_goal.yaw)
+            smach.StateMachine.add('CreateNavGoal',
+                                   createNavGoal(),
+                                   transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
+            
             smach.StateMachine.add('MoveRobot', 
-								SimpleActionState(NAVIGATION_TOPIC_NAME, MoveBaseAction, nav_goal), 
+								SimpleActionState(NAVIGATION_TOPIC_NAME, MoveBaseAction, goal_key='navigation_goal'), 
 								transitions={'succeeded':'succeeded', 'aborted':'aborted'})
             
             # TODO: result callback to fulfill standard_error userdata key
