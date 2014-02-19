@@ -1,0 +1,6 @@
+numberOfSubMaps: 1
+poi:
+  submap_0:
+    intermediate: [submap_0, intermediate, 0.1, 0.1, 0.0]
+    exit: [submap_0, exit, 0.3, 0.3, 0.0]
+  

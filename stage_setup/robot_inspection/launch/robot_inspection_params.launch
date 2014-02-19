@@ -1,0 +1,5 @@
+<launch>
+    <!-- Launch map pois for the robot inspection test-->
+	<rosparam file="$(find robot_inspection)/config/pois_robot_inspection.yaml" command="load" ns="robot_inspection" />
+
+</launch>
