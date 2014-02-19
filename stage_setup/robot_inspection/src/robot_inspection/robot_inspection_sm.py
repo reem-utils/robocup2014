@@ -10,13 +10,7 @@ Created on Tue Oct 22 12:00:00 2013
 import rospy
 #import copy
 import smach
-#from smach_ros import SimpleActionState, ServiceState  # <- you'll need this!
-#import actionlib
-
-#from std_msgs.msg import *
-#from actionlib_msgs import *
-#from actionlib_msgs.msg import GoalStatus
-
+from navigation_states.nav_to_coord import nav_to_coord
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -26,30 +20,17 @@ import random
 
 class DummyStateMachine(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], input_keys=['coming_from_outcome', 'number_of_transitions'], output_keys=['coming_from_outcome', 'number_of_transitions'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], input_keys=[], output_keys=[])
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
         # userdata is generated in run time and it's actually remapped so we can't really see what's in it
-        rospy.loginfo("We came from outcome: " + userdata.coming_from_outcome)
         rospy.sleep(1)
-        userdata.number_of_transitions += 1
-        if userdata.number_of_transitions >= 10:
-            rospy.loginfo("Returning preempted!")
-            return 'preempted'
-            
-        if random.randint(0,1):
-            rospy.loginfo(OKGREEN + "Returning succeeded!" + ENDC)
-            userdata.coming_from_outcome = 'succeeded'
-            return 'succeeded'
-        else:
-            rospy.loginfo(FAIL +"Returning aborted!" + ENDC)
-            userdata.coming_from_outcome = 'aborted'
-            return 'aborted'
+        return 'succeeded'
 
 
 
-class HelloWorldStateMachine(smach.StateMachine):
+class RobotInspectionSM(smach.StateMachine):
     """
     Executes a SM that does not much. Transitions 10 times
     randomly transitioning to succeeded or to aborted.
@@ -72,32 +53,31 @@ class HelloWorldStateMachine(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.coming_from_outcome = 'initial_outcome'
-            self.userdata.number_of_transitions = 0
+            self.userdata.nav_to_coord_goal = [0.5, 0.5, 0.0]
             smach.StateMachine.add(
                 'enter_room',
                 DummyStateMachine(),
-                transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
+                transitions={'succeeded': 'move_to_intermediate_poi', 'aborted': 'aborted', 'preempted': 'succeeded'})
                 
 
             smach.StateMachine.add(
                 'move_to_intermediate_poi',
-                DummyStateMachine(),
-                transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
+                nav_to_coord(),
+                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
                 
 
-
-            smach.StateMachine.add(
-                'wait_state',
-                DummyStateMachine(),
-                transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
-                
-
-            smach.StateMachine.add(
-                'move_to_exit',
-                DummyStateMachine(),
-                transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
-                
+# 
+#             smach.StateMachine.add(
+#                 'wait_state',
+#                 DummyStateMachine(),
+#                 transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
+#                 
+# 
+#             smach.StateMachine.add(
+#                 'move_to_exit',
+#                 DummyStateMachine(),
+#                 transitions={'succeeded': 'DummyStateMachine_succeeded', 'aborted': 'DummyStateMachine_aborted', 'preempted': 'succeeded'})
+#                 
 
 
 

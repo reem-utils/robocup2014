@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+"""
+Author:  Chang
+Email: Chang@dsfjakldfa
+19 Feb 2014
+"""
+
+
 import rospy
 import smach
 import smach_ros
@@ -14,63 +21,74 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 
 # Constants
-NAVIGATION_TOPIC_NAME = '\move_base'
+NAVIGATION_TOPIC_NAME = '/move_base'
 
-class nav_to_coord(smach.State):
 
-	"""
-	Navigate to Coordenates
 
-	This SM navigates to a given coordenates using the parameter: "nav_to_coord_goal"
-	This input data should be a (x,y,z,) point
+class createNavGoal(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal'])
 
-	"""
-	
-	def __init__(self):
-		"""
-		Constructor for nav_to_coord
-		@type frame_id: string
-		@param frame_id: The frame_id of the pose object. Default is "/base_link"
-
-		@type 
-		"""
-		#Initialization of the SMACH State machine
-		smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted','exit'], input_keys=['nav_to_coord_goal'])
-
-		self.userdata.xWalk = 0.0
-
-		with self: #Adding states to the container
-			#Prepare State, to initialize variables
-
-			#smach.StateMachine.add('Prepare', Prepare(), 
-             #                   transitions={'endPrepare':'Concurrence'},
-             #                   remapping={'xWalk_in':'xWalk', 'xWalk_out':'xWalk'})
-			nav_goal = create_nav_goal(self.userdata.nav_to_coord_goal.x, self.userdata.nav_to_coord_goal.y, 0.0)
-
-			smach.StateMachine.add('MoveRobot', SimpleActionState(NAVIGATION_TOPIC_NAME, MoveBaseAction, nav_goal), transitions={'succeeded':'succeeded', 'aborted':'aborted'})
-
-	def create_nav_goal(x, y, yaw):
-	    """Create a MoveBaseGoal with x, y position and yaw rotation (in degrees).
-	    Returns a MoveBaseGoal"""
-	    mb_goal = MoveBaseGoal()
-	    mb_goal.target_pose.header.frame_id = '/map' # Note: the frame_id must be map
-	    mb_goal.target_pose.pose.position.x = x
-	    mb_goal.target_pose.pose.position.y = y
-	    mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
+    def execute(self, userdata):
+        # TODO: try catch de esto apra ver si peta y return aborted si peta con la userdata key que toca con el comentario
+        nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
+									userdata.nav_to_coord_goal[1], 
+									userdata.nav_to_coord_goal[2])
+		
+        userdata.navigation_goal = nav_goal
+        return 'succeeded'
 	    
-	    # Orientation of the robot is expressed in the yaw value of euler angles
-	    angle = radians(yaw) # angles are expressed in radians
-	    quat = quaternion_from_euler(0.0, 0.0, angle) # roll, pitch, yaw
-	    mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
-	    
-	    return mb_goal
+    def create_nav_goal(self, x, y, yaw):
+		"""Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
+		Returns a MoveBaseGoal"""
+		mb_goal = MoveBaseGoal()
+		mb_goal.target_pose.header.frame_id = '/map' # Note: the frame_id must be map
+		mb_goal.target_pose.pose.position.x = x
+		mb_goal.target_pose.pose.position.y = y
+		mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
+		 
+		# Orientation of the robot is expressed in the yaw value of euler angles
+		quat = quaternion_from_euler(0.0, 0.0, yaw) # roll, pitch, yaw
+		mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
+		 
+		return mb_goal
 
-class Prepare(smach.State):
-	    def __init__(self):
-	        smach.State.__init__(self, outcomes=['endPrepare'], input_keys=['xWalk_in'], output_keys=['xWalk_out'])
+class nav_to_coord(smach.StateMachine):
 
-	    def execute(self, userdata):
-	        rospy.loginfo('Executing state Prepare')
-	        userdata.xWalk_out = 1.0
-	        return 'endPrepare'
-.
+    """
+    Navigate to Coordenates
+
+    This SM navigates to a given coordenates using the parameter: "nav_to_coord_goal"
+    This input data should be a (x,y,yaw) point
+    
+    @input_keys: nav_to_coord_goal type list [x, y, yaw] where x, y are float, and yaw a float representing
+    rotation in radians
+    @output_keys: standard_error string representing the possible error
+
+    
+    """
+
+    
+    def __init__(self):
+        """
+        Constructor for nav_to_coord
+        """
+        #Initialization of the SMACH State machine
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+                                 input_keys=['nav_to_coord_goal'],
+                                 output_keys=['standard_error'])
+
+        with self: #Adding states to the container
+
+            smach.StateMachine.add('CreateNavGoal',
+                                   createNavGoal(),
+                                   transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
+            
+            smach.StateMachine.add('MoveRobot', 
+								SimpleActionState(NAVIGATION_TOPIC_NAME, MoveBaseAction, goal_key='navigation_goal'), 
+								transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+            
+            # TODO: result callback to fulfill standard_error userdata key
+
+

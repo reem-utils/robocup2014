@@ -12,7 +12,7 @@ import smach_ros
 import actionlib
 #from smach_ros import SimpleActionState, ServiceState
 
-from super_state_machine import HelloWorldStateMachine
+from robot_inspection_sm import RobotInspectionSM
 
 
 class DummyStateMachine(smach.State):
@@ -37,11 +37,11 @@ def main():
         smach.StateMachine.add(
             'dummy_state',
             DummyStateMachine(),
-            transitions={'succeeded': 'HelloWorldStateMachine'})
+            transitions={'succeeded': 'RobotInspectionSM'})
 
         smach.StateMachine.add(
-            'HelloWorldStateMachine',
-            HelloWorldStateMachine(),
+            'RobotInspectionSM',
+            RobotInspectionSM(),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
