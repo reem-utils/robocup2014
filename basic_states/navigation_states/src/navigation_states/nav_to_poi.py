@@ -46,7 +46,7 @@ class translate_coord(smach.State):
             return 'succeeded'
         else :
             userdata.standard_error='Poi not found'
-            print FAIL +'POI NOT FOUND'+ENDC # todo change to loginfo
+            print FAIL +'POI NOT FOUND im locking for'+locationName+ENDC # todo change to loginfo
             return 'aborted'
 
 
