@@ -12,7 +12,8 @@ import smach_ros
 import actionlib
 #from smach_ros import SimpleActionState, ServiceState
 
-from robot_inspection_sm import RobotInspectionSM
+
+from say import text_to_say
 
 
 class DummyStateMachine(smach.State):
@@ -21,7 +22,7 @@ class DummyStateMachine(smach.State):
 
     def execute(self, userdata):
         print "Dummy state to launch real State Machine"
-        #rospy.sleep(1) # in seconds
+        rospy.sleep(1) # in seconds
 
         return 'succeeded'
 
@@ -37,11 +38,13 @@ def main():
         smach.StateMachine.add(
             'dummy_state',
             DummyStateMachine(),
-            transitions={'succeeded': 'RobotInspectionSM'})
+            transitions={'succeeded': 'SaySM'})
 
+        sm.userdata.tts_text = "I'm working"
+        sm.userdata.tts_wait_before_speaking = 0
         smach.StateMachine.add(
-            'RobotInspectionSM',
-            RobotInspectionSM(),
+            'SaySM',
+            text_to_say(),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
