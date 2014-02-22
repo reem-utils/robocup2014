@@ -12,6 +12,7 @@ import rospy
 import smach
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
+from navigation_states.enter_room import EnterRoomSM
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -91,7 +92,7 @@ class RobotInspectionSM(smach.StateMachine):
             #croos door
             smach.StateMachine.add(
                 'enter_door_in',
-                enter_door_in(),
+                EnterRoomSM(),
                 transitions={'succeeded': 'setGoIntermediatePoi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
           
@@ -129,7 +130,7 @@ class RobotInspectionSM(smach.StateMachine):
             #Cross door
             smach.StateMachine.add(
                 'enter_door_out',
-                enter_door_in(),
+                EnterRoomSM(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
