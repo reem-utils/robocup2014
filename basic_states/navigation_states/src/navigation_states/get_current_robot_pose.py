@@ -13,20 +13,21 @@ from math import radians, degrees
 
 class GetPoseSubscribe(smach.State):
 	def __init__(self):
-		smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], output_keys=['current_robot_pose', 'standard_error'])
+		smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+			output_keys=['current_robot_pose', 'standard_error'])
 
 	def execute(self, userdata):
 		try:
-			pose_current = rospy.wait_for_message('/amcl_pose', PoseWithCovarianceStamped, 60)
+			pose_current = rospy.wait_for_message('/amcl_pose', PoseWithCovarianceStamped, 10)
 			userdata.current_robot_pose = pose_current.pose
+			userdata.standard_error = "OK"
+			
 			return 'succeeded'
 		except rospy.ROSException:
 			userdata.standard_error = "get_current_robot_pose : Time_out getting /amcl_pose"
+			print 'aborded'
 			return 'aborted'
 			
-			
-		
-
 
 class get_current_robot_pose(smach.StateMachine):
 

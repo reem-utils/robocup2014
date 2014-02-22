@@ -130,7 +130,7 @@ class RobotInspectionSM(smach.StateMachine):
             #Cross door
             smach.StateMachine.add(
                 'enter_door_out',
-                EnterRoomSM(),
+                enter_door_in(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 

@@ -55,7 +55,7 @@ class check(smach.State):
     def execute(self, userdata):
         distance = 1.5
         door_position = -1
-        rospy.sleep(5)
+        #rospy.sleep(5)
 
         message = rospy.wait_for_message('/scan_filtered', LaserScan, 60)
         
@@ -69,7 +69,9 @@ class check(smach.State):
             if message.ranges[middle] <= 3.0:
                 door_position = message.ranges[middle]
             else:
-                return 'door_too_far'
+                print 'to far'
+                return 'succeeded'
+
         if (minimum >= distance+door_position):
             return 'succeeded'
         rospy.loginfo("Distance in front of the robot is too small: " + str(distance+door_position) + ". Minimum distance: " + str(minimum))
