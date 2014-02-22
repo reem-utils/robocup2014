@@ -1,11 +1,8 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    doorIn: [submap_0, doorIn, 2.0, 2.0, 1]
-    doorOut: [submap_0, doorOut, -2.0, -2.0, 0]
-    centerRoom: [submap_0, centerRoom, 4.0, 4.0, 1]
-    test: [submap_0, test, 0.5, 0.5, 1]
-    test1: [submap_0, test1, 4, 4, 1]
-    test2: [submap_0, test2, -2, -2, 1]
+    exit: [submap_0, exit, -2.0, -2.0, 0]
+    intermediate: [submap_0, intermediate, 4.0, 4.0, 1]
+
 
   

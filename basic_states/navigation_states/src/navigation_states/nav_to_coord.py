@@ -87,6 +87,7 @@ class nav_to_coord(smach.StateMachine):
                         print userdata.standard_error
                     return 'aborted'
                 else:
+                    userdata.standard_error = "OK"
                     return 'succeeded'
         
             

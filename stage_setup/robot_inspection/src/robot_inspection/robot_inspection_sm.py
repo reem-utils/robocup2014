@@ -42,6 +42,27 @@ class enter_door_in(smach.State) :
         rospy.sleep(10)
         return 'succeeded'
 
+class setGoIntermediatePoi(smach.State):
+    def __init__(self):
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['nav_to_poi_goal']) #todo: i have to delate de output_key
+
+    def execute(self,userdata):
+        nav_to_poi_goal='intermediate'
+        return succeeded
+
+
+class setExit(smach.State):
+     def __init__(self):
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['nav_to_poi_goal']) #todo: i have to delate de output_key
+
+    def execute(self,userdata):
+        nav_to_poi_goal='exit'
+        return succeeded
+
 
 class RobotInspectionSM(smach.StateMachine):
     """
@@ -66,37 +87,41 @@ class RobotInspectionSM(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-             #goto DoorIn
-            self.userdata.nav_to_poi_goal = 'doorIn'
-            smach.StateMachine.add(
-                'go_to_door_in',
-                nav_to_poi(),
-                transitions={'succeeded': 'enter_door_in', 'aborted': 'aborted', 
-                'preempted': 'preempted'})
-            
+          
             #croos door
             smach.StateMachine.add(
                 'enter_door_in',
                 enter_door_in(),
                 transitions={'succeeded': 'move_to_center_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
+          
             # go to center
-            self.userdata.nav_to_poi_goal = 'centerRoom'
+             smach.StateMachine.add(
+                'setGoIntermediatePoi',
+                setGoIntermediatePoi(),
+                transitions={'succeeded': 'go_to_intermediate_state', 'aborted': 'aborted', 'preempted': 'preempted'})
+            
             smach.StateMachine.add(
-                'move_to_center_poi',
+                'go_to_intermediate_state',
                 nav_to_poi(),
-                transitions={'succeeded': 'center_inspection', 'aborted': 'aborted', 'preempted': 'preempted'}) 
-            # test of roboots
+                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted': 'preempted'}) 
+            
+            # test of robots, here we didnt know what will we have to do
             smach.StateMachine.add(
-                 'center_inspection',
+                 'wait_time',
                  DummyStateMachine(),
-                 transitions={'succeeded': 'go_to_door_out', 
+                 transitions={'succeeded': 'setExit', 
                  'aborted': 'aborted', 
                  'preempted': 'succeeded'})
 
-            self.userdata.nav_to_poi_goal = 'doorOut'
             smach.StateMachine.add(
-                'go_to_door_out',
+                'setExit',
+                setGoOut(),
+                transitions={'succeeded': 'go_out', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
+
+            smach.StateMachine.add(
+                'go_out',
                 nav_to_poi(),
                 transitions={'succeeded': 'enter_door_out', 'aborted': 'aborted', 
                 'preempted': 'preempted'})
