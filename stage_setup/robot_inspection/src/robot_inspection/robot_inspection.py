@@ -21,7 +21,7 @@ class DummyStateMachine(smach.State):
 
     def execute(self, userdata):
         print "Dummy state to launch real State Machine"
-        rospy.sleep(1) # in seconds
+        #rospy.sleep(1) # in seconds
 
         return 'succeeded'
 

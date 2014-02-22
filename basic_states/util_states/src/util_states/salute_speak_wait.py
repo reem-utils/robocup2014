@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
 """
-Author:  Chang
-Author: Sammy Pfeiffer
-Email: Chang@dsfjakldfa
-19 Feb 2014
+Author:  Chang Long Zhu Jin
+Email: changlongzj@gmail.com
+22 Feb 2014
 """
 
 
@@ -14,10 +13,7 @@ from smach_ros import SimpleActionState
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Quaternion
 from tf.transformations import quaternion_from_euler
-
-# Constants
-NAVIGATION_TOPIC_NAME = '/move_base'
-
+from play_motion.msg import PlayMotionGoal, PlayMotionAction
 
 
 class createNavGoal(smach.State):
@@ -48,50 +44,46 @@ class createNavGoal(smach.State):
          
         return mb_goal
 
-class nav_to_coord(smach.StateMachine):
+class salute_speak_wait(smach.StateMachine):
     """
-    Navigate to given map coords.
-
-    This SM navigates to a given coordenates using the parameter: "nav_to_coord_goal"
-    This input data should be a (x,y,yaw) point
+    State Machine which includes 3 different SMs:
+    - Speak
+    - Salute
+    - Wait
     
-    @input_keys: nav_to_coord_goal type list [x, y, yaw] where x, y are float, and yaw a float representing
-    rotation in radians
+    @input_keys: wait_time_goal type: float representing seconds
     @output_keys: standard_error string representing the possible error
     """
 
     
     def __init__(self):
         """
-        Constructor for nav_to_coord.
+        Constructor for salute_speak_wait.
         """
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                 input_keys=['nav_to_coord_goal'],
+                                 input_keys=['wait_time_goal'],
                                  output_keys=['standard_error'])
 
         with self: 
+            
+            # Concurrence State Machine:
+            # 1. Salute
+            # 2. Speak
+            
+            sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted'],
+                                    default_outcome='succeeded',
+                                    outcome_map={'succeeded': {'Salute': 'succeeded', 'Speak': 'succeeded'}})
+            
+            with sm_conc:
+                
 
-            smach.StateMachine.add('CreateNavGoal',
+                smach.Concurrence.add('Salute',
                                    createNavGoal(),
                                    transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
+                
             
-            def move_res_cb(userdata, result_status, result):
-
-                if result_status != 3: # 3 == SUCCEEDED
-                    if result_status == 4: 
-                        userdata.standard_error = "Aborted navigation goal (maybe we didn't get there?)"
-                        print userdata.standard_error
-                    elif result_status == 5: # We havent got a rejected yet, maybe never happens
-                        userdata.standard_error = "Rejected navigation goal (maybe the goal is outside of the map or in a obstacle?)"
-                        print userdata.standard_error
-                    return 'aborted'
-                else:
-                    userdata.standard_error = "OK"
-                    return 'succeeded'
-        
-            
-            smach.StateMachine.add('MoveRobot', 
+                 smach.Concurrence.add('Speak', 
 								SimpleActionState(NAVIGATION_TOPIC_NAME,
                                                    MoveBaseAction,
                                                    goal_key='navigation_goal',
