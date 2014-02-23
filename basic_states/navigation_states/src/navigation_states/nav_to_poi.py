@@ -19,7 +19,7 @@ OKGREEN = '\033[92m'
 import random
 
 
-# in dis state we will transform de pois to coord
+# In this state we will transform de pois to coord
 class translate_coord(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
@@ -28,10 +28,10 @@ class translate_coord(smach.State):
 
     def execute(self, userdata):
       
-         #locationName have the poi that we are looking for
+        #locationName have the poi that we are looking for
         locationName=userdata.nav_to_poi_name
         foundLocation = False
-        #important to do add the .yalm beefor
+        #important to do add the .yalm before
         pois = rospy.get_param("/mmap/poi/submap_0") # todo need de mmap
        
         for key, value in pois.iteritems():

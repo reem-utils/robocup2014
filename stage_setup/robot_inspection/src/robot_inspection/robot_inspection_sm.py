@@ -3,7 +3,7 @@
 """
 Created on Tue Oct 22 12:00:00 2013
 
-@author: sampfeiffer
+@author: Roger Boldu
 """
 
 
@@ -64,6 +64,7 @@ class setExit(smach.State):
         userdata.nav_to_poi_name='exit'
         return 'succeeded'
 
+# Class that prepare the value need for nav_to_poi
 class prepareDoorInit(smach.State):
     def __init__(self):
          smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -101,29 +102,28 @@ class RobotInspectionSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            
+            # We prepare the information to go to the init door
             smach.StateMachine.add(
                 'prepare_door',
                 prepareDoorInit(),
                 transitions={'succeeded': 'go_door_in', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
-            #just triing
+            # Go to the init door
             smach.StateMachine.add(
                 'go_door_in',
                 nav_to_poi(),
                 transitions={'succeeded': 'enter_door_in', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
-
-            #croos door
+            # Cross init door
             smach.StateMachine.add(
                 'enter_door_in',
                 EnterRoomSM(),
                 transitions={'succeeded': 'setGoIntermediatePoi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
           
-            # go to center
+            # Go to center point
             smach.StateMachine.add(
                 'setGoIntermediatePoi',
                 setGoIntermediatePoi(),
@@ -134,7 +134,7 @@ class RobotInspectionSM(smach.StateMachine):
                 nav_to_poi(),
                 transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted': 'preempted'}) 
             
-            # test of robots, here we didnt know what will we have to do
+            # Test of robots, here we didnt know what will we have to do
             smach.StateMachine.add(
                  'wait_time',
                  DummyStateMachine(),
@@ -142,6 +142,7 @@ class RobotInspectionSM(smach.StateMachine):
                  'aborted': 'aborted', 
                  'preempted': 'succeeded'})
 
+            # Go to the exit door
             smach.StateMachine.add(
                 'setExit',
                 setExit(),
@@ -154,10 +155,10 @@ class RobotInspectionSM(smach.StateMachine):
                 transitions={'succeeded': 'enter_door_out', 'aborted': 'aborted', 
                 'preempted': 'preempted'})
             
-            #Cross door
+            # Cross exit door
             smach.StateMachine.add(
                 'enter_door_out',
-                enter_door_in(),
+                EnterRoomSM(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
