@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 """
-Author:  Chang
-Author: Sammy Pfeiffer
-Email: Chang@dsfjakldfa
+@author:  Chang Long Zhu
+@email: changlongzj@gmail.com
+@author: Sammy Pfeiffer
+
 19 Feb 2014
 """
 
@@ -81,10 +82,10 @@ class nav_to_coord(smach.StateMachine):
                 if result_status != 3: # 3 == SUCCEEDED
                     if result_status == 4: 
                         userdata.standard_error = "Aborted navigation goal (maybe we didn't get there?)"
-                        print userdata.standard_error
+                        rospy.loginfo(userdata.standard_error)
                     elif result_status == 5: # We havent got a rejected yet, maybe never happens
                         userdata.standard_error = "Rejected navigation goal (maybe the goal is outside of the map or in a obstacle?)"
-                        print userdata.standard_error
+                        rospy.loginfo(userdata.standard_error)
                     return 'aborted'
                 else:
                     userdata.standard_error = "OK"

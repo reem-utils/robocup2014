@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: Cristina
+@author: Cristina De Saint Germain
+@email: crsaintc8@gmail.com
 @author: Roger Boldu
+@email: roger.boldu@gmail.com
+
 22 Feb 2014
 
 """
-
 
 import rospy
 import smach
@@ -20,52 +22,6 @@ from sensor_msgs.msg import LaserScan
 from speech_states.say import text_to_say
 from util_states.topic_reader import TopicReaderState
 
-class prepare_move_base(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['current_robot_pose','current_robot_yaw', 'nav_to_coord_goal'],
-                                output_keys=['nav_to_coord_goal'])
-
-
-    def execute(self, userdata):
-
-        distance = 3
-
-        distX = (distance / math.sqrt(math.pow(math.tan(userdata.current_robot_yaw),2) + 1) ) 
-        distY = math.tan(userdata.current_robot_yaw) * distX
-
-        print "distX: " + str(distX)
-        print "distY: " + str(distY)
-
-
-    
-        if 0 <= userdata.current_robot_yaw <= math.pi/2:
-            userdata.nav_to_coord_goal=[userdata.current_robot_pose.pose.position.x + distX, 
-                                        userdata.current_robot_pose.pose.position.y + distY, 
-                                        userdata.current_robot_yaw]
-        elif math.pi/2 < userdata.current_robot_yaw <= math.pi:
-            userdata.nav_to_coord_goal=[userdata.current_robot_pose.pose.position.x - distX, 
-                                        userdata.current_robot_pose.pose.position.y + distY, 
-                                        userdata.current_robot_yaw]
-
-                                        
-        elif -math.pi/2 > userdata.current_robot_yaw >= -math.pi:  
-            userdata.nav_to_coord_goal=[userdata.current_robot_pose.pose.position.x - distX, 
-                                        userdata.current_robot_pose.pose.position.y - distY, 
-                                        userdata.current_robot_yaw]                              
-        elif 0 >= userdata.current_robot_yaw >= -math.pi/2:
-            userdata.nav_to_coord_goal=[userdata.current_robot_pose.pose.position.x + distX, 
-                                        userdata.current_robot_pose.pose.position.y - distY, 
-                                        userdata.current_robot_yaw]
-
-        print "Robot x: " + str(userdata.current_robot_pose.pose.position.x)
-        print "Robot y: " + str(userdata.current_robot_pose.pose.position.y)
-        print "Robot new x: " + str(userdata.nav_to_coord_goal[0])
-        print "Robot new y: " + str(userdata.nav_to_coord_goal[1])
-        print "Robot yaw: " + str(userdata.current_robot_yaw)
-
-        return 'succeeded'
-
 class prepare_play_motion(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -77,16 +33,16 @@ class prepare_play_motion(smach.State):
         userdata.manip_motion_to_play = 'home'
         userdata.manip_time_to_play = 10
 
-        return 'succeeded'
+        return 'succeeded'                        
 
 class check_door_status(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted', 'door_too_far'],
          output_keys=['standard_error'])
+        self.door_position = -1
 
     def execute(self, userdata):
         distance = 1.5
-        door_position = -1
         
         WIDTH = 0.10  # Width in meters to look forward.
         READ_TIMEOUT = 15
@@ -102,16 +58,15 @@ class check_door_status(smach.State):
         middle = length_ranges/2
         cut = [x for x in message.ranges[middle-n_elem:middle+n_elem] if x > 0.01]
         minimum = min(cut)
-        if door_position == -1:
+        if self.door_position == -1:
             if message.ranges[middle] <= MAX_DIST_TO_DOOR:
-                door_position = message.ranges[middle]
+                self.door_position = message.ranges[middle]
             else:
-                print 'to far'
-                return 'succeeded'
+                return 'door_too_far'
 
-        if (minimum >= distance+door_position):
+        if (minimum >= distance+self.door_position):
             return 'succeeded'
-        rospy.loginfo("Distance in front of the robot is too small: " + str(distance+door_position) + ". Minimum distance: " + str(minimum))
+        rospy.loginfo("Distance in front of the robot is too small: " + str(distance+self.door_position) + ". Minimum distance: " + str(minimum))
         userdata.standard_error = "get_current_robot_pose : Time_out getting /scan_filtered"
         return 'aborted'
                         
@@ -119,7 +74,7 @@ class check_door_status(smach.State):
 class EnterRoomSM(smach.StateMachine):
     """
     Executes a SM that enter a room. 
-    Look for a door, wait if not open and enter the room.
+    Wait if the door isn't open and enter the room.
 
     Required parameters:
     No parameters.
@@ -127,8 +82,10 @@ class EnterRoomSM(smach.StateMachine):
     Optional parameters:
     No optional parameters
 
-    No input keys.
-    No output keys.
+    Input keys:
+        nav_to_poi_name: indicates the point we need to reach after detect that the door is open
+    Output keys:
+        standard_error: String that show what kind of error could be happened
     No io_keys.
 
     Nothing must be taken into account to use this SM.
@@ -136,17 +93,17 @@ class EnterRoomSM(smach.StateMachine):
 
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                    input_keys=['nav_to_coord_goal'],
-                                output_keys=['standard_error'])
+                    input_keys=['nav_to_poi_name'],
+                    output_keys=['standard_error'])
 
         with self:
-            
+    
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check_door_status(),
-                   transitions={'succeeded': 'get_actual_pos',
+                   transitions={'succeeded': 'enter_room',
                                 'aborted': 'check_can_pass',
-                                'door_too_far': 'check_can_pass'})
+                                'door_too_far': 'say_too_far_from_door'})
 
             # Robot is too far from door
             self.userdata.tts_text = "I'm too far from the door."
@@ -170,22 +127,12 @@ class EnterRoomSM(smach.StateMachine):
     #            play_motion(),
     #            transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 'preempted': 'preempted'})
           
-            # Calculate the actual position
-            smach.StateMachine.add(
-                'get_actual_pos',
-                get_current_robot_pose(),
-                transitions={'succeeded': 'prepare_move_base', 'aborted': 'aborted', 'preempted': 'succeeded'})
+            # We don't need to prepare the state, it takes the input_key directly
 
-            # Prepare the new goal
-            smach.StateMachine.add(
-                'prepare_move_base',
-                prepare_move_base(),
-                transitions={'succeeded': 'enter_room', 'aborted': 'aborted', 'preempted':'preempted'})
-
-            # Enter room
+            # Go to the poi in the other site of the door
             smach.StateMachine.add(
                 'enter_room',
-                nav_to_coord(),
+                nav_to_poi(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
-                
+
 

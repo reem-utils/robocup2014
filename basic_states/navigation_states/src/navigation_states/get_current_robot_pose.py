@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+"""
+Created on Tue Oct 22 12:00:00 2013
+
+@author: Chang Long Zhu
+@email: changlongzj@gmail.com
+"""
 
 import rospy
 import smach
@@ -28,19 +34,33 @@ class GetPoseSubscribe(smach.State):
 								pose_current.pose.pose.orientation.y,
 								pose_current.pose.pose.orientation.z,
 								pose_current.pose.pose.orientation.w])
-
-			#serdata.current_robot_yaw = math.atan2(pose_current.pose.pose.orientation.x, pose_current.pose.pose.orientation.y)
 			userdata.standard_error = "OK"
 			
 			return 'succeeded'
 		except rospy.ROSException:
 			userdata.standard_error = "get_current_robot_pose : Time_out getting /amcl_pose"
-			print 'aborded'
 			return 'aborted'
 			
 
 class get_current_robot_pose(smach.StateMachine):
+	"""
+    Return the actual position and the yaw of the robot
 
+    Required parameters:
+    No parameters.
+
+    Optional parameters:
+    No optional parameters
+
+    No input keys.
+    Output keys:
+    	current_robot_pose: PoseWithCovariance that show the position of the robot 
+    	current_robot_yaw: Indicates in radians the yaw of the robot
+        standard_error: String that show what kind of error could be happened
+    No io_keys.
+
+  
+    """
 	def __init__(self):
 		smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
 			output_keys=['current_robot_pose', 'current_robot_yaw', 'standard_error'])
