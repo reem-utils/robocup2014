@@ -45,7 +45,7 @@ class createNavGoal(smach.State):
         # Orientation of the robot is expressed in the yaw value of euler angles
         quat = quaternion_from_euler(0.0, 0.0, yaw) # roll, pitch, yaw
         mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
-         
+
         return mb_goal
 
 class nav_to_coord(smach.StateMachine):

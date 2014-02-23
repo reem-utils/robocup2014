@@ -14,6 +14,7 @@ from math import radians, degrees
 class GetPoseSubscribe(smach.State):
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+			input_keys=['current_robot_pose'],
 			output_keys=['current_robot_pose', 'standard_error'])
 
 	def execute(self, userdata):

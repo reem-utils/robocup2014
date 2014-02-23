@@ -22,14 +22,17 @@ from util_states.topic_reader import TopicReaderState
 class prepare_move_base(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['current_robot_pose'],
+                                input_keys=['current_robot_pose','nav_to_coord_goal'],
                                 output_keys=['nav_to_coord_goal'])
 
 
     def execute(self, userdata):
 
-        distance = 1.5
-        userdata.nav_to_coord_goal = [current_robot_pose.x + 1.5, current_robot_pose.y, current_robot_pose.yaw]
+        distance = 3
+        userdata.nav_to_coord_goal=[userdata.nav_to_coord_goal[0], 
+                                    userdata.nav_to_coord_goal[1]-distance, 
+                                    userdata.nav_to_coord_goal[2]]
+
 
         return 'succeeded'
 
@@ -102,12 +105,14 @@ class EnterRoomSM(smach.StateMachine):
     MAX_DIST_TO_DOOR = 3.0
 
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+                    input_keys=['nav_to_coord_goal'],
+                                output_keys=['standard_error'])
 
         with self:
  
             # Check the distance between the robot and the door
-   
+            
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check(),

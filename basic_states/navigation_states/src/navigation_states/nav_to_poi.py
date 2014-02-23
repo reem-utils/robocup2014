@@ -23,13 +23,13 @@ import random
 class translate_coord(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-         input_keys=['nav_to_poi_goal'], 
+         input_keys=['nav_to_poi_name'], 
          output_keys=['nav_to_coord_goal','standard_error'])
 
     def execute(self, userdata):
       
          #locationName have the poi that we are looking for
-        locationName=userdata.nav_to_poi_goal
+        locationName=userdata.nav_to_poi_name
         foundLocation = False
         #important to do add the .yalm beefor
         pois = rospy.get_param("/mmap/poi/submap_0") # todo need de mmap
@@ -71,8 +71,8 @@ class nav_to_poi(smach.StateMachine):
     def __init__(self):
 
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-        						input_keys=['nav_to_poi_goal'],
-        						output_keys=['standard_error'])
+        						input_keys=['nav_to_poi_name'],
+        						output_keys=['standard_error','nav_to_coord_goal'])
 
 
         with self:

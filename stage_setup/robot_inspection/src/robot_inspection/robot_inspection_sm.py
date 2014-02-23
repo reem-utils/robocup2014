@@ -24,7 +24,7 @@ class DummyStateMachine(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
-            output_keys=['nav_to_poi_goal']) #todo: i have to delate de output_key
+            output_keys=['nav_to_poi_name']) #todo: i have to delate de output_key
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
@@ -47,10 +47,10 @@ class setGoIntermediatePoi(smach.State):
     def __init__(self):
          smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
-            output_keys=['nav_to_poi_goal']) #todo: i have to delate de output_key
+            output_keys=['nav_to_poi_name']) #todo: i have to delate de output_key
 
     def execute(self,userdata):
-        userdata.nav_to_poi_goal='intermediate'
+        userdata.nav_to_poi_name='intermediate'
         return 'succeeded'
 
 
@@ -58,11 +58,22 @@ class setExit(smach.State):
     def __init__(self):
          smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
-            output_keys=['nav_to_poi_goal']) #todo: i have to delate de output_key
+            output_keys=['nav_to_poi_name'])
 
     def execute(self,userdata):
-        userdata.nav_to_poi_goal='exit'
+        userdata.nav_to_poi_name='exit'
         return 'succeeded'
+
+class prepareDoorInit(smach.State):
+    def __init__(self):
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['nav_to_poi_name']) 
+
+    def execute(self,userdata):
+        userdata.nav_to_poi_name='doorIn'
+        return 'succeeded'
+
 
 
 class RobotInspectionSM(smach.StateMachine):
@@ -88,7 +99,23 @@ class RobotInspectionSM(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.nav_to_poi_goal='centerRoom'
+            self.userdata.nav_to_poi_name=''
+            
+            
+            smach.StateMachine.add(
+                'prepare_door',
+                prepareDoorInit(),
+                transitions={'succeeded': 'go_door_in', 'aborted': 'aborted', 
+                'preempted': 'preempted'})  
+
+            #just triing
+            smach.StateMachine.add(
+                'go_door_in',
+                nav_to_poi(),
+                transitions={'succeeded': 'enter_door_in', 'aborted': 'aborted', 
+                'preempted': 'preempted'})    
+
+
             #croos door
             smach.StateMachine.add(
                 'enter_door_in',
