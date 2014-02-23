@@ -36,7 +36,15 @@ class play_motion_finish_Error(smach.State):
         userdata.standard_error = "play_motion_sm : Play_motion error"
 
         return 'aborted'
-        
+
+class play_motion_finish_Ok(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], output_keys=['standard_error'])
+    
+    def execute(self, userdata):
+        userdata.standard_error = "play_motion_sm : Play_motion NO error"
+
+        return 'succeeded'
         
 class play_motion_sm(smach.StateMachine):
 
@@ -60,7 +68,9 @@ class play_motion_sm(smach.StateMachine):
                                    play_motion_finish_Error(),
                                    transitions={'succeeded':'aborted', 'aborted':'aborted', 'preempted':'aborted'})
             
-            
+            smach.StateMachine.add('play_motion_finish_Ok',
+                                   play_motion_finish_Ok(),
+                                   transitions={'succeeded':'succeeded', 'aborted':'succeeded', 'preempted':'succeeded'})
             
             
             
