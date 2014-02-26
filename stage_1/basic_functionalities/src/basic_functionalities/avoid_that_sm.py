@@ -18,25 +18,26 @@ FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
 
-TIME_LIVE_AVOID = 3*60 # maxim time that it will be in this machine 
+TIME_LIVE_AVOID = 5 # maxim time that it will be in this machine 
 
 
 # Class to decide if i'm bloquet
-class bloquet(smach.State):
+class blocked(smach.State):
     def __init__(self):
          smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['time_stamp_init'], 
+            input_keys=['time_stamp_init','standard_error'], 
             output_keys=['nav_to_poi_name','standard_error'])
 
     def execute(self,userdata):
-        time=rospy.Time.now()
-        time=time-userdata.time_stamp_init
+        time= rospy.get_time()
+        print str(userdata.time_stamp_init)
+        time2=time - userdata.time_stamp_init
         
-        if (time>TIME_LIVE_AVOID):
-            userdata.standard_error='time live, impossibol to got de POI'
+        if (time2>TIME_LIVE_AVOID):
+            userdata.standard_error='Avoid that Time live'+ " + " +userdata.standard_error
             return 'aborted'
         else :
-            userdata.nav_to_poi_name='Avoid_That'
+            userdata.nav_to_poi_name='avoid_that'
             return 'succeeded'    
                 
 
@@ -48,8 +49,8 @@ class prepare_Avoid(smach.State):
             output_keys=['nav_to_poi_name','standard_error','time_stamp_init'])
 
     def execute(self,userdata):
-        userdata.nav_to_poi_name='Avoid_That'
-        userdata.time_stamp_init=rospy.Time.now()
+        userdata.nav_to_poi_name='avoid_that'
+        userdata.time_stamp_init=rospy.get_time()
         return 'succeeded'
 
 
@@ -77,7 +78,7 @@ class Avoid_That(smach.StateMachine):
     Nothing must be taken into account to use this SM.
     """
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'], output_keys=['standard_error'])
         with self:
 
             # We prepare the information to go to the init door
@@ -91,14 +92,13 @@ class Avoid_That(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_poi',
                 nav_to_poi(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'bloqued', 
+                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
-            # If it's no possible to arrive to the POI, becouse it pass the navigation Time
-            # If its time to live, it return aborted, else it will tri again
-            smach.StateMachine.add(
-                'bloqued', 
-                bloquet(),
-                transitions={'succeeded': 'go_to_poi', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
+            # If its time to live, will return aborted, else it will tri again sending de same goal
+            #smach.StateMachine.add(
+            #    'blocked', 
+            #   blocked(),
+            #  transitions={'succeeded': 'go_to_poi', 'aborted': 'aborted', 
+            # 'preempted': 'preempted'}) 
 
