@@ -1,5 +1,7 @@
 <launch>
-    <!-- Launch map pois for the basic funcionalities test-->
-	<rosparam file="$(find basic_functionalities)/config/pois_basic_functionalities.yaml" command="load" ns="mmap" />
+
+<!-- TODO: maybe we need to delete the params before loading them -->
+<include file="$(find basic_functionalities)/launch/basic_functionalities_params.launch" />
+<!-- TODO: launch sm -->
 
 </launch>

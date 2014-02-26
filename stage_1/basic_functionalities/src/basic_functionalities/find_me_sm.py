@@ -36,14 +36,15 @@ class prepare_location(smach.State):
             output_keys=['nav_to_poi_name']) 
 
     def execute(self,userdata):
-        userdata.nav_to_poi_name='pick_and_place'
+        userdata.nav_to_poi_name='find_me'
         return 'succeeded'
 
-class PickPlaceSM(smach.StateMachine):
+
+class FindMeSM(smach.StateMachine):
     """
-    Executes a SM that does the test to pick and place.
-    The robot goes to a location and recognize one object.
-    It picks the object and goes a location where it will be release. 
+    Executes a SM that does the test find me and go over there.
+    The robot recognize one TC and it must reconize this person inside a room.
+    When it do it, it must go to the side that the TC indicates. 
 
 
     Required parameters:
@@ -66,7 +67,14 @@ class PickPlaceSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            # Prepare the poi for nav_to_poi
+            # Save the data from the TC
+            smach.StateMachine.add(
+                'save_face',
+                DummyStateMachine(),
+                transitions={'succeeded': 'prepare_location', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+
+            # Prepare the info to go to the room
             smach.StateMachine.add(
                 'prepare_location',
                 prepare_location(),
@@ -77,34 +85,40 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_location',
                 nav_to_poi(),
-                transitions={'succeeded': 'object_recognition', 'aborted': 'aborted', 
+                transitions={'succeeded': 'find_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
-            # Do object_recognition 
+            # Find a particular person 
             smach.StateMachine.add(
-                'object_recognition',
+                'find_person',
                 DummyStateMachine(),
-                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_to_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
-            # Grasp the object
+            # Go to the person - We assume that find person will return the position for the person
             smach.StateMachine.add(
-                'grasp_object',
+                'go_to_person',
                 DummyStateMachine(),
-                transitions={'succeeded': 'go_second_location', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
                 'preempted': 'preempted'})     
 
-            # Go the location - We need to go to the place to object category, so we assume that the
-            # object recognition will init the poi to the object must to go
+            # Say "I found you!"
             smach.StateMachine.add(
-                'go_second_location',
-                nav_to_poi(),
-                transitions={'succeeded': 'release_object', 'aborted': 'aborted', 
+                'say_found',
+                DummyStateMachine(),
+                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
-            # Release the object
+            # Recognize the direction
             smach.StateMachine.add(
-                'release_object',
+                'gesture_recognition',
+                DummyStateMachine(),
+                transitions={'succeeded': 'go_side', 'aborted': 'aborted', 
+                'preempted': 'preempted'})    
+
+            # Go to the direction
+            smach.StateMachine.add(
+                'go_side',
                 DummyStateMachine(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
