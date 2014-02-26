@@ -1,5 +1,5 @@
 <launch>
     <!-- Launch map pois for the basic funcionalities test-->
-	<rosparam file="$(find basic_funcionalities)/config/pois_basic_funcionalities.yaml" command="load" ns="mmap" />
+	<rosparam file="$(find basic_functionalities)/config/pois_basic_functionalities.yaml" command="load" ns="mmap" />
 
 </launch>
