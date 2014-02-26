@@ -9,6 +9,10 @@ poi:
     waste_bin: [submap_0, waste_bin, -2.0, -2.0, 0] 
 
     init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
+    fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
+
     init_find_me: [submap_0, init_find_me, -2.0, -2.0, 0]
+    find_me: [submap_0, find_me, -2.0, -2.0, 0]
+
     init_what_say: [submap_0, init_what_say, -2.0, -2.0, 0]
 
