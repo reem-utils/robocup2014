@@ -3,8 +3,8 @@
 """
 Created on Tue Oct 22 12:00:00 2013
 
-@author: Roger Boldu
-@email: roger.boldu@gmail.com
+@author: Cristina De Saint Germain
+@email: crsaintc8@gmail.com
 """
 
 
