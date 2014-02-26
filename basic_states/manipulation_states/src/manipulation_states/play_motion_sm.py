@@ -1,5 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 22 12:00:00 2013
 
+@author: Chang long Zhu
+@email: changlongzj@gmail.com
+"""
 import rospy
 import smach
 import smach_ros
