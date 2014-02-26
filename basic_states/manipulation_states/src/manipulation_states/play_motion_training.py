@@ -28,8 +28,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
         sm.userdata.manip_motion_to_play = 'home'
-        sm.userdata.manip_time_to_play = 20.0
-        
+        sm.userdata.manip_time_to_play = 4.0
         smach.StateMachine.add(
             'dummy_state',
             play_motion_sm(),
