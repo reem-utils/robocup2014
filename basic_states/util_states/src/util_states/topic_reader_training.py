@@ -11,29 +11,36 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
-from play_motion_sm import play_motion_sm
+from topic_reader import topic_reader
+from sensor_msgs.msg import Range
+
+
 
 class PrintUserdataPose(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['current_robot_pose'])
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['topic_output_msg'])
 
     def execute(self, userdata):
-        rospy.loginfo('Current Pose : ' + str(userdata.current_robot_pose))
+        rospy.loginfo('Current Info Topic : ' + str(userdata.topic_output_msg))
 
         return 'succeeded'
 
 def main():
-    rospy.loginfo('Main Get Current Position')
-    rospy.init_node('get_current_position')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_motion_to_play = 'home'
-        sm.userdata.manip_time_to_play = 4.0
+        
+        topic_name = '/sonar_base'
+        topic_type = Range
+        topic_time_out = 60
+        
         smach.StateMachine.add(
             'dummy_state',
-            play_motion_sm(),
+            topic_reader(topic_name,topic_type,topic_time_out),
+            transitions={'succeeded': 'Printing','preempted':'preempted', 'aborted':'aborted'})
+        smach.StateMachine.add(
+            'Printing',
+            PrintUserdataPose(),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
-        
 
     sm.execute()
     rospy.spin()
