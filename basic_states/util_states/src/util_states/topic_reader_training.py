@@ -12,13 +12,16 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 from topic_reader import topic_reader
+from sensor_msgs.msg import Range
+
+
 
 class PrintUserdataPose(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['topic_info'])
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['topic_output_msg'])
 
     def execute(self, userdata):
-        rospy.loginfo('Current Info Topic : ' + str(userdata.topic_info))
+        rospy.loginfo('Current Info Topic : ' + str(userdata.topic_output_msg))
 
         return 'succeeded'
 
@@ -26,13 +29,13 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
         
-        sm.userdata.topic_name = '/amcl_pose'
-        sm.userdata.topic_type = PoseWithCovarianceStamped
-        sm.userdata.topic_time_out = 60
+        topic_name = '/sonar_base'
+        topic_type = Range
+        topic_time_out = 60
         
         smach.StateMachine.add(
             'dummy_state',
-            topic_reader(),
+            topic_reader(topic_name,topic_type,topic_time_out),
             transitions={'succeeded': 'Printing','preempted':'preempted', 'aborted':'aborted'})
         smach.StateMachine.add(
             'Printing',
