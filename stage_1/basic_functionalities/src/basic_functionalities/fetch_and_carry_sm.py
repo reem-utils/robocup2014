@@ -36,15 +36,25 @@ class prepare_location(smach.State):
             output_keys=['nav_to_poi_name']) 
 
     def execute(self,userdata):
-        userdata.nav_to_poi_name='pick_and_place'
+        userdata.nav_to_poi_name='fetch_and_carry'
         return 'succeeded'
 
-class PickPlaceSM(smach.StateMachine):
-    """
-    Executes a SM that does the test to pick and place.
-    The robot goes to a location and recognize one object.
-    It picks the object and goes a location where it will be release. 
+class prepare_second_location(smach.State):
+    def __init__(self):
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['nav_to_poi_name']) 
 
+    def execute(self,userdata):
+        userdata.nav_to_poi_name='init_fetch_and_carry'
+        return 'succeeded'
+
+
+class FetchAndCarrySM(smach.StateMachine):
+    """
+    Executes a SM that do the test Fetch and Carry.
+    The robot is given a spoken command to retrieve one object.
+    It goes to a location and takes the correct object. 
 
     Required parameters:
     No parameters.
@@ -66,7 +76,14 @@ class PickPlaceSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            # Prepare the poi for nav_to_poi
+            # Waits for spoken command
+            smach.StateMachine.add(
+                'spoken_command',
+                DummyStateMachine(),
+                transitions={'succeeded': 'prepare_location', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+
+            # Prepare the info to go where are the objects
             smach.StateMachine.add(
                 'prepare_location',
                 prepare_location(),
@@ -94,11 +111,24 @@ class PickPlaceSM(smach.StateMachine):
                 transitions={'succeeded': 'go_second_location', 'aborted': 'aborted', 
                 'preempted': 'preempted'})     
 
-            # Go the location - We need to go to the place to object category, so we assume that the
-            # object recognition will init the poi to the object must to go
+            # Prepare the info to go to the init point
+            smach.StateMachine.add(
+                'prepare_second_location',
+                prepare_second_location(),
+                transitions={'succeeded': 'go_second_location', 'aborted': 'aborted', 
+                'preempted': 'preempted'})  
+
+            # Go to the location
             smach.StateMachine.add(
                 'go_second_location',
                 nav_to_poi(),
+                transitions={'succeeded': 'second_spoken_command', 'aborted': 'aborted', 
+                'preempted': 'preempted'})    
+            
+            # Waits for spoken command
+            smach.StateMachine.add(
+                'second_spoken_command',
+                DummyStateMachine(),
                 transitions={'succeeded': 'release_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -108,6 +138,4 @@ class PickPlaceSM(smach.StateMachine):
                 DummyStateMachine(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
-
-           
 

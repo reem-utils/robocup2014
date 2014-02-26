@@ -1,16 +1,21 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 22 12:00:00 2013
-
 @author: Cristina De Saint Germain
 @email: crsaintc8@gmail.com
-"""
 
+26 Feb 2014
+"""
 
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from pick_place_sm import PickPlaceSM
+from fetch_and_carry_sm import FetchAndCarrySM
+from find_me_sm import FindMeSM
+from avoid_that_sm import Avoid_That
+from what_say_sm import WhatSaySM
+
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -80,11 +85,10 @@ class prepare_what_did_you_say(smach.State):
         userdata.nav_to_poi_name='init_what_say'
         return 'succeeded'
 
-class BasicFuncionalitiesSM(smach.StateMachine):
+class BasicFunctionalitiesSM(smach.StateMachine):
     """
-    Executes a SM that does the basic funcionalities.
-    The robot moves autonomously to each activities 
-
+    Executes a SM that does the basic functionalities.
+    The robot moves autonomously to each activities and do it.
 
     Required parameters:
     No parameters.
@@ -123,7 +127,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             # Do pick and place
             smach.StateMachine.add(
                 'do_pick_and_place',
-                DummyStateMachine(),
+                PickPlaceSM(),
                 transitions={'succeeded': 'prepare_fetch_and_carry', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -144,7 +148,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             # Do fetch and carry
             smach.StateMachine.add(
                 'do_fetch_and_carry',
-                DummyStateMachine(),
+                FetchAndCarrySM(),
                 transitions={'succeeded': 'prepare_find_me', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -165,7 +169,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             # Do find me
             smach.StateMachine.add(
                 'do_find_me',
-                DummyStateMachine(),
+                FindMeSM(),
                 transitions={'succeeded': 'prepare_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -186,7 +190,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             # Do avoid that
             smach.StateMachine.add(
                 'do_avoid_that',
-                DummyStateMachine(),
+                Avoid_That(),
                 transitions={'succeeded': 'prepare_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -194,7 +198,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_what_did_you_say',
                 prepare_what_did_you_say(),
-                transitions={'succeeded': 'go_door_in', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
             # Go to what did you say
@@ -207,7 +211,7 @@ class BasicFuncionalitiesSM(smach.StateMachine):
             # Do what did you say
             smach.StateMachine.add(
                 'do_what_did_you_say',
-                DummyStateMachine(),
+                WhatSaySM(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
