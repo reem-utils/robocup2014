@@ -1,22 +1,97 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on 22 Febreary 12:00:00 2013
+
+@author: Roger Boldu
+@email: roger.boldu@gmail.com
+
+"""
 
 import rospy
 import smach
-import smach_ros
-import actionlib
-import play_motion
+from navigation_states.nav_to_coord import nav_to_coord
 
-from smach_ros import SimpleActionState
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion
-from play_motion.msg import PlayMotionGoal, PlayMotionAction
-from tf.transformations import quaternion_from_euler, euler_from_quaternion
-from math import radians, degrees
+# Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
+ENDC = '\033[0m'
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
 
-from nav_to_coord import nav_to_coord
+# In this state we will transform de pois to coord
+class translate_coord(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
+         input_keys=['nav_to_poi_name'], 
+         output_keys=['nav_to_coord_goal','standard_error'])
 
-class GoToPoi(smach.State):
+    def execute(self, userdata):
+      
+        #locationName have the poi that we are looking for
+        locationName=userdata.nav_to_poi_name
+        foundLocation = False
+        #important to do add the .yalm before
+        pois = rospy.get_param("/mmap/poi/submap_0") # todo need de mmap
+       
+        for key, value in pois.iteritems():
+         
+            if value[1] == locationName:
+                userdata.nav_to_coord_goal = [value[2], value[3], value[4]]
+                foundLocation = True  
+                break
 
-	def __init__(self):
-		smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted','exit'], input_keys=['nav_to_coord_poi'])
+        if foundLocation:
+            userdata.standard_error='OK'
+            return 'succeeded'
+        else :
+            userdata.standard_error='Poi not found'
+            rospy.loginfo( FAIL +'POI NOT FOUND im locking for'+locationName+ENDC) # todo change to loginfo
+            return 'aborted'
+
+
+class nav_to_poi(smach.StateMachine):
+    """
+    This state machine receive the name of the point and go there. 
+
+    Required parameters:
+    No parameters.
+
+    Optional parameters:
+    No optional parameters
+
+    Input keys: 
+        nav_to_poi_name: String that contain the poi information
+    Output keys:
+        standard_error: String that show what kind of error could be happened
+    No io_keys.
+
+  
+    """
+    def __init__(self):
+
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+        						input_keys=['nav_to_poi_name'],
+        						output_keys=['standard_error'])
+
+
+        with self:
+            # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
+            self.userdata.standard_error=''
+            self.userdata.nav_to_coord_goal=[0.0,0.0,0.0]
+
+            # We transform the poi to coordenates
+            smach.StateMachine.add(
+               'translate_coord',
+               translate_coord(),
+               transitions={'succeeded': 'move_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
+                
+            # Go to coordanates
+            smach.StateMachine.add(
+             'move_to_coord',
+               nav_to_coord(),
+               transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+                
+             
+
+
+
 
