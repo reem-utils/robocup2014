@@ -1,0 +1,7 @@
+<launch>
+
+	<!-- TODO: maybe we need to delete the params before loading them -->
+	<include file="$(find basic_funcionalities)/launch/basic_funcionalities_params.launch" />
+	<!-- TODO: launch sm -->
+
+</launch>
