@@ -1,0 +1,54 @@
+#JSGF V1.0;
+grammar general;
+
+public <basic> = ((<action> [<action>] [and] [<action>]) | <garbage>) {obj.put("external","1");};
+
+
+<action> = (<goto>  | <fetch> | <bringit> | <askname> | <findp> | <get> | <follow>  | <find> | <grasp> | <give> | <recognize>  | <stay> | <exit>);
+
+<goto>   = (<gocommand> to [the] <location>);
+<fetch>  = (<fetchcommand> [the] <item> from [the] <location>);
+<bringit>= (<bringcommand> (it | the <item>) to [the] <location>);
+<askname>= (memorize the person | ask the persons name);
+<findp>  = (<findcommand> a person);
+<get>    = (<getcommand> ([the] <item> | it ));
+<follow> = ((follow (me | the person in front of you) ) | (come with me) );
+<find>   = (<finditcmd> [the] <item>);
+<grasp>  = (<graspcommand> (the <item> | it));
+<give>   = (<givecommand> ([the] <item> | it)  to <person>);
+<recognize> = (recognize (him | her));
+<stay>   = (stop here | wait there);
+<exit> =  (<exitcommand> [the] apartment);
+
+
+<gocommand>   = (go | move | navigate);
+<fetchcommand>= (retrieve | bring);
+<bringcommand>= (bring | carry);
+<getcommand>  = (retrieve | get | bring);
+<findcommand> = (find | look for);
+<finditcmd>   = (detect | find | identify);
+<graspcommand>= (get | take | grasp);
+<givecommand> = (give | hand);
+<exitcommand> = (exit | leave);
+
+
+<person> = (christopher | matthew | joshua | david | james | daniel | robert | john | joseph | jennifer);
+
+<location> =(kitchen | kitchen table | fridge | bedroom | lamp | bed | drawer | corridor | bookshelf | living room | sofa | tv | plant);
+
+<item> =(shoe | sponge | candles | cup | coke | beer | water | sprite | pringles | biscuit | bubble gum | ketchup | corn );
+
+<sentence>   = (hello | greetings | goodbye | your name);
+
+
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+

@@ -1,0 +1,18 @@
+#JSGF V1.0;
+
+grammar elevator;
+
+public <basic> = (  <getout> {obj.put("action","getout");} | <getin> {obj.put("action","getin");} | <garbage> ) {obj.put("external","1");}; 
+
+<getout> = ((get out from | leave) the elevator) | (get out | leave); 
+<getin>  = ((get into | come into) the elevator) | (get in | come in);
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+

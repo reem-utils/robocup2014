@@ -1,0 +1,17 @@
+#JSGF V1.0;
+
+grammar calling;
+
+public <basic> = (  <called> {obj.put("called","yes");} | <garbage> ){obj.put("external","1");}; 
+
+<called> = (hey | hey reem | hello | hello reem);
+
+<garbage>  = <garbage1>;
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+
