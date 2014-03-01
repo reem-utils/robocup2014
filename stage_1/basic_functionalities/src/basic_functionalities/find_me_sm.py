@@ -43,7 +43,7 @@ class prepare_location(smach.State):
 class FindMeSM(smach.StateMachine):
     """
     Executes a SM that does the test find me and go over there.
-    The robot recognize one TC and it must reconize this person inside a room.
+    The robot recognize one TC and it must recognize this person inside a room.
     When it do it, it must go to the side that the TC indicates. 
 
 
