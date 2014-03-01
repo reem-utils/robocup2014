@@ -14,30 +14,12 @@ import actionlib
 
 from robot_inspection_sm import RobotInspectionSM
 
-
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'], output_keys=[])
-
-    def execute(self, userdata):
-        print "Dummy state to launch real State Machine"
-        #rospy.sleep(1) # in seconds
-
-        return 'succeeded'
-
-
 def main():
-    rospy.init_node('sm_example_sm_pkg')
+    rospy.init_node('robot_inpection')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-
-        # Using this state to wait and to initialize stuff if necessary (fill up input/output keys for example)
-        smach.StateMachine.add(
-            'dummy_state',
-            DummyStateMachine(),
-            transitions={'succeeded': 'RobotInspectionSM'})
 
         smach.StateMachine.add(
             'RobotInspectionSM',
@@ -46,7 +28,7 @@ def main():
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'sm_example_sm_pkg_introspection', sm, '/SM_ROOT')
+        'robot_inspection_introspection', sm, '/RI_ROOT')
     sis.start()
 
     sm.execute()
