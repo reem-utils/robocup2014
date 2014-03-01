@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launch map pois for the robot inspection test-->
+        <rosparam file="$(find manipulation_states)/config/reem_motions.yaml" command="load" ns="" />
+</launch>
