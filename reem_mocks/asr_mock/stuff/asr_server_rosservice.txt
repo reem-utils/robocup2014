@@ -1,0 +1,13 @@
+rosservice call /asr_server "request:
+  requests:
+  - 1
+  - 2
+  - 3
+  - 4
+  activation:
+    action: 1
+  grammar:
+    action: 1
+    grammarName: 'drinks'
+  lang:
+    language: 'en_US'"
