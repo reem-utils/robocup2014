@@ -89,9 +89,9 @@ class FaceService():
         self = SetDatabaseRequest()
         # it means that delates the databas
         if req.purgeAll==True :
-            rospy.loginfo("removing database" )
+            rospy.loginfo("removing database  " + str(req.databaseName) )
         else:
-            rospy.loginfo("Charging database" )
+            rospy.loginfo("Charging database  "+str(req.databaseName) )
         return database # todo: i dont know what 
          
          
