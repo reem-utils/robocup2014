@@ -7,116 +7,111 @@ Created on Tue Oct 22 12:00:00 2013
 """
 
 
-import rospy
-import smach
-from smach_ros import ServiceState
 from pal_detection_msgs.srv import StartEnrollmentResponse, StartEnrollmentRequest,  StartEnrollment
 from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEnrollmentResponse
+import rospy
 from rospy.core import rospyinfo
-from pal_detection_msgs.srv._StartEnrollment import StartEnrollment,\
-	StartEnrollmentRequest
+import smach
+from smach_ros import ServiceState
+
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-import random
 
 class waitstate(smach.State):
-    def __init__(self):
+    def __init__(self, learning_time):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted']) #todo: i have to delate de output_key
-
+        self.learning_time = learning_time
     def execute(self, userdata):
-        print "Dummy state just to change learn_face"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(3)
+        rospy.loginfo("Learning Face")
+        rospy.sleep(self.learning_time)
         return 'succeeded'
 
 
 class learn_face(smach.StateMachine):
     """
     Executes a SM that does the proces off enrollment.
-    It moves the robot to the enter door, call enter_room,
-    pass the inspection (now we have a dummy state that only waits 5 secs)
-    and go to the exit door. We assume that the exit door will be closed.
+    It call a enrollmentStard Service,
+    it waits learning_time,
+    and then stops the enrollment, 
 
 
-    Required parameters:
+    Required parameters : 
     No parameters.
 
-    Optional parameters:
+    Optional parameters: learning_time, by defauld is 5 seconds
     No optional parameters
 
 
-    No input keys.
-    No output keys.
+    input keys: name, it's the name of the person who will enroll
+    output keys: standard_error, whit the error
     No io_keys.
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self):
-        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'])
-        # it's time that the robot will be learning a face
-        self.userdata.time_to_learn=3000
-        self.userdata.name='pepe'
-        
+    def __init__(self, learning_time=5):
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=['name'], 
+                                 output_keys=['standard_error'])
         
         with self:
+            # call request for StardEnrollment
             @smach.cb_interface(input_keys=['name'])
             def face_start_request_cb(userdata, request):
                 start_request = StartEnrollmentRequest()
-                start_request.name=''
+                start_request.name=userdata.name
                 return start_request
-               
-              
+            # call response for stop
+            # it returns the enrollment, true o false, if it found   
+            @smach.cb_interface(output_keys=['standard_error'])
             def stop_response_cb(userdata, response):
-                resulta=StopEnrollmentResponse()
-                #resulta=StopEnrollmentResponse()
-                #respounse=StopEnrollmentResponse()
-                resulta.enrollment_ok=response.enrollment_ok
-                resulta.error_msg=response.error_msg
-                resulta.numFacesEnrolled=response.numFacesEnrolled
-                print str(resulta.enrollment_ok)
-                print str(resulta.error_msg)
-                print str(resulta.numFacesEnrolled)
+                resultat=StopEnrollmentResponse() 
+                resultat.enrollment_ok=response.enrollment_ok
+                resultat.error_msg=response.error_msg
+                resultat.numFacesEnrolled=response.numFacesEnrolled
                 
-                return 'succeeded'
-              
-            self.userdata.name='pepe'    
-               
-            
-            smach.StateMachine.add('wais',
-                               waitstate(),
-                               transitions={'succeeded':'start_enrollment','aborted' : 'aborted','preempted':'preempted'})
-            
+                if resultat.enrollment_ok == False:
+                    rospy.loginfo(FAIL+"Learning Face Error  " +
+                                str(resultat.enrollment_ok)+"  "+str(resultat.error_msg)
+                                +"  "+str(resultat.numFacesEnrolled)+ENDC)
+                    self.userdata.standard_error='face not found'
+                    return 'aborted'
+                else:
+                    self.userdata.standard_error='ok, face found'
+                    return 'succeeded'
+                   
+            #call request of start enrollment
             smach.StateMachine.add('start_enrollment',
                                ServiceState('/pal_face/start_enrollment',
                                             StartEnrollment,
                                             request_cb = face_start_request_cb,
                                             input_keys = ['name']),
                                transitions={'succeeded':'wait_state','aborted' : 'aborted','preempted':'preempted'})
-            # We prepare the information to go to the init door
+            # Wait learning_time, that the robot will be learning the face
             smach.StateMachine.add(
                                 'wait_state',
-                                waitstate(),
+                                waitstate(learning_time),
                                 transitions={'succeeded': 'stop_enrollment', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
-                                
+            
+            # it returns StopEnrollmentResponse, if face not found aborted                     
             smach.StateMachine.add('stop_enrollment',
                               ServiceState('/pal_face/stop_enrollment',
                                            StopEnrollment,
-                                           response_cb = stop_response_cb),
+                                           response_cb = stop_response_cb,
+                                           output_keys = ['standard_error']),
                               transitions={'succeeded':'succeeded','aborted': 'aborted','preempted':'preempted'})
       
-       	
+           
         # Go to the init door
 
 
 
 
                  
-
 
 
 
