@@ -1,34 +1,35 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 22 12:00:00 2013
+@author:  Cristina De Saint Germain
+@email: crsaintc8@gmail.com
 
-@author: sampfeiffer
+26 Feb 2014
 """
 
 import rospy
 import smach
 import smach_ros
 import actionlib
-#from smach_ros import SimpleActionState, ServiceState
 
-from robot_inspection_sm import RobotInspectionSM
+from basic_functionalities_sm import BasicFunctionalitiesSM
 
 def main():
-    rospy.init_node('robot_inpection')
+    rospy.init_node('basic_functionalities')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
 
         smach.StateMachine.add(
-            'RobotInspectionSM',
-            RobotInspectionSM(),
+            'BasicFunctionalitiesSM',
+            BasicFunctionalitiesSM(),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
+    
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'robot_inspection_introspection', sm, '/RI_ROOT')
+        'basic_functionalities_introspection', sm, '/SM_ROOT')
     sis.start()
 
     sm.execute()

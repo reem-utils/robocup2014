@@ -1,5 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 22 12:00:00 2013
 
+@author: Chang long Zhu
+@email: changlongzj@gmail.com
+"""
 import rospy
 import smach
 import smach_ros
@@ -27,17 +33,6 @@ class createPlayMotionGoal(smach.State):
         
         return 'succeeded'
 
-
-class play_motion_finish_Error(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], output_keys=['standard_error'])
-    
-    def execute(self, userdata):
-        userdata.standard_error = "play_motion_sm : Play_motion error"
-
-        return 'aborted'
-        
-        
 class play_motion_sm(smach.StateMachine):
 
     def __init__(self):
@@ -51,17 +46,50 @@ class play_motion_sm(smach.StateMachine):
                                    createPlayMotionGoal(),
                                    transitions={'succeeded':'Play_Motion_Send', 'aborted':'aborted', 'preempted':'preempted'})
             
+            def play_motion_cb_result(userdata, result_status, result):
+                if result.error_code != 1: # 1 == SUCCEEDED
+                    print "in not succeeded"
+                    if result.error_code == -1: 
+                        userdata.standard_error = "Play Motion not available: Motion Not Found"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -2:
+                        userdata.standard_error = "Play Motion not available: Infeasible Reach Time"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -3:
+                        userdata.standard_error = "Play Motion not available: Controller Busy"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -4:
+                        userdata.standard_error = "Play Motion not available: Missing Controller"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -5:
+                        userdata.standard_error = "Play Motion not available: Trajectory Error"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -6:
+                        
+                        userdata.standard_error = "Play Motion not available: Goal Not Reached"
+                        
+                        rospy.loginfo(userdata.standard_error)
+                        
+                    elif result.error_code == -7:
+                        userdata.standard_error = "Play Motion not available: Planner Offline"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -8:
+                        userdata.standard_error = "Play Motion not available: No Plan Found"
+                        rospy.loginfo(userdata.standard_error)
+                    elif result.error_code == -42:
+                        userdata.standard_error = "Play Motion not available: Other Error"
+                        rospy.loginfo(userdata.standard_error)    
+                    print "aborting"
+                    return 'aborted'
+                else:
+                    userdata.standard_error = "Play Motion OK"
+                    return 'succeeded'
             #Send Play motion Goal
+
             smach.StateMachine.add('Play_Motion_Send', 
-                              SimpleActionState('/play_motion', PlayMotionAction, goal_key='play_motion_sm_goal'), 
-                              transitions={'succeeded':'succeeded', 'preempted':'play_motion_finish_Error', 'aborted':'play_motion_finish_Error'})
-            
-            smach.StateMachine.add('play_motion_finish_Error',
-                                   play_motion_finish_Error(),
-                                   transitions={'succeeded':'aborted', 'aborted':'aborted', 'preempted':'aborted'})
-            
-            
-            
-            
-            
+                                   SimpleActionState('/play_motion', PlayMotionAction, goal_key='play_motion_sm_goal', 
+                                                     input_keys=['standard_error'],
+                                                   output_keys=['standard_error'],
+                                                   result_cb=play_motion_cb_result), 
+                                   transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
             
