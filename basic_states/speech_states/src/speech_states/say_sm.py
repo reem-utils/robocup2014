@@ -40,7 +40,7 @@ def main():
             DummyStateMachine(),
             transitions={'succeeded': 'SaySM'})
 
-        sm.userdata.tts_text = "I'm working"
+        sm.userdata.tts_text = "Congratulations sergi"
         sm.userdata.tts_wait_before_speaking = 0
         smach.StateMachine.add(
             'SaySM',

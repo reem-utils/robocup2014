@@ -23,7 +23,7 @@ class AsrService():
         """Callback of asr service requests """
         if req.asrupdate.enable_grammar:
             rospy.loginfo("ASR: Enabling grammar '%s'" % req.asrupdate.enable_grammar)
-            self.current_grammar = req.asrupdate.enable_grammar
+            self.current_grammar = req.request.enable_grammar
             self.enabled_grammar = True
         elif req.disable_grammar:
             rospy.loginfo("ASR: Disabling grammar '%s'" % req.asrupdate.disable_grammar)
