@@ -46,21 +46,25 @@ class FaceService():
     
     def face_enrollment_start_cb(self, req):
         """Callback of face service requests """
+        response=StartEnrollmentResponse()
         if req.name!="":
-            rospy.loginfo("FACE: Enabling face start_enrollment'%s'")
-            self.name=req.name     
+            rospy.loginfo("FACE: Enabling face start_enrollment")
+            print str(req.name)
+            self.name=req.name  
+            response.result=True  
         else:
-            rospy.loginfo("FUCKING %s",req.name)
             rospy.loginfo("FACE: No face name")
+            response.result=False
             
-        return StartEnrollmentResponse()
+        return response
     
     def face_enrollment_stop_cb (self, req):
         
         """Callback of face service requests """
     #        rospy.loginfo("FACE: Disabling face enrollment" )
+        stop = StopEnrollmentResponse()
         if self.name!="" :
-            stop = StopEnrollmentResponse()
+            
             stop.enrollment_ok=True
             stop.numFacesEnrolled=1
             stop.error_msg=''
