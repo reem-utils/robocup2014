@@ -29,7 +29,42 @@ class topic_reader_state(smach.State):
             return 'aborted'
         
 class topic_reader(smach.StateMachine):
+    """
+    Executes a SM that reads a specified topic.
     
+    Required parameters:
+    @param topic_name: Name of the topic (e.g. \amcl_pose) 
+        @type String: 
+    @param topic_type: Class of the topic (e.g. PoseStamped)
+        @type Class: 
+    @param topic_time_out: Number of seconds to 'wait' at maximum to finish the SM
+        @type Float: 
+
+    Optional parameters:
+    No optional parameters
+
+
+    No input keys.
+    
+    Output keys:
+    @keyword topic_output_msg: Output of the topic
+        @type: topic_type:
+    @keyword standard_error: Specifies an error string if occurred.
+        @type String: 
+     
+
+    No io_keys.
+
+    Example of usage:
+    t    opic_name = '/sonar_base'
+        topic_type = Range
+        topic_time_out = 60
+        
+        smach.StateMachine.add(
+            'dummy_state',
+            topic_reader(topic_name,topic_type,topic_time_out),
+            transitions={'succeeded': 'Printing','preempted':'preempted', 'aborted':'aborted'})
+    """
     def __init__(self, topic_name, topic_type, topic_time_out):
         
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
