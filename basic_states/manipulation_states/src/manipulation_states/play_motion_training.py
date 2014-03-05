@@ -19,6 +19,7 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 from play_motion_sm import play_motion_sm
 
+
 class PrintUserdataPose(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['current_robot_pose'])
@@ -34,7 +35,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
         sm.userdata.manip_motion_to_play = 'home'
-        sm.userdata.manip_time_to_play = 4.0
+        sm.userdata.manip_time_to_play = 8.0
         smach.StateMachine.add(
             'dummy_state',
             play_motion_sm(),
