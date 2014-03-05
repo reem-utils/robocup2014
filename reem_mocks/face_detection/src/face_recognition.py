@@ -48,7 +48,8 @@ class FaceService():
         """Callback of face service requests """
         response=StartEnrollmentResponse()
         if req.name!="":
-            rospy.loginfo("FACE: Enabling face start_enrollment'%s'")
+            rospy.loginfo("FACE: Enabling face start_enrollment")
+            print str(req.name)
             self.name=req.name  
             response.result=True  
         else:
