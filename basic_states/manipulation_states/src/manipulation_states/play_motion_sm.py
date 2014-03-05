@@ -19,6 +19,7 @@ from play_motion.msg import PlayMotionGoal, PlayMotionAction
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 
+
 class createPlayMotionGoal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
