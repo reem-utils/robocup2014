@@ -107,6 +107,9 @@ if __name__=='__main__':
     #moveit_goal = create_move_group_pose_goal(goal_pose, group="right_arm", end_link_name="arm_right_tool_link", plan_only=True)
     moveit_goal = create_move_group_pose_goal(goal_pose, group="right_arm", end_link_name="arm_right_tool_link", plan_only=False)
     #moveit_goal = create_move_group_pose_goal(goal_pose, group="right_arm", plan_only=True)
+    
+    # Available groups:
+    # both_arms, both_arms_torso, left_arm, left_arm_torso, left_hand, right_arm, right_arm_torso, right_hand
     rospy.loginfo("Sending goal...")
     moveit_ac.send_goal(moveit_goal)
     rospy.loginfo("Waiting for result...")
