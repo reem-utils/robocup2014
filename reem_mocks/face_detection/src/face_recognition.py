@@ -8,6 +8,7 @@ from pal_detection_msgs.srv import RecognizerRequest, RecognizerResponse
 from pal_detection_msgs.msg import FaceDetection
 from pal_detection_msgs.srv import StartEnrollmentResponse, StartEnrollmentRequest,  StartEnrollment
 from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEnrollmentResponse
+from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseResponse
 
 
 
@@ -25,8 +26,12 @@ class FaceService():
                                           StartEnrollment, self.face_enrollment_start_cb)
         self.faceservice = rospy.Service('/pal_face/stop_enrollment', 
                                          StopEnrollment, self.face_enrollment_stop_cb)
+        self.faceservice = rospy.Service('/pal_face/set_database', 
+                                         SetDatabase, self.face_database_cb)
         rospy.loginfo("face service initialized")
         self.face_pub= rospy.Publisher('/pal_face/recognizer', FaceDetection)
+       
+
    
    
         
@@ -75,6 +80,19 @@ class FaceService():
             stop.numFacesEnrolled=0
          
         return stop
+    
+    def face_database_cb (self, req):
+        
+        """Callback of face service requests """
+    #        rospy.loginfo("FACE: Disabling face enrollment" )
+        database = SetDatabaseResponse()
+        self = SetDatabaseRequest()
+        # it means that delates the databas
+        if req.purgeAll==True :
+            rospy.loginfo("removing database  " + str(req.databaseName) )
+        else:
+            rospy.loginfo("Charging database  "+str(req.databaseName) )
+        return database # todo: i dont know what 
          
          
     def run(self):
