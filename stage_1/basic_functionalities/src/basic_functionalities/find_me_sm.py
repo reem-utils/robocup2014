@@ -10,6 +10,8 @@
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from speech_states.say_sm import text_to_say
+from save_face import SaveFaceSM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -39,6 +41,18 @@ class prepare_location(smach.State):
         userdata.nav_to_poi_name='find_me'
         return 'succeeded'
 
+class prepare_say_found(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=[],
+                                output_keys=['tts_text','tts_wait_before_speaking'])
+
+    def execute(self, userdata):
+
+        userdata.tts_text = "I found you, " + userdata.name + "!"
+        userdata.tts_wait_before_speaking = 0
+
+        return 'succeeded'
 
 class FindMeSM(smach.StateMachine):
     """
@@ -68,10 +82,11 @@ class FindMeSM(smach.StateMachine):
             self.userdata.nav_to_poi_name=''
             
             # Save the data from the TC
+            # We need one state machine that listen the name and then learn the face
             smach.StateMachine.add(
                 'save_face',
-                DummyStateMachine(),
-                transitions={'succeeded': 'prepare_location', 'aborted': 'aborted', 
+                SaveFaceSM(),
+                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Prepare the info to go to the room
@@ -88,7 +103,7 @@ class FindMeSM(smach.StateMachine):
                 transitions={'succeeded': 'find_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
-            # Find a particular person 
+            # Go around the room, it the robot find the TC return success
             smach.StateMachine.add(
                 'find_person',
                 DummyStateMachine(),
@@ -99,15 +114,26 @@ class FindMeSM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_person',
                 DummyStateMachine(),
-                transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
+                transitions={'succeeded': 'check_face', 'aborted': 'aborted', 
                 'preempted': 'preempted'})     
+
+            # Check if is the TC learned
+            smach.StateMachine.add(
+                'search_faces',
+                DummyStateMachine(),
+                transitions={'succeeded': 'prepare_say_found', 'aborted': 'find_person', 
+                'preempted': 'preempted'})                 
 
             # Say "I found you!"
             smach.StateMachine.add(
+                'prepare_say_found',
+                prepare_say_found(),
+                transitions={'succeeded': 'say_found', 'aborted': 'aborted', 'preempted': 'preempted'})
+
+            smach.StateMachine.add(
                 'say_found',
-                DummyStateMachine(),
-                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
+                text_to_say(),
+                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted'})
 
             # Recognize the direction
             smach.StateMachine.add(
