@@ -97,7 +97,12 @@ class create_move_group_joints_goal(smach.State):
         userdata.move_it_joint_goal.planning_options.plan_only = False #False = Plan + Execute ; True = Plan only
         userdata.move_it_joint_goal.planning_options.planning_scene_diff.is_diff = True
         userdata.move_it_joint_goal.request.group_name = userdata.manip_joint_group
+        rospy.loginfo('Group Name: ' + userdata.manip_joint_group)
+        rospy.loginfo('Joints name: ' + str(userdata.manip_joint_names))
+        rospy.loginfo('Joints Values: ' + str(userdata.manip_goal_joint_pose))
         
+        
+        rospy.loginfo('GOAL TO SEND IS:... ' + str(userdata.move_it_joint_goal))
         return 'succeeded'
         
         

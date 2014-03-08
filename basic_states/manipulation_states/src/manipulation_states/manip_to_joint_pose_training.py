@@ -25,14 +25,18 @@ def main():
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_joint_group = 'right_arm_torso'
-        joint_list_right_arm_straight_down = [-5.85101288255e-05, -0.00100779755239, 9.26099389043e-05,
-                                          0.000257664105577, -1.55489239528e-06, -0.00244347294573,
-                                          -2.55958709623e-05]
+        sm.userdata.manip_joint_group = 'right_arm'
+        joint_list_right_arm_straight_down = [0, 0, 0,
+                                          0, 0, 0,
+                                          0]
+        a_joint_list = [0.376906673976, 0.114372113957,
+                                          0, 0, 0,
+                                          0]
+        
         joint_list_right_arm_shake_hand_pose = [0.376906673976, 0.114372113957, -0.198407737748,
                                             1.36616457377, 0.970099953413, 0.108292227188,
                                             -0.822999433641]
-        sm.userdata.manip_goal_joint_pose = joint_list_right_arm_straight_down
+        sm.userdata.manip_goal_joint_pose = a_joint_list
 
         sm.userdata.manip_joint_names = ['arm_right_1_joint', 'arm_right_2_joint', 'arm_right_3_joint',
                    'arm_right_4_joint', 'arm_right_5_joint', 'arm_right_6_joint',
