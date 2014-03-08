@@ -5,7 +5,7 @@ Author:  Sergi Ubach
 Email: sxubach@dsfjakldfa
 22 Feb 2014
 """
-# Basat en tts, play_sound_sm, sound_action de l'any pasat i nav_to_coord d'aquest
+
 
 import rospy
 import smach
