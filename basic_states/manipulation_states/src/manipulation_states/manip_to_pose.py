@@ -26,8 +26,7 @@ for name in MoveItErrorCodes.__dict__.keys():
 
 class prepare_manip_to_pose(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                             output_keys=['topic_output_msg', 'standard_error'])
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'])
     def execute(self, userdata):
         rospy.loginfo('Executing Prepare_manip_to_pose')
         rospy.sleep(1);
