@@ -5,7 +5,7 @@ import actionlib
 
 from pal_detection_msgs.srv import Recognizer
 from pal_detection_msgs.srv import RecognizerRequest, RecognizerResponse
-from pal_detection_msgs.msg import FaceDetection
+from pal_detection_msgs.msg import FaceDetection, FaceDetections
 from pal_detection_msgs.srv import StartEnrollmentResponse, StartEnrollmentRequest,  StartEnrollment
 from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEnrollmentResponse
 from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseResponse
@@ -21,6 +21,7 @@ class FaceService():
         self.minConfidence = 0.0
         self.enabled = False
         self.name=""
+        self.recognized_face = FaceDetections()
         self.faceservice = rospy.Service('/pal_face/recognizer', Recognizer, self.face_cb)
         self.faceservice = rospy.Service('/pal_face/start_enrollment',
                                           StartEnrollment, self.face_enrollment_start_cb)
@@ -29,7 +30,7 @@ class FaceService():
         self.faceservice = rospy.Service('/pal_face/set_database', 
                                          SetDatabase, self.face_database_cb)
         rospy.loginfo("face service initialized")
-        self.face_pub= rospy.Publisher('/pal_face/recognizer', FaceDetection)
+        self.face_pub= rospy.Publisher('/pal_face/recognizer', FaceDetections)
        
 
    
@@ -73,7 +74,10 @@ class FaceService():
             stop.enrollment_ok=True
             stop.numFacesEnrolled=1
             stop.error_msg=''
-            self.name=""
+            cara = FaceDetection()
+            cara.name = self.name
+            cara.confidence = self.minConfidence
+            self.recognized_face.faces.append(cara)
         else:
             stop.error_msg="no name face"
             stop.enrollment_ok=False
@@ -86,9 +90,10 @@ class FaceService():
         """Callback of face service requests """
     #        rospy.loginfo("FACE: Disabling face enrollment" )
         database = SetDatabaseResponse()
-        self = SetDatabaseRequest()
+        #self = SetDatabaseRequest()
         # it means that delates the databas
         if req.purgeAll==True :
+            self.recognized_face = FaceDetections()
             rospy.loginfo("removing database  " + str(req.databaseName) )
         else:
             rospy.loginfo("Charging database  "+str(req.databaseName) )
@@ -101,10 +106,25 @@ class FaceService():
         while not rospy.is_shutdown():
             if self.enabled:
                 #rospy.loginfo("FACE: Disabling face recognition" )
-                recognized_face = FaceDetection()
-                recognized_face.name = "Pepito"
-                recognized_face.confidence = 50.0
-                self.face_pub.publish(recognized_face)
+               
+                self.recognized_face.header.stamp=rospy.Time.now()
+                self.recognized_face.header.frame_id = '/stereo_gazebo_right_camera_optical_frame'
+
+                for object in self.recognized_face.faces:
+                    object.x= 262
+                    object.y= 200
+                    object.width= 61
+                    object.height= 61
+                    object.eyesLocated= True
+                    object.leftEyeX= 307
+                    object.leftEyeY= 215
+                    object.rightEyeX= 276
+                    object.rightEyeY= 217
+                    object.position.x=-0.0874395146966
+                    object.position.y= -0.0155512560159
+                    object.position.z= 0.945071995258
+
+                self.face_pub.publish(self.recognized_face)
             rospy.sleep(3)
         
         

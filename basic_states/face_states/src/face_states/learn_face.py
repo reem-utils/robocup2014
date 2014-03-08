@@ -33,7 +33,7 @@ class waitstate(smach.State):
 
 class learn_face(smach.StateMachine):
     """
-    Executes a SM that does the proces off enrollment.
+    Executes a SM that does the process off enrollment.
     It call a enrollmentStard Service,
     it waits learning_time,
     and then stops the enrollment, 
@@ -42,7 +42,7 @@ class learn_face(smach.StateMachine):
     Required parameters : 
     No parameters.
 
-    Optional parameters: learning_time, by defauld is 5 seconds
+    Optional parameters: learning_time, by default is 5 seconds
     No optional parameters
 
 
