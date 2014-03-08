@@ -2,4 +2,7 @@
     <!-- Launch map pois for the basic functionalities test-->
 	<rosparam file="$(find basic_functionalities)/config/pois_basic_functionalities.yaml" command="load" ns="mmap" />
 
+
+    <!-- Launch questions and answers for the basic functionalities test-->
+	<rosparam file="$(find basic_functionalities)/config/questions.yaml" command="load" ns="quest" />
 </launch>

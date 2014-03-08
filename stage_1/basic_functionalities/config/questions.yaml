@@ -1,0 +1,13 @@
+numberOfSubQuestions: 1
+questions:
+  what_say:
+    one: [what_say, one, "What is the capital of Germany", Berlin]
+    two: [what_say, two, "What is the capital of Spain", Madrid]
+    three: [what_say, three, "Who let the dogs out", "wulf. wulf wuf"]
+    four: [what_say, four, "Who lives in a pineapple under the sea", "sponge bob square pants"]
+    five: [what_say, five, hello, hi]
+    six: [what_say, six, bye, ababa]
+    seven: [what_say, seven, "Good morning", "shut up"]
+    eight: [what_say, eight, "How do you feel", "I am sick of seeing you"]
+    nine: [what_say, nine, "Plis kill me", "I can't"]
+    ten: [what_say, ten, April, June]
