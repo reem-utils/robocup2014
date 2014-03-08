@@ -20,7 +20,12 @@ from util_states.topic_reader import topic_reader
 from smach_ros.simple_action_state import SimpleActionState
 from manip_to_pose import manip_to_pose
 
-
+class print_userdata(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, input_keys=['standard_error'], outcomes=['succeeded', 'aborted', 'preempted'])
+    def execute(self, userdata):
+        rospy.loginfo('Userdata Standard Error' + userdata.standard_error)
+        return 'succeeded'
 def main():
     rospy.loginfo('Manip_to_pose_training INIT')
 
@@ -35,9 +40,9 @@ def main():
         smach.StateMachine.add(
             'dummy_state',
             manip_to_pose(),
-            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+            transitions={'succeeded': 'print','preempted':'preempted', 'aborted':'aborted'})
+        smach.StateMachine.add('print', print_userdata(), transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
         
-
     sm.execute()
     rospy.spin()
 
