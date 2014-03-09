@@ -38,7 +38,7 @@ class Extraction_cb(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                 input_keys=['topic_output_msg'],
-                                output_keys=['asr_userSaid','standard_error'])
+                                output_keys=['asr_userSaid','standard_error', 'asr_tags'])
     
     def execute(self, userdata):
         rospy.loginfo("extracting message from topic")
@@ -55,7 +55,7 @@ class ListenToSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['grammar_name'],
-                    output_keys=['asr_userSaid', 'standard_error'])
+                    output_keys=['asr_userSaid', 'standard_error', 'asr_tags'])
         
         with self:
     
