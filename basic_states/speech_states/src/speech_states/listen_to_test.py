@@ -14,6 +14,10 @@ import actionlib
 
 
 from listen_to import ListenToSM
+"""
+    This file tests the listen_to function
+    
+"""
 
 
 class DummyStateMachine(smach.State):
@@ -29,11 +33,11 @@ class Speaking_cb(smach.State):
     
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                                input_keys=['userSaid'],
+                                input_keys=['asr_userSaid'],
                                 output_keys=['standard_error'])
     
     def execute(self, userdata):
-        rospy.loginfo("------------------------ '%s'" % userdata.userSaid)
+        rospy.loginfo("------------------------ '%s'" % userdata.asr_userSaid)
         userdata.standard_error = ''
     
         return 'succeeded'  
