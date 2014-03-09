@@ -114,7 +114,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_pick_and_place',
                 prepare_pick_and_place(),
-                transitions={'succeeded': 'do_find_me', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_pick_and_place', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Go to pick and place
@@ -170,7 +170,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_find_me',
                 FindMeSM(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                transitions={'succeeded': 'prepare_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Prepare the poi for avoid that

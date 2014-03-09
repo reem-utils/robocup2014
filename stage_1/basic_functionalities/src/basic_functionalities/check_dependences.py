@@ -34,7 +34,10 @@ PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/find_me",
                      "/mmap/poi/submap_0/init_avoid_that",
                      "/mmap/poi/submap_0/avoid_that",
-                     "/mmap/poi/submap_0/init_what_say"]
+                     "/mmap/poi/submap_0/init_what_say", 
+                     "/mmap/poi/submap_0/point_room_one",
+                     "/mmap/poi/submap_0/point_room_two",
+                     "/mmap/poi/submap_0/point_room_three"]
                      
 
 class UserdataHacked():

@@ -74,10 +74,13 @@ class SaveFaceSM(smach.StateMachine):
     Nothing must be taken into account to use this SM.
     """
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+                                        input_keys=[],
+                                        output_keys=['name'])
 
         with self:
             self.userdata.name = ''
+            self.userdata.asr_userSaid = ''
             self.userdata.grammar_name = ''
             
             # Ask for name
