@@ -31,7 +31,6 @@ smach.StateMachine.add('ListenToTest',
 @output actiontag[] asr_tags
 
 """
-# TODO: Add grammar stuff
 
 class Extraction_cb(smach.State):
     
@@ -48,6 +47,20 @@ class Extraction_cb(smach.State):
     
         return 'succeeded'  
     
+    
+class Aborting_cb(smach.State):
+    
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['aborted'],
+                                output_keys=['asr_userSaid','standard_error', 'asr_tags'])
+    
+    def execute(self, userdata):
+        userdata.asr_userSaid = ''
+        userdata.standard_error = ''
+        userdata.asr_tags = []
+    
+        return 'aborted'  
+
 
 class ListenToSM(smach.StateMachine):
 
@@ -76,12 +89,12 @@ class ListenToSM(smach.StateMachine):
                     ASRService,
                     request_cb = AsrServerRequestActivate_cb,
                     input_keys = ['grammar_name']),
-                    transitions={'succeeded':'topicReader', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    transitions={'succeeded':'topicReader', 'aborted': 'aborting', 'preempted': 'preempted'})
 
   # topic reader state
             smach.StateMachine.add('topicReader',
-                    topic_reader_state('/asr_event', ASREvent, 2),
-                    transitions={'succeeded': 'Process', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    topic_reader_state('/asr_event', ASREvent, 30),
+                    transitions={'succeeded': 'Process', 'aborted': 'aborting', 'preempted': 'preempted'})
 
   # Process asr_event -> asr_userSaid state       
 
@@ -106,5 +119,9 @@ class ListenToSM(smach.StateMachine):
                     ASRService,
                     request_cb = AsrServerRequestDeactivate_cb,
                     input_keys = ['grammar_name']),
-                    transitions={'succeeded':'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    transitions={'succeeded':'succeeded', 'aborted': 'aborting', 'preempted': 'preempted'})
+            
+            smach.StateMachine.add('aborting',
+                    Aborting_cb(),
+                    transitions={'aborted': 'aborted'})
 

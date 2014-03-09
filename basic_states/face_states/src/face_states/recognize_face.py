@@ -90,7 +90,7 @@ class recognize_face(smach.StateMachine):
         
         with self:
 
-            # Wait learning_time, that the robot will be learning the face
+            # extract the database that the robot is finding
             smach.StateMachine.add(
                                 'detect_face',
                                 detect_face(minConfidence),

@@ -6,13 +6,29 @@ from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, AS
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 
-MOCK_SAID = "Please kill me"
+MOCK_SAID = "Good morning"
 
 class AsrService():
     """ASR Mock service 
         
         This mock service will simulate reem hearing  someone saying MOCK_SAID
         also simulate grammar analysis of what it hearint [bring] & [coke]   on line 88 (if want to change modifie there)
+        
+        exemple of using tags in pyton:
+        
+        def take_order_cb(userdata, message):
+                self.last_drink_name = None
+                print colors.BACKGROUND_GREEN, "MESSAGE: ", str(message), colors.NATIVE_COLOR
+
+                actiontag = [tag for tag in message.tags if tag.key == 'action']
+                drinktag = [tag for tag in message.tags if tag.key == 'object']  # drink
+                if actiontag and actiontag[0].value == 'bring':
+                    print "\n\nDRINK TAG: ", drinktag
+                    userdata.out_drink_order = DrinkOrder(userdata.in_person_name, drinktag[0].value)
+                    self.last_drink_name = drinktag[0].value
+                    rospy.loginfo("==========>>> New drink: (%s, %s)" % (userdata.in_person_name, drinktag[0].value))
+                    return succeeded
+                return aborted
     
     """
     
@@ -73,6 +89,7 @@ class AsrService():
             resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
+            self.userdata.asr_srv_resp = resp
                             
         return resp
                  
