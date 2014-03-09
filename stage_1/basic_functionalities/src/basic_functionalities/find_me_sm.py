@@ -10,6 +10,7 @@
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from face_states.drop_faces import drop_faces
 from speech_states.say_sm import text_to_say
 from save_face import SaveFaceSM
 
@@ -54,6 +55,7 @@ class prepare_say_found(smach.State):
 
         return 'succeeded'
 
+
 class FindMeSM(smach.StateMachine):
     """
     Executes a SM that does the test find me and go over there.
@@ -80,6 +82,18 @@ class FindMeSM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
+            
+            # Params for drop faces - always will be the same
+            self.userdata.name_database = "find_me_database"
+            self.userdata.purgeAll = True
+            
+            # Init the state machine - Drop faces in the database
+            smach.StateMachine.add(
+                'init_database',
+                drop_faces(),
+                remapping={'name':'name_database'},
+                transitions={'succeeded': 'save_face', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
             
             # Save the data from the TC
             # We need one state machine that listen the name and then learn the face
@@ -114,7 +128,7 @@ class FindMeSM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_person',
                 DummyStateMachine(),
-                transitions={'succeeded': 'check_face', 'aborted': 'aborted', 
+                transitions={'succeeded': 'search_faces', 'aborted': 'aborted', 
                 'preempted': 'preempted'})     
 
             # Check if is the TC learned

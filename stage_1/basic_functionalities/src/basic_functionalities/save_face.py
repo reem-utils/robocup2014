@@ -17,6 +17,19 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
+class prepare_name(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['asr_userSaid'],
+                                output_keys=['name'])
+
+    def execute(self, userdata):
+
+        userdata.name = userdata.asr_userSaid
+        
+        return 'succeeded'
+
+
 class prepare_ask_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -65,7 +78,6 @@ class SaveFaceSM(smach.StateMachine):
 
         with self:
             self.userdata.name = ''
-            self.userdata.userSaid = ''
             self.userdata.grammar_name = ''
             
             # Ask for name
@@ -85,14 +97,16 @@ class SaveFaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'listen_name',
                 ListenToSM(),
-                transitions={'succeeded': 'learn_face', 'aborted': 'aborted', 
+                transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-            # Depen que em retorni s'ha de fer un canvi de nom
-          #  self.userdata.name = self.userdata.userSaid
+            # We prepare the name for face_detection 
+            smach.StateMachine.add(
+                "prepare_name",
+                prepare_name(),
+                transitions={'succeeded': 'learn_face', 'aborted': 'aborted', 
+                'preempted': 'preempted'})  
            
-            self.userdata.name = "cris"
-             
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
