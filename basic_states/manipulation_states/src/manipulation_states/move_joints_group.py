@@ -34,25 +34,63 @@ class prepare_move_joints_group(smach.State):
         return 'succeeded'
 class create_move_group_joints_goal(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'])
+        smach.State.__init__(self, 
+                             input_keys=['move_joint_group','move_joint_poses', 'move_joint_list'],
+                             output_keys=['move_joint_goal'],
+                             outcomes=['succeeded', 'aborted', 'preempted'])
     def execute(self, userdata):
+        userdata.move_joint_goal = FollowJointTrajectoryGoal()
+        userdata.move_joint_goal.trajectory.joint_names.append = userdata.move_joint_group
+        
+        jointTrajectoryPoint = JointTrajectoryPoint()
+        jointTrajectoryPoint.positions = userdata.move_joint_poses
+        
+        for x in range(0, len(userdata.move_joint_poses)):
+            jointTrajectoryPoint.velocities.append(0.0)
+         
+        jointTrajectoryPoint.time_from_start = rospy.Duration(2.0)
+        
+        userdata.move_joint_goal.trajectory.points.append(jointTrajectoryPoint)
+        
+        for joint in userdata.move_joint_goal.trajectory.joint_names:
+            goal_tol = JointTolerance()
+            goal_tol.name = joint
+            goal_tol.position = 5.0
+            goal_tol.velocity = 5.0
+            goal_tol.acceleration = 5.0
+            userdata.move_joint_goal.goal_tolerance.append(goal_tol)
+        userdata.move_joint_goal.goal_time_tolerance = rospy.Duration(2.0)
+        userdata.move_joint_goal.trajectory.header.stamp = rospy.Time.now()
+        
         
         return 'succeeded'
         
 class move_joints_group(smach.StateMachine):
     
     """
-        This SM moves a group of joints from a group controller.
+    This SM moves a group of joints from a group controller.
+
+
+    Required parameters: None
     
+    Optional parameters: None
+    
+    Input keys:
+        @key move_joint_group: indicates the controller associated with the joints
+        @key move_joint_list: indicates the joints to control/move
+        @key move_joint_poses: indicates the pose/s for each joint              
+         
+    Output keys:
+        @key standard_error: Error
     """
     def __init__(self):
-        rospy.init_node("manip_to_joint_pose")
+        rospy.init_node("move_joints_group_node")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['move_joint_group','move_joint_poses', 'move_joint_list'],
                                     output_keys=['standard_error'])
         with self:
             # Preparation of the SM
-            smach.StateMachine.add('prepare_manip_to_pose',
+            smach.StateMachine.add('prepare_move_joints_group',
                                     prepare_move_joints_group(), 
                                     transitions={'succeeded':'prepare_move_goal', 'preempted':'preempted', 'aborted':'aborted'})
             # Preparation of the Goal
@@ -64,24 +102,24 @@ class move_joints_group(smach.StateMachine):
                 print(str(move_result.error_code))
                 if move_result.error_code.val != 1:
                     rospy.logwarn("Goal not succeeded: \"" + traj_error_dict[move_result.error_code.val]  + "\"")
-                    self.standard_error = "manip_to_joint_pose Goal not succeeded: \"" + traj_error_dict[move_result.error_code.val]  + "\""
+                    self.standard_error = "move_to_joint_pose Goal not succeeded: \"" + traj_error_dict[move_result.error_code.val]  + "\""
                     return 'aborted'
                 elif move_result.error_code.val == 1:
                     rospy.loginfo("Goal achieved.")
-                    self.standard_error = "manip_to_joint_pose succeeded!"
+                    self.standard_error = "move_to_joint_pose succeeded!"
                     return 'succeeded'
                 else:
-                    rospy.logerr("manip_to_joint_pose : Couldn't get result, something went wrong, the goal probably timed out.")
+                    rospy.logerr("move_to_joint_pose : Couldn't get result, something went wrong, the goal probably timed out.")
                     return 'preempted'
                 
             # Send the goal
             smach.StateMachine.add('send_move_goal', 
-                                   SimpleActionState('/move_group', FollowJointTrajectoryAction, 
-                                   goal_key='move_it_joint_goal',
-                                   exec_timeout=rospy.Duration(20.0), 
-                                   result_cb=move_result_cb, 
-                                   input_keys=['standard_error'], 
-                                   output_keys=['standard_error']),
+                                   SimpleActionState('/'+self.userdata.move_joint_group+'/follow_joint_trajectory', FollowJointTrajectoryAction, 
+                                                     goal_key='move_joint_goal',
+                                                     exec_timeout=rospy.Duration(20.0), 
+                                                     result_cb=move_result_cb, 
+                                                     input_keys=['standard_error'], 
+                                                     output_keys=['standard_error']),
                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
 
 
