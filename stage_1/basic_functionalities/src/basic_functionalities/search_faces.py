@@ -39,10 +39,13 @@ class prepare_poi(smach.State):
         
         if userdata.num_iterations % 3 == 0:
             userdata.nav_to_poi_name = "point_room_one"
+            rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
         elif userdata.num_iterations % 3 == 1: 
             userdata.nav_to_poi_name = "point_room_two"
+            rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
         else:
             userdata.nav_to_poi_name = "point_room_three"
+            rospy.loginfo(OKGREEN + "Point_roomthree" + ENDC)
         
         userdata.num_iterations += 1
 
@@ -76,12 +79,13 @@ class SearchFacesSM(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                     input_keys=['name', 'nav_to_poi_name'],
+                                     input_keys=['name', 'nav_to_poi_name', 'face'],
                                      output_keys=['face'])
 
         with self:
 
             self.userdata.num_iterations = 0
+            self.userdata.face = None
             
             # We define the different points
             smach.StateMachine.add(
@@ -93,7 +97,7 @@ class SearchFacesSM(smach.StateMachine):
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted'],
                                         default_outcome='succeeded',
-                                        input_keys=['name', 'nav_to_poi_name'],
+                                        input_keys=['name', 'nav_to_poi_name', 'face'],
                                         output_keys=['face'],
                                         outcome_map={'succeeded': {'find_faces': 'succeeded'},
                                                      'aborted': {'walk_to_poi':'succeeded', 
