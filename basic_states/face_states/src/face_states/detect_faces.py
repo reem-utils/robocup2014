@@ -35,7 +35,6 @@ class read_topic_faces(smach.State):
         # Check the distance between the robot and the doo
         if message!= None:
             userdata.faces=message
-            print ("hello_world")
             userdata.standard_error="Detect_face OK"
             return 'succeeded'
         else:
@@ -45,37 +44,42 @@ class read_topic_faces(smach.State):
 
 class detect_face(smach.StateMachine): 
     """
-    Executes a SM that does the process off enrollment.
-    It call a Recognizer Service, if force the start,
-    It doesn't close the secognizer
+    Executes a SM that subscribe in a topic and return what faces
+    are detect.
+    It call a Recognizer Service, it force the start,
+    It doesn't close the recognizer
 
 
     Required parameters : 
     No parameters.
 
-    Optional parameters: learning_time, by default is 5 seconds
+    Optional parameters:
+             minConfidence, is the value to filter the face TODO: i don't know
+                             what value for default is ok
     No optional parameters
 
 
-    input keys: minConfidence, is the value to filter the face TODO:
-    output keys: standard_error: inform what is the problem
-                faces: is a message that have array of face FaceDetections
+    input keys: 
+       
+    output keys:
+        standard_error: inform what is the problem
+        faces: is a message that have array of face FaceDetection
     No io_keys.
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self):
+    def __init__(self,minConfidence=90.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                                 input_keys=['minCofidence','standard_error'], 
+                                 input_keys=[], 
                                  output_keys=['standard_error','faces'])
         
         with self:
-            # call request for StardEnrollment
-            @smach.cb_interface(input_keys=['minCofidence'])
+            # call request for Recognizer
+            @smach.cb_interface(input_keys=[])
             def face_start_detect_request_cb(userdata, request):
                 start_request = RecognizerRequest()
                 start_request.enabled=True
-                start_request.minConfidence=userdata.minCofidence
+                start_request.minConfidence=minConfidence
                 return start_request
           
             #call request of start recognizer
@@ -83,7 +87,7 @@ class detect_face(smach.StateMachine):
                                ServiceState('/pal_face/recognizer',
                                             Recognizer,
                                             request_cb = face_start_detect_request_cb,
-                                            input_keys = ['minCofidence']),
+                                            input_keys = []),
                                transitions={'succeeded':'Read_Topic','aborted' : 'aborted','preempted':'preempted'})
             # Wait learning_time, that the robot will be learning the face
             smach.StateMachine.add(

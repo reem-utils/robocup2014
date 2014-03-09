@@ -18,15 +18,6 @@ FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
 
-class prepare_detect_face(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-                             output_keys=['minCofidence'])
-        
-    def execute(self, userdata):
-        rospy.loginfo("prepering learn face")
-        userdata.minCofidence=90.0 # is the name that it will learn TODO: i don't know normal parameter
-        return 'succeeded'
     
 class detect_Face_error(smach.State):
     def __init__(self):
@@ -70,11 +61,7 @@ def main():
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        # it preper the minConfidence for detect
-        smach.StateMachine.add(
-            'prepare_detect_face',
-            prepare_detect_face(),
-            transitions={'succeeded':'detect_face','aborted' : 'aborted','preempted':'preempted'})
+
         # it call the learn state
         smach.StateMachine.add(
             'detect_face',
