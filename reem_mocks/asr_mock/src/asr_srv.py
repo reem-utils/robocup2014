@@ -89,7 +89,6 @@ class AsrService():
             resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
-            self.userdata.asr_srv_resp = resp
                             
         return resp
                  
@@ -102,6 +101,7 @@ class AsrService():
                 recognized_sentence = ASREvent()
                 recognized_sentence.recognized_utterance.text = MOCK_SAID
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+                #recognized_sentence.recognized_utterance.tags = []
                 tag = actiontag()
                 tag.key = 'action'
                 tag.value = 'bring'
