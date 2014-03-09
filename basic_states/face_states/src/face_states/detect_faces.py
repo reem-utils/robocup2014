@@ -96,11 +96,6 @@ class detect_face(smach.StateMachine):
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
       
-           
-        # Go to the init door
-
-
-
 
                  
 
