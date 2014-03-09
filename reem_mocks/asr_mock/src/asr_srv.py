@@ -89,7 +89,7 @@ class AsrService():
             resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
-            self.userdata.asr_srv_resp = resp
+           # self.userdata.asr_srv_resp = resp
                             
         return resp
                  

@@ -24,11 +24,13 @@ class look_time(smach.State):
                              output_keys=[])
 
     def execute(self, userdata):
-        temps_actual=rospy.Time.now()
-        
-        if ((temps_actual.secs-self.time_init)>self.maxtime):
-            return 'aborted'
-        else :
+	
+      #  temps_actual=rospy.Time.now()
+       # 
+        #if ((temps_actual.secs-self.time_init)>self.maxtime):
+         #   return 'aborted'
+        #else :
+	
             return 'succeeded'
         
 

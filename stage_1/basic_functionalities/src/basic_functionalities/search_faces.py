@@ -66,7 +66,16 @@ def child_term_cb(outcome_map):
 
     # in all other case, just keep running, don't terminate anything
     return False
-     
+
+def out_cb(outcome_map):
+    if outcome_map['find_faces'] == 'succeeded':
+	return 'succeeded'	
+    else:
+	return 'aborted'
+
+
+
+	
 class SearchFacesSM(smach.StateMachine):
     """
     The robot goes around a room looking for faces. When it detects the face from
@@ -114,9 +123,10 @@ class SearchFacesSM(smach.StateMachine):
                                         input_keys=['name', 'nav_to_poi_name', 'face'],
                                         output_keys=['face'],
                                         child_termination_cb = child_term_cb,
-                                        outcome_map={'succeeded': {'find_faces': 'succeeded'},
-                                                     'aborted': {'walk_to_poi':'succeeded', 
-                                                                'find_faces':'aborted'}})
+					outcome_cb=out_cb)
+                                      #  outcome_map={'succeeded': {'find_faces': 'succeeded'},
+                                       #              'aborted': {'walk_to_poi':'succeeded', 
+                                        #                        'find_faces':'preemted'}})
             
             with sm_conc:
                 # Go around the room 
