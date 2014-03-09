@@ -2,15 +2,16 @@
 
 import rospy
 
-#from pal_interaction_msgs.msg import asrupdate, asrresult
-#from pal_interaction_msgs.srv import recognizerService
-#from pal_interaction_msgs.srv import recognizerServiceRequest, recognizerServiceResponse
-
 from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 class AsrService():
-    """ASR Mock service """
+    """ASR Mock service 
+        
+        This mock service will simulate reem hearing  someone asking for a dinosaur
+        also will, in a near future, simulate grammar analysis of what it hear   
+    
+    """
     
     def __init__(self):
         rospy.loginfo("Initializing asrservice")
@@ -35,27 +36,28 @@ class AsrService():
                 if req.request.activation.action == ASRActivation.DEACTIVATE:
                     self.enabled_asr = False
                     rospy.loginfo("ASR: Disabling speech recognizer")
-                if req.request.activation.action == ASRActivation.PAUSE:
-                    self.enabled_asr = False
-                    rospy.loginfo("ASR: Pausing speech recognizer")
-                if req.request.activation.action == ASRActivation.RESUME:
-                    self.enabled_asr = True
-                    rospy.loginfo("ASR: Resuming speech recognizer")
+#                 if req.request.activation.action == ASRActivation.PAUSE:
+#                     self.enabled_asr = False
+#                     rospy.loginfo("ASR: Pausing speech recognizer")
+#                 if req.request.activation.action == ASRActivation.RESUME:
+#                     self.enabled_asr = True
+#                     rospy.loginfo("ASR: Resuming speech recognizer")
                     
             elif curr_req == req.request.GRAMMAR:
                 if req.request.grammar.action == ASRGrammarMngmt.ENABLE:
                     self.enabled_grammar = True
-                    rospy.loginfo("ASR: Enabling grammar")
+                    self.current_grammar = req.request.grammar.grammarName
+                    rospy.loginfo("ASR: Enabling grammar '%s'" % req.request.grammar.grammarName)
                 if req.request.grammar.action == ASRGrammarMngmt.DISABLE:
                     self.enabled_grammar = False
-                    rospy.loginfo("ASR: Disabling grammar")
-                if req.request.grammar.action == ASRGrammarMngmt.LOAD:
-                    self.current_grammar = req.request.grammar.grammarName
-                    rospy.loginfo("ASR: Loading grammar '%s'" % ASRGrammarMngmt.grammarName)
-                if req.request.grammar.action == ASRGrammarMngmt.UNLOAD:
                     self.current_grammar = ""
-                    #PREGUNTAR COM TRACTAR DIFERENTS GRAMARS EN PARALEL
-                    rospy.loginfo("ASR: Unloading grammar")
+                    rospy.loginfo("ASR: Disabling grammar")
+#                 if req.request.grammar.action == ASRGrammarMngmt.LOAD:
+#                     self.current_grammar = req.request.grammar.grammarName
+#                     rospy.loginfo("ASR: Loading grammar '%s'" % ASRGrammarMngmt.grammarName)
+#                 if req.request.grammar.action == ASRGrammarMngmt.UNLOAD:
+#                     self.current_grammar = ""
+#                     rospy.loginfo("ASR: Unloading grammar")
                     
             elif curr_req == req.request.LANGUAGE:
                 self.current_lang = req.request.lang.language
@@ -65,23 +67,23 @@ class AsrService():
             
             resp.response.status.active = self.enabled_asr
             resp.response.status.enabled_grammar = self.current_grammar
-            resp.response.status.langauge = self.current_lang
+            resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
                             
         return resp
                  
         
-    
-        
     def run(self):
         """Publishing usersaid when grammar is enabled """
         # TODO: add tags, add other fields, take into account loaded grammar to put other text in the recognized sentence
         while not rospy.is_shutdown():
-            if self.enabled_asr:
+            if self.enabled_asr and self.enabled_grammar:
                 recognized_sentence = ASREvent()
-                recognized_sentence.recognized_utterance.text = "Kill Roger"
-                recognized_sentence.recognized_utterance.confidence = ASREvent.recognized_utterance.CONFIDENCE_MAX
+                recognized_sentence.recognized_utterance.text = "How do you feel"
+                recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+                recognized_sentence.active = self.enabled_asr
+                # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
                 self.usersaid_pub.publish(recognized_sentence)
             rospy.sleep(1)
         

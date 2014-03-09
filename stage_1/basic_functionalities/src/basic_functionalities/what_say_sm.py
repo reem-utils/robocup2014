@@ -4,12 +4,16 @@
 @author: Cristina De Saint Germain
 @email: crsaintc8@gmail.com
 
+@author: Sergi Xavier Ubach Pallàs
+@email: sxubach@gmail.com
+
 26 Feb 2014
 """
 
 import rospy
 import smach
-from navigation_states.nav_to_poi import nav_to_poi
+from speech_states.say  import text_to_say
+from speech_states.listen_to import ListenToSM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -27,6 +31,60 @@ class DummyStateMachine(smach.State):
 
         rospy.sleep(3)
         return 'succeeded'
+    
+class SelectAnswer(smach.State):
+    def __init__(self):
+        rospy.loginfo("Entring SelectAnswer")
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
+                                input_keys=['asr_userSaid'],
+                                output_keys=['standard_error', 'tts_text', 'tts_wait_before_speaking'])
+
+    def execute(self, userdata):
+        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
+        
+        question = userdata.asr_userSaid
+        foundAnswer = False
+        #important to do add the .yalm before
+        questions = rospy.get_param("/quest/questions/what_say")
+       
+        for key, value in questions.iteritems():
+         
+            if value[2] == question:
+                userdata.tts_text = value[3]
+                userdata.tts_wait_before_speaking = 0
+                foundLocation = True
+                break
+
+        if foundLocation:
+            userdata.standard_error='OK'
+#             userdata.loop_iterations = userdata.loop_iterations + 1
+            return 'succeeded'
+#         elif userdata.loop_iterations == 10:
+#             return 'preempted'        
+        else:
+            userdata.standard_error='Answer not found'
+            rospy.loginfo( FAIL +'ANSWER NOT FOUND') # todo change to loginfo
+            return 'aborted'
+        
+        
+
+class loopTest(smach.State):
+    def __init__(self):
+        rospy.loginfo("Entring loop_test")
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['loop_iterations'],
+                                output_keys=['standard_error', 'loop_iterations'])
+
+    def execute(self, userdata):
+        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
+        
+        if userdata.loop_iterations == 10:
+            return 'aborted'
+        else:
+            userdata.standard_error='OK'
+            userdata.loop_iterations = userdata.loop_iterations + 1
+            return 'succeeded'
+
 
 class WhatSaySM(smach.StateMachine):
     """
@@ -52,70 +110,44 @@ class WhatSaySM(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.nav_to_poi_name=''
-            
+            self.userdata.loop_iterations = 1
+            rospy.loginfo("Begining SM")
             # Listen the first question
+            self.userdata.grammar_name = ''
             smach.StateMachine.add(
-                'listen_first_question',
-                DummyStateMachine(),
-                transitions={'succeeded': 'search_first_answer', 'aborted': 'aborted', 
+                'listen_question',
+                ListenToSM(),
+                transitions={'succeeded': 'search_answer', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
             # Search the answer
             smach.StateMachine.add(
-                'search_first_answer',
-                DummyStateMachine(),
-                transitions={'succeeded': 'say_first_answer', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
+                'search_answer',
+                SelectAnswer(),
+                transitions={'succeeded': 'say_answer', 'aborted': 'aborted', 
+                'preempted': 'preempted', 'None': 'aborted'})    
 
             # Say the answer
             smach.StateMachine.add(
-                'say_first_answer',
-                DummyStateMachine(),
-                transitions={'succeeded': 'listen_second_question', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
-            # Listen the second question
-            smach.StateMachine.add(
-                'listen_second_question',
-                DummyStateMachine(),
-                transitions={'succeeded': 'search_second_answer', 'aborted': 'aborted', 
+                'say_answer',
+                text_to_say(),
+                transitions={'succeeded': 'loop_test', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
-            # Search the answer
+            # loop test
             smach.StateMachine.add(
-                'search_second_answer',
-                DummyStateMachine(),
-                transitions={'succeeded': 'say_second_answer', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
+                'loop_test',
+                loopTest(),
+                transitions={'succeeded': 'ask_next_question', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
 
-            # Say the answer
+            # Ask for the second question
+            self.userdata.tts_text = "Next question please, I'm waiting"
+            self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
-                'say_second_answer',
-                DummyStateMachine(),
-                transitions={'succeeded': 'listen_third_question', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
-            # Listen the third question
-            smach.StateMachine.add(
-                'listen_third_question',
-                DummyStateMachine(),
-                transitions={'succeeded': 'search_third_answer', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
-            # Search the answer
-            smach.StateMachine.add(
-                'search_third_answer',
-                DummyStateMachine(),
-                transitions={'succeeded': 'say_third_answer', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
-
-            # Say the answer
-            smach.StateMachine.add(
-                'say_third_answer',
-                DummyStateMachine(),
+                'ask_next_question',
+                text_to_say(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
-           
-
+                'preempted': 'listen_question'}) 
+            
+            
