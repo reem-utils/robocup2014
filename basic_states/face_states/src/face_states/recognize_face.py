@@ -29,9 +29,7 @@ class proces_face(smach.State):
 
     def execute(self, userdata):
         
-        #userdata.face=None
         # firs of all i look if it's some faces
-        #userdata.faces.faces
         if userdata.faces.faces:
             # i look in what option we are, if we are looking for a name o no
             if userdata.name!="":
@@ -47,7 +45,6 @@ class proces_face(smach.State):
             else:
                 # i want to take the best face confidence    
                 userdata.faces.faces.sort(cmp=None, key=attrgetter('confidence'), reverse=True)
-                print("hellllllllllllllllllllllllllllllllllllllllllllo"+ str(userdata.faces.faces[0]))
                 userdata.face=userdata.faces.faces[0]
                 userdata.standard_error="Recognize_face_Normal OK"+userdata.standard_error
                 return 'succeeded'
@@ -76,7 +73,7 @@ class recognize_face(smach.StateMachine):
 
 
     input keys:
-            Name, it's optional of the person we are looking for
+            Name, it's optional of the person we are looking for, i can be or ""o the name
     output keys:
             standard_error: inform what is the problem
             face, is a message that have FaceDetection, 

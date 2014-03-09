@@ -19,6 +19,8 @@ OKGREEN = '\033[92m'
 
 
 
+
+# you can chose the name
 class prepare_recognize_face(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],
