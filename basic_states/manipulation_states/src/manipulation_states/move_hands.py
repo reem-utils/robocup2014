@@ -82,7 +82,10 @@ class move_hands(smach.StateMachine):
     
     Input keys:
         @key move_hand_side: indicates the side of the hand
-        @key move_hand_pose: indicates poses for the joints to reach : 3 joints [thumb, middle, index] 
+        @key move_hand_pose: indicates poses for the joints to reach : 3 joints [thumb, middle, index]
+        
+        Joints:
+        [0.1, 0.1, 0,1] = Open Hands 
     """
     def __init__(self, move_joint_group_in):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
