@@ -50,6 +50,7 @@ class proces_face(smach.State):
                 return 'succeeded'
         else:
             userdata.standard_error="no faces available"+userdata.standard_error
+            userdata.face=None
             return 'aborted'
 
 
