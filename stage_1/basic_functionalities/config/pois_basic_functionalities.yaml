@@ -16,3 +16,7 @@ poi:
 
     init_what_say: [submap_0, init_what_say, -2.0, -2.0, 0]
 
+    point_room_one: [submap_0, point_room_one, 3.0, 3.0, 0]
+    point_room_two: [submap_0, point_room_two, -3.0, 0.0, 0]
+    point_room_three: [submap_0, point_room_three, 3.0, -3.0, 0]
+
