@@ -67,7 +67,7 @@ class ListenToSM(smach.StateMachine):
                 requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
                 requ.activation.action = ASRActivation.ACTIVATE                
                 requ.grammar.action = ASRGrammarMngmt.ENABLE
-                requ.grammar.grammarName = userdata.grammar_name                
+                requ.grammar.grammarName = userdata.grammar_name       
                 requ.lang.language = 'en_US'
                 return requ
 
@@ -87,5 +87,24 @@ class ListenToSM(smach.StateMachine):
 
             smach.StateMachine.add('Process',
                     Extraction_cb(),
-                    transitions={'succeeded': 'succeeded'})
+                    transitions={'succeeded': 'Deactivate_Asr'})
+            
+  # Deactivating asr service to stop listening 
+            @smach.cb_interface(input_keys=['grammar_name'])
+            def AsrServerRequestDeactivate_cb(userdata, request):
+                rospy.loginfo("Dectivating Asr server")
+                requ = ASRSrvRequest()
+                requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
+                requ.activation.action = ASRActivation.DEACTIVATE                
+                requ.grammar.action = ASRGrammarMngmt.ENABLE
+                requ.grammar.grammarName = userdata.grammar_name       
+                requ.lang.language = 'en_US'
+                return requ
+            
+            smach.StateMachine.add('Deactivate_Asr',
+                    ServiceState('/asr_server',
+                    ASRService,
+                    request_cb = AsrServerRequestDeactivate_cb,
+                    input_keys = ['grammar_name']),
+                    transitions={'succeeded':'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
 
