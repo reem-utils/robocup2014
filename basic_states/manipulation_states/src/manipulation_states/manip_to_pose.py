@@ -14,7 +14,6 @@ from geometry_msgs.msg import Point, Quaternion, Pose
 from moveit_msgs.msg import MoveGroupGoal, MoveGroupResult, MoveGroupAction, Constraints, PositionConstraint, OrientationConstraint, MoveItErrorCodes
 from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
-from util_states.topic_reader import topic_reader
 from smach_ros.simple_action_state import SimpleActionState
 
 # Useful dictionary for reading in a human friendly way the MoveIt! error codes
@@ -26,8 +25,7 @@ for name in MoveItErrorCodes.__dict__.keys():
 
 class prepare_manip_to_pose(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                             output_keys=['topic_output_msg', 'standard_error'])
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'])
     def execute(self, userdata):
         rospy.loginfo('Executing Prepare_manip_to_pose')
         rospy.sleep(1);
@@ -129,22 +127,30 @@ class manip_to_pose(smach.StateMachine):
                                     create_move_group_pose_goal(), 
                                     transitions={'succeeded':'send_move_goal', 'preempted':'preempted', 'aborted':'aborted'})
             
-            def move_result_cb(userdata, error_code):
-                if error_code.val != 1:
-                    rospy.logwarn("Goal not succeeded: \"" + moveit_error_dict[error_code.val]  + "\"")
-                    userdata.standard_error = "manip_to_pose Goal not succeeded: \"" + moveit_error_dict[error_code.val]  + "\""
+            def move_result_cb(self, error, move_result):
+                print(str(move_result.error_code))
+                if move_result.error_code.val != 1:
+                    rospy.logwarn("Goal not succeeded: \"" + moveit_error_dict[move_result.error_code.val]  + "\"")
+                    self.standard_error = "manip_to_pose Goal not succeeded: \"" + moveit_error_dict[move_result.error_code.val]  + "\""
                     return 'aborted'
-                elif error_code.val == 1:
+                elif move_result.error_code.val == 1:
                     rospy.loginfo("Goal achieved.")
-                    userdata.standard_error = "manip_to_pose succeeded!"
+                    self.standard_error = "manip_to_pose succeeded!"
                     return 'succeeded'
                 else:
                     rospy.logerr("manip_to_pose : Couldn't get result, something went wrong, the goal probably timed out.")
                     return 'preempted'
                 
+            self.userdata.standard_error = ' '
             # Send the goal
             smach.StateMachine.add('send_move_goal', 
-                                   SimpleActionState('/move_group', MoveGroupAction, goal_key='move_it_goal', exec_timeout=10.0, result_cb=move_result_cb, input_keys=['standard_error'], output_keys=['standard_error']),
+                                   SimpleActionState('/move_group', MoveGroupAction, 
+                                   goal_key='move_it_goal', 
+                                   exec_timeout=rospy.Duration(10.0), 
+                                   result_cb=move_result_cb, 
+                                   input_keys=['standard_error'], 
+                                   output_keys=['standard_error']),
+                                   
                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
             
             
