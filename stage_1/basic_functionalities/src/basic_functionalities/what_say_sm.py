@@ -15,6 +15,9 @@ import smach
 from speech_states.say  import text_to_say
 from speech_states.listen_to import ListenToSM
 
+# Constants
+NUMBER_OF_QUESTIONS = 3
+
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -39,9 +42,7 @@ class SelectAnswer(smach.State):
                                 input_keys=['asr_userSaid'],
                                 output_keys=['standard_error', 'tts_text', 'tts_wait_before_speaking'])
 
-    def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-        
+    def execute(self, userdata):        
         question = userdata.asr_userSaid
         foundAnswer = False
         #important to do add the .yalm before
@@ -73,12 +74,14 @@ class loopTest(smach.State):
         rospy.loginfo("Entring loop_test")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['loop_iterations'],
-                                output_keys=['standard_error', 'loop_iterations'])
+                                output_keys=['standard_error', 'loop_iterations', 'tts_text', 'tts_wait_before_speaking'])
 
     def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
         
-        if userdata.loop_iterations == 10:
+        userdata.tts_text = "I'm ready, ask me a question"
+        userdata.tts_wait_before_speaking = 0
+        
+        if userdata.loop_iterations == NUMBER_OF_QUESTIONS:
             return 'aborted'
         else:
             rospy.loginfo(userdata.loop_iterations)
@@ -104,16 +107,31 @@ class WhatSaySM(smach.StateMachine):
     No output keys.
     No io_keys.
 
-    Nothing must be taken into account to use this SM.
+    To use this SM in a simulator is required to run asr_srv.py, tts_as and roscore.
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.loop_iterations = 1
+            self.userdata.loop_iterations = 0
             # Listen the first question
             self.userdata.grammar_name = ''
+            
+            # loop test
+            smach.StateMachine.add(
+                'loop_test',
+                loopTest(),
+                transitions={'succeeded': 'ask_next_question', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
+            
+            # Ask for next question
+            smach.StateMachine.add(
+                'ask_next_question',
+                text_to_say(),
+                transitions={'succeeded': 'listen_question', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
             smach.StateMachine.add(
                 'listen_question',
                 ListenToSM(),
@@ -135,20 +153,6 @@ class WhatSaySM(smach.StateMachine):
                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
 
-            # loop test
-            smach.StateMachine.add(
-                'loop_test',
-                loopTest(),
-                transitions={'succeeded': 'ask_next_question', 'aborted': 'aborted', 
-                'preempted': 'preempted'})
 
-            # Ask for the second question
-            self.userdata.tts_text = "Next question please, I'm waiting"
-            self.userdata.tts_wait_before_speaking = 0
-            smach.StateMachine.add(
-                'ask_next_question',
-                text_to_say(),
-                transitions={'succeeded': 'listen_question', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
             
             

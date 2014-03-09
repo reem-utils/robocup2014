@@ -80,7 +80,7 @@ class AsrService():
         while not rospy.is_shutdown():
             if self.enabled_asr and self.enabled_grammar:
                 recognized_sentence = ASREvent()
-                recognized_sentence.recognized_utterance.text = "How do you feel"
+                recognized_sentence.recognized_utterance.text = "Plis kill me"
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
                 recognized_sentence.active = self.enabled_asr
                 # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
