@@ -9,7 +9,8 @@ Created on 08/03/2014
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
-from face_states.recognize_face import recognize_face
+from face_states.searching_person import searching_person 
+from manipulation_states.move_head import move_head
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -28,7 +29,6 @@ class DummyStateMachine(smach.State):
         rospy.sleep(3)
         return 'succeeded'
 
-
 class prepare_poi(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -45,12 +45,28 @@ class prepare_poi(smach.State):
             rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
         else:
             userdata.nav_to_poi_name = "point_room_three"
-            rospy.loginfo(OKGREEN + "Point_roomthree" + ENDC)
+            rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
         
         userdata.num_iterations += 1
 
         return 'succeeded'
-    
+ 
+# gets called when ANY child state terminates
+def child_term_cb(outcome_map):
+
+    # terminate all running states if walk_to_poi finished with outcome succeeded
+    if outcome_map['walk_to_poi'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
+        return True
+
+    # terminate all running states if BAR finished
+    if outcome_map['find_faces'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
+        return True
+
+    # in all other case, just keep running, don't terminate anything
+    return False
+     
 class SearchFacesSM(smach.StateMachine):
     """
     The robot goes around a room looking for faces. When it detects the face from
@@ -74,8 +90,6 @@ class SearchFacesSM(smach.StateMachine):
     No output keys.
     No io_keys.
 
-    Nothing must be taken into account to use this SM.
-    var = cast(raw_input('Sentence:'))
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
@@ -99,20 +113,20 @@ class SearchFacesSM(smach.StateMachine):
                                         default_outcome='succeeded',
                                         input_keys=['name', 'nav_to_poi_name', 'face'],
                                         output_keys=['face'],
+                                        child_termination_cb = child_term_cb,
                                         outcome_map={'succeeded': {'find_faces': 'succeeded'},
                                                      'aborted': {'walk_to_poi':'succeeded', 
                                                                 'find_faces':'aborted'}})
-    
             
             with sm_conc:
                 # Go around the room 
                 smach.Concurrence.add('walk_to_poi', nav_to_poi())                  
           
                 # Move head
-                smach.Concurrence.add('move_head', DummyStateMachine())
+             #   smach.Concurrence.add('move_head', DummyStateMachine())
                 
                 # Search for face
-                smach.Concurrence.add('find_faces', recognize_face())
+                smach.Concurrence.add('find_faces', searching_person())
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
