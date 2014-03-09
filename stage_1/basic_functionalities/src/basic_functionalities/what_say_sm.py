@@ -81,6 +81,7 @@ class loopTest(smach.State):
         if userdata.loop_iterations == 10:
             return 'aborted'
         else:
+            rospy.loginfo(userdata.loop_iterations)
             userdata.standard_error='OK'
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
@@ -111,7 +112,6 @@ class WhatSaySM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 1
-            rospy.loginfo("Begining SM")
             # Listen the first question
             self.userdata.grammar_name = ''
             smach.StateMachine.add(
@@ -119,6 +119,7 @@ class WhatSaySM(smach.StateMachine):
                 ListenToSM(),
                 transitions={'succeeded': 'search_answer', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
+            # TODO: stop listenting after getting the sentence. toask
 
             # Search the answer
             smach.StateMachine.add(
@@ -147,7 +148,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'ask_next_question',
                 text_to_say(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
-                'preempted': 'listen_question'}) 
+                transitions={'succeeded': 'listen_question', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
             
             
