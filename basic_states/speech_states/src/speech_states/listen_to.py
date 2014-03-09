@@ -11,7 +11,7 @@ import rospy
 import smach
 
 from smach_ros import SimpleActionState, ServiceState
-from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage
+from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage, actiontag
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 from util_states.topic_reader import topic_reader_state
 from pal_interaction_msgs.msg._ASREvent import ASREvent
@@ -28,6 +28,7 @@ smach.StateMachine.add('ListenToTest',
 
 @input string grammar_name
 @output string asr_userSaid
+@output actiontag[] asr_tags
 
 """
 # TODO: Add grammar stuff
@@ -42,8 +43,7 @@ class Extraction_cb(smach.State):
     def execute(self, userdata):
         rospy.loginfo("extracting message from topic")
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
-        # TODO: reading tags from grammar recognition
-        #userdata.
+        userdata.asr_tags = userdata.topic_output_msg.recognized_utterance.tags
         userdata.standard_error = ''
     
         return 'succeeded'  
