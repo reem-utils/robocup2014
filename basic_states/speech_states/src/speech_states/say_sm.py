@@ -3,7 +3,7 @@
 """
 Created on Tue Oct 22 12:00:00 2013
 
-@author: sampfeiffer
+@author: Sergi Xavier Ubach Pallàs
 """
 
 import rospy
@@ -21,7 +21,6 @@ class DummyStateMachine(smach.State):
         smach.State.__init__(self, outcomes=['succeeded'], output_keys=[])
 
     def execute(self, userdata):
-        print "Dummy state to launch real State Machine"
         rospy.sleep(1) # in seconds
 
         return 'succeeded'
@@ -40,7 +39,7 @@ def main():
             DummyStateMachine(),
             transitions={'succeeded': 'SaySM'})
 
-        sm.userdata.tts_text = "Congratulations sergi"
+        sm.userdata.tts_text = "Congratulations Sergi"
         sm.userdata.tts_wait_before_speaking = 0
         smach.StateMachine.add(
             'SaySM',
@@ -49,7 +48,7 @@ def main():
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'sm_example_sm_pkg_introspection', sm, '/SM_ROOT')
+        'saysm_test_introspection', sm, '/SAY_TEST')
     sis.start()
 
     sm.execute()
