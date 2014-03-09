@@ -105,13 +105,3 @@ class learn_face(smach.StateMachine):
                                            output_keys = ['standard_error']),
                               transitions={'succeeded':'succeeded','aborted': 'aborted','preempted':'preempted'})
       
-           
-        # Go to the init door
-
-
-
-
-                 
-
-
-

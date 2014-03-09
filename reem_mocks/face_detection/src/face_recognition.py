@@ -21,6 +21,8 @@ class FaceService():
         self.minConfidence = 0.0
         self.enabled = False
         self.name=""
+        self.time_first_face=60
+        self.time_Start=rospy.Time.now()
         self.recognized_face = FaceDetections()
         self.faceservice = rospy.Service('/pal_face/recognizer', Recognizer, self.face_cb)
         self.faceservice = rospy.Service('/pal_face/start_enrollment',
@@ -98,7 +100,9 @@ class FaceService():
         else:
             rospy.loginfo("Charging database  "+str(req.databaseName) )
         return database # todo: i dont know what 
-         
+    def asck_mode(self):
+        self.time_first_face=str(raw_input('Time for start introducing face :'))    
+        self.time_Start=rospy.Time.now()
          
     def run(self):
         """Publishing usersaid when face recognitionL is enabled """
@@ -106,25 +110,30 @@ class FaceService():
         while not rospy.is_shutdown():
             if self.enabled:
                 #rospy.loginfo("FACE: Disabling face recognition" )
-               
                 self.recognized_face.header.stamp=rospy.Time.now()
                 self.recognized_face.header.frame_id = '/stereo_gazebo_right_camera_optical_frame'
-
-                for object in self.recognized_face.faces:
-                    object.x= 262
-                    object.y= 200
-                    object.width= 61
-                    object.height= 61
-                    object.eyesLocated= True
-                    object.leftEyeX= 307
-                    object.leftEyeY= 215
-                    object.rightEyeX= 276
-                    object.rightEyeY= 217
-                    object.position.x=-0.0874395146966
-                    object.position.y= -0.0155512560159
-                    object.position.z= 0.945071995258
-
-                self.face_pub.publish(self.recognized_face)
+                if ((self.recognized_face.header.stamp.secs-self.time_Start.secs)>int(self.time_first_face) ):
+                    for face in self.recognized_face.faces:
+                        face.x= 262
+                        face.y= 200
+                        face.width= 61
+                        face.height= 61
+                        face.eyesLocated= True
+                        face.leftEyeX= 307
+                        face.leftEyeY= 215
+                        face.rightEyeX= 276
+                        face.rightEyeY= 217
+                        face.position.x=-0.0874395146966
+                        face.position.y= -0.0155512560159
+                        face.position.z= 0.945071995258
+                    self.face_pub.publish(self.recognized_face)
+                
+                else:
+                    pub=FaceDetections()
+                    pub.header.stamp=rospy.Time.now()
+                    pub.header.frame_id = '/stereo_gazebo_right_camera_optical_frame'
+                    self.face_pub.publish(pub)
+                
             rospy.sleep(3)
         
         
@@ -132,7 +141,10 @@ if __name__ == '__main__':
     rospy.init_node('face_recognizer_srv')
     rospy.loginfo("Initializing face_recognizer_srv")
     face = FaceService()
+    face.asck_mode()
     face.run()
+    
+    
   
 
 # vim: expandtab ts=4 sw=4

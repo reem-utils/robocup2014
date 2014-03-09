@@ -82,7 +82,7 @@ class recognize_face(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self):
+    def __init__(self,minConfidence=90):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
                                  output_keys=['standard_error','face'])
@@ -92,7 +92,7 @@ class recognize_face(smach.StateMachine):
             # Wait learning_time, that the robot will be learning the face
             smach.StateMachine.add(
                                 'detect_face',
-                                detect_face(),
+                                detect_face(minConfidence),
                                 transitions={'succeeded': 'proces_face', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
             
@@ -103,8 +103,6 @@ class recognize_face(smach.StateMachine):
                     transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                     'preempted': 'preempted'})
             
-           
-        # Go to the init door
 
 
 

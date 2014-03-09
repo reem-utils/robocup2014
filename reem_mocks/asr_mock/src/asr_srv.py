@@ -2,14 +2,17 @@
 
 import rospy
 
-from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage
+from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage, actiontag
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
+
+
+MOCK_SAID = "Please kill me"
 
 class AsrService():
     """ASR Mock service 
         
-        This mock service will simulate reem hearing  someone asking for a dinosaur
-        also will, in a near future, simulate grammar analysis of what it hear   
+        This mock service will simulate reem hearing  someone saying MOCK_SAID
+        also simulate grammar analysis of what it hearint [bring] & [coke]   on line 88 (if want to change modifie there)
     
     """
     
@@ -80,8 +83,16 @@ class AsrService():
         while not rospy.is_shutdown():
             if self.enabled_asr and self.enabled_grammar:
                 recognized_sentence = ASREvent()
-                recognized_sentence.recognized_utterance.text = "How do you feel"
+                recognized_sentence.recognized_utterance.text = MOCK_SAID
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+                tag = actiontag()
+                tag.key = 'action'
+                tag.value = 'bring'
+                recognized_sentence.recognized_utterance.tags.append(tag);
+                tag = actiontag()
+                tag.key = 'object'
+                tag.value = 'coke'
+                recognized_sentence.recognized_utterance.tags.append(tag);
                 recognized_sentence.active = self.enabled_asr
                 # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
                 self.usersaid_pub.publish(recognized_sentence)

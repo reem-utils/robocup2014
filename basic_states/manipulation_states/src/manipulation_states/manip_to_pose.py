@@ -14,7 +14,6 @@ from geometry_msgs.msg import Point, Quaternion, Pose
 from moveit_msgs.msg import MoveGroupGoal, MoveGroupResult, MoveGroupAction, Constraints, PositionConstraint, OrientationConstraint, MoveItErrorCodes
 from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
-from util_states.topic_reader import topic_reader
 from smach_ros.simple_action_state import SimpleActionState
 
 # Useful dictionary for reading in a human friendly way the MoveIt! error codes
