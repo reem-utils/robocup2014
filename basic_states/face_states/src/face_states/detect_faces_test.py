@@ -72,7 +72,7 @@ def main():
             'aborted_info',
             detect_Face_error(),
             transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
-         # it prints the standard error
+        # it prints the standard error
         smach.StateMachine.add(
             'detect_print',
             detect_Face_print(),
