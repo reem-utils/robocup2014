@@ -89,10 +89,6 @@ class AsrService():
             resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
-<<<<<<< HEAD
-=======
-           # self.userdata.asr_srv_resp = resp
->>>>>>> 1a0c11dbba88b476a9a1ea63e72846b479e1ba20
                             
         return resp
                  
@@ -115,7 +111,6 @@ class AsrService():
                 tag.value = 'spain'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 recognized_sentence.active = self.enabled_asr
-                # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
                 self.usersaid_pub.publish(recognized_sentence)
             rospy.sleep(1)
         

@@ -17,6 +17,7 @@ from speech_states.listen_to import ListenToSM
 
 # Constants
 NUMBER_OF_QUESTIONS = 3
+GRAMMAR_NAME = 'what_did_you_say.gram'
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -123,7 +124,7 @@ class WhatSaySM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
             # Listen the first question
-            self.userdata.grammar_name = 'firstgram.gram'
+            self.userdata.grammar_name = GRAMMAR_NAME
             
             # loop test
             smach.StateMachine.add(
