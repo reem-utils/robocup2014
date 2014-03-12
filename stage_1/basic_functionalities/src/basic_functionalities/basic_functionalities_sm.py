@@ -37,7 +37,7 @@ class DummyStateMachine(smach.State):
 # Class that prepare the value need for nav_to_poi
 class prepare_pick_and_place(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -47,7 +47,7 @@ class prepare_pick_and_place(smach.State):
 
 class prepare_fetch_and_carry(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -57,7 +57,7 @@ class prepare_fetch_and_carry(smach.State):
 
 class prepare_find_me(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -67,7 +67,7 @@ class prepare_find_me(smach.State):
 
 class prepare_avoid_that(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -77,7 +77,7 @@ class prepare_avoid_that(smach.State):
 
 class prepare_what_did_you_say(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -115,7 +115,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 'prepare_pick_and_place',
                 prepare_pick_and_place(),
                 transitions={'succeeded': 'go_pick_and_place', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
+                'preempted': 'preempted'}) 
 
             # Go to pick and place
             smach.StateMachine.add(

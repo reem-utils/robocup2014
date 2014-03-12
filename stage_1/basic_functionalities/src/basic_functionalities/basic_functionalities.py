@@ -12,6 +12,7 @@ import smach
 import smach_ros
 import actionlib
 
+from check_dependences import CheckDependencesState
 from basic_functionalities_sm import BasicFunctionalitiesSM
 
 def main():
@@ -20,7 +21,12 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-
+   
+        smach.StateMachine.add(
+            'CheckDepencences',
+            CheckDependencesState(),
+            transitions={'succeeded': 'BasicFunctionalitiesSM', 'aborted': 'aborted'}) 
+   
         smach.StateMachine.add(
             'BasicFunctionalitiesSM',
             BasicFunctionalitiesSM(),
@@ -29,7 +35,7 @@ def main():
     
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'basic_functionalities_introspection', sm, '/SM_ROOT')
+        'basic_functionalities_introspection', sm, '/BF_ROOT')
     sis.start()
 
     sm.execute()

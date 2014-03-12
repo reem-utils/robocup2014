@@ -24,7 +24,8 @@ class prepare_learn_face(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo("prepering learn face")
-        userdata.name='pepe'# is the name that it will learn
+        userdata.name=str(raw_input('Face Name :'))
+        #print (userdata.name)# is the name that it will learn
         return 'succeeded'
 class learn_Face_error(smach.State):
     def __init__(self):
@@ -69,3 +70,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    

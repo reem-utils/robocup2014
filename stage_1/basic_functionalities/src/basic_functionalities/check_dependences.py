@@ -7,10 +7,10 @@
 
 import smach
 import rospy
-import rostopic
 import rosservice
 import rosgraph.masterapi
 from util_states.colors import Colors
+
 TOPIC_LIST_NAMES = [  # Topics and Actions
                     ##################### Topics #####################
                     "/amcl_pose",
@@ -26,11 +26,18 @@ ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/sound"]
 
 PARAMS_LIST_NAMES = [  # #################### Params #####################
-                     "/mmap/poi/submap_0/intermediate",
-                     "/mmap/poi/submap_0/door_init",
-                     "/mmap/poi/submap_0/door_exit",
-                     "/mmap/poi/submap_0/exit_init",
-                     "/mmap/poi/submap_0/exit_exit"]
+                     "/mmap/poi/submap_0/init_pick_and_place",
+                     "/mmap/poi/submap_0/pick_and_place",
+                     "/mmap/poi/submap_0/init_fetch_and_carry",
+                     "/mmap/poi/submap_0/fetch_and_carry",
+                     "/mmap/poi/submap_0/init_find_me",
+                     "/mmap/poi/submap_0/find_me",
+                     "/mmap/poi/submap_0/init_avoid_that",
+                     "/mmap/poi/submap_0/avoid_that",
+                     "/mmap/poi/submap_0/init_what_say", 
+                     "/mmap/poi/submap_0/point_room_one",
+                     "/mmap/poi/submap_0/point_room_two",
+                     "/mmap/poi/submap_0/point_room_three"]
                      
 
 class UserdataHacked():
@@ -144,7 +151,7 @@ class CheckDependencesState(smach.State):
         self._print_fatal("Checking action '%s': Failed" % action_name)
         return 'aborted'
 
-    def __check_params(self, param_name):
+    def __check_params(self, param_name):        
         params = rospy.get_param_names()
         if any([x for x in params if x==param_name]):  # None
             self._print_info("Checking params '%s': OK" % param_name)
