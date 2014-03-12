@@ -6,7 +6,7 @@ public <basic> = (  ( <begin> is the <info> {obj.put("info",$.$value)} of <count
 
 <begin> = what | who;
 <info> = capital | president;
-<country> = spain | germany;
+<country> = spain | germany | holland | portugal | france | italy | russia | catalonia;
 
 <garbage>  = <garbage2>;
 
