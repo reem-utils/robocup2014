@@ -6,7 +6,7 @@ from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, AS
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 
-MOCK_SAID = "Good morning"
+MOCK_SAID = "what is the capital of spain"
 
 class AsrService():
     """ASR Mock service 
@@ -103,12 +103,12 @@ class AsrService():
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
                 #recognized_sentence.recognized_utterance.tags = []
                 tag = actiontag()
-                tag.key = 'action'
-                tag.value = 'bring'
+                tag.key = 'info'
+                tag.value = 'president'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 tag = actiontag()
-                tag.key = 'object'
-                tag.value = 'coke'
+                tag.key = 'country'
+                tag.value = 'spain'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 recognized_sentence.active = self.enabled_asr
                 # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla

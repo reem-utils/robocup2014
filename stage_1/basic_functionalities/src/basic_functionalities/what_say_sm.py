@@ -39,33 +39,40 @@ class SelectAnswer(smach.State):
     def __init__(self):
         rospy.loginfo("Entring SelectAnswer")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
-                                input_keys=['asr_userSaid'],
+                                input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error', 'tts_text', 'tts_wait_before_speaking'])
 
     def execute(self, userdata):        
         question = userdata.asr_userSaid
+        questionTags = userdata.asr_userSaid_tags
         foundAnswer = False
         #important to do add the .yalm before
-        questions = rospy.get_param("/quest/questions/what_say")
+        question_params = rospy.get_param("/question_list/questions/what_say")
        
-        for key, value in questions.iteritems():
-         
-            if value[2] == question:
-                userdata.tts_text = value[3]
+        info = [tag for tag in questionTags if tag.key == 'info']
+        country = [tag for tag in questionTags if tag.key == 'country']
+        
+        for key, value in question_params.iteritems():
+            
+            if (info and info[0].value == value[2]) and (country and country[0].value == value[3]):
+                userdata.tts_text = value[4]
                 userdata.tts_wait_before_speaking = 0
-                foundLocation = True
+                foundAnswer = True
                 break
 
-        if foundLocation:
+        if foundAnswer:
             userdata.standard_error='OK'
 #             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
 #         elif userdata.loop_iterations == 10:
 #             return 'preempted'        
         else:
+            
+            userdata.tts_text = "I don't know"
+            userdata.tts_wait_before_speaking = 0
             userdata.standard_error='Answer not found'
             rospy.loginfo( FAIL +'ANSWER NOT FOUND') # todo change to loginfo
-            return 'aborted'
+            return 'succeeded'
         
         
 
@@ -116,7 +123,7 @@ class WhatSaySM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
             # Listen the first question
-            self.userdata.grammar_name = ''
+            self.userdata.grammar_name = 'firstgram.gram'
             
             # loop test
             smach.StateMachine.add(

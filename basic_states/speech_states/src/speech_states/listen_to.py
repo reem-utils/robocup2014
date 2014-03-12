@@ -28,7 +28,7 @@ smach.StateMachine.add('ListenToTest',
 
 @input string grammar_name
 @output string asr_userSaid
-@output actiontag[] asr_tags
+@output actiontag[] asr_userSaid_tags
 
 """
 
@@ -37,12 +37,12 @@ class Extraction_cb(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                 input_keys=['topic_output_msg'],
-                                output_keys=['asr_userSaid','standard_error', 'asr_tags'])
+                                output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
         rospy.loginfo("extracting message from topic")
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
-        userdata.asr_tags = userdata.topic_output_msg.recognized_utterance.tags
+        userdata.asr_userSaid_tags = userdata.topic_output_msg.recognized_utterance.tags
         userdata.standard_error = ''
     
         return 'succeeded'  
@@ -52,12 +52,12 @@ class Aborting_cb(smach.State):
     
     def __init__(self):
         smach.State.__init__(self, outcomes=['aborted'],
-                                output_keys=['asr_userSaid','standard_error', 'asr_tags'])
+                                output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
         userdata.asr_userSaid = ''
         userdata.standard_error = ''
-        userdata.asr_tags = []
+        userdata.asr_userSaid_tags = []
     
         return 'aborted'  
 
@@ -68,7 +68,7 @@ class ListenToSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['grammar_name'],
-                    output_keys=['asr_userSaid', 'standard_error', 'asr_tags'])
+                    output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
         
         with self:
     
