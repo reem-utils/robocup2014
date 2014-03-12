@@ -19,8 +19,7 @@ from roslib import packages
 
 ROBOT_COMPUTER_NAME = ROS_MASTER_URI.split("http://")[1].split(":")[0]  # Assuming always http://$COMPUTER:11311
 USERNAME = "root"  # SSH login robot
-PASSWORD = "r"  # SSH password robot
-
+PASSWORD = "palroot"  # SSH password robot
 
 class UserdataHacked():
     def __init__(self):
