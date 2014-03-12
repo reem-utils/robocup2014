@@ -72,8 +72,8 @@ class prepare_say_found(smach.State):
 
     def execute(self, userdata):
 
-        userdata.tts_text = "I found you, " + userdata.name + "!"
-        userdata.tts_text += "Live long and prosper"
+        userdata.tts_text = "I found you, " + userdata.name + "!" + "Live long and prosper"
+#         userdata.tts_text +
         userdata.tts_wait_before_speaking = 0
         
         #TODO: We can use move it to salute the TC
