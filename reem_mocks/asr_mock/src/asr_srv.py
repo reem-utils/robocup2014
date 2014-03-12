@@ -6,7 +6,7 @@ from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, AS
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 
-MOCK_SAID = "Good morning"
+MOCK_SAID = "what is the capital of spain"
 
 class AsrService():
     """ASR Mock service 
@@ -89,7 +89,6 @@ class AsrService():
             resp.response.status.language = self.current_lang
             resp.response.error_msg = ""
             resp.response.warn_msg = ""
-           # self.userdata.asr_srv_resp = resp
                             
         return resp
                  
@@ -102,16 +101,16 @@ class AsrService():
                 recognized_sentence = ASREvent()
                 recognized_sentence.recognized_utterance.text = MOCK_SAID
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+                #recognized_sentence.recognized_utterance.tags = []
                 tag = actiontag()
-                tag.key = 'action'
-                tag.value = 'bring'
+                tag.key = 'info'
+                tag.value = 'president'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 tag = actiontag()
-                tag.key = 'object'
-                tag.value = 'coke'
+                tag.key = 'country'
+                tag.value = 'spain'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 recognized_sentence.active = self.enabled_asr
-                # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
                 self.usersaid_pub.publish(recognized_sentence)
             rospy.sleep(1)
         
