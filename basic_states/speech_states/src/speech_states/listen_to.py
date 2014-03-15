@@ -28,26 +28,39 @@ smach.StateMachine.add('ListenToTest',
 
 @input string grammar_name
 @output string asr_userSaid
-@output actiontag[] asr_tags
+@output actiontag[] asr_userSaid_tags
 
 """
-# TODO: Add grammar stuff
 
 class Extraction_cb(smach.State):
     
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                 input_keys=['topic_output_msg'],
-                                output_keys=['asr_userSaid','standard_error'])
+                                output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
         rospy.loginfo("extracting message from topic")
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
-        userdata.asr_tags = userdata.topic_output_msg.recognized_utterance.tags
+        userdata.asr_userSaid_tags = userdata.topic_output_msg.recognized_utterance.tags
         userdata.standard_error = ''
     
         return 'succeeded'  
     
+    
+class Aborting_cb(smach.State):
+    
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['aborted'],
+                                output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
+    
+    def execute(self, userdata):
+        userdata.asr_userSaid = ''
+        userdata.standard_error = ''
+        userdata.asr_userSaid_tags = []
+    
+        return 'aborted'  
+
 
 class ListenToSM(smach.StateMachine):
 
@@ -55,7 +68,7 @@ class ListenToSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['grammar_name'],
-                    output_keys=['asr_userSaid', 'standard_error'])
+                    output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
         
         with self:
     
@@ -76,12 +89,12 @@ class ListenToSM(smach.StateMachine):
                     ASRService,
                     request_cb = AsrServerRequestActivate_cb,
                     input_keys = ['grammar_name']),
-                    transitions={'succeeded':'topicReader', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    transitions={'succeeded':'topicReader', 'aborted': 'aborting', 'preempted': 'preempted'})
 
   # topic reader state
             smach.StateMachine.add('topicReader',
-                    topic_reader_state('/asr_event', ASREvent, 2),
-                    transitions={'succeeded': 'Process', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    topic_reader_state('/asr_event', ASREvent, 30),
+                    transitions={'succeeded': 'Process', 'aborted': 'aborting', 'preempted': 'preempted'})
 
   # Process asr_event -> asr_userSaid state       
 
@@ -106,5 +119,9 @@ class ListenToSM(smach.StateMachine):
                     ASRService,
                     request_cb = AsrServerRequestDeactivate_cb,
                     input_keys = ['grammar_name']),
-                    transitions={'succeeded':'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    transitions={'succeeded':'succeeded', 'aborted': 'aborting', 'preempted': 'preempted'})
+            
+            smach.StateMachine.add('aborting',
+                    Aborting_cb(),
+                    transitions={'aborted': 'aborted'})
 

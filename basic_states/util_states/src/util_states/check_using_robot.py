@@ -6,7 +6,7 @@ import os
 
 COMPUTERNAME = socket.gethostname()
 ROS_MASTER_URI = os.environ["ROS_MASTER_URI"]
-ROBOTS_NAME = ["reem", "rh2c"]
+ROBOTS_NAME = ["reem", "rh2c", "reemh3-2c"]
 
 #ROS_PACKAGE_PATH="/mnt_flash/stacks:/opt/ros/fuerte/share:/opt/ros/fuerte/stacks:/mnt_flash/stacks:/mnt_flash/robocup2013"
 

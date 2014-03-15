@@ -50,6 +50,7 @@ class proces_face(smach.State):
                 return 'succeeded'
         else:
             userdata.standard_error="no faces available"+userdata.standard_error
+            userdata.face=None
             return 'aborted'
 
 
@@ -89,7 +90,7 @@ class recognize_face(smach.StateMachine):
         
         with self:
 
-            # Wait learning_time, that the robot will be learning the face
+            # extract the database that the robot is finding
             smach.StateMachine.add(
                                 'detect_face',
                                 detect_face(minConfidence),

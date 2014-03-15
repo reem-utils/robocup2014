@@ -4,7 +4,10 @@
 @author:  Cristina De Saint Germain
 @email: crsaintc8@gmail.com
 
-26 Feb 2014
+@author:  Sergi Xavier Ubach Pallàs
+@email: sxubach@gmail.com
+
+12 Mar 2014
 """
 
 import rospy
@@ -13,10 +16,9 @@ import smach_ros
 import actionlib
 
 from check_dependences import CheckDependencesState
-from basic_functionalities_sm import BasicFunctionalitiesSM
-
+from robozoo_sm import RoboZooSM
 def main():
-    rospy.init_node('basic_functionalities')
+    rospy.init_node('robozoo')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
@@ -25,17 +27,17 @@ def main():
         smach.StateMachine.add(
             'CheckDepencences',
             CheckDependencesState(),
-            transitions={'succeeded': 'BasicFunctionalitiesSM', 'aborted': 'aborted'}) 
+            transitions={'succeeded': 'RoboZooSM', 'aborted': 'aborted'}) 
    
         smach.StateMachine.add(
-            'BasicFunctionalitiesSM',
-            BasicFunctionalitiesSM(),
+            'RoboZooSM',
+            RoboZooSM(),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
     
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'basic_functionalities_introspection', sm, '/BF_ROOT')
+        'robozoo', sm, '/RZ_ROOT')
     sis.start()
 
     sm.execute()

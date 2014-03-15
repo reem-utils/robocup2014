@@ -4,5 +4,5 @@
 
 
     <!-- Launch questions and answers for the basic functionalities test-->
-	<rosparam file="$(find basic_functionalities)/config/questions.yaml" command="load" ns="quest" />
+	<rosparam file="$(find basic_functionalities)/config/questions.yaml" command="load" ns="question_list" />
 </launch>

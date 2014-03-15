@@ -6,13 +6,29 @@ from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, AS
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 
-MOCK_SAID = "Please kill me"
+MOCK_SAID = "what is the capital of spain"
 
 class AsrService():
     """ASR Mock service 
         
         This mock service will simulate reem hearing  someone saying MOCK_SAID
         also simulate grammar analysis of what it hearint [bring] & [coke]   on line 88 (if want to change modifie there)
+        
+        exemple of using tags in pyton:
+        
+        def take_order_cb(userdata, message):
+                self.last_drink_name = None
+                print colors.BACKGROUND_GREEN, "MESSAGE: ", str(message), colors.NATIVE_COLOR
+
+                actiontag = [tag for tag in message.tags if tag.key == 'action']
+                drinktag = [tag for tag in message.tags if tag.key == 'object']  # drink
+                if actiontag and actiontag[0].value == 'bring':
+                    print "\n\nDRINK TAG: ", drinktag
+                    userdata.out_drink_order = DrinkOrder(userdata.in_person_name, drinktag[0].value)
+                    self.last_drink_name = drinktag[0].value
+                    rospy.loginfo("==========>>> New drink: (%s, %s)" % (userdata.in_person_name, drinktag[0].value))
+                    return succeeded
+                return aborted
     
     """
     
@@ -85,16 +101,16 @@ class AsrService():
                 recognized_sentence = ASREvent()
                 recognized_sentence.recognized_utterance.text = MOCK_SAID
                 recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+                #recognized_sentence.recognized_utterance.tags = []
                 tag = actiontag()
-                tag.key = 'action'
-                tag.value = 'bring'
+                tag.key = 'info'
+                tag.value = 'president'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 tag = actiontag()
-                tag.key = 'object'
-                tag.value = 'coke'
+                tag.key = 'country'
+                tag.value = 'spain'
                 recognized_sentence.recognized_utterance.tags.append(tag);
                 recognized_sentence.active = self.enabled_asr
-                # TODO: #recognized_sentence.recognized_utterance.tags #bla bla bla
                 self.usersaid_pub.publish(recognized_sentence)
             rospy.sleep(1)
         

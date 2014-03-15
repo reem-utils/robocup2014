@@ -1,20 +1,18 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: Cristina De Saint Germain
+@author:  Cristina De Saint Germain
 @email: crsaintc8@gmail.com
 
-26 Feb 2014
+@author:  Sergi Xavier Ubach Pallàs
+@email: sxubach@gmail.com
+
+12 Mar 2014
 """
 
 import rospy
 import smach
-from navigation_states.nav_to_poi import nav_to_poi
-from pick_place_sm import PickPlaceSM
-from fetch_and_carry_sm import FetchAndCarrySM
-from find_me_sm import FindMeSM
-from avoid_that_sm import Avoid_That
-from what_say_sm import WhatSaySM
+
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -34,61 +32,11 @@ class DummyStateMachine(smach.State):
         rospy.sleep(3)
         return 'succeeded'
 
-# Class that prepare the value need for nav_to_poi
-class prepare_pick_and_place(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
 
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_pick_and_place'
-        return 'succeeded'
-
-class prepare_fetch_and_carry(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_fetch_and_carry'
-        return 'succeeded'
-
-class prepare_find_me(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_find_me'
-        return 'succeeded'
-
-class prepare_avoid_that(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_avoid_that'
-        return 'succeeded'
-
-class prepare_what_did_you_say(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_what_say'
-        return 'succeeded'
-
-class BasicFunctionalitiesSM(smach.StateMachine):
+class RoboZooSM(smach.StateMachine):
     """
-    Executes a SM that does the basic functionalities.
-    The robot moves autonomously to each activities and do it.
+    Executes a SM that does the robozoo
+    The robot dances for an hour. It does different dances in a loop. 
 
     Required parameters:
     No parameters.
@@ -110,30 +58,30 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            # Prepare the poi for pick and place
+            # Do the Macarena Dance
             smach.StateMachine.add(
-                'prepare_pick_and_place',
-                prepare_pick_and_place(),
-                transitions={'succeeded': 'go_pick_and_place', 'aborted': 'aborted', 
+                'do_macarena',
+                DummyStateMachine(),
+                transitions={'succeeded': 'do_YMCA', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
-            # Go to pick and place
+            # Do the YMCA Dance
             smach.StateMachine.add(
-                'go_pick_and_place',
-                nav_to_poi(),
-                transitions={'succeeded': 'do_pick_and_place', 'aborted': 'aborted', 
+                'do_YMCA',
+                DummyStateMachine(),
+                transitions={'succeeded': 'do_robot', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
-            # Do pick and place
+            # Do the Robot Dance
             smach.StateMachine.add(
-                'do_pick_and_place',
-                PickPlaceSM(),
+                'do_robot',
+                DummyStateMachine(),
                 transitions={'succeeded': 'prepare_fetch_and_carry', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Prepare the poi for Fetch and Carry
             smach.StateMachine.add(
-                'prepare_fetch_and_carry',
+                'do_jokes',
                 prepare_fetch_and_carry(),
                 transitions={'succeeded': 'go_fetch_and_carry', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
