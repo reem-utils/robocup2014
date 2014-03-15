@@ -55,7 +55,7 @@ class prepare_coord_person(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['face'], 
-            output_keys=['nav_to_coord_goal']) 
+            output_keys=['nav_to_coord_goal'])
 
     def execute(self,userdata):
         
@@ -224,7 +224,7 @@ class WhatSaySM(smach.StateMachine):
                 text_to_say(),
                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
             
-            # Question Part 
+            # Question Part ---------------------------------------------------------------------------------------------
             
             # loop test - It checks the number of iterations
             smach.StateMachine.add(

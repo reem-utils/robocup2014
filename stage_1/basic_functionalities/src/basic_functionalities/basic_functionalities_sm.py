@@ -114,7 +114,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_pick_and_place',
                 prepare_pick_and_place(),
-                transitions={'succeeded': 'go_pick_and_place', 'aborted': 'aborted', 
+                transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Go to pick and place
