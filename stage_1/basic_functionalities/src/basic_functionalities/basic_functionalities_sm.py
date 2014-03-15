@@ -11,8 +11,6 @@ import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from pick_place_sm import PickPlaceSM
-from fetch_and_carry_sm import FetchAndCarrySM
-from find_me_sm import FindMeSM
 from avoid_that_sm import Avoid_That
 from what_say_sm import WhatSaySM
 
@@ -43,26 +41,6 @@ class prepare_pick_and_place(smach.State):
 
     def execute(self,userdata):
         userdata.nav_to_poi_name='init_pick_and_place'
-        return 'succeeded'
-
-class prepare_fetch_and_carry(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_fetch_and_carry'
-        return 'succeeded'
-
-class prepare_find_me(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_find_me'
         return 'succeeded'
 
 class prepare_avoid_that(smach.State):
@@ -102,6 +80,9 @@ class BasicFunctionalitiesSM(smach.StateMachine):
     No io_keys.
 
     Nothing must be taken into account to use this SM.
+    
+    NOTE: Is necessary check the time in each test and while we are goint to the next test?
+    
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
@@ -128,51 +109,9 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_pick_and_place',
                 PickPlaceSM(),
-                transitions={'succeeded': 'prepare_fetch_and_carry', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
-            # Prepare the poi for Fetch and Carry
-            smach.StateMachine.add(
-                'prepare_fetch_and_carry',
-                prepare_fetch_and_carry(),
-                transitions={'succeeded': 'go_fetch_and_carry', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
-            # Go to fetch and carry
-            smach.StateMachine.add(
-                'go_fetch_and_carry',
-                nav_to_poi(),
-                transitions={'succeeded': 'do_fetch_and_carry', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
-
-            # Do fetch and carry
-            smach.StateMachine.add(
-                'do_fetch_and_carry',
-                FetchAndCarrySM(),
-                transitions={'succeeded': 'prepare_find_me', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
-            # Prepare the poi for find me
-            smach.StateMachine.add(
-                'prepare_find_me',
-                prepare_find_me(),
-                transitions={'succeeded': 'go_find_me', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
-            # Go to find me
-            smach.StateMachine.add(
-                'go_find_me',
-                nav_to_poi(),
-                transitions={'succeeded': 'do_find_me', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
-
-            # Do find me
-            smach.StateMachine.add(
-                'do_find_me',
-                FindMeSM(),
                 transitions={'succeeded': 'prepare_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
-
+           
             # Prepare the poi for avoid that
             smach.StateMachine.add(
                 'prepare_avoid_that',
