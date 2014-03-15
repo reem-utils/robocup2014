@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 22 12:00:00 2013
+Created on Sat March 15 12:00:00 2013
 
 @author: Chang Long Zhu
 @email: changlongzj@gmail.com
@@ -86,16 +86,72 @@ class emergency_situation_sm(smach.StateMachine):
                 text_to_say(),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
-           #TODO: Define the poi for the output of the room
+            #TODO: Define the poi for the output of the room 
+            # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM(),
                 transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
-            #TODO: Define the name of the room to enter
+            #TODO: Define the name of the room to enter (defined by the OC)
+            #If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Go_to_emergency_room',
                 nav_to_poi(),
-                transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
+                transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
-                        
+            # Userdata output keys:
+            #  - person_location: PoseStamped/Geometry_msg (?)
+            # No need of face_recognition
+            # What if person not found? Re-search?
+            smach.StateMachine.add(
+                'Search_People',
+                Search_People_Emergency(),
+                transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
+
+            # Userdata input:
+            # person_location: PoseStamped (?)
+            # It is a SuperStateMachine (contains submachines) with these functionalities (draft):
+            # 1. Go to Person location
+            # 2. Ask Status
+            # 3. Register position
+            # 4. Save info4
+            # What to do if fail?
+            smach.StateMachine.add(
+                'Save_Person',
+                Save_People_Emergency(),
+                transitions={'succeeded':'Get_Person_Desired_Object', 'aborted':'Get_Person_Desired_Object', 'preempted':'Get_Person_Desired_Object'})
+
+            # The functionalities of this SuperSM are:
+            # 1. Ask the person what to fetch
+            # 2. Go and grab the object  --> Similar with Pick-and-Place
+            #   2.1. Go to room
+            #   2.2. Find Object 
+            #   2.3. Go to Object
+            #   2.4. Grab Object
+            #   2.5. Go to person
+            #   2.6. Give object --> Ungrab
+            #--> Database of objects and their location
+            #                           --> Manip/Grab 
+            # 
+
+            smach.StateMachine.add(
+                'Get_Person_Desired_Object',
+                Get_Person_Desired_Object(),
+                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+
+            #TODO: Define Entry room POI: userdata.nav_poi (?)
+            #Retrying to go to entry_door until is succeeded
+            smach.StateMachine.add(
+                'Go_to_Entry_Door',
+                nav_to_poi(),
+                transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+
+            #What is Wait for Ambulance or People Mean? Person detection?
+            smach.StateMachine.add(
+                'Wait_for_Ambulance_Person',
+                Wait_for_Ambulance_Person(),
+                transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+
+            smach.StateMachine.add(
+                '')
