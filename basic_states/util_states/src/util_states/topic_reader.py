@@ -56,7 +56,7 @@ class topic_reader(smach.StateMachine):
     No io_keys.
 
     Example of usage:
-    t    opic_name = '/sonar_base'
+        topic_name = '/sonar_base'
         topic_type = Range
         topic_time_out = 60
         
