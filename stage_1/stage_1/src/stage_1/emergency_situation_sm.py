@@ -78,11 +78,24 @@ class emergency_situation_sm(smach.StateMachine):
                 'Arms_Home',
                 play_motion_sm(),
                 transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
+            
+            userdata.tts_text = "I am ready to save people"
+            userdata.tts_wait_before_speaking = 0
+            smach.StateMachine.add(
+                'Say_Ready',
+                text_to_say(),
+                transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
            #TODO: Define the poi for the output of the room
             smach.StateMachine.add(
-                'Enter_Room',
+                'Enter_Room_Arena',
                 EnterRoomSM(),
-                )
+                transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
-            
+            #TODO: Define the name of the room to enter
+            smach.StateMachine.add(
+                'Go_to_emergency_room',
+                nav_to_poi(),
+                transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
+
+                        
