@@ -25,15 +25,29 @@ import random
 
 class DummyStateMachine(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) #todo: i have to delate de output_key
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'])
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
         rospy.sleep(3)
         return 'succeeded'
+
+# Class that prepare the value need for nav_to_poi
+class prepare_poi_emergency(smach.State):
+    def __init__(self):
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['nav_to_poi_name']) 
+
+    def execute(self,userdata, poi_type='arena_door_out'):
+        if poi_type == 'arena_door_out':
+            userdata.nav_to_poi_name='arena_door_out'    
+        elif poi_type == 'emergency_room':
+            userdata.nav_to_poi_name='emergency_room'
+
+        return 'succeeded'
+
 
 
 class emergency_situation_sm(smach.StateMachine):
@@ -84,17 +98,26 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say(),
-                transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
+                transitions={'succeeded':'Prepare_Door_Out_Arena', 'aborted':'Prepare_Door_Out_Arena', 'preempted':'Prepare_Door_Out_Arena'})
 
             #TODO: Define the poi for the output of the room 
             # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
             smach.StateMachine.add(
+                'Prepare_Door_Out_Arena',
+                prepare_emergency_room('arena_door_out'),
+                transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
+
+            smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM(),
-                transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
+                transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
             #TODO: Define the name of the room to enter (defined by the OC)
             #If Aborted (not supposed to), retry?
+            smach.StateMachine.add(
+                'Prepare_Poi_Emergency_1',
+                prepare_emergency_room('emergency_room'),
+                transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
             smach.StateMachine.add(
                 'Go_to_emergency_room',
                 nav_to_poi(),
@@ -138,10 +161,14 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Get_Person_Desired_Object',
                 Get_Person_Desired_Object(),
-                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+                transitions={'succeeded':'Prepare_Door_Out_Arena_2', 'aborted':'Prepare_Door_Out_Arena_2', 'preempted':'Prepare_Door_Out_Arena_2'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
+            smach.StateMachine.add(
+                'Prepare_Door_Out_Arena_2',
+                prepare_emergency_room('arena_door_out'),
+                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
                 nav_to_poi(),
@@ -152,6 +179,31 @@ class emergency_situation_sm(smach.StateMachine):
                 'Wait_for_Ambulance_Person',
                 Wait_for_Ambulance_Person(),
                 transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+            
+            userdata.tts_text = "Please Follow Me, I will guide you to the emergency"
+            userdata.tts_wait_before_speaking = 0
+            smach.StateMachine.add(
+                'Say_Follow_Me',
+                text_to_say(),
+                transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
+            
+            #TODO: Define the name of the room to enter (defined by the OC)
+            #If Aborted (not supposed to), retry?
+            smach.StateMachine.add(
+                'Go_to_emergency_room_2',
+                nav_to_poi(),
+                transitions={'succeeded':'DummyStateMachine', 'aborted':'DummyStateMachine', 'preempted':'DummyStateMachine'})
 
             smach.StateMachine.add(
-                '')
+                'Dummy_Wait',
+                DummyStateMachine(),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+
+        sis = smach_ros.IntrospectionServer(
+        'emergency_situation_introspection', sm, '/SM_ROOT')
+    sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+    sis.stop()
