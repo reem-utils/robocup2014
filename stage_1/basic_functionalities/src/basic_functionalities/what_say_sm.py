@@ -18,6 +18,12 @@ from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say_sm import text_to_say
 from search_faces import SearchFacesSM
 
+from navigation_states.get_current_robot_pose import get_current_robot_pose
+from util_states.math_utils import add_vectors, substract_vector
+from util_states.pose_at_distance import pose_at_distance, pose_at_distance2
+from geometry_msgs.msg import Pose
+
+
 # Constants
 NUMBER_OF_QUESTIONS = 3
 GRAMMAR_NAME = 'what_did_you_say.gram'
@@ -54,14 +60,23 @@ class prepare_location(smach.State):
 class prepare_coord_person(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['face'], 
+            input_keys=['face', 'current_robot_yaw','current_robot_pose'], 
             output_keys=['nav_to_coord_goal'])
 
     def execute(self,userdata):
+        person_pose = Pose()
+        person_pose.position = userdata.face.position
+        person_pose.orientation = userdata.current_robot_pose.pose.orientation
+                
+#         robot_pose_goal = Pose()
+#         robot_pose_goal.position = substract_vector(person_pose.position, userdata.current_robot_pose.pose.position)
+#         robot_pose_goal = pose_at_distance(robot_pose_goal,1.4)
+#         
+#         robot_pose_goal.position = add_vectors(robot_pose_goal.position,userdata.current_robot_pose.pose.position)
+        person_pose = pose_at_distance2(userdata.current_robot_pose.pose,person_pose,1.41)
+        userdata.nav_to_coord_goal=[person_pose.position.x, person_pose.position.y, userdata.current_robot_yaw]
         
         
-        userdata.nav_to_coord_goal = [userdata.face.position.x, userdata.face.position.y, userdata.face.position.z]
-
         return 'succeeded'
 
 class prepare_say_found(smach.State):
@@ -79,6 +94,7 @@ class prepare_say_found(smach.State):
         #TODO: We can use move it to salute the TC
 
         return 'succeeded'
+
 
 class SelectAnswer(smach.State):
     def __init__(self):
@@ -121,7 +137,6 @@ class SelectAnswer(smach.State):
             return 'succeeded'
         
         
-
 class loopTest(smach.State):
     def __init__(self):
         rospy.loginfo("Entering loop_test")
@@ -197,8 +212,14 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_face',
                 SearchFacesSM(),
-                transitions={'succeeded': 'prepare_coord_person', 'aborted': 'aborted', 
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 
                 'preempted': 'preempted'})
+            
+            # Where are we?
+            smach.StateMachine.add(
+                'get_actual_pos',
+                get_current_robot_pose(),
+                transitions={'succeeded': 'prepare_coord_person', 'aborted': 'aborted', 'preempted': 'succeeded'})
             
             # Go to the person - We assume that find person will return the position for the person
             smach.StateMachine.add(
