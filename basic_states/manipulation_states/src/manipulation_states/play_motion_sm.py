@@ -32,10 +32,31 @@ class createPlayMotionGoal(smach.State):
         play_goal.reach_time.secs = userdata.manip_time_to_play
         userdata.play_motion_sm_goal = play_goal
         
-        return 'succeeded'
+        return 'succeeded'    """
+    """
 
 class play_motion_sm(smach.StateMachine):
+    """
+        This is the play_motion_sm. This SM executes the Play_motion functionality, 
+        which specifies the position of the different joints in the time.
+        
+        Required parameters:
+        No parameters.
+    
+        Optional parameters:
+        No optional parameters
+    
+    
+        Input Keys:
+        @key manip_motion_to_play: specifies the motion (from a predefined set of motions in a .yaml file)
+        @key manip_time_to_play: specifies the time to reach the motion. If exceeded an error is produced.
 
+        Output Keys:
+        @key standard_error: Specifies an error output occurred in the SM.
+        No io_keys.
+    
+        Nothing must be taken into account to use this SM.
+    """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['manip_motion_to_play','manip_time_to_play'],
