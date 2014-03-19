@@ -152,7 +152,7 @@ class emergency_situation_sm(smach.StateMachine):
             # 1. Go to Person location
             # 2. Ask Status
             # 3. Register position
-            # 4. Save info4
+            # 4. Save info
             # What to do if fail?
             smach.StateMachine.add(
                 'Save_Person',

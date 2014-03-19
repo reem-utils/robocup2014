@@ -58,15 +58,21 @@ class prepare_tts(smach.State):
         return 'succeeded'
 
 
-class Save_People_Emergency(smach.StateMachine):
+class Get_Person_Desired_Object(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation's Save People SM.
     It is a SuperStateMachine (contains submachines) with these functionalities (draft):
-    1. Go to Person location
-    2. Ask Status
-    3. Register position
-    4. Save info
-    What to do if fail?
+    # The functionalities of this SuperSM are:
+    # 1. Ask the person what to fetch
+    # 2. Go and grab the object  --> Similar with Pick-and-Place
+    #   2.1. Go to room
+    #   2.2. Find Object 
+    #   2.3. Go to Object
+    #   2.4. Grab Object
+    #   2.5. Go to person
+    #   2.6. Give object --> Ungrab
+    #                    --> Database of objects and their location
+    #                    --> Manip/Grab 
 
     Required parameters:
     No parameters.
