@@ -14,6 +14,38 @@ magnitude distance.
 
     return x, y
 
+def vector_magnitude2D(vec):
+    """
+Returns the magnitude of the given vector.
+"""
+    return math.sqrt(vec.x*vec.x + vec.y*vec.y)
+
+
+def normalize_vector2D(vec):
+    """
+Returns a normalized (unitary) copy of *vec*.
+"""
+    magnitude = vector_magnitude(vec)
+    unit = copy.deepcopy(vec)
+    if magnitude > 0.0:
+        unit.x /= magnitude
+        unit.y /= magnitude
+    return unit
+
+def multiply_vector2D(vec, factor):
+    """
+Multiplies each component of *vec* by the given *factor*.
+There is the factor zero condition, to aviod having variables
+that were negative having a value or -0.0.
+"""
+    result = copy.deepcopy(vec)
+    if factor == 0.0:
+        result.x = 0.0
+        result.y = 0.0
+    else:
+        result.x *= factor
+        result.y *= factor
+    return result
 
 def vector_magnitude(vec):
     """
