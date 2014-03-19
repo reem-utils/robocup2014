@@ -48,6 +48,15 @@ class prepare_poi_emergency(smach.State):
 
         return 'succeeded'
 
+class prepare_tts(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, 
+            outcomes=['succeeded','aborted', 'preempted'], 
+            output_keys=['tts_text']) 
+    def execute(self, userdata, tts_text_phrase=''):
+        userdata.tts_text = tts_text_phrase
+
+        return 'succeeded'
 
 
 class emergency_situation_sm(smach.StateMachine):
@@ -91,10 +100,14 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Arms_Home',
                 play_motion_sm(),
-                transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
+                transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
-            userdata.tts_text = "I am ready to save people"
             userdata.tts_wait_before_speaking = 0
+            smach.StateMachine.add(
+                'Prepare_TTS_1',
+                prepare_tts("I am ready to save people"),
+                transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
+
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say(),
@@ -124,7 +137,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
-            #  - person_location: PoseStamped/Geometry_msg (?)
+            #  - emergency_person_location: PoseStamped/Geometry_msg (?)
+            #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
             smach.StateMachine.add(
@@ -178,13 +192,13 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Wait_for_Ambulance_Person',
                 Wait_for_Ambulance_Person(),
-                transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             
             userdata.tts_text = "Please Follow Me, I will guide you to the emergency"
             userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
-                'Say_Follow_Me',
-                text_to_say(),
+                'Prepare_TTS_2',
+                prepare_tts("I am ready to save people"),
                 transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
             
             #TODO: Define the name of the room to enter (defined by the OC)
