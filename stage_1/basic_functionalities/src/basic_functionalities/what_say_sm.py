@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: Cristina De Saint Germain
-@email: crsaintc8@gmail.com
-
 @author: Sergi Xavier Ubach Pallàs
 @email: sxubach@gmail.com
+
+@author: Cristina De Saint Germain
+@email: crsaintc8@gmail.com
 
 26 Feb 2014
 """
@@ -22,6 +22,7 @@ from navigation_states.get_current_robot_pose import get_current_robot_pose
 from util_states.math_utils import add_vectors, substract_vector
 from util_states.pose_at_distance import pose_at_distance, pose_at_distance2
 from geometry_msgs.msg import Pose
+
 
 
 # Constants
@@ -50,7 +51,7 @@ class prepare_location(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
+            output_keys=['nav_to_poi_name', 'standard_error']) 
 
     def execute(self,userdata):
         userdata.nav_to_poi_name='find_me'
@@ -61,18 +62,13 @@ class prepare_coord_person(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['face', 'current_robot_yaw','current_robot_pose'], 
-            output_keys=['nav_to_coord_goal'])
+            output_keys=['nav_to_coord_goal', 'standard_error'])
 
     def execute(self,userdata):
         person_pose = Pose()
         person_pose.position = userdata.face.position
         person_pose.orientation = userdata.current_robot_pose.pose.orientation
-                
-#         robot_pose_goal = Pose()
-#         robot_pose_goal.position = substract_vector(person_pose.position, userdata.current_robot_pose.pose.position)
-#         robot_pose_goal = pose_at_distance(robot_pose_goal,1.4)
-#         
-#         robot_pose_goal.position = add_vectors(robot_pose_goal.position,userdata.current_robot_pose.pose.position)
+        
         person_pose = pose_at_distance2(userdata.current_robot_pose.pose,person_pose,1.41)
         userdata.nav_to_coord_goal=[person_pose.position.x, person_pose.position.y, userdata.current_robot_yaw]
         
@@ -83,7 +79,7 @@ class prepare_say_found(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['name'],
-                                output_keys=['tts_text','tts_wait_before_speaking'])
+                                output_keys=['tts_text','tts_wait_before_speaking', 'standard_error'])
 
     def execute(self, userdata):
 
@@ -95,6 +91,20 @@ class prepare_say_found(smach.State):
 
         return 'succeeded'
 
+class prepare_ask_for_tc(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['name'],
+                                output_keys=['tts_text','tts_wait_before_speaking', 'standard_error'])
+
+    def execute(self, userdata):
+
+        userdata.tts_text = "Excuse me, right know I can't quite find your magesty, would you mind coming here so we can talk a little bit?"
+        userdata.tts_wait_before_speaking = 0
+        
+        #TODO: We can use move it to salute the TC
+
+        return 'succeeded'
 
 class SelectAnswer(smach.State):
     def __init__(self):
@@ -157,6 +167,29 @@ class loopTest(smach.State):
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
 
+    
+def child_term_cb(outcome_map):
+
+    #If time passed, we terminate all running states
+    if outcome_map['TimeOut'] == 'succeeded':
+        rospy.loginfo('TimeOut finished')
+        return True
+    
+    if outcome_map['search_face'] == 'succeeded':
+        rospy.loginfo('search_face finished')
+        return True
+    #By default, just keep running
+    return False
+
+
+def out_cb(outcome_map):
+    if outcome_map['TimeOut'] == 'succeeded':
+        return 'succeeded'   
+    elif outcome_map['search_face'] == 'succeeded':
+        return 'succeeded'   
+    else:
+        return 'aborted'
+
 
 class WhatSaySM(smach.StateMachine):
     """
@@ -180,6 +213,9 @@ class WhatSaySM(smach.StateMachine):
 
     To use this SM in a simulator is required to run asr_srv.py, tts_as and roscore.
     """
+
+    
+    
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
@@ -207,12 +243,12 @@ class WhatSaySM(smach.StateMachine):
                 nav_to_poi(),
                 transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
-           
+            
             # Look for a face
             smach.StateMachine.add(
                 'search_face',
                 SearchFacesSM(),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'prepare_ask_for_tc', 
                 'preempted': 'preempted'})
             
             # Where are we?
@@ -242,6 +278,17 @@ class WhatSaySM(smach.StateMachine):
 
             smach.StateMachine.add(
                 'say_found',
+                text_to_say(),
+                transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
+            
+             # Say "I found you!" + Small Talk
+            smach.StateMachine.add(
+                'prepare_ask_for_tc',
+                prepare_ask_for_tc(),
+                transitions={'succeeded': 'ask_for_tc', 'aborted': 'aborted', 'preempted': 'preempted'})
+
+            smach.StateMachine.add(
+                'ask_for_tc',
                 text_to_say(),
                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
             

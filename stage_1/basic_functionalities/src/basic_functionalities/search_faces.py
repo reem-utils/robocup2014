@@ -11,6 +11,7 @@ import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from face_states.searching_person import searching_person 
 from manipulation_states.move_head import move_head
+from util_states.timeout import TimeOut
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -33,7 +34,7 @@ class prepare_poi(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['num_iterations'],
-                                output_keys=['nav_to_poi_name', 'num_iterations'])
+                                output_keys=['nav_to_poi_name', 'num_iterations', 'standard_error'])
 
     def execute(self, userdata):    
         
@@ -63,19 +64,22 @@ def child_term_cb(outcome_map):
     if outcome_map['find_faces'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
         return True
+    
+    if outcome_map['TimeOut'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "TimeOut ends" + ENDC)
+        return True
 
     # in all other case, just keep running, don't terminate anything
     return False
 
 def out_cb(outcome_map):
     if outcome_map['find_faces'] == 'succeeded':
-	return 'succeeded'	
+        return 'succeeded'	
+    elif outcome_map['TimeOut'] == 'succeeded':
+        return 'endTime'    
     else:
-	return 'aborted'
+        return 'aborted'
 
-
-
-	
 class SearchFacesSM(smach.StateMachine):
     """
     The robot goes around a room looking for faces. When it detects the face from
@@ -103,12 +107,13 @@ class SearchFacesSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['name', 'nav_to_poi_name', 'face'],
-                                     output_keys=['face'])
+                                     output_keys=['face', 'standard_error'])
 
         with self:
 
             self.userdata.num_iterations = 0
             self.userdata.face = None
+            self.userdata.wait_time = 15
             
             # We define the different points
             smach.StateMachine.add(
@@ -118,10 +123,10 @@ class SearchFacesSM(smach.StateMachine):
                 'preempted': 'preempted'}) 
             
             # Concurrence
-            sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted'],
+            sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
-                                        input_keys=['name', 'nav_to_poi_name', 'face'],
-                                        output_keys=['face'],
+                                        input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
+                                        output_keys=['face', 'standard_error'],
                                         child_termination_cb = child_term_cb,
 					outcome_cb=out_cb)
                                       #  outcome_map={'succeeded': {'find_faces': 'succeeded'},
@@ -134,13 +139,14 @@ class SearchFacesSM(smach.StateMachine):
           
                 # Move head
              #   smach.Concurrence.add('move_head', DummyStateMachine())
-                
+                smach.Concurrence.add('TimeOut', TimeOut())
+                 
                 # Search for face
                 smach.Concurrence.add('find_faces', searching_person())
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
-                                transitions={'succeeded':'succeeded', 'aborted':'prepare_poi'})
-            
-           
+                                transitions={'succeeded':'succeeded', 'aborted':'prepare_poi', 'endTime': 'aborted'})
 
+                  
+           
