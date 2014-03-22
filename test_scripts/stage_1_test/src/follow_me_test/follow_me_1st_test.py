@@ -12,7 +12,7 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-from follow_me_1st import follow_me_1st
+from follow_me.follow_me_1st import follow_me_1st
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
