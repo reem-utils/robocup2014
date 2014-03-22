@@ -10,11 +10,14 @@ Created on Sat March 15 12:00:00 2013
 
 import rospy
 import smach
+import smach_ros
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
-
+from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
+from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
+from emergency_situation.Save_People_Emergency import Save_People_Emergency
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -36,7 +39,7 @@ class DummyStateMachine(smach.State):
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_emergency(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -91,7 +94,7 @@ class emergency_situation_sm(smach.StateMachine):
     Nothing must be taken into account to use this SM.
     """
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        sm = smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:           
             # We prepare the information to go to the init door
@@ -102,7 +105,7 @@ class emergency_situation_sm(smach.StateMachine):
                 play_motion_sm(),
                 transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
-            userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
                 'Prepare_TTS_1',
                 prepare_tts("I am ready to save people"),
@@ -117,7 +120,7 @@ class emergency_situation_sm(smach.StateMachine):
             # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
             smach.StateMachine.add(
                 'Prepare_Door_Out_Arena',
-                prepare_emergency_room('arena_door_out'),
+                prepare_poi_emergency('arena_door_out'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
             smach.StateMachine.add(
@@ -129,7 +132,7 @@ class emergency_situation_sm(smach.StateMachine):
             #If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Prepare_Poi_Emergency_1',
-                prepare_emergency_room('emergency_room'),
+                prepare_poi_emergency('emergency_room'),
                 transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
             smach.StateMachine.add(
                 'Go_to_emergency_room',
@@ -141,10 +144,10 @@ class emergency_situation_sm(smach.StateMachine):
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
-            smach.StateMachine.add(
-                'Search_People',
-                Search_People_Emergency(),
-                transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
+           # smach.StateMachine.add(
+           #     'Search_People',
+           #     Search_People_Emergency(),
+           #     transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
 
             # Userdata input:
             # person_location: PoseStamped (?)
@@ -181,7 +184,7 @@ class emergency_situation_sm(smach.StateMachine):
             #Retrying to go to entry_door until is succeeded
             smach.StateMachine.add(
                 'Prepare_Door_Out_Arena_2',
-                prepare_emergency_room('arena_door_out'),
+                prepare_poi_emergency('arena_door_out'),
                 transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
@@ -189,10 +192,10 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
 
             #What is Wait for Ambulance or People Mean? Person detection?
-            smach.StateMachine.add(
-                'Wait_for_Ambulance_Person',
-                Wait_for_Ambulance_Person(),
-                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+#            smach.StateMachine.add(
+#                'Wait_for_Ambulance_Person',
+#                Wait_for_Ambulance_Person(),
+#                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             
             smach.StateMachine.add(
                 'Prepare_TTS_2',
@@ -206,7 +209,7 @@ class emergency_situation_sm(smach.StateMachine):
             #If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Prepare_Poi_Emergency_2',
-                prepare_emergency_room('emergency_room'),
+                prepare_poi_emergency('emergency_room'),
                 transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
             smach.StateMachine.add(
                 'Go_to_emergency_room_2',
@@ -217,12 +220,12 @@ class emergency_situation_sm(smach.StateMachine):
                 'Dummy_Wait',
                 DummyStateMachine(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-
+    
         sis = smach_ros.IntrospectionServer(
-        'emergency_situation_introspection', sm, '/SM_ROOT')
-    sis.start()
-
-    sm.execute()
-
-    rospy.spin()
-    sis.stop()
+            'emergency_situation_introspection', sm, '/SM_ROOT')
+        sis.start()
+    
+        sm.execute()
+    
+        rospy.spin()
+        sis.stop()
