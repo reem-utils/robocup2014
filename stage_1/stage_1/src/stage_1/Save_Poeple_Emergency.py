@@ -95,7 +95,6 @@ class Save_People_Emergency(smach.StateMachine):
                 'Prepare_Say_Rescue',
                 prepare_tts('I am going to rescue you!'),
                 transitions={'succeeded':'Say_Rescue', 'aborted':'Say_Rescue', 'preempted':'Say_Rescue'})
-
             smach.StateMachine.add(
                 'Say_Rescue',
                 text_to_say(),
@@ -105,18 +104,16 @@ class Save_People_Emergency(smach.StateMachine):
                 'Prepare_Go_To_Person',
                 prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
-
             smach.StateMachine.add(
                 'Go_To_Person',
                 nav_to_poi(),
                 transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
-            #It should be Speak Recognition
+            #It should be Speech Recognition: ListenTo(?)
             smach.StateMachine.add(
                 'Prepare_Ask_Status',
                 prepare_tts('Are you Ok?'),
                 transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
-
             smach.StateMachine.add(
                 'Ask_Status',
                 text_to_say(),

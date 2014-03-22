@@ -98,18 +98,21 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
             userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
-                'Prepare_Say_Rescue',
-                prepare_tts('I am going to rescue you!'),
-                transitions={'succeeded':'Say_Rescue', 'aborted':'Say_Rescue', 'preempted':'Say_Rescue'})
+                'Prepare_Ask_Object',
+                prepare_tts('What would you like me to bring?'),
+                transitions={'succeeded':'Say_Ask_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
 
             smach.StateMachine.add(
-                'Say_Rescue',
+                'Say_Ask_Object',
                 text_to_say(),
                 transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
 
+            #ASR : Automatic Speech Recognition
+            
+            #Find Object + Grab Object SM
             smach.StateMachine.add(
-                'Prepare_Go_To_Person',
-                prepare_poi_person_emergency(),
+                'Grab_Object',
+                Find_and_grab_object(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
 
             smach.StateMachine.add(
