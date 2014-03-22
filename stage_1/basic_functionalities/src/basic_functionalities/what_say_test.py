@@ -37,6 +37,7 @@ class Avoid_That_error(smach.State):
 	print 'info of aborted What did you say?'
         print FAIL + str(userdata.standard_error) + ENDC
         return 'aborted'
+#TODO : check if the function above can be deleted
 
 def main():
     rospy.init_node('what_say_test')

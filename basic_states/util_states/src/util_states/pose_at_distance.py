@@ -30,6 +30,7 @@ def pose_at_distance2(pose1,pose2,distance):
     Returns a pose that has the same orientation as the original
     but the position is at a distance from the original.
     Very usefull when you want to mantain a distance from an object. 
+    It takes into account where the robot is
     """
                 
     new_pose2 = Pose()
