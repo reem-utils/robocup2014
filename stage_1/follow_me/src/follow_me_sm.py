@@ -2,6 +2,8 @@
 # vim: expandtab ts=4 sw=4
 ### FOLLOW_ME.PY ###
 import roslib
+from src.follow_me_3rd import follow_me_3rd
+from src.follow_me_2nd import follow_me_2nd
 roslib.load_manifest('follow_me')
 import smach
 import rospy
@@ -14,6 +16,11 @@ OKGREEN = '\033[92m'
 
 from speech_states.say import text_to_say
 from speech_states.listen_to import  ListenToSM
+from learn_person import LearnPerson
+from follow_me_init import FollowMeInit
+from follow_me_1st import follow_me_1st
+from follow_me_2nd import follow_me_2nd
+from follow_me_3rd import follow_me_3rd
  
 FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
@@ -43,47 +50,18 @@ class FollowMe(smach.StateMachine):
 
         with self:
 
-            self.userdata.tts_text="Hello, my name is REEM! What do you want me to do today?"
-            self.userdata.tts_wait_before_speaking=0
-            smach.StateMachine.add('INTRO',
-                                   text_to_say(),
+
+            smach.StateMachine.add('INIT_FOLLOW',
+                                   FollowMeInit(),
                                    transitions={'succeeded': 'FOLLOW_ME_COMMAND'})
 
-            ### 2. Follow me command
-            # todo create a State waiting if they say that i'm looking for
-            self.userdata.grammar_name="follow_me.gram" #TODO ha de ser igual que la del sergi
-            smach.StateMachine.add('Listen',
-                                   ListenToSM(),
-                                   transitions={'succeeded': 'FOLLOW_ME_COMMAND',
-                                                'aborted': 'Listen'})
-          
-            # it locks if it's the command correct
-            smach.StateMachine.add('FOLLOW_ME_COMMAND',
-                                   wait_for_stard(),
-                                   transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
-                                                'aborted': 'Listen'})
-
-            start_text = START_FOLLOW_FRASE
-            self.userdata.tts_text="Ok, I'll follow you wherever you want.
-             Please come a bit closer if you aretoo far, then Please stay still while I learn how you are."
-            smach.StateMachine.add('START_FOLLOWING_COME_CLOSER',
-                                   SpeakActionState(start_text),
-                                   transitions={'succeeded': 'SM_LEARN_PERSON'})
-
-            smach.StateMachine.add('SM_LEARN_PERSON',
-                                   LearnPerson(),
-                                   transitions={'succeeded': 'FOLLOW_ME',
-                                                'aborted': 'aborted'},
-                                   remapping={'PT_Id_of_person': 'out_targetId',
-                                              'LP_all_person_data': 'out_personTrackingData'})
-
-            learned_text = LEARNED_PERSON_FRASE
-            smach.StateMachine.add('START_FOLLOWING_COME_CLOSER',
-                                   SpeakActionState(learned_text),
-                                   transitions={'succeeded': 'SM_LEARN_PERSON'})
-
-            smach.StateMachine.add('FOLLOW_ME',
-                                   FollowAndStop(),
-                                   remapping={'in_targetId': 'out_targetId',
-                                              'in_personTrackingData': 'out_personTrackingData'},
-                                   transitions={'succeeded': 'succeeded'})
+            smach.StateMachine.add('FOLLOW_ME_1rst',
+                                   follow_me_1st(),
+                                   transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+            
+            smach.StateMachine.add('FOLLOW_ME_2nd',
+                                   follow_me_2nd(),
+                                   transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+            smach.StateMachine.add('FOLLOW_ME_3rd',
+                                   follow_me_3rd(),
+                                   transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
