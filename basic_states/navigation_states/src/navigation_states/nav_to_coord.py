@@ -10,6 +10,7 @@
 
 
 #import rospy
+import rospy
 import smach
 from smach_ros import SimpleActionState
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
@@ -24,7 +25,7 @@ NAVIGATION_TOPIC_NAME = '/move_base'
 class createNavGoal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal'])
+							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal','standard_error'])
 
     def execute(self, userdata):
         nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
