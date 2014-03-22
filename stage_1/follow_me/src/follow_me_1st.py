@@ -11,22 +11,22 @@ class Dumy_state(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted'])
+            outcomes=['succeeded', 'aborted'],input_keys=['standard_error'])
 
     def execute(self, userdata):
         rospy.sleep(2)
+        userdata.standar_error="Dummy"
         return 'succeded'
      
 
 #Defining the state Machine of Learn Person
-# the original document is hear:  https://github.com/reem-utils/robocup-code/blob/master/pal_smach_utils/src/pal_smach_utils/navigation/learn_person.py
 class follow_me_1st(smach.StateMachine):
 
 
 
     def __init__(self, learn_face=False):
         smach.StateMachine.__init__(self,
-                                    ['succeeded', 'preempted', 'aborted'])
+                                    ['succeeded', 'preempted', 'aborted'],output_keys=['standard_error'])
 
         with self:
 

@@ -15,7 +15,8 @@ OKGREEN = '\033[92m'
 from speech_states.say import text_to_say
 from speech_states.listen_to import  ListenToSM
 from learn_person import LearnPerson
- 
+
+
 FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
 START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."

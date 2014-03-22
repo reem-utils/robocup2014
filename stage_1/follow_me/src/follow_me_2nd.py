@@ -19,7 +19,6 @@ class Dumy_state(smach.State):
      
 
 #Defining the state Machine of Learn Person
-# the original document is hear:  https://github.com/reem-utils/robocup-code/blob/master/pal_smach_utils/src/pal_smach_utils/navigation/learn_person.py
 class follow_me_2nd(smach.StateMachine):
 
 

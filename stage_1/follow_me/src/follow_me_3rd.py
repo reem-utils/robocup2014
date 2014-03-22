@@ -16,7 +16,6 @@ class Dumy_state(smach.State):
     def execute(self, userdata):
         rospy.sleep(2)
         return 'succeded'
-     
 
 #Defining the state Machine of Learn Person
 class follow_me_3rd(smach.StateMachine):
