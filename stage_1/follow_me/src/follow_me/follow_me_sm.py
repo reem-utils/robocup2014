@@ -1,9 +1,6 @@
 #! /usr/bin/env python
 # vim: expandtab ts=4 sw=4
-### FOLLOW_ME.PY ###
-import roslib
 
-roslib.load_manifest('follow_me')
 import smach
 import rospy
 
