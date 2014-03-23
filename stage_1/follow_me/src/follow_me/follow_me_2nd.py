@@ -24,7 +24,7 @@ class follow_me_2nd(smach.StateMachine):
 
 
 
-    def __init__(self, learn_face=False):
+    def __init__(self):
         smach.StateMachine.__init__(self,
                                     ['succeeded', 'preempted', 'aborted'],output_keys=['standard_error'])
         
