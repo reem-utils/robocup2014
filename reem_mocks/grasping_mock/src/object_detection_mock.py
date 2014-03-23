@@ -4,6 +4,7 @@ import rospy
 import actionlib
 
 from grasping_mock.msgs import ObjectDetection
+from grasping_mock.srv import Recognizer, RecognizerResponse, RecognizerRequest
 
 class ObjectService():
     """Face recognition Mock service """
@@ -17,8 +18,19 @@ class ObjectService():
         self.time_Start=rospy.Time.now()
         self.recognized_object = ObjectDetection()
 
+        self.faceservice = rospy.Service('/object_detect/recognizer', ObjectDetection, self.face_cb)
         self.face_pub= rospy.Publisher('/object_detect/recognizer', ObjectDetection)
-       
+
+    def object_cb(self):
+        """Callback of object service requests """
+        if (req.enabled):
+            self.minConfidence = req.minConfidence
+            self.enabled = True
+        else:
+            self.minConfidence = 0.0
+            self.enabled = False
+        return RecognizerResponse()
+
     def asck_mode(self):
         self.time_first_object=str(raw_input('Time for start introducing object :'))    
         self.time_Start=rospy.Time.now()

@@ -38,7 +38,7 @@ class DummyStateMachine(smach.State):
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_person_emergency(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['person_location'], 
             output_keys=['nav_to_poi_name']) 
 
