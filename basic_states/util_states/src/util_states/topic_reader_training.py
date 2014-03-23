@@ -21,7 +21,6 @@ from topic_reader import topic_reader
 from sensor_msgs.msg import Range
 
 
-
 class PrintUserdataPose(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['topic_output_msg'])
