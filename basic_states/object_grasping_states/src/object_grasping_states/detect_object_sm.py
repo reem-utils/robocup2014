@@ -92,8 +92,4 @@ class detect_object(smach.StateMachine):
                                 'Read_Topic',
                                 read_topic_objects(),
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
-                                'preempted': 'preempted'})
-      
-
-def  __init__():
-    
+                                'preempted': 'preempted'})    
