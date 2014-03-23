@@ -12,7 +12,6 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-#from face_states.learn_face import learn_face
 from  object_grasping_states.detect_object_sm import detect_object
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -30,80 +29,64 @@ class prepare_detect_object(smach.State):
         
 
     def execute(self, userdata):
-        userdata.name=""
-        userdata.name=str(raw_input('Face Name :'))
+        userdata.name=str(raw_input('Object Name :'))
         userdata.standard_error="ok"
         return 'succeeded'   
     
-class recognize_Face_error(smach.State):
+class recognize_Object_error(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'], output_keys=['standard_error'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],input_keys=['standard_error'], output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo('info of aborted recognize Face')
+        rospy.loginfo('info of aborted recognize object')
         rospy.loginfo( FAIL +"standard_error :==   "+str(userdata.standard_error) + ENDC)
         return 'aborted'
     
-class recognize_Face_print(smach.State):
+class recognize_Object_print(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['face'],output_keys=[])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],input_keys=['object'],output_keys=[])
 
     def execute(self, userdata):
         
-        if userdata.face :
-            rospy.loginfo(str(userdata.face.name))
-            rospy.loginfo(str(userdata.face.confidence))              
-            rospy.loginfo (str(userdata.face.x))
-            rospy.loginfo (str(userdata.face.y))
-            rospy.loginfo (str(userdata.face.width))
-            rospy.loginfo (str(userdata.face.height))
-            rospy.loginfo (str(userdata.face.eyesLocated))
-            rospy.loginfo (str(userdata.face.leftEyeX))
-            rospy.loginfo (str(userdata.face.leftEyeY))
-            rospy.loginfo (str(userdata.face.rightEyeX))
-            rospy.loginfo (str(userdata.face.rightEyeY))
-            rospy.loginfo (str(userdata.face.position.x))
-            rospy.loginfo (str(userdata.face.position.y))
-            rospy.loginfo (str(userdata.face.position.z))
-         
+        if userdata.object :
+            rospy.loginfo(str(userdata.object.object_name))
+            rospy.loginfo(str(userdata.object.confidence))              
+            rospy.loginfo (str(userdata.object.position))
 
         return 'succeeded'
     
     
 def main():
-    rospy.init_node('recognize_face_test')
+    rospy.init_node('recognize_obect_test')
     
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        
-        
-                # it call the learn state
-        smach.StateMachine.add(
-            'prepare_face_reconize',
-            prepare_detect_object(),
-            transitions={'succeeded': 'detect_face','aborted' : 'aborted_info'})
+        # smach.StateMachine.add(
+        #     'prepare_object',
+        #     prepare_detect_object(),
+        #     transitions={'succeeded': 'detect_object','aborted' : 'aborted_info'})
         # it call the learn state
         smach.StateMachine.add(
-            'detect_face',
+            'detect_object',
             detect_object(),
             transitions={'succeeded': 'detect_print','aborted' : 'aborted_info'})
         # it prints the standard error
         smach.StateMachine.add(
             'aborted_info',
-            recognize_Face_error(),
+            recognize_Object_print(),
             transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
          # it prints the standard error
         
-        sm.userdata.face=None
+        sm.userdata.object=None
         
         smach.StateMachine.add(
             'detect_print',
-            recognize_Face_print(),
+            recognize_Object_print(),
             transitions={'succeeded': 'aborted_info', 'aborted':'aborted_info'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'detect_face_introspection', sm, '/DFI_ROOT')
+        'detect_object_introspection', sm, '/DFI_ROOT')
     sis.start()
 
     sm.execute()
