@@ -1,8 +1,11 @@
 #! /usr/bin/env python
-
+"""
+@author: Roger Boldu
+"""
 import rospy
 import smach
 
+from follow_operator import FollowOperator
 
 
 
@@ -17,7 +20,7 @@ class Listen_Comands(smach.State):
         rospy.sleep(2)
        # userdata.standard_error="Dummy"
         return 'succeeded'
-     
+'''     
 class Follow_operator(smach.State):
 
     def __init__(self):
@@ -29,7 +32,7 @@ class Follow_operator(smach.State):
         rospy.sleep(2)
        # userdata.standard_error="Dummy"
         return 'succeeded'
-
+'''
 #Defining the state Machine of follow_me 1st part
 class follow_me_1st(smach.Concurrence):
     """
@@ -45,18 +48,20 @@ class follow_me_1st(smach.Concurrence):
     
     """
     def __init__(self, distToHuman=0.9, state_machine_name="restaurant"):
-        smach.Concurrence.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'],default_outcome='succeeded',input_keys=["id_learn_person"])
+        smach.Concurrence.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'],
+                                   default_outcome='succeeded',input_keys=["in_learn_person"])
+        
         rospy.set_param("/params_learn_and_follow_operator_test/distance_to_human", distToHuman)
     
         with self:
     
             
             smach.Concurrence.add('FOLLOW_OPERATOR',
-                            Follow_operator(),
-                            remapping={"id_learn_person": "id_learn_person"})
+                            FollowOperator(),
+                            remapping={"in_learn_person": "in_learn_person"})
             
             #fumada... no vec perque ho fan aixi....
-            # jo el que vec ésque podem fer-ho aixi i un cop senti enter ja puc salta a la seguent fase
+            # jo el que vec es que podem fer-ho aixi i un cop senti enter ja puc salta a la seguent fase
             smach.Concurrence.add('LISTEN_COMMANDS',
                             Listen_Comands())
                   

@@ -1,7 +1,10 @@
 #! /usr/bin/env python
 # vim: expandtab ts=4 sw=4
 ### FOLOW_OPERATOR.PY ###
+"""
 
+@author: Roger Boldu
+"""
 import rospy
 import smach
 
@@ -54,9 +57,9 @@ class FollowOperator(smach.StateMachine):
 
         with self:
 #TODO i don't know if it's the correct form to stop de face traking
-            smach.StateMachine.add('DISABLE_FACE_TRACKING',
-                                       ServiceState('/personServer/faceTracking/stop'),
-                                       transitions={'succeeded': 'FIX_HEAD_POSITION'})
+            #smach.StateMachine.add('DISABLE_FACE_TRACKING',
+             #                          ServiceState('/personServer/faceTracking/stop'),
+              #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
 
 
             smach.StateMachine.add('FIX_HEAD_POSITION',

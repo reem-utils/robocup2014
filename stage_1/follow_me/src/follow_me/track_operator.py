@@ -1,7 +1,10 @@
 #! /usr/bin/env python
 # vim: expandtab ts=4 sw=4
 ### FOLOW_OPERATOR.PY ###
+"""
 
+@author: Roger Boldu
+"""
 import rospy
 import smach
 import math
@@ -64,16 +67,13 @@ The input is a Pose(). Publishes a blue sphere in the position of the goal.
 class initTrackOperatorVariables(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-                             input_keys=['id_personTrackingData'],
+                             input_keys=['in_personTrackingData'],
                             output_keys=["out_new_tracked_person", "currentFilterTries", "currentUsedFilter"])
     def execute(self, userdata):
-        userdata.out_new_tracked_person = userdata.in_personTrackingData
-        userdata.currentFilterTries = 0
-        userdata.currentUsedFilter = 1
-        global last_time_occluded
-        last_time_occluded = None
-        global not_say_again
-        not_say_again = False
+
+        userdata.out_new_tracked_person='22'
+        userdata.currentFilterTries='44'
+        userdata.currentUsedFilter='33'
         return 'succeeded'
     
     
@@ -91,26 +91,32 @@ class resetOccludedTime(smach.State):
 
 
 class FilterAndProcessPeopleTrackerData(smach.State):
-    smach.State.__init__(self,
-                             outcomes=['succeeded', 'no_plausible_person_found', "tracked_person_is_occluded"],
-                             input_keys=['in_persons_detected', 'out_new_tracked_person', "currentFilterTries", "currentUsedFilter"],
-                             output_keys=['out_new_tracked_person', "currentFilterTries", "currentUsedFilter"])
+    def __init__(self):
+    
+        smach.State.__init__(self,
+                                 outcomes=['succeeded', 'no_plausible_person_found', "tracked_person_is_occluded"],
+                                 input_keys=['in_persons_detected', 'out_new_tracked_person', "currentFilterTries", "currentUsedFilter"],
+                                 output_keys=['out_new_tracked_person', "currentFilterTries", "currentUsedFilter"])
     def execute(self, userdata):
         rospy.sleep(5)
         rospy.loginfo("i'm in the filter state, now it's a dummy state")
+        userdata.out_new_tracked_person='33'
+        userdata.currentFilterTries='22'
+        userdata.currentUsedFilter='04'
         return 'succeeded'
     
 #TODO mo haig de mirar    
 class changePersonDataToNotFollow(smach.State):
         def __init__(self):
-            smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-                                 input_keys=['id_personTrackingData'],
-                                output_keys=["out_new_tracked_person", "currentFilterTries", "currentUsedFilter"])
+            smach.State.__init__(self, outcomes=['succeeded','reduced_distance'],
+                                 input_keys=['out_new_tracked_person'],
+                                output_keys=["out_new_tracked_person"])
         def execute(self, userdata):
                 modified_person = userdata.out_new_tracked_person
                 alfa = math.atan2(modified_person.y, modified_person.x)
                 s = math.sin(alfa)
                 c = math.cos(alfa)
+                userdata.out_new_tracked_person='33'
 
                 dist = 0.1
                 modified_person.x = c * dist
@@ -145,22 +151,25 @@ class changePersonDataToNotFollow(smach.State):
                     return 'succeeded'
 
 class publishFollowMeTargetId(smach.State):
-    smach.State.__init__(self,
-                             outcomes=['succeeded', 'no_plausible_person_found', "tracked_person_is_occluded"],
-                             input_keys=['in_new_tracked_person'])
+    def __init__(self):
+        smach.State.__init__(self,
+                                 outcomes=['succeeded'],
+                                 input_keys=['out_new_tracked_person'],output_keys=['in_new_tracked_person'])
     def execute(self, userdata):
-        #TODO: la intenció és printar tota la info del que estic seguin, aixó i és en els antics i te bona pinta
+        #TODO: la intencio es printar tota la info del que estic seguin, aixo i es en els antics i te bona pinta
         # printPersonStatus(userdata.in_new_tracked_person)
-        rospy.loginfo(' Following the target Id => ' + str(userdata.in_new_tracked_person.targetId) +
-                    ' Status of the target => ' + str(userdata.in_new_tracked_person.targetStatus))
+        rospy.loginfo(' Following the target Id => ' + str(userdata.out_new_tracked_person.targetId) +
+                    ' Status of the target => ' + str(userdata.out_new_tracked_person.targetStatus))
                
         rospy.sleep(5)
+        userdata.out_new_tracked_person='22'
         rospy.loginfo("i'm in the filter state, now it's a dummy state")
         return 'succeeded'
 
 
 class detectElevator(smach.State):
-    smach.State.__init__(self)
+    def __init__(self):
+        smach.State.__init__(self)
     def execute(self, userdata):
         #TODO: i will have to lock if i'm realy near of the person, if it's true i will have to pass to the other 
         #part of the test
@@ -292,6 +301,16 @@ class lookAtLocation(smach.StateMachine):
                 return 'succeeded'
 
 
+class topic_reader2(smach.StateMachine):
+    def __init__(self,topic_name='/people_tracking/peopleSet', topic_type=Pose(), topic_time_out=90):
+        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'], output_keys=['topic_output_msg'])
+
+    def execute(self, userdata):                
+        rospy.loginfo("im in the topic reader fake state...")
+        rospy.sleep(5)
+        userdata.topic_output_msg='hello'
+        
+        return 'succeeded'
 
 class TrackOperator(smach.StateMachine):
     def __init__(self, distToHuman=0.9):
@@ -300,8 +319,7 @@ class TrackOperator(smach.StateMachine):
                                     input_keys=['in_personTrackingData'])
         with self:
 
-                
-            
+            self.in_new_tracked_person='22'
             #TODO: no em cal el remaping
             smach.StateMachine.add(
                                 'INIT_TRACK_OPERATOR_VARIABLES',
@@ -315,8 +333,10 @@ class TrackOperator(smach.StateMachine):
 
 
             #it will stay in this state since it recive a message
+            # TODO: i will like to put none, because i won't to get the message
+            # i have create a fake one...
             smach.StateMachine.add('GRAB_PEOPLE_TRACKER_DATA',
-                                   topic_reader(topic_name='/people_tracking/peopleSet', msg_type=Pose, timeout=None),
+                                   topic_reader2(topic_name='/people_tracking/peopleSet', topic_type=Pose(), topic_time_out=90),
                                    transitions={'succeeded': 'FILTER_AND_PROCESS_PEOPLE_TRACKER_DATA',
                                                 'preempted': 'preempted',
                                                 'aborted': 'GRAB_PEOPLE_TRACKER_DATA'},
@@ -329,7 +349,7 @@ class TrackOperator(smach.StateMachine):
                                                 'no_plausible_person_found': 'GRAB_PEOPLE_TRACKER_DATA',
                                                 'tracked_person_is_occluded': 'CHANGE_PERSON_DATA_TO_NOT_FOLLOW'},
                                    remapping={'in_persons_detected': 'out_persons_detected',
-                                              'out_new_tracked_person': 'out_new_tracked_person',
+                                              "out_new_tracked_person":"out_new_tracked_person",
                                               "currentFilterTries": "currentFilterTries",
                                               "currentUsedFilter": "currentUsedFilter"})
 
@@ -340,18 +360,17 @@ class TrackOperator(smach.StateMachine):
                 
 
             smach.StateMachine.add('CHANGE_PERSON_DATA_TO_NOT_FOLLOW',
-                                   changePersonDataToNotFollow(), input_keys=['out_new_tracked_person'],
-                                   output_keys=['out_new_tracked_person'],
+                                   changePersonDataToNotFollow(),
                                    transitions={'succeeded': 'PUBLISH_TARGET_ID',
-                                                "reduced_distance": "PUBLISH_TARGET_ID"},
-                                   remapping={'out_new_tracked_person': 'out_new_tracked_person'})
+                                                'reduced_distance': 'PUBLISH_TARGET_ID'},
+                                   remapping={"out_new_tracked_person": "out_new_tracked_person"})
 
 
 
             smach.StateMachine.add('PUBLISH_TARGET_ID',
-                                   publishFollowMeTargetId, input_keys=['in_new_tracked_person'],
+                                   publishFollowMeTargetId,
                                    transitions={'succeeded': 'DETECT_ELEVATOR'},
-                                   remapping={'in_new_tracked_person': 'out_new_tracked_person'})
+                                   remapping={"out_new_tracked_person":"out_new_tracked_person"})
 
             # TODO: this is not a state that it will have to be hear... i don't find the logic..
             smach.StateMachine.add("DETECT_ELEVATOR",

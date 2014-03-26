@@ -1,9 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 22 12:00:00 2013
-
-@author: Roger Boldú
+@author: Roger Boldu
 """
 
 
@@ -21,16 +19,17 @@ OKGREEN = '\033[92m'
 #TODO: it's incomplate, hear we will have to know what ID it will need
 class prepare_msg(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-                             output_keys=[])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],output_keys=['in_learn_person'])
 
     def execute(self, userdata):
+        userdata.in_learn_person='ok'
         rospy.loginfo("preparing msgs")
         return 'succeeded'
 
 class follow_me_1st_error(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'], output_keys=['standard_error'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'],
+                              output_keys=['standard_error'])
 
     def execute(self, userdata):
         rospy.loginfo('info of follo_me_1st')
@@ -38,7 +37,7 @@ class follow_me_1st_error(smach.State):
         return 'aborted'
 
 def main():
-    rospy.init_node('follow_me_2nd_test')
+    rospy.loginfo('follow_me_1nd_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
     with sm:
