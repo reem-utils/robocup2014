@@ -49,24 +49,19 @@ class detect_face(smach.StateMachine):
     It call a Recognizer Service, it force the start,
     It doesn't close the recognizer
 
-
     Required parameters : 
     No parameters.
 
     Optional parameters:
              minConfidence, is the value to filter the face TODO: i don't know
                              what value for default is ok
-    No optional parameters
 
-
-    input keys: 
-       
+    No input keys.       
     output keys:
         standard_error: inform what is the problem
         faces: is a message that have array of face FaceDetection
     No io_keys.
 
-    Nothing must be taken into account to use this SM.
     """
     def __init__(self,minConfidence=90.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],

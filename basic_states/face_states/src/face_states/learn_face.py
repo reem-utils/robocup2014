@@ -23,7 +23,7 @@ OKGREEN = '\033[92m'
 
 class waitstate(smach.State):
     def __init__(self, learning_time):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted']) #todo: i have to delate de output_key
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'])
         self.learning_time = learning_time
     def execute(self, userdata):
         rospy.loginfo("Learning Face")
@@ -64,7 +64,8 @@ class learn_face(smach.StateMachine):
                 start_request = StartEnrollmentRequest()
                 start_request.name=userdata.name
                 return start_request
-            # call response for stop
+            
+	    # call response for stop
             # it returns the enrollment, true o false, if it found   
             @smach.cb_interface(output_keys=['standard_error'])
             def stop_response_cb(userdata, response):
@@ -90,7 +91,8 @@ class learn_face(smach.StateMachine):
                                             request_cb = face_start_request_cb,
                                             input_keys = ['name']),
                                transitions={'succeeded':'wait_state','aborted' : 'aborted','preempted':'preempted'})
-            # Wait learning_time, that the robot will be learning the face
+            
+	    # Wait learning_time, that the robot will be learning the face
             smach.StateMachine.add(
                                 'wait_state',
                                 waitstate(learning_time),

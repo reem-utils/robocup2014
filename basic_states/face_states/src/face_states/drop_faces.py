@@ -23,23 +23,20 @@ OKGREEN = '\033[92m'
 
 class drop_faces(smach.StateMachine):
     """
-    Executes a SM that manage the database .
-    Only do a service call whit name and purge option
+    Executes a SM that manage the database.s
+    Only do a service call with name and purge option
     provided for input_key 
-
 
     Required parameters : 
     No parameters.
 
     Optional parameters: learning_time, by default is 5 seconds
-    No optional parameters
-
 
     input keys: name, it's the name of the dataBaser
                 purgeAll, “False” parameter means that we do not want to empty the database. Set to “True” in
                             order to remove previously stored faces.
 
-    output keys: standard_error, whit the error, now at the moment we don't complete
+    output keys: standard_error: string with the error, now we don't complete
     No io_keys.
 
     Nothing must be taken into account to use this SM.

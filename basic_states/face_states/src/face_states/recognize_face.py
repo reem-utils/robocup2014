@@ -29,7 +29,7 @@ class proces_face(smach.State):
 
     def execute(self, userdata):
         
-        # firs of all i look if it's some faces
+        # first of all i look if it's some faces
         if userdata.faces.faces:
             # i look in what option we are, if we are looking for a name o no
             if userdata.name!="":
@@ -70,8 +70,6 @@ class recognize_face(smach.StateMachine):
     Optional parameters:
                     name, of the person that you are looking for, it will return
                         aborted if can't find
-    No optional parameters
-
 
     input keys:
             Name, it's optional of the person we are looking for, i can be or ""o the name
