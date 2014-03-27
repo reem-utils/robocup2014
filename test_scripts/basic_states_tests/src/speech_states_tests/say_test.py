@@ -10,40 +10,23 @@ import rospy
 import smach
 import smach_ros
 import actionlib
-#from smach_ros import SimpleActionState, ServiceState
 
-
-from say import text_to_say
-
-
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'], output_keys=[])
-
-    def execute(self, userdata):
-        rospy.sleep(1) # in seconds
-
-        return 'succeeded'
-
+from speech_states.say import text_to_say
 
 def main():
-    rospy.init_node('sm_example_sm_pkg')
+    rospy.init_node('say_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
 
-        # Using this state to wait and to initialize stuff if necessary (fill up input/output keys for example)
-        smach.StateMachine.add(
-            'dummy_state',
-            DummyStateMachine(),
-            transitions={'succeeded': 'SaySM'})
+	sm.userdata.tts_text = None
+	sm.userdata.tts_wait_before_speaking = None
+	sm.userdata.tts_lang = 'en_US'
 
-        sm.userdata.tts_text = "Congratulations Sergi"
-        sm.userdata.tts_wait_before_speaking = 0
         smach.StateMachine.add(
             'SaySM',
-            text_to_say(),
+            text_to_say("Hello!"),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
