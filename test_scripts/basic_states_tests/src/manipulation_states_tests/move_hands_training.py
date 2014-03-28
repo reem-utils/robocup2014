@@ -27,7 +27,9 @@ def main():
     with sm:
         sm.userdata.move_hand_side = 'left'
         move_hand_side_out = 'left_hand_controller'
-        sm.userdata.move_hand_pose = [0.1, 0.1, 0.1]        
+        sm.userdata.move_hand_pose = [0.1, 0.1, 0.1]  #Full Open
+        sm.userdata.move_hand_pose = [5, 5, 5]  #Full Close
+        sm.userdata.move_hand_pose = [0.1, 5, 5] #Pregrasp, #Thumb open
         smach.StateMachine.add(
             'dummy_state',
             move_hands(move_hand_side_out),

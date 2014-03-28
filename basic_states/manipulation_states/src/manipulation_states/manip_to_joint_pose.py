@@ -109,7 +109,9 @@ class create_move_group_joints_goal(smach.State):
 class manip_to_joint_pose(smach.StateMachine):
     """
     Executes a SM that makes the upper body movement of the robot.
-    
+    It needs a joint goal and moves the body part to that goal.
+    It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.
+        
     Required parameters: None
     
     Optional parameters: None

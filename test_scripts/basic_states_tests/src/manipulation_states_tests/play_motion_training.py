@@ -17,8 +17,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
-from play_motion_sm import play_motion_sm
-
+from manipulation_states.play_motion_sm import play_motion_sm
 
 class PrintUserdataPose(smach.State):
     def __init__(self):
@@ -34,13 +33,12 @@ def main():
     rospy.init_node('get_current_position')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_motion_to_play = 'car_drive_ferrari'
+        sm.userdata.manip_motion_to_play = 'home'
         sm.userdata.manip_time_to_play = 8.0
         smach.StateMachine.add(
             'dummy_state',
             play_motion_sm(),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
-        
 
     sm.execute()
     rospy.spin()

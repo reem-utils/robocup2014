@@ -16,8 +16,8 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
-from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
-from emergency_situation.Save_People_Emergency import Save_People_Emergency
+#from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
+#from emergency_situation.Save_People_Emergency import Save_People_Emergency
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
