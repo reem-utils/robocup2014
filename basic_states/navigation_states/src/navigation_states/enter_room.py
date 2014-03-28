@@ -19,47 +19,9 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.get_current_robot_pose import get_current_robot_pose
 from sensor_msgs.msg import LaserScan
 from manipulation_states.play_motion_sm import play_motion_sm
-from speech_states.say_sm import text_to_say
+from speech_states.say import text_to_say
 from util_states.topic_reader import topic_reader
-
-class prepare_play_motion(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=[],
-                                output_keys=['manip_motion_to_play','manip_time_to_play'])
-
-    def execute(self, userdata):
-
-        userdata.manip_motion_to_play = 'home'
-        userdata.manip_time_to_play = 10
-
-        return 'succeeded'    
-
-class prepare_say_far(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=[],
-                                output_keys=['tts_text','tts_wait_before_speaking'])
-
-    def execute(self, userdata):
-
-        userdata.tts_text = "I'm too far from the door."
-        userdata.tts_wait_before_speaking = 0
-
-        return 'succeeded'                       
-
-class prepare_say_open_door(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=[],
-                                output_keys=['tts_text','tts_wait_before_speaking'])
-
-    def execute(self, userdata):
-
-        userdata.tts_text = "Can anyone open the door please?"
-        userdata.tts_wait_before_speaking = 0
-
-        return 'succeeded'  
+ 
 
 class check_door_status(smach.State):
     def __init__(self):
@@ -126,47 +88,36 @@ class EnterRoomSM(smach.StateMachine):
                     output_keys=['standard_error'])
 
         with self:
-    
+            
+            self.userdata.tts_text = None
+            self.userdata.tts_wait_before_speaking = None
+            self.userdata.tts_lang = None
+            self.userdata.manip_motion_to_play = None
+            self.userdata.manip_time_to_play = None
+        
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check_door_status(),
-                   transitions={'succeeded': 'prepare_home_position',
-                                'aborted': 'prepare_say_open_door',
-                                'door_too_far': 'prepare_say_far'})
+                   transitions={'succeeded': 'home_position',
+                                'aborted': 'say_open_door',
+                                'door_too_far': 'say_too_far_from_door'})
 
             # Robot is too far from door
             smach.StateMachine.add(
-                'prepare_say_far',
-                prepare_say_far(),
-                transitions={'succeeded': 'say_too_far_from_door', 'aborted': 'aborted', 'preempted': 'preempted'})
-
-            smach.StateMachine.add(
                 'say_too_far_from_door',
-                text_to_say(),
+                text_to_say("I'm too far from the door."),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
                         
-        
             # Robot ask to open the door
             smach.StateMachine.add(
-                'prepare_say_open_door',
-                prepare_say_open_door(),
-                transitions={'succeeded': 'say_open_door', 'aborted': 'aborted', 'preempted': 'preempted'})
-
-            smach.StateMachine.add(
                 'say_open_door',
-                text_to_say(),
+                text_to_say("Can anyone open the door please?"),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
-
-            # Robot arms home position
-            smach.StateMachine.add(
-                'prepare_home_position',
-                prepare_play_motion(),
-                transitions={'succeeded': 'home_position', 'aborted': 'aborted', 'preempted': 'preempted'})
 
             # Robot arms home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm(),
+                play_motion_sm("arms_t", 10),
                 transitions={'succeeded': 'enter_room', 'aborted': 'aborted', 'preempted': 'preempted'})
           
             # We don't need to prepare the state, it takes the input_key directly

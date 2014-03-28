@@ -36,8 +36,7 @@ class look_time(smach.State):
 
 
 class searching_person(smach.StateMachine): 
-    """
-    
+    """ 
     This state machine only can return succeeded, it will try to
     find a face all the time, if it find it will return succeeded.
     It can return aborted if the time live.
@@ -49,8 +48,6 @@ class searching_person(smach.StateMachine):
     Optional parameters:
                     name, of the person that you are looking for
                     max time ?¿ maybe it can be interesting to put a maximum time
-    No optional parameters
-
 
     input keys:
             name, it's optional of the person we are looking for,

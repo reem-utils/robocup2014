@@ -32,9 +32,30 @@ class createPlayMotionGoal(smach.State):
         play_goal.reach_time.secs = userdata.manip_time_to_play
         userdata.play_motion_sm_goal = play_goal
         
-        return 'succeeded'    """
-    """
+        return 'succeeded'   
+    
 
+class prepareData(smach.State):
+    
+    def __init__(self, motion, time):
+        
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                            input_keys=['manip_motion_to_play','manip_time_to_play'], output_keys=['manip_motion_to_play','manip_time_to_play'])
+        self.motion = motion
+        self.time = time
+        
+    def execute(self, userdata):
+           
+        if not self.motion and not userdata.manip_motion_to_play:
+            rospy.logerr("Motion isn't set")
+            return 'aborted'
+        
+        #Priority in init
+        userdata.manip_motion_to_play = self.motion if self.motion else userdata.manip_motion_to_play   
+        userdata.manip_time_to_play = self.time if self.time else userdata.manip_time_to_play 
+       
+        return 'succeeded'
+    
 class play_motion_sm(smach.StateMachine):
     """
         This is the play_motion_sm. This SM executes the Play_motion functionality, 
@@ -57,13 +78,18 @@ class play_motion_sm(smach.StateMachine):
     
         Nothing must be taken into account to use this SM.
     """
-    def __init__(self):
+    def __init__(self, motion = None, time = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['manip_motion_to_play','manip_time_to_play'],
                                     output_keys=['standard_error'])
         rospy.loginfo('Play Motion StateMachine')
         with self:
-            #Prepare Play Motion Goal
+            
+            #Prepare Play Motion Goal    
+            smach.StateMachine.add('PrepareData',
+                                   prepareData(motion, time),
+                                   transitions={'succeeded':'Prepare_play_motion_goal', 'aborted':'aborted'})
+            
             smach.StateMachine.add('Prepare_play_motion_goal',
                                    createPlayMotionGoal(),
                                    transitions={'succeeded':'Play_Motion_Send', 'aborted':'aborted', 'preempted':'preempted'})
@@ -101,13 +127,12 @@ class play_motion_sm(smach.StateMachine):
                     elif result.error_code == -42:
                         userdata.standard_error = "Play Motion not available: Other Error"
                         rospy.loginfo(userdata.standard_error)    
-                    print "aborting"
                     return 'aborted'
                 else:
                     userdata.standard_error = "Play Motion OK"
                     return 'succeeded'
             #Send Play motion Goal
-
+            
             smach.StateMachine.add('Play_Motion_Send', 
                                    SimpleActionState('/play_motion', PlayMotionAction, goal_key='play_motion_sm_goal', 
                                                      input_keys=['standard_error'],

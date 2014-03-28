@@ -10,24 +10,12 @@ import rospy
 import smach
 import smach_ros
 import actionlib
-#from smach_ros import SimpleActionState, ServiceState
 
-
-from listen_to import ListenToSM
+from speech_states.listen_to import ListenToSM
 """
     This file tests the listen_to function
     
 """
-
-
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'], output_keys=[])
-
-    def execute(self, userdata):
-        rospy.sleep(1) # in seconds
-
-        return 'succeeded'
     
 class Speaking_cb(smach.State):
     
@@ -49,21 +37,15 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-
-        # Using this state to wait and to initialize stuff if necessary (fill up input/output keys for example)
-        smach.StateMachine.add(
-            'dummy_state',
-            DummyStateMachine(),
-            transitions={'succeeded': 'ListenToTest'})
-
         sm.userdata.grammar_name = "JungleParty"
+
         smach.StateMachine.add('ListenToTest',
-            ListenToSM(),
+            ListenToSM("JungleParty"),
             transitions={'succeeded': 'succe', 'aborted': 'aborted'})
         
         smach.StateMachine.add('succe',
-                    Speaking_cb(),
-                    transitions={'succeeded': 'succeeded'})
+            Speaking_cb(),
+            transitions={'succeeded': 'succeeded'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(

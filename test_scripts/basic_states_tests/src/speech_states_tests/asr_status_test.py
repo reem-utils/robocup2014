@@ -10,10 +10,8 @@ import rospy
 import smach
 import smach_ros
 
-#from smach_ros import SimpleActionState, ServiceState
 from speech_states.asr_status import AsrStatus
 
-          
 def main():
     rospy.init_node('asr_status_test')
     

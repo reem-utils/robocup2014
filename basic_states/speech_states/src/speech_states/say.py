@@ -79,7 +79,7 @@ class text_to_say(smach.StateMachine):
     """
 
                     
-    def __init__(self, text=None, text_cb=None, wait_before_speaking=0.0, lang='en_US'):
+    def __init__(self, text=None, text_cb=None, wait_before_speaking=0, lang='en_US'):
         """
            Constructor for text_to_say.
 
