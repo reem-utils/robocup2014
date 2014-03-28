@@ -10,7 +10,9 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-from follow_me_1st import follow_me_1st
+
+from speech_states.say import text_to_say
+from follow_operator import FollowOperator
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -26,7 +28,7 @@ class prepare_msg(smach.State):
         rospy.loginfo("preparing msgs")
         return 'succeeded'
 
-class follow_me_1st_error(smach.State):
+class follow_operator_error(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'],
                               output_keys=['standard_error'])
@@ -37,8 +39,8 @@ class follow_me_1st_error(smach.State):
         return 'aborted'
 
 def main():
-    rospy.loginfo('follow_me_1st_test')
-    rospy.init_node('follow_me_1st_test')
+    rospy.loginfo('follow_operator_TEST')
+    rospy.init_node('follow_operator_TEST')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
     with sm:
@@ -47,20 +49,31 @@ def main():
         smach.StateMachine.add(
             'prepare_msg',
             prepare_msg(),
-            transitions={'succeeded':'follow_me1st_test','aborted' : 'aborted','preempted':'preempted'})
+            transitions={'succeeded':'follow_operator','aborted' : 'aborted','preempted':'preempted'})
         # it call the drop_face state
         smach.StateMachine.add(
-            'follow_me1st_test',
-            follow_me_1st(),
-            transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted'})
-        smach.StateMachine.add(
-            'follow_me_info',
-            follow_me_1st_error(),
-            transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+            'follow_operator',
+            FollowOperator(),
+            transitions={'lost':'say_lost','succeeded' : 'follow_me_info'})
 
+        
+
+        sm.userdata.tts_text="i have lose the person"
+        sm.userdata.tts_wait_before_speaking=0
+        smach.StateMachine.add('say_lost',
+                               text_to_say(),
+                               transitions={'succeeded': 'follow_me_info','aborted':'follow_me_info'})       
+        
+    
+        smach.StateMachine.add(
+                               'follow_me_info',
+                               follow_operator_error(),
+                               transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+
+    
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'follow_me_1st_introspection', sm, '/FM1_ROOT')
+        'follow_operator_test', sm, '/FO_ROOT')
     sis.start()
 
     sm.execute()

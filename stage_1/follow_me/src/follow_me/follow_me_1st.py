@@ -9,7 +9,7 @@ from follow_operator import FollowOperator
 
 
 
-class Listen_Comands(smach.State):
+class check_elevator(smach.State):
 
     def __init__(self):
         smach.State.__init__(
@@ -18,6 +18,7 @@ class Listen_Comands(smach.State):
 
     def execute(self, userdata):
         rospy.sleep(2)
+        rospy.loginfo("i'm in dummy elevator state")
        # userdata.standard_error="Dummy"
         return 'succeeded'
 '''     
@@ -47,23 +48,22 @@ class follow_me_1st(smach.Concurrence):
         Follow
     
     """
-    def __init__(self, distToHuman=0.9, state_machine_name="restaurant"):
+    def __init__(self, distToHuman=0.9):
         smach.Concurrence.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'],
                                    default_outcome='succeeded',input_keys=["in_learn_person"])
         
-        rospy.set_param("/params_learn_and_follow_operator_test/distance_to_human", distToHuman)
+       # rospy.set_param("/params_learn_and_follow_operator_test/distance_to_human", distToHuman)
     
         with self:
     
             
             smach.Concurrence.add('FOLLOW_OPERATOR',
-                            FollowOperator(),
-                            remapping={"in_learn_person": "in_learn_person"})
-            
-            #fumada... no vec perque ho fan aixi....
-            # jo el que vec es que podem fer-ho aixi i un cop senti enter ja puc salta a la seguent fase
-            smach.Concurrence.add('LISTEN_COMMANDS',
-                            Listen_Comands())
+                            FollowOperator())
+            #This it will return if it's in the elevator, and if it's in the elevator
+            # it have to say: i'm in the elevator
+            # it have to sent a goal in a less distance of the operator
+            smach.Concurrence.add('CHECK_ELEVATOR',
+                            check_elevator())
                   
                
             

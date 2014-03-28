@@ -345,7 +345,7 @@ class TrackOperator(smach.StateMachine):
 #TODO: it's in another file... at the moment is a dummy state
             smach.StateMachine.add('FILTER_AND_PROCESS_PEOPLE_TRACKER_DATA',
                                    FilterAndProcessPeopleTrackerData(),
-                                   transitions={'succeeded': "RESET_OCCLUDED_TIME",
+                                   transitions={'succeeded': 'RESET_OCCLUDED_TIME',
                                                 'no_plausible_person_found': 'GRAB_PEOPLE_TRACKER_DATA',
                                                 'tracked_person_is_occluded': 'CHANGE_PERSON_DATA_TO_NOT_FOLLOW'},
                                    remapping={'in_persons_detected': 'out_persons_detected',
@@ -366,7 +366,8 @@ class TrackOperator(smach.StateMachine):
                                    remapping={"out_new_tracked_person": "out_new_tracked_person"})
 
 
-
+# it will publicate de status of the following, the place that the robot is and all the information,
+# basicli it's a debug state
             smach.StateMachine.add('PUBLISH_TARGET_ID',
                                    publishFollowMeTargetId,
                                    transitions={'succeeded': 'DETECT_ELEVATOR'},
