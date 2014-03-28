@@ -24,8 +24,8 @@ OKGREEN = '\033[92m'
 class read_topic_objects(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                             input_keys=['standard_error'],
-         output_keys=['standard_error','faces'])
+                             input_keys=['objectm'],
+         output_keys=['standard_error','objectm'])
 
     def execute(self, userdata):
         
@@ -34,11 +34,11 @@ class read_topic_objects(smach.State):
         
         # Check the distance between the robot and the doo
         if message!= None:
-            userdata.object = message
-            userdata.standard_error="Detect_face OK"
+            userdata.objectm = message
+            userdata.standard_error="Detect_Object OK"
             return 'succeeded'
         else:
-            userdata.object=None
+            userdata.objectm=None
             userdata.standard_error="Time live of Object Detection"
             return 'aborted'
 
@@ -70,7 +70,7 @@ class detect_object(smach.StateMachine):
     def __init__(self,minConfidence=90.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=[], 
-                                 output_keys=['standard_error','object'])
+                                 output_keys=['standard_error','objectm'])
         
         with self:
             # call request for Recognizer

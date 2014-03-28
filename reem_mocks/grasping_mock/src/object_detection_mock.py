@@ -3,7 +3,7 @@
 import rospy
 import actionlib
 
-from grasping_mock.msgs import ObjectDetection
+from grasping_mock.msg import ObjectDetection
 from grasping_mock.srv import Recognizer, RecognizerResponse, RecognizerRequest
 
 class ObjectService():
@@ -18,10 +18,10 @@ class ObjectService():
         self.time_Start=rospy.Time.now()
         self.recognized_object = ObjectDetection()
 
-        self.faceservice = rospy.Service('/object_detect/recognizer', ObjectDetection, self.face_cb)
-        self.face_pub= rospy.Publisher('/object_detect/recognizer', ObjectDetection)
+        self.objectservice = rospy.Service('/object_detect/recognizer', Recognizer, self.object_cb)
+        self.object_pub= rospy.Publisher('/object_detect/recognizer', ObjectDetection)
 
-    def object_cb(self):
+    def object_cb(self, req):
         """Callback of object service requests """
         if (req.enabled):
             self.minConfidence = req.minConfidence
@@ -44,16 +44,17 @@ class ObjectService():
                 self.recognized_object.header.stamp=rospy.Time.now()
                 self.recognized_object.header.frame_id = '/stereo_gazebo_right_camera_optical_frame'
                 if ((self.recognized_object.header.stamp.secs-self.time_Start.secs)>int(self.time_first_object) ):
-                    face.position.x=-0.0874395146966
-                    face.position.y= -0.0155512560159
-                    face.position.z= 0.945071995258
-                    self.face_pub.publish(self.recognized_object)
+                    objectm = ObjectDetection()
+		    objectm.position.x=-0.0874395146966
+                    objectm.position.y= -0.0155512560159
+                    objectm.position.z= 0.945071995258
+                    self.object_pub.publish(self.recognized_object)
                 
                 else:
-                    pub=FaceDetections()
+                    pub=ObjectDetection()
                     pub.header.stamp=rospy.Time.now()
                     pub.header.frame_id = '/stereo_gazebo_right_camera_optical_frame'
-                    self.face_pub.publish(pub)
+                    self.object_pub.publish(pub)
                 
             rospy.sleep(3)
         

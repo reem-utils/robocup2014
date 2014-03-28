@@ -44,14 +44,14 @@ class recognize_Object_error(smach.State):
     
 class recognize_Object_print(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],input_keys=['object'],output_keys=[])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],input_keys=['objectm'],output_keys=['objectm'])
 
     def execute(self, userdata):
         
-        if userdata.object :
-            rospy.loginfo(str(userdata.object.object_name))
-            rospy.loginfo(str(userdata.object.confidence))              
-            rospy.loginfo (str(userdata.object.position))
+        if userdata.objectm :
+            rospy.loginfo(str(userdata.objectm.object_name))
+            rospy.loginfo(str(userdata.objectm.confidence))              
+            rospy.loginfo (str(userdata.objectm.position))
 
         return 'succeeded'
     
