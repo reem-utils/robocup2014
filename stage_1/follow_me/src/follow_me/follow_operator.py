@@ -17,6 +17,8 @@ from util_states.math_utils import *
 from tf.transformations import quaternion_from_euler
 from navigation_states.nav_to_coord import nav_to_coord
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from util_states.topic_reader import topic_reader
+from follow_me.msg import tracker_people # TODO: maybe we have to change it
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -27,7 +29,7 @@ OKGREEN = '\033[92m'
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 
 
-# its the traker learn person...
+# its the tracker learn person...
 class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'],output_keys=['time_last_found'])
@@ -36,34 +38,36 @@ class init_var(smach.State):
             rospy.sleep(1)
             rospy.loginfo("i'm in dummy init var")
             return 'succeeded'
-# its the traker learn person...
+# its the tracker learn person...
 class read_topic(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['traking_msg'],
-                             output_keys=['traking_msg'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['tracking_msg'],
+                             output_keys=['tracking_msg'])
     def execute(self, userdata):
             rospy.sleep(1)
-            userdata.traking_msg=Pose()
-            userdata.traking_msg.position.x=22
-            userdata.traking_msg.position.y=22
+            userdata.tracking_msg=Pose()
+            userdata.tracking_msg.position.x=22
+            userdata.tracking_msg.position.y=22
             rospy.loginfo("i'm in dummy read topic")
             return 'succeeded'
         
-        # its the traker learn person...
+        # its the tracker learn person...
 class filter_and_process(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['find_it','not_found', 'no_pausible'],
-                             input_keys=['traking_msg','traking_msg_filtered'],
-                             output_keys=['traking_msg_filtered'])
+                             input_keys=['tracking_msg','tracking_msg_filtered'],
+                             output_keys=['tracking_msg_filtered'])
     def execute(self, userdata):
             
             # if the message is perfect i d'ont have to do anything, 
             #only return if it's in the message or not
-            userdata.traking_msg_filtered=Pose()
-            userdata.traking_msg_filtered.position.x=1
-            userdata.traking_msg_filtered.position.y=0      
+            aux=tracker_people()
+            aux.pose.position.x
+            aux.pose.position.y
+            #userdata.tracking_msg_filtered=tracker_people()
+            userdata.tracking_msg_filtered=userdata.tracking_msg.pose    
             
-            #userdata.traking_msg_filtered='hello'
+            #userdata.tracking_msg_filtered='hello'
             rospy.loginfo("i'm in the dummy filter and process state")
             return 'find_it'
 # it resset the time from last found, thats because i have find it 
@@ -93,15 +97,15 @@ class no_follow(smach.State):
 class calculete_goal(smach.State):
     def __init__(self, distanceToHuman=0.9):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],
-                             input_keys=['traking_msg_filtered','nav_to_coord_goal'],
+                             input_keys=['tracking_msg_filtered','nav_to_coord_goal'],
                              output_keys=['nav_to_coord_goal'])
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
 
         #Calculating vectors for the position indicated
         new_pose = Pose()
-        new_pose.position.x = userdata.traking_msg_filtered.position.x
-        new_pose.position.y = userdata.traking_msg_filtered.position.y
+        new_pose.position.x = userdata.tracking_msg_filtered.position.x
+        new_pose.position.y = userdata.tracking_msg_filtered.position.y
         unit_vector = normalize_vector(new_pose.position)
         position_distance = vector_magnitude(new_pose.position)
         rospy.loginfo(" Position data from Reem to person:")
@@ -167,7 +171,7 @@ class send_goal(smach.State):
 class debug(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'],
-                             input_keys=['nav_goal_msg','traking_msg_filtered','traking_msg'])
+                             input_keys=['nav_goal_msg','tracking_msg_filtered','tracking_msg'])
     def execute(self, userdata):
             rospy.loginfo("i'm in dummy debug state")
             return 'succeeded'
@@ -188,20 +192,23 @@ class FollowOperator(smach.StateMachine):
 
         with self:
             
-#TODO i don't know if it's the correct form to stop de face traking
+#TODO i don't know if it's the correct form to stop de face tracking
             #smach.StateMachine.add('DISABLE_FACE_TRACKING',
              #                          ServiceState('/personServer/faceTracking/stop'),
               #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
-            self. userdata.traking_msg=Pose()
+            #self. userdata.tracking_msg=Pose()
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
                                   transitions={'succeeded': "READ_TRACKER_TOPIC"})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
-                                   read_topic(),
+                                   topic_reader(topic_name='/people_tracker/person',
+                                                topic_type=tracker_people,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
-                                                'aborted':'READ_TRACKER_TOPIC'})
+                                                'aborted':'READ_TRACKER_TOPIC',
+                                                'preempted':'READ_TRACKER_TOPIC'},
+                                   remapping={'topic_output_msg': 'tracking_msg'})
 
             smach.StateMachine.add('FILTER_AND_PROCESS',
                                    filter_and_process(),
