@@ -16,10 +16,9 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
-#from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
-#from emergency_situation.Save_People_Emergency import Save_People_Emergency
+from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
+from emergency_situation.Save_People_Emergency import Save_People_Emergency
 
-# Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -38,12 +37,12 @@ class DummyStateMachine(smach.State):
 
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_emergency(smach.State):
-    def __init__(self):
+    def __init__(self, poi_type='arena_door_out'):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
-    def execute(self,userdata, poi_type='arena_door_out'):
+    def execute(self,userdata):
         if poi_type == 'arena_door_out':
             userdata.nav_to_poi_name='arena_door_out'    
         elif poi_type == 'emergency_room':
@@ -52,11 +51,11 @@ class prepare_poi_emergency(smach.State):
         return 'succeeded'
 
 class prepare_tts(smach.State):
-    def __init__(self):
+    def __init__(self, tts_text_phrase):
         smach.State.__init__(self, 
             outcomes=['succeeded','aborted', 'preempted'], 
             output_keys=['tts_text']) 
-    def execute(self, userdata, tts_text_phrase=''):
+    def execute(self, userdata):
         userdata.tts_text = tts_text_phrase
 
         return 'succeeded'
@@ -220,12 +219,3 @@ class emergency_situation_sm(smach.StateMachine):
                 'Dummy_Wait',
                 DummyStateMachine(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-    
-        sis = smach_ros.IntrospectionServer(
-            'emergency_situation_introspection', sm, '/SM_ROOT')
-        sis.start()
-    
-        sm.execute()
-    
-        rospy.spin()
-        sis.stop()
