@@ -18,22 +18,21 @@ from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 from smach_ros.simple_action_state import SimpleActionState
 from manipulation_states.move_hands import move_hands
-
+from manipulation_states.move_hands_form import move_hands_form
 
 def main():
     rospy.loginfo('Move_joint_pose_training INIT')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.move_hand_side = 'left'
-        move_hand_side_out = 'left_hand_controller'
-        sm.userdata.move_hand_pose = [0.1, 0.1, 0.1]  #Full Open
-        sm.userdata.move_hand_pose = [5, 5, 5]  #Full Close
-        sm.userdata.move_hand_pose = [0.1, 5, 5] #Pregrasp, #Thumb open
-        smach.StateMachine.add(
-            'dummy_state',
-            move_hands(move_hand_side_out),
-            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+        smach.StateMachine.add('dummy_state',
+                                move_hands_form(hand_pose_name="grasp", hand_side="right"),
+                                transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+        
+        #smach.StateMachine.add(
+        #    'dummy_state',
+        #    move_hands(move_hand_side_out),
+        #    transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
         
 
     sm.execute()

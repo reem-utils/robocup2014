@@ -21,19 +21,20 @@ from manipulation_states.move_hands import move_hands
 
 class prepareData(smach.State):
 
-    def __init__(self, hand_pose_name="full_open", hand_side="right"):
+    def __init__(self, hand_pose_name, hand_side):
         smach.State.__init__(self, 
                             outcomes=['succeeded', 'aborted', 'preempted'],
                             output_keys=['move_hand_pose', 'move_hand_side'])
         self.hand_pose = hand_pose_name
         self.hand_side_self = hand_side
     def execute(self, userdata):
-        if(_hand_pose == "full_open"):
+        rospy.loginfo('Executing Prepare: ' + self.hand_pose + ' -- ' )
+        if(self.hand_pose == "full_open"):
             userdata.move_hand_pose = [0.1, 0.1, 0.1]
-        elif _hand_pose == "grasp":
-            sm.userdata.move_hand_pose = [5, 5, 5]
-        elif _hand_pose == "pre_grasp":
-            sm.userdata.move_hand_pose = [0.1, 5, 5]
+        elif self.hand_pose == "grasp":
+            userdata.move_hand_pose = [5, 5, 5]
+        elif self.hand_pose == "pre_grasp":
+            userdata.move_hand_pose = [0.1, 5, 5]
 
         self.move_hand_side_out = self.hand_side_self+'_hand_controller'
         userdata.move_hand_side = self.hand_side_self
@@ -44,17 +45,26 @@ class move_hands_form(smach.StateMachine):
     """
     This SM executes the "move_hands" SM from the Manipulation_States.
     It gets a name of a defined hand_pose name, this set of predefined poses are:
-        - "full_open" : Hand is full
+        - "full_open" : Hand is fully open
         - "grasp" : Hand is completely closed
         - "pre_grasp" : Hand has the thumb open, and two other fingers closed
+    Parameters:
+        @param: hand_pose_name:
+            "full_open", "grasp", "pre_grasp"
+        @param: hand_side:
+            "left", "right"
 
+    No input_keys
+    
+    No output_keys
     """
-    def __init__(self, hand_pose_name="full_open", hand_side="right"):
+    def __init__(self, hand_pose_name, hand_side):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
         with self:
+            self.move_hand_side_out = "right_hand_controller"
             smach.StateMachine.add('PrepareData', 
-                                    prepareData(),
-                                    outcomes={'succeeded':'Move_Hands', 'aborted':'Move_Hands', 'preempted':'Move_Hands'})
+                                    prepareData(hand_pose_name,hand_side),
+                                    transitions={'succeeded':'Move_Hands', 'aborted':'Move_Hands', 'preempted':'Move_Hands'})
             smach.StateMachine.add('Move_Hands',
                                     move_hands(self.move_hand_side_out),
                                     transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
