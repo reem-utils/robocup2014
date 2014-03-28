@@ -8,8 +8,9 @@ Created on Tue Oct 22 12:00:00 2013
 """
 
 import rospy
-from rospy.core import rospyinfo
 import smach
+import actionlib
+from rospy.core import rospyinfo
 from smach_ros import ServiceState
 
 from grasping_mock.msg import ObjectDetection
@@ -33,11 +34,11 @@ class read_topic_objects(smach.State):
         
         # Check the distance between the robot and the doo
         if message!= None:
-            userdata.objects = message
+            userdata.object = message
             userdata.standard_error="Detect_face OK"
             return 'succeeded'
         else:
-            userdata.objects=None
+            userdata.object=None
             userdata.standard_error="Time live of Object Detection"
             return 'aborted'
 
@@ -61,7 +62,7 @@ class detect_object(smach.StateMachine):
        
     output keys:
         standard_error: inform what is the problem
-        objects: ObjectDetectionMessage
+        object: ObjectDetectionMessage
     No io_keys.
 
     Nothing must be taken into account to use this SM.
@@ -69,7 +70,7 @@ class detect_object(smach.StateMachine):
     def __init__(self,minConfidence=90.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=[], 
-                                 output_keys=['standard_error','objects'])
+                                 output_keys=['standard_error','object'])
         
         with self:
             # call request for Recognizer
