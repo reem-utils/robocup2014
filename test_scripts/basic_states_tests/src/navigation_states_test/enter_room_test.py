@@ -20,11 +20,11 @@ def main():
     
     with sm:
 
-        sm.userdata.nav_to_poi_name = "find_me"
+        sm.userdata.nav_to_poi_name = None
         
         smach.StateMachine.add(
             'enter_room_test',
-            EnterRoomSM(),
+            EnterRoomSM("find_me"),
             transitions={'succeeded': 'succeeded','aborted' : 'aborted'})
         
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!

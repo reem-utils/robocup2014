@@ -22,6 +22,25 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from speech_states.say import text_to_say
 from util_states.topic_reader import topic_reader
  
+ 
+class prepareData(smach.State):
+    
+    def __init__(self, poi_name):
+        
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                            input_keys=['nav_to_poi_name'], output_keys=['nav_to_poi_name'])
+        self.poi_name = poi_name
+        
+    def execute(self, userdata):
+           
+        if not self.poi_name and not userdata.nav_to_poi_name:
+            rospy.logerr("Poi_name isn't set")
+            return 'aborted'
+        
+        #Priority in init
+        userdata.nav_to_poi_name = self.poi_name if self.poi_name else userdata.nav_to_poi_name   
+        
+        return 'succeeded'
 
 class check_door_status(smach.State):
     def __init__(self):
@@ -82,7 +101,7 @@ class EnterRoomSM(smach.StateMachine):
     Nothing must be taken into account to use this SM.
     """
 
-    def __init__(self):
+    def __init__(self, poi_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['nav_to_poi_name'],
                     output_keys=['standard_error'])
@@ -95,6 +114,11 @@ class EnterRoomSM(smach.StateMachine):
             self.userdata.manip_motion_to_play = None
             self.userdata.manip_time_to_play = None
         
+        
+            smach.StateMachine.add('PrepareData',
+               prepareData(poi_name),
+               transitions={'succeeded':'check_can_pass', 'aborted':'aborted'})
+            
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check_door_status(),
@@ -117,7 +141,7 @@ class EnterRoomSM(smach.StateMachine):
             # Robot arms home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm("arms_t", 10),
+                play_motion_sm("home", 10),
                 transitions={'succeeded': 'enter_room', 'aborted': 'aborted', 'preempted': 'preempted'})
           
             # We don't need to prepare the state, it takes the input_key directly

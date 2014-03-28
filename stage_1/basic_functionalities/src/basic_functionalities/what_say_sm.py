@@ -15,7 +15,7 @@ import smach
 from speech_states.listen_to import ListenToSM
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.nav_to_coord import nav_to_coord
-from speech_states.say_sm import text_to_say
+from speech_states.say import text_to_say
 from search_faces import SearchFacesSM
 
 from navigation_states.get_current_robot_pose import get_current_robot_pose
@@ -34,29 +34,6 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=[])
-
-    def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(3)
-        return 'succeeded'
-
-# Class that prepare the value need for nav_to_poi    
-class prepare_location(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name', 'standard_error']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='find_me'
-        return 'succeeded'
-    
 
 class prepare_coord_person(smach.State):
     def __init__(self):
@@ -71,39 +48,7 @@ class prepare_coord_person(smach.State):
         
         person_pose = pose_at_distance2(userdata.current_robot_pose.pose,person_pose,1.41)
         userdata.nav_to_coord_goal=[person_pose.position.x, person_pose.position.y, userdata.current_robot_yaw]
-        
-        
-        return 'succeeded'
-
-class prepare_say_found(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['name'],
-                                output_keys=['tts_text','tts_wait_before_speaking', 'standard_error'])
-
-    def execute(self, userdata):
-
-        userdata.tts_text = "I found you, " + userdata.name + "!" + "Live long and prosper"
-#         userdata.tts_text +
-        userdata.tts_wait_before_speaking = 0
-        
-        #TODO: We can use move it to salute the TC
-
-        return 'succeeded'
-
-class prepare_ask_for_tc(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['name'],
-                                output_keys=['tts_text','tts_wait_before_speaking', 'standard_error'])
-
-    def execute(self, userdata):
-
-        userdata.tts_text = "Excuse me, right know I can't quite find your magesty, would you mind coming here so we can talk a little bit?"
-        userdata.tts_wait_before_speaking = 0
-        
-        #TODO: We can use move it to salute the TC
-
+    
         return 'succeeded'
 
 class SelectAnswer(smach.State):
@@ -133,31 +78,24 @@ class SelectAnswer(smach.State):
 
         if foundAnswer:
             userdata.standard_error='OK'
-#             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
-#         elif userdata.loop_iterations == 10:
-#             return 'preempted'        
-        else:
-            
-            
+   
+        else:            
             userdata.tts_text = "I don't know"
             userdata.tts_wait_before_speaking = 0
             userdata.standard_error='Answer not found'
-            rospy.loginfo( FAIL +'ANSWER NOT FOUND')
+            rospy.logerr('ANSWER NOT FOUND')
             return 'succeeded'
         
         
-class loopTest(smach.State):
+class checkLoop(smach.State):
     def __init__(self):
         rospy.loginfo("Entering loop_test")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
                                 input_keys=['loop_iterations'],
-                                output_keys=['standard_error', 'loop_iterations', 'tts_text', 'tts_wait_before_speaking'])
+                                output_keys=['standard_error', 'loop_iterations'])
 
     def execute(self, userdata):
-        
-        userdata.tts_text = "I'm ready, ask me a question"
-        userdata.tts_wait_before_speaking = 0
         
         if userdata.loop_iterations == NUMBER_OF_QUESTIONS:
             return 'end'
@@ -213,8 +151,6 @@ class WhatSaySM(smach.StateMachine):
 
     To use this SM in a simulator is required to run asr_srv.py, tts_as and roscore.
     """
-
-    
     
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
@@ -230,17 +166,11 @@ class WhatSaySM(smach.StateMachine):
             # Find me Part 
             
             # Enter room
-            # Prepare the info to go to the room
-            smach.StateMachine.add(
-                'prepare_location',
-                prepare_location(),
-                transitions={'succeeded': 'go_location', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
 
             # Go to the location
             smach.StateMachine.add(
                 'go_location',
-                nav_to_poi(),
+                nav_to_poi("find_me"),
                 transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
             
@@ -248,7 +178,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_face',
                 SearchFacesSM(),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': 'prepare_ask_for_tc', 
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'ask_for_tc', 
                 'preempted': 'preempted'})
             
             # Where are we?
@@ -267,44 +197,34 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_person',
                 nav_to_coord(),
-                transitions={'succeeded': 'prepare_say_found', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
                 'preempted': 'preempted'})   
             
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(
-                'prepare_say_found',
-                prepare_say_found(),
-                transitions={'succeeded': 'say_found', 'aborted': 'aborted', 'preempted': 'preempted'})
-
-            smach.StateMachine.add(
                 'say_found',
-                text_to_say(),
+                text_to_say("I found you!"),
                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
             
-             # Say "I found you!" + Small Talk
-            smach.StateMachine.add(
-                'prepare_ask_for_tc',
-                prepare_ask_for_tc(),
-                transitions={'succeeded': 'ask_for_tc', 'aborted': 'aborted', 'preempted': 'preempted'})
-
+            # Ask for TC if we dont find him
             smach.StateMachine.add(
                 'ask_for_tc',
-                text_to_say(),
+                text_to_say("I can't find you. Can you come to me?"),
                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
             
             # Question Part ---------------------------------------------------------------------------------------------
             
             # loop test - It checks the number of iterations
             smach.StateMachine.add(
-                'loop_test',
-                loopTest(),
+                'check_loop',
+                checkLoop(),
                 transitions={'succeeded': 'ask_next_question', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'succeeded'})
             
             # Ask for next question
             smach.StateMachine.add(
                 'ask_next_question',
-                text_to_say(),
+                text_to_say("I'm ready, ask me a question"),
                 transitions={'succeeded': 'listen_question', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

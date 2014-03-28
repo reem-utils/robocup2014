@@ -14,9 +14,7 @@ from util_states.colors import Colors
 TOPIC_LIST_NAMES = [  # Topics and Actions
                     ##################### Topics #####################
                     "/amcl_pose",
-                    "/scan_filtered",    
-                    "/asr_event", 
-                    "/pal_face/recognizer"]
+                    "/scan_filtered"]
 
 SERVICES_LIST_NAMES = []  # #################### Services #####################
                        
