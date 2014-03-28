@@ -40,8 +40,8 @@ def main():
 
     with sm:
    
-        sm.userdata.wait_time = 15
-        sm.userdata.sleep_time = 5
+        sm.userdata.wait_time = None
+        sm.userdata.sleep_time = None
         sm.userdata.standard_error = ''
         
         # Concurrence
@@ -52,9 +52,9 @@ def main():
                                     child_termination_cb = child_term_cb,
                                     outcome_cb=out_cb)
         with sm_conc: 
-            smach.Concurrence.add('Sleep', Sleeper())
+            smach.Concurrence.add('Sleep', Sleeper(5))
             
-            smach.Concurrence.add('TimeOut', TimeOut())
+            smach.Concurrence.add('TimeOut', TimeOut(15))
         
         smach.StateMachine.add(
             'Concurrence',
