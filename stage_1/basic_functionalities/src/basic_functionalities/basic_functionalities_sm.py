@@ -20,49 +20,6 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=[])
-
-    def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(3)
-        return 'succeeded'
-
-# Class that prepare the value need for nav_to_poi
-class prepare_pick_and_place(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_pick_and_place'
-        return 'succeeded'
-
-class prepare_avoid_that(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_avoid_that'
-        return 'succeeded'
-
-class prepare_what_did_you_say(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) 
-
-    def execute(self,userdata):
-        userdata.nav_to_poi_name='init_what_say'
-        return 'succeeded'
-
 class BasicFunctionalitiesSM(smach.StateMachine):
     """
     Executes a SM that does the basic functionalities.
@@ -91,17 +48,10 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            # Prepare the poi for pick and place
-            smach.StateMachine.add(
-                'prepare_pick_and_place',
-                prepare_pick_and_place(),
-                transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
             # Go to pick and place
             smach.StateMachine.add(
                 'go_pick_and_place',
-                nav_to_poi(),
+                nav_to_poi('init_pick_and_place'),
                 transitions={'succeeded': 'do_pick_and_place', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
@@ -112,17 +62,10 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 transitions={'succeeded': 'prepare_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
            
-            # Prepare the poi for avoid that
-            smach.StateMachine.add(
-                'prepare_avoid_that',
-                prepare_avoid_that(),
-                transitions={'succeeded': 'go_avoid_that', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
             # Go to avoid that
             smach.StateMachine.add(
                 'go_avoid_that',
-                nav_to_poi(),
+                nav_to_poi('init_avoid_that'),
                 transitions={'succeeded': 'do_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
@@ -133,17 +76,10 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 transitions={'succeeded': 'prepare_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
-            # Prepare the poi for what did you say
-            smach.StateMachine.add(
-                'prepare_what_did_you_say',
-                prepare_what_did_you_say(),
-                transitions={'succeeded': 'go_what_did_you_say', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-
             # Go to what did you say
             smach.StateMachine.add(
                 'go_what_did_you_say',
-                nav_to_poi(),
+                nav_to_poi('init_what_say'),
                 transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 
