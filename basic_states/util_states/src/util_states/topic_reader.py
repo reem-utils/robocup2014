@@ -69,7 +69,7 @@ class topic_reader(smach.StateMachine):
         
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                              output_keys=['topic_output_msg', 'standard_error'])
-        rospy.init_node("Topic_reader")
+ #       rospy.init_node("Topic_reader")
         with self:
             smach.StateMachine.add('Topic_reader_state', 
                                    topic_reader_state(topic_name, topic_type, topic_time_out), 

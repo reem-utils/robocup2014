@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>follow_me</name>
+  <name>stage_1_test</name>
   <version>0.0.0</version>
-  <description>The follow_me package</description>
+  <description>The stage_1_test package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/follow_me</url> -->
+  <!-- <url type="website">http://wiki.ros.org/stage_1_test</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -32,20 +32,15 @@
   <!-- Dependencies can be catkin packages or system dependencies -->
   <!-- Examples: -->
   <!-- Use build_depend for packages you need at compile time: -->
-     <build_depend>message_generation</build_depend>
+  <!--   <build_depend>message_generation</build_depend> -->
   <!-- Use buildtool_depend for build tool packages: -->
   <!--   <buildtool_depend>catkin</buildtool_depend> -->
   <!-- Use run_depend for packages you need at runtime: -->
-   <run_depend>message_runtime</run_depend>
+  <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>smach_ros</build_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>smach_ros</run_depend>
 
-	
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -12,7 +12,7 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-from follow_me.follow_me_init import FollowMeInit
+from follow_me_init import FollowMeInit
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -24,7 +24,7 @@ class follow_me_init_error(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'], output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo('info of follo_me_3rd')
+        rospy.loginfo('info of follow_me_init')
         rospy.loginfo( FAIL +"standard_error :==   "+str(userdata.standard_error) + ENDC)
         return 'aborted'
 
@@ -34,14 +34,17 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
         # it call the drop_face state
+        sm.userdata.standard_error='ok'
+        #sm.userdata.standard_error=33
         smach.StateMachine.add(
             'follow_init_test',
             FollowMeInit(),
             transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted'})
+        
         smach.StateMachine.add(
             'follow_me_info',
             follow_me_init_error(),
-            transitions={'succeeded': 'dummy', 'aborted':'dummy'})
+            transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(

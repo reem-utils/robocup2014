@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 # vim: expandtab ts=4 sw=4
 ### FOLLOW_ME.PY ###
-import roslib
-roslib.load_manifest('follow_me')
 import smach
 import rospy
 
@@ -14,7 +12,8 @@ OKGREEN = '\033[92m'
 
 from speech_states.say import text_to_say
 from speech_states.listen_to import  ListenToSM
-from learn_person import LearnPerson
+#from learn_person import LearnPerson
+
 
 
 FOLLOW_GRAMMAR_NAME = 'robocup/followme'
@@ -22,6 +21,20 @@ FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
 LEARNED_PERSON_FRASE = "Let's go buttercup."
 
+
+
+# It's only becouse i can't import the file... i can't understand
+class LearnPerson(smach.StateMachine):
+
+    def __init__(self): 
+        smach.State.__init__(self, input_keys=['asr_userSaid'],
+                             outcomes=['succeeded','aborted', 'preempted'])
+
+    def execute(self, userdata):
+        
+        rospy.loginfo("shhhhhhhhh")
+        return 'succeeded'
+    
 class wait_for_stard(smach.StateMachine):
 
     def __init__(self): 
@@ -32,24 +45,24 @@ class wait_for_stard(smach.StateMachine):
         
         
         if userdata.asr_userSaid=="Follow me":
-            return 'succeded' # todo locks to .gram
+            return 'succeeded' # todo locks to .gram
         else :
             print (FAIL +"I listen diferent a diferent thing   " +  str(userdata.asr_userSaid) + ENDC)
             return 'aborted'
-        return 'succeeded'
+        
 
 #Main
 class FollowMeInit(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],output_keys=['standard_error'])
 
         with self:
-
+            self.userdata.standard_error='OK'
             self.userdata.tts_text="Hello, my name is REEM! What do you want me to do today?"
             self.userdata.tts_wait_before_speaking=0
             smach.StateMachine.add('INTRO',
                                    text_to_say(),
-                                   transitions={'succeeded': 'FOLLOW_ME_COMMAND'})
+                                   transitions={'succeeded': 'Listen','aborted':'aborted'})
 
             ### 2. It listen the comand    
             self.userdata.grammar_name="follow_me.gram" #TODO ha de ser igual que la del sergi
@@ -67,7 +80,7 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.tts_text = START_FOLLOW_FRASE # todo it doesn0t work i'm waiting for cris
             smach.StateMachine.add('START_FOLLOWING_COME_CLOSER',
                                    text_to_say(),
-                                   transitions={'succeeded': 'SM_LEARN_PERSON'})
+                                   transitions={'succeeded': 'SM_LEARN_PERSON','aborted':'aborted'})
 
             # it learns the person that we have to follow
             smach.StateMachine.add('SM_LEARN_PERSON',
@@ -78,4 +91,4 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.tts_text = LEARNED_PERSON_FRASE # todo it doesn0t work i'm waiting for cris
             smach.StateMachine.add('SM_STOP_LEARNING',
                                    text_to_say(),
-                                   transitions={'succeeded': 'succeeded'})
+                                   transitions={'succeeded': 'succeeded','aborted':'aborted'})
