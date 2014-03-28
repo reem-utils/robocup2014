@@ -113,11 +113,9 @@ class play_motion_sm(smach.StateMachine):
                         userdata.standard_error = "Play Motion not available: Trajectory Error"
                         rospy.loginfo(userdata.standard_error)
                     elif result.error_code == -6:
-                        
                         userdata.standard_error = "Play Motion not available: Goal Not Reached"
-                        
                         rospy.loginfo(userdata.standard_error)
-                        
+                        #return 'succeeded'
                     elif result.error_code == -7:
                         userdata.standard_error = "Play Motion not available: Planner Offline"
                         rospy.loginfo(userdata.standard_error)

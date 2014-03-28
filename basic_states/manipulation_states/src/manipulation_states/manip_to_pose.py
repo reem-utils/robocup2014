@@ -93,7 +93,8 @@ class create_move_group_pose_goal(smach.State):
 class manip_to_pose(smach.StateMachine):
     """
     Executes a SM that makes the upper body movement of the robot.
-    
+    It needs a 3D pose goal and moves the body part to that goal.
+    It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.    
     Required parameters: None
     
     Optional parameters: None
@@ -104,7 +105,7 @@ class manip_to_pose(smach.StateMachine):
             left_arm, left_arm_torso, left_hand, --> End effector/link : hand_left_grasping_frame 
             right_arm, right_arm_torso, right_hand --> End effector/link : hand_right_grasping_frame
             
-        manip_goal_pose: indicates the pose to reach for the group specified in manip_group
+        manip_goal_pose: indicates the pose to reach for the group specified in manip_group, 3D pose
             type: Point() --> x,y,z
          
     Output keys:
