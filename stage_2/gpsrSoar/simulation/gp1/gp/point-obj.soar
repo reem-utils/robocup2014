@@ -1,0 +1,25 @@
+sp {gp*propose*point-obj
+   (state <s> ^name gp
+              ^robot <r>
+              ^object <obj>)
+   (<r> ^locId <rloc>)
+   (<obj> ^locId <rloc>
+          ^found yes
+         -^grasped yes
+         -^delivered yes
+         -^pointed yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name point-obj
+         ^objToPoint <obj>
+         ^withRob <r>)
+}
+
+sp {gp*apply*point-obj
+   (state <s> ^operator <op>)
+   (<op> ^name point-obj
+         ^objToPoint <obj>
+         ^withRob <r>)
+-->
+   (<obj> ^pointed yes)
+}

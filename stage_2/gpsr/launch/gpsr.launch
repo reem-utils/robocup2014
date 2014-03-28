@@ -1,0 +1,25 @@
+<launch>
+  
+<!-- load the configuration file -->
+  <rosparam file="$(find gpsr)/config/parsing.yaml"
+      command="load" ns="parsing" />
+  <rosparam file="$(find common)/config/robocup_params.yaml"
+      command="load" ns="robocup_params" />
+<!--
+  <include file="$(find object_recognition_mock)/launch/object_recognition_mock.launch" />
+  <include file="$(find speech_recognition_mock)/launch/speech_recognition_mock.launch" />
+  <include file="$(find tts_mock)/launch/tts_mock.launch" />
+-->
+
+  <!-- GPSR it SMACH -->
+  <node pkg ="gpsr"
+        type="understandOrders_test.py"
+        name="understandOrders_test"
+        output="screen">
+  </node>
+
+
+
+
+
+</launch>

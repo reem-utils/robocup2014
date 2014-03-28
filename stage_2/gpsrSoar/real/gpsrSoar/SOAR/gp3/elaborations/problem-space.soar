@@ -1,0 +1,14 @@
+## Elaborate the state with the problem space 
+##   and information on how to make copies for look-ahead
+##   two-level-attributes are copy not just the jug, but also the substructure.
+##   This avoids have the substate modify the same jug structure as in the top state.
+##   Empty is not copied because it is computed via an elaboration
+
+sp {gp*elaborate*problem-space
+   (state <s> ^name gp)
+-->
+   (<s> ^problem-space <p>)
+   (<p> ^name gp
+        ^default-state-copy yes
+        ^two-level-attributes item person robot location
+        ^dont-copy empty)} 

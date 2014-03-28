@@ -1,0 +1,8 @@
+<launch>
+  
+<rosparam file="$(find gpsrSoar)/config/simulation.yaml" command="load" ns="mock_config" />
+
+<include file="$(find speech_recognition_mock)/launch/speech_recognition_mock.launch" />
+
+</launch>
+

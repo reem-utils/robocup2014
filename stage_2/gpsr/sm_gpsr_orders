@@ -1,0 +1,9 @@
+import roslib
+roslib.load_manifest('gpsr')
+import smach
+
+from utils.global_common import succeeded, preempted, aborted
+from speech.sm_listen_orders import ListenOrders  # check if the SM is correctly defined
+from speech.sound_action import SpeakActionState
+
+Class

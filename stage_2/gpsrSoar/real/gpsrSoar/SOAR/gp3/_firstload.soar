@@ -1,0 +1,6 @@
+echo "learning is on"
+learn --on
+watch --chunks -p
+pushd ../default
+source selection.soar
+popd

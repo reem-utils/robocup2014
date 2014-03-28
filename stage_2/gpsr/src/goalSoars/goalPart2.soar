@@ -1,0 +1,11 @@
+sp {gp*apply*detect*goal*achived*remove-achived
+   (state <s> ^io.output-link <out>)
+
+   (<out> ^achived <st>)
+   (<st> ^status complete)
+
+-->
+   (<out> ^achived <st> -)
+   (write (crlf) |The problem has been solved|)
+   (halt)
+}

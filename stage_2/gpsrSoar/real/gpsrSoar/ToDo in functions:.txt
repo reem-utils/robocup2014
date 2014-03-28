@@ -1,0 +1,27 @@
+23/03 -> DEmo
+
+Albert: 
+- [1] Template SOAR
+
+- [2] unHardCode prohibitions (que ho passi la interface)
+
+- [3] ouputs altres accions
+
+- Maquines d'estats de les accions que falten
+
+- Launch i manifest ampliats per altres goals
+
+- Launch Real
+
+
+Jordi: 
+- General StateMachine -> no cal, inclosa a la SM de understanding -> Crear Launch que executi both: action server + understanding
+
+- Define Path to jar in REEM (gpsr/src/stparser.py)
+
+- Preparar portatil
+
+
+
+
+

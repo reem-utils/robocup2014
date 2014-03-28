@@ -1,0 +1,56 @@
+sp {gp*propose*deliver
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId <rloc>
+        ^obj1Id <> -1)
+   (<p> ^locId <rloc>
+        ^near yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name deliver
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*deliver
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name deliver
+         ^withRob <r>
+         ^toPers <p>) 
+   (<p> ^id <pid>)
+-->
+   (<out> ^deliver.pers <pid>)
+}
+
+sp {gp*apply*deliver*remove-deliver
+   (state <s> ^operator <op>
+              ^object <obj>
+              ^io.output-link <out>
+              ^person <p>
+              ^robot <r>)
+   
+  (<op> ^name deliver
+         ^withRob <rop>
+         ^toPers <pop>) 
+   
+   (<pop> ^id <popid>)
+   (<p> ^id <popid>)
+               
+   (<r> ^obj1Id <robjid>)
+   (<obj> ^id <robjid>)
+   (<p> ^obj1Id <pObj>)
+   
+   (<out> ^deliver <st>)
+   (<st> ^status complete)
+
+-->
+   (<p> ^obj1Id <robjid>
+                <pObj> -)
+   (<r> ^obj1Id -1
+                <robjid> -)
+   (<obj> ^delivered yes)
+   
+   (<out> ^deliver <st> -)
+}

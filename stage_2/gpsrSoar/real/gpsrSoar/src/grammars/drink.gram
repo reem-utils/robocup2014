@@ -1,0 +1,21 @@
+#JSGF V1.0;
+
+grammar drink;
+
+public <basic> = (  ([plese] [((<command> [me]) )] [<determinant>] <drink> {obj.put("object",$.$value);}) | <garbage> ) ; 
+
+<command> = ( bring | give | get | carry);
+
+<want> = ( want | need );
+
+<determinant> = (a | an | the | some | one);
+
+<drink> = ( (beer bottle) | fanta | (beer can) | coke | (seven up) | (chocolate milk) | (energy drink) | (orange juice) | milk | (apple juice) ) ;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);

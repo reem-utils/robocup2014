@@ -1,0 +1,3 @@
+pushd gp3
+source gp3_source.soar
+popd

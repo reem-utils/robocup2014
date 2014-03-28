@@ -1,0 +1,11 @@
+sp {gp*propose*navigate
+   (state <s> ^name gp
+              ^robot <r>
+              ^localization <l>)
+   (<l> ^id -1)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name navigate
+         ^withRob <r>
+         ^toLoc <l>)
+}

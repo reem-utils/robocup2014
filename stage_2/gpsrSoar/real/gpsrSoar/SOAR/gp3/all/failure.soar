@@ -1,0 +1,53 @@
+
+sp {gp*evaluate*state*failure*duplicate
+   (state <s2> ^name gp
+               ^superstate-set <s1>
+               ^robot <r1>
+               ^person <p1>
+               ^item <i1>
+               ^tried-tied-operator)
+   (<r1> ^introduced <int>
+         ^locId <rlid>
+         ^obj1Id <roid>
+         ^pointed-at-loc <paobj>)
+   (<p1> ^askedName <an>
+         ^followed <foll>
+         ^id <pid>
+         ^locId <plid>
+         ^memorized <memo>
+         ^near <near>
+         ^obj1Id <poid>
+         ^recognized <reco>)
+   (<i1> ^delivered <deli>
+         ^found <fou>
+         ^grasped <gras>
+         ^id <iid>
+         ^locId <ilid>
+         ^pointed <poi>
+         ^toBeGrasped <tobe>)
+   (<s1> ^name gp
+               ^desired <d>
+               ^robot <r2>
+               ^person <p2>
+               ^item <i2>)
+   (<r2> ^introduced <int>
+         ^locId <rlid>
+         ^obj1Id <roid>
+         ^pointed-at-loc <paobj>)
+   (<p2> ^askedName <an>
+         ^followed <foll>
+         ^id <pid>
+         ^locId <plid>
+         ^memorized <memo>
+         ^near <near>
+         ^obj1Id <poid>
+         ^recognized <reco>)
+   (<i2> ^delivered <deli>
+         ^found <fou>
+         ^grasped <gras>
+         ^id <iid>
+         ^locId <ilid>
+         ^pointed <poi>
+         ^toBeGrasped <tobe>)
+-->
+   (<s2> ^failure <d>)}

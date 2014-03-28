@@ -1,0 +1,43 @@
+<package>
+  <description brief="gpsrSoar">
+
+     gpsrSoar
+
+  </description>
+  <author>Albert Pumarola</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/gpsrSoar</url>
+
+  <depend package="actionlib"/>
+  <depend package="rospy"/>
+  <depend package="smach"/>
+  <depend package="smach_ros"/>
+
+  <!--<depend package="pal_smach_utils"/>
+  <depend package="move_base_msgs"/>
+  <depend package="tf" />
+  <depend package="next_location_provider" /> 
+  <depend package="follow_me"/> 
+  <depend package="object_manipulation_msgs"/>
+  <depend package="move_base"/> -->
+  <!-- <depend package="iri_moped_handler"/> -->
+  <!--depend package="Master_Commander"-->
+
+  
+  <!-- Mocks -->
+  <!-- <depend package="face_recognition"/>
+  <depend package="move_base"/>
+  <depend package="text_to_speech"/>
+  <depend package="object_recognition_mock"/>
+  <depend package="coord_translator"/>
+  <depend package="face_recognition"/>
+  <depend package="follow_me"/>
+  <depend package="reem_tabletop_manipulation_launch"/>
+  <depend package="reem_final_approach"/>
+  <depend package="tabletop_collision_map_processing" />  -->
+
+
+</package>
+
+

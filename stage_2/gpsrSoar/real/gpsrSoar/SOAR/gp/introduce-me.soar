@@ -1,0 +1,31 @@
+sp {gp*propose*introduce-me
+   (state <s> ^name gp
+              ^robot <r>)
+   (<r> -^introduced yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name introduce-me
+         ^withRob <r>)
+}
+
+sp {gp*apply*introduce-me
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name introduce-me
+         ^withRob <r>)
+-->
+   (<out> ^introduce-me.aux 1)
+}
+
+sp {gp*apply*remove*introduce-me
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^robot <r>)
+   (<op> ^name introduce-me)
+   (<r> -^introduced yes)
+   (<out> ^introduce-me <st>)
+   (<st> ^status complete)
+-->
+   (<r> ^introduced yes)
+   (<out> ^introduce-me <st> -)
+}

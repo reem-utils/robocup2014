@@ -1,0 +1,39 @@
+sp {gp*record*operator
+   (state <s> ^name gp
+              ^operator.name <name>)
+-->
+   (<s> ^last-operator <name>)}
+
+sp {gp*remove*last-operator
+   (state <s> ^name gp
+              ^last-operator <name>
+              ^operator.name <> <name>)
+-->
+   (<s> ^last-operator <name> -)}
+
+sp {gp*select*search-object*grasp*best
+   (state <s> ^name gp
+              ^last-operator search-object
+              ^operator <o> +)
+   (<o> ^name grasp)
+-->
+   (<s> ^operator <o> >)}
+
+
+sp {gp*select*navigate-exit-apartment*navigate*worst
+   (state <s> ^name gp
+              ^last-operator << navigate exit-apartment >>
+              ^operator <o> +)
+   (<o> ^name navigate)
+-->
+   (<s> ^operator <o> <)}
+
+sp {gp*select*navigate-exit-apartment*navigate*worst
+   (state <s> ^name gp
+              ^operator <o> +)
+   (<o> ^name exit-apartment)
+-->
+   (<s> ^operator <o> >)}
+
+
+

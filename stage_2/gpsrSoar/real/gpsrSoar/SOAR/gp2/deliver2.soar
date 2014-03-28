@@ -1,0 +1,96 @@
+sp {gp*propose*deliver
+    (state <s> ^name gp
+               ^desired <d>
+               ^robot <r>
+               ^location <l>
+               ^person <p>
+               ^object <o>)
+    (<l> ^id <ploc>)
+    (<r> ^id 1
+         ^locId <ploc>
+         ^obj1Id <oid>)
+    (<p> ^id <pid>
+         ^locId <ploc>
+         ^obj1Id -1
+         ^found yes)
+    (<o> ^id <oid>
+         ^grasped yes)
+    (<d> ^person <dp>
+         ^object <do>)
+    (<dp> ^id <pid>)
+    (<do> ^id <oid>)
+ -->
+   (<s> ^operator <op> + >)
+    (<op> ^name deliver
+          ^toPers <p>)
+}
+
+sp {gp*propose*navigate-to*deliver
+    (state <s> ^name gp
+               ^desired <d>
+               ^robot <r>
+               ^location <l>
+               ^person <p>
+               ^object <o>)
+    (<l> ^id <ploc>)
+    (<r> ^id 1
+         ^locId {<> <ploc> <rloc>}
+         ^obj1Id <oid>)
+    (<p> ^id <pid>
+         ^locId <ploc>
+         ^obj1Id -1
+         ^found no)
+    (<o> ^id <oid>
+         ^grasped yes)
+    (<d> ^person <dp>
+         ^object <do>)
+    (<dp> ^id <pid>)
+    (<do> ^id <oid>)
+ -->
+   (<s> ^operator <op> + >)
+    (<op> ^name navigate
+          ^toLoc <l>)
+}
+
+
+sp {gp*apply*deliver
+   (state <s> ^operator <op> +
+              ^io.output-link <out>)
+   (<op> ^name deliver
+         ^toPers <p>)
+   (<p> ^id <pid>)
+-->
+   (<out> ^deliver.pers <pid>)
+}
+
+sp {gp*apply*deliver*remove-deliver
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^person <p>
+              ^object <o>
+              ^robot <r>)
+   (<out> ^deliver <st>)
+   (<st> ^status complete
+         ^pers <pid>)
+   (<p> ^id <pid>
+        ^obj1Id <poid>)
+#   (<op> ^id <pid>)
+   (<o> ^id <oid>
+        ^delivered <val>)
+   (<r> ^id 1
+        ^obj1Id <oid>
+        ^locId <rloc>)
+   
+-->
+   (<out> ^deliver <st> -)
+   (<o> ^delivered yes
+                   <val> -
+        ^locId <rloc>)
+   (<p> ^obj1Id <oid>
+                <poid> -)
+   
+#   (<p> ^obj1Id <oid>
+#                <poid> -)
+   (<r> ^obj1Id -1
+                <oid> -)
+}

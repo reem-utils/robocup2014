@@ -1,0 +1,166 @@
+List of basic actions needed: 
+(Can be extended, modified or complemented with your ideas)
+Note: Result succeeded means that the state machine executed completely, even if it was with a negative value. Aborted means that somehow the state Machine failed at some point and we can't cosider that the action was successfully carried out. 
+
+
+
+[~OK] Move to room: 
+Reem goes to a known location. Already implemented as room, but our objective is to find a specific location, which is defined as a table, sofa, etc. 
+Needs: Room_Name or Room_ID
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Current Location -> not implemented
+Implemented in: 
+    move_to_room.py
+Tested in clean_up
+Problema: No veig com obtenir les dades de la posició actual del robot... Podem ignorar-ho i presuposar que amb una acció succeeded SEMPRE serem on voliem i amb una acció aborted ens hem quedat on erem (en termes de SOAR), de manera que com l'ordre és go_to, no importa on siguem, que fara el què calgui per arribar-hi, tot i que em sembla poc net...
+
+
+
+[~OK] Exit: 
+Reem goes to the location known as 'exit'
+Needs: -
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Current Location -> not implemented
+Implemented in: 
+    move_to_room.py
+Tested in clean_up
+
+
+[OK] Learn Person: 
+A person that is not in Reems database of people is asked the name and is stored on his memory
+Needs: Person in front
+Returns: 
+    Succeeded: Person_Name¿?
+    Aborted: Aborted
+Implemented in: 
+    utils.learn_face.LearnFaceStateMachine
+Tested in cocktail_party
+
+
+[~OK] Recognize Person: 
+Identifies that the person in front of reem is in the database and greets the person with the stored name
+Needs: Person in Front
+Returns: 
+    Succeeded: Person_Name -> add to return recognized person's name in userdata.out_person_name
+    Aborted: Unknown_face
+Implemented in: 
+    common.utils.recognize_face
+    Doesn't return the name of the recognized person, but it is stored in userdata.out_person_name
+Tested in Cocktail Party
+
+
+[OK] Introduce: 
+Reem greets the person in front of him and tells his own name
+Needs: Person in front
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Aborted
+Implemented in:
+    common.utils.introduce_yourself
+Not tested!!!
+
+
+[KO] Point at: 
+Reem extends his arm (and finger?) pointing at a selected location
+Needs: Location Coordinates
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Aborted
+Not implemented
+Not tested
+
+
+[KO - Tested, but doesn't work in my PC] Find object/identify object: 
+Being reem in a location, Reem looks on that surface if there is a given object and stores its 3D coordinates
+Needs:  - Next to Location
+        - Object Name
+Returns: 
+    Succeeded: Object_Coordinates (is stored in userdata.object_found.object_list[x].pose.position)
+    Aborted: Aborted
+Implemented in: 
+    - grasp.search_object_with_confidence_moped.SearchObjectWithConfidenceStateMachine
+Tested in subtests -> SearchObjectWithConfidenceStateMachine_sm
+!!! We need that given an object name it can find the one we need !!!
+
+
+
+
+[UNCHECKED] Grasp object: 
+Given the coordinates of a previously identified object, Reem tries to grasp it
+Needs:  - Object Coordinates
+        - Next to Location
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Aborted (notice that when grasping is aborted we can't be sure that the object is still in the same location, so a new identification is mandatory)
+
+
+[OK] Deliver object: 
+Having an object in his hand, Reem extends his arm to deliver that object to the person in front of him
+Needs:  - Object at hand
+        - Person in front
+Returns: 
+    Succeeded: Succeeded (When delivering is performed, we asume the object is in the hands of the receiver. It's reasonable to think that is needed to previously recognize to whom are we delivering the object)
+    Aborted: Aborted
+Implemented in: 
+    - common.grasp.sm_release.ReleaseObjectStateMachine
+Tested in clean_up
+
+
+[OK - tested OK] Approach Person: 
+Having identified a person or a location in a room, Reem approaches it to perform a deliver/grasp/find/recognize/introduce/others¿? action
+Needs:  - person found
+        - Person Coordinates (data from find person)
+Returns: 
+    Succeeded: Person_in_Front/Next_to_Location
+    Aborted: Current_Location
+Implemented in:
+    - navigation.go_to_closest_person.ApproachPerson
+Tested in approach_person_test
+
+
+[OK] Find person: (no estic segur de què volem que faci aquesta funció, si buscar la persona per tota la zona o identificar si hi ha alguna persona a l'habitació on es troba..Gariebé crec que és més un goal que una acció, a menys que sigui com jo la descric a sota..)
+being reem in a room, he looks if there is a given person in it
+Needs: -
+Returns: 
+    Succeeded:  - Person In the room
+                - Person coordinates
+    Aborted: Aborted
+Implemented in: 
+    - utils.find_person.FindPersonStateMachine
+Tested in cocktail_party
+--> evitar que busqui eternament
+
+[KO - implemented, but not working...] Follow: 
+Reem tries to maintain a close distance to the person infront of him, while he/she moves. When starting, anounces that he's going to follow that person and that he/she should touch his screen when the task is successfully accomplished
+Needs: Person in front
+Returns: 
+    Succeeded:  - Current Location
+                - Succeeded
+    Aborted:    - Current Location
+                - Aborted
+Implemented in: 
+    - If Already Learned: 
+        - common.navigation.follow_operator
+    - If Not Learned: 
+        - follow_me.follow_me
+Tested in follow_me
+
+
+
+
+[~OK] Return to referee: 
+Reem moves to the starting position, where the referee is waiting for him
+Needs: Goal Completed
+Returns: 
+    Succeeded: Succeeded
+    Aborted: Current Position
+Implemented in: 
+    - navigation.move_to_room.py
+Tested in clean_up
+(Implement as a goal -> at the beginning of gpsr -> store location and face of the referee as a location: referee)
+
+Point at door¿?
+Ves a la sortida is enyala la porta
+

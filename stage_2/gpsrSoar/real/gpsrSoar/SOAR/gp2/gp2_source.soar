@@ -1,0 +1,23 @@
+source _firstload.soar
+pushd all
+source all_source.soar
+popd
+pushd elaborations
+source elaborations_source.soar
+popd
+source ask-name.soar
+source deliver.soar
+source deliver-toLoc.soar
+source deliver2.soar
+source exit-apartment.soar
+source grasp.soar
+source initialize-gp.soar
+source introduce-me.soar
+source memorize-person.soar
+source navigate.soar
+source point-obj.soar
+source prohibitions-in-run-time.soar
+source recognize-person.soar
+source record.soar
+source search-object.soar
+source search-person.soar

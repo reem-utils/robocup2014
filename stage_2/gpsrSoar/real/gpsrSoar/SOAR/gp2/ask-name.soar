@@ -1,0 +1,49 @@
+sp {gp*propose*ask-name
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>
+              ^desired <d>)
+   (<r> ^locId <rloc>)
+   (<p> ^id <id>
+        ^locId <rloc>
+        ^near yes
+        ^askedName no)
+   (<d> ^person <dp>)
+   (<dp> ^id <id>
+         ^askedName yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name ask-name
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*ask-name
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name ask-name
+         ^withRob <r>
+         ^toPers <p>) 
+-->
+   (<out> ^ask-name.aux 1)
+}
+
+sp {gp*apply*remove*ask-name
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^person <p>)
+   (<op> ^name ask-name
+         ^withRob <r>
+         ^toPers <pop>) 
+   
+   (<pop> ^id <popid>)
+   (<p> ^id <popid>)
+   
+   (<out> ^ask-name <st>)
+   (<st> ^status complete)
+-->
+   (<p> ^askedName yes
+                   no -)
+   (<out> ^ask-name <st> -)
+   
+}

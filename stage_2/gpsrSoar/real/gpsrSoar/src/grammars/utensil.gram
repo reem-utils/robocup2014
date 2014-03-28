@@ -1,0 +1,21 @@
+#JSGF V1.0;
+
+grammar utensil;
+
+public <basic> = (  ([please] [((<command> it) )] [to] [<determinant>] <utensil> {obj.put("object",$.$value);}) | <garbage> ) ; 
+
+<command> = ( bring | give | get | carry);
+
+<want> = ( want | need );
+
+<determinant> = (a | an | the | some | one);
+
+<utensil> = (hanger | (umbrella stand) | (trash bin) | plant) ;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);

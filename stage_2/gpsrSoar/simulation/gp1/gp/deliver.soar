@@ -1,0 +1,32 @@
+sp {gp*propose*deliver
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId <rloc>
+        ^obj1Id <> -1)
+   (<p> ^locId <rloc>
+        ^near yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name deliver
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*deliver
+   (state <s> ^operator <op>
+              ^object <obj>)
+   (<op> ^name deliver
+         ^withRob <r>
+         ^toPers <p>) 
+   (<r> ^obj1Id <robjid>)
+   (<obj> ^id <robjid>)
+   (<p> ^obj1Id <pObj>)
+-->
+   (<p> ^obj1Id <robjid>
+                <pObj> -)
+   (<r> ^obj1Id -1
+                <robjid> -)
+   (<obj> ^grasped yes -
+          ^delivered yes)
+}

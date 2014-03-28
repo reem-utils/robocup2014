@@ -1,0 +1,24 @@
+sp {gp*propose*memorize-person
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId <rloc>)
+   (<p> ^locId <rloc>
+        ^near yes
+        -^memorized yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name memorize-person
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*memorize-person
+   (state <s> ^operator <op>
+              ^object <obj>)
+   (<op> ^name memorize-person
+         ^withRob <r>
+         ^toPers <p>) 
+-->
+   (<p> ^memorized yes)
+}

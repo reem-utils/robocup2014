@@ -1,0 +1,61 @@
+# podria tenir errors
+sp {gp*propose*point-obj
+   (state <s> ^name gp
+              ^robot <r>
+              ^location <l>
+              ^desired <d>)
+   (<l> ^id <lId>
+       ^pointed-at no)
+   (<r> ^id 1
+        ^locId <lId>)
+
+   (<d> ^robot.pointedAtLoc <lId>)
+-->
+   (<s> ^operator <op> + >)
+   (<op> ^name point-obj
+         ^locId <lId>)
+}
+
+sp {gp*propose*move*point-obj
+   (state <s> ^name gp
+              ^robot <r>
+              ^location <l>
+              ^desired <d>)
+   (<l> ^id <lId>
+       ^pointed-at no)
+   (<r> ^id 1
+        ^locId {<> <lId> <rlocid>})
+
+   (<d> ^robot.pointedAtLoc <lId>)
+-->
+   (<s> ^operator <op> + >)
+   (<op> ^name navigate
+         ^locId <lId>)
+}
+
+
+sp {gp*apply*point-obj
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name point-obj
+         ^locId <l>)
+-->
+   (<out> ^point-obj.loc <l>)
+}
+
+sp {gp*apply*remove*point-obj
+  (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^location <l>)
+   
+   (<op> ^name point-obj
+         ^locId <loc>)
+   (<l> ^id <loc>)
+   
+   (<out> ^point-obj <st>)
+   (<st> ^status complete)
+-->
+   (<l> ^pointed-at yes
+                    no -)
+   (<out> ^point-obj <st> -)
+}

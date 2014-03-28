@@ -1,0 +1,99 @@
+#sp {gp*monitor*state
+#   (state <s> ^name gp
+#              ^person <p>)
+#   (<p> ^id 0
+#          ^obj1Id <pobj>)
+#-->
+#   (write (crlf) | pers_obj(| <pobj> |)|)
+#}
+
+
+sp {gp*monitor*operator-application*navigate
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name navigate
+        ^toLoc.id <l>)
+-->
+   (write (crlf) | NAVIGATE(| <l> |)|)
+}
+
+sp {gp*monitor*operator-application*search-object
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name search-object
+        ^objToSearch.id <obj>)
+-->
+   (write (crlf) | SEARCH_OBJECT(| <obj> |)|)
+}
+
+sp {gp*monitor*operator-application*search-person
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name search-person
+        ^persToSearch.id <p>)
+-->
+   (write (crlf) | SEARCH_PERSON(| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*grasp
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name grasp
+        ^objToGrasp.id <obj>)
+-->
+   (write (crlf) | GRASP(| <obj> |)|)
+}
+
+sp {gp*monitor*operator-application*deliver
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name deliver
+        ^toPers.id <p>
+        ^withRob.obj1Id <> -1 <obj>)
+-->
+   (write (crlf) | DELIVER(obj:| <obj> | to:| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*point-obj
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name point-obj
+        ^locId <loc>)
+-->
+   (write (crlf) | POINT(| <loc> |)|)
+}
+
+sp {gp*monitor*operator-application*recognize-person
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name recognize-person
+        ^toPers.id <p>)
+-->
+   (write (crlf) | RECOGNIZE_PERSON(| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*memorize-person
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name memorize-person
+        ^toPers.id <p>)
+-->
+   (write (crlf) | MEMORIZE_PERSON(| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*ask-name
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name ask-name
+        ^toPers.id <p>)
+-->
+   (write (crlf) | ASK_NAME(| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*introduce-me
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name introduce-me)
+-->
+   (write (crlf) | INTRODUCE_MYSELF()|)
+}

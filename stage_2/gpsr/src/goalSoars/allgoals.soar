@@ -1,0 +1,128 @@
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^object <obj1>
+        ^person <pers1>)
+  (<r> ^obj1Id -1)
+  (<obj1> ^id ITEM
+           ^delivered yes)
+  (<pers1> ^id PERSON
+           ^obj1Id ITEM)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^localization <l0>)
+  (<l0> ^id LOCATION)
+  (<r> ^locId LOCATION)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^localization <l0>)
+  (<l0> ^id LOCATION)
+  (<r> ^locId LOCATION)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^object <obj1>)
+  (<obj1> ^id ITEM
+           ^found yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^person <pers1>)
+  (<pers1> ^id PERSON
+           ^recognized yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^object <obj1>)
+  (<r> ^obj1Id ITEM)
+  (<obj1> ^id ITEM
+           ^grasped yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^person <pers1>)
+  (<r> ^introduced yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^object <obj1>
+        ^person <pers1>)
+  (<obj1> ^id ITEM
+           ^delivered yes)
+  (<pers1> ^id -1 #sent -1 el referee
+           ^obj1Id ITEM)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^person <pers1>)
+  (<r> ^locId <id1>)
+  (<pers1> ^locId <id1>
+           ^near yes
+           ^followed yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^person <pers1>)
+  (<pers1> ^id PERSON
+           ^memorized yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^person <pers1>)
+  (<pers1> ^id PERSON
+           ^recognized yes)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*monitor*detect*goal*achived
+  (<s> ^name gp
+        ^robot <r>
+        ^location <l1>)
+  (<l1> ^id LOCATION
+        ^pointed_at yes)
+-->
+   (<out> ^achived.true 1)
+}

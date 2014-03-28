@@ -1,0 +1,17 @@
+sp {gp*propose*introduce-me
+   (state <s> ^name gp
+              ^robot <r>)
+   (<r> -^introduced yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name introduce-me
+         ^withRob <r>)
+}
+
+sp {gp*apply*introduce-me
+   (state <s> ^operator <op>)
+   (<op> ^name introduce-me
+         ^withRob <r>)
+-->
+   (<r> ^introduced yes)
+}

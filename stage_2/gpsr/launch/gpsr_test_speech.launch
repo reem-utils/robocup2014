@@ -1,0 +1,12 @@
+<launch>
+
+
+
+  <!-- gpsr it SMACH -->
+  <node pkg ="gpsr"
+        type="sm_gpsr_speech_test.py"
+        name="gpsr_speech_test"
+        output="screen"/>
+
+
+</launch>

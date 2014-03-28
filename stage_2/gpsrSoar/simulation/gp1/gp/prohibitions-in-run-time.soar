@@ -1,0 +1,6 @@
+sp {gp*select*prohibit
+   (state <s> ^name gp
+              ^operator <o> +)
+   (<o> ^name << ask-name introduce-me memorize-person point-obj recognize-person exit-apartment >>)
+-->
+   (<s> ^operator <o> ~)}

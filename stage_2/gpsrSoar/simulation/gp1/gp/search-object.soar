@@ -1,0 +1,22 @@
+sp {gp*propose*search-object
+   (state <s> ^name gp
+              ^object <obj>
+              ^robot <r>)
+   (<r> ^locId <rloc>)
+   (<obj> ^locId <rloc>
+         -^found yes
+         -^grasped yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name search-object
+         ^objToSearch <obj>)
+}
+
+sp {gp*apply*search-object
+   (state <s> ^operator <op>)
+   (<op> ^name search-object
+         ^objToSearch <obj>)
+-->
+   (<obj> ^found yes)
+}
+

@@ -1,0 +1,24 @@
+sp {gp*propose*recognize-person
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId <rloc>)
+   (<p> ^locId <rloc>
+        ^near yes
+        -^recognized yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name recognize-person
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*recognize-person
+   (state <s> ^operator <op>
+              ^object <obj>)
+   (<op> ^name recognize-person
+         ^withRob <r>
+         ^toPers <p>) 
+-->
+   (<p> ^recognized yes)
+}

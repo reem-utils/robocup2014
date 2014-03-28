@@ -1,0 +1,34 @@
+<launch>
+
+  <!-- fake action server nodes -->
+
+
+  <!-- <include file="$(find object_recognition_mock)/launch/object_recognition_mock.launch" /> -->
+  <!-- <include file="$(find speech_recognition_mock)/launch/speech_recognition_mock.launch" /> -->
+  <!-- <include file="$(find tts_mock)/launch/tts_mock.launch" />
+  -->
+
+
+  <rosparam file="$(find pal_smach_utils)/config/robocup_params.yaml"
+      command="load" ns="robocup_params" />
+
+  <rosparam file="$(find cocktail_party)/config/cocktail_party.yaml"
+      command="load" ns="cocktail_party" />
+
+  <!-- <rosparam file="$(find cocktail_party)/config/simulation.yaml" 
+      command="load" ns="mock_config" /> -->
+  <!-- GPSR understanding module -->
+  
+  <include file="$(find gpsr)/launch/gpsrOrders.launch"/>
+
+  
+
+  <!-- gpsr it SMACH -->
+  <node pkg ="gpsrSoar"
+        type="gpsrASAction.py"
+        name="gpsrSoar"
+        output="screen">
+  </node>
+
+
+</launch>

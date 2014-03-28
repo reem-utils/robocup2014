@@ -1,0 +1,44 @@
+sp {gp*propose*initialize-gp
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name initialize-gp)
+}
+
+sp {gp*apply*initialize-gp
+   (state <s> ^operator.name initialize-gp)
+-->
+   (<s> ^name gp
+        ^localization <l0> <l1> <l2> <l3>
+        ^robot <r>
+        ^object <obj1>
+        ^person <pers1>)
+   (<l0> ^id -1
+          ^pointed-at yes -)
+   (<l1> ^id 0
+          ^pointed-at yes -)
+   (<l2> ^id 1
+          ^pointed-at yes -)
+   (<l3> ^id 2
+          ^pointed-at yes -)
+   (<r> ^locId 0
+        ^obj1Id -1
+        ^introduced yes -)
+   (<obj1> ^id 0
+           ^locId 0
+           ^found yes -
+           ^near yes 
+           ^toBeGrasped yes -
+           ^grasped yes -
+           ^delivered yes -
+           ^pointed yes -)
+   (<pers1> ^id 0
+           ^locId 0
+           ^near yes -
+           ^obj1Id -1
+           ^found yes -
+           ^recognized yes -
+           ^memorized yes -
+           ^askedName yes -)
+}

@@ -1,0 +1,109 @@
+# sp {gp*record*operator
+#    (state <s> ^name gp
+#               ^operator.name <name>)
+# -->
+#    (<s> ^last-operator <name>)}
+
+# sp {gp*remove*last-operator
+#    (state <s> ^name gp
+#               ^last-operator <name>
+#               ^operator.name <> <name>)
+# -->
+#    (<s> ^last-operator <name> -)}
+
+sp {gp*select*search-object*grasp*best
+   (state <s> ^name gp
+              ^last-operator search-object
+              ^operator <o> +)
+   (<o> ^name grasp)
+-->
+   (<s> ^operator <o> >)}
+
+
+# sp {gp*select*navigate-exit-apartment*navigate*worst
+#    (state <s> ^name gp
+#               ^last-operator << navigate exit-apartment >>
+#               ^operator <o> +)
+#    (<o> ^name navigate)
+# -->
+#    (<s> ^operator <o> <)}
+
+# sp {gp*select*navigate-exit-apartment*navigate*worst
+#    (state <s> ^name gp
+#               ^operator <o> +)
+#    (<o> ^name exit-apartment)
+# -->
+#    (<s> ^operator <o> >)}
+
+sp {gp*elaboration*naviagte*goal
+   (state <s> ^name gp
+              ^desired <d>
+              ^operator <op> + <op2> +)
+   (<d> ^name go-to
+        ^robot.locId <rloc>)
+   (<op> ^name navigate
+         ^toLoc.id <rloc>)
+-->
+   (<s> ^operator <op> > <op2>)}
+
+sp {gp*elaboration*naviagte*not*goal
+   (state <s> ^name gp
+              ^desired <d>
+              ^operator <op> +)
+   (<d> -^name go-to)
+   (<op> ^name navigate)
+-->
+   (<s> ^operator <op> <)}
+
+
+# sp {gp*elaboration*naviagte*goal*prohibite
+#    (state <s> ^name gp
+#               ^operator <op> +)
+#    (<op> ^name navigate
+#          ^toLoc.id -1)
+# -->
+#    (<s> ^operator <op> ~)}
+
+
+# sp {gp*elaboration*naviagte*to*item
+#    (state <s> ^name gp
+#               ^desired <d>
+#               ^object <i>
+#               ^robot <r>
+#               ^operator <op1> +)
+#    (<d> ^object.id <idobj>)
+#    (<i> ^id <idobj>
+#         ^locId <objloc>)
+#    (<op1> ^name navigate
+#          ^toLoc.id <objloc>)
+#    (<r> ^locId {<> <objloc> <rloc>})
+# -->
+#    (<s> ^operator <op1> >)}
+
+# sp {gp*elaboration*propose*naviagte*to*item
+#    (state <s> ^name gp
+#               ^desired <d>
+#               ^object <i>
+#               ^robot <r>)
+#    (<d> ^object.id <idobj>)
+#    (<i> ^id <idobj>
+#         ^locId <objloc>)
+#    (<r> ^locId {<> <objloc> <rloc>})
+# -->
+#    (<s> ^operator <op> + >)
+#    (<op> ^name navigate
+#          ^toLoc.id <objloc>)}
+
+# sp {gp*elaboration*naviagte*to*person
+#    (state <s> ^name gp
+#               ^desired <d>
+#               ^person <p>
+#               ^operator <op> +)
+#    (<d> ^object.id <idpers>)
+#    (<p> ^id <idpers>
+#         ^locId <ploc>)
+#    (<op> ^name navigate
+#          ^toLoc.id <ploc>)
+# -->
+#    (<s> ^operator <op> >)}
+   

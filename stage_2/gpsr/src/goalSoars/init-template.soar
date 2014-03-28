@@ -1,0 +1,23 @@
+sp {gp*propose*initialize-gp
+   (state <s> ^superstate nil
+             - ^name)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name initialize-gp)
+}
+
+sp {gp*apply*initialize-gp
+   (state <s> ^operator.name initialize-gp)
+-->
+   (<s> ^name gp
+        ^location LOCATIONS
+        ^robot <r>
+        ^object <obj1>
+        ^person <pers1>
+        ^desired <d>)
+   LOCATION
+   ROBOT
+   ITEM
+   PERSON
+   DESIRE
+}

@@ -1,0 +1,38 @@
+# sp {gp*propose*exit-apartment
+#    (state <s> ^name gp
+#               ^location <l>)
+#    (<l> ^id -1)
+# -->
+#    (<s> ^operator <op> + =)
+#    (<op> ^name exit-apartment
+#          ^toLoc <l>)
+# }
+
+# sp {gp*apply*exit-apartment
+#    (state <s> ^operator <op>
+#               ^io.output-link <out>)
+#    (<op> ^name exit-apartment
+#          ^toLoc <l>)
+#    (<l> ^id <lid>)
+# -->
+#    (<out> ^exit-apartment.loc <lid>)
+# }
+
+# sp {gp*apply*navigate*exit-apartment
+#    (state <s> ^operator <op>
+#               ^io.output-link <out>
+#               ^robot <r>)
+#    (<op> ^name exit-apartment
+#          ^toLoc <lop>)
+
+#    (<lop> ^id <lidop>)
+   
+#    (<r> ^locId <rlocid>)
+   
+#    (<out> ^exit-apartment <st>)
+#    (<st> ^status complete)
+# -->
+#    (<r> ^locId <lidop>
+#                <rlocid> -)
+#    (<out> ^exit-apartment <st> -)
+# }

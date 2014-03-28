@@ -1,0 +1,29 @@
+<package>
+  <description brief="gpsr">
+
+     gpsr
+
+  </description>
+  <author>JY</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/gpsr</url>
+  <depend package="roslib"/>
+  <depend package="rospy"/>
+  <depend package="smach_ros"/>
+  <depend package="smach"/>
+  <depend package="pal_interaction_msgs"/>
+  <depend package="gpsrSoar"/>
+  <!--depend package="subprocess"/>-->
+  <!--depend package="tempfile"/>-->
+  <!--depend package="os"/>-->
+  <!--depend package="sys"/>--> 
+  <!--depend package="tempfile"/>-->
+  <depend package="std_msgs"/>
+  <!--depend package="grammar_state"/>-->
+  <depend package="pal_smach_utils"/>
+
+
+</package>
+
+

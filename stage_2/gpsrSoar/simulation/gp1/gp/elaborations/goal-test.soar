@@ -1,0 +1,12 @@
+sp {gp*monitor*detect*goal*achived
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId 2
+        ^obj1Id -1)
+   (<p> ^id 0
+         ^obj1Id 0)
+-->
+   (write (crlf) |The problem has been solved|)
+   (halt)
+}

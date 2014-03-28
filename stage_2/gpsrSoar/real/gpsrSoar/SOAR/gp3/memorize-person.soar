@@ -1,0 +1,43 @@
+sp {gp*propose*memorize-person
+   (state <s> ^name gp
+              ^robot <r>
+              ^person <p>)
+   (<r> ^locId <rloc>)
+   (<p> ^locId <rloc>
+        ^near yes
+        -^memorized yes)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name memorize-person
+         ^withRob <r>
+         ^toPers <p>)
+}
+
+sp {gp*apply*memorize-person
+   (state <s> ^operator <op>
+              ^item <obj>
+              ^io.output-link <out>)
+   (<op> ^name memorize-person
+         ^withRob <r>
+         ^toPers <p>) 
+-->
+   (<out> ^memorize-person.aux 1)
+}
+
+sp {gp*apply*remove*memorize-person
+   (state <s> ^operator <op>
+              ^item <obj>
+              ^io.output-link <out>
+              ^person <p>)
+   (<op> ^name memorize-person
+         ^withRob <r>
+         ^toPers <pop>)
+   (<p> ^id <pid>)
+   (<pop> ^id <pid>)
+   
+   (<out> ^memorize-person <st>)
+   (<st> ^status complete)
+-->
+   (<p> ^memorized yes)
+   (<out> ^memorize-person <st> -)
+}

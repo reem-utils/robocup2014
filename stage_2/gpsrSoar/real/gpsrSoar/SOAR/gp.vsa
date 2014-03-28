@@ -1,0 +1,26 @@
+VERSION 4
+/gp/gp.dm
+0	ROOT gp gp 1
+1	0	FOPERATOR _firstload _firstload.soar 2
+2	0	FOLDER all all 3
+3	0	FOLDER elaborations elaborations 4
+4	3	FOPERATOR _all _all.soar 5
+5	3	FOPERATOR goal-test goal-test.soar 6
+6	3	FOPERATOR monitor monitor.soar 7
+7	3	FOPERATOR top-state top-state.soar 8
+8	0	OPERATOR ask-name ask-name.soar 9
+9	0	OPERATOR deliver deliver.soar 10
+10	0	OPERATOR exit-apartment exit-apartment.soar 11
+11	0	OPERATOR goal-achived goal-achived.soar 23
+12	0	OPERATOR grasp grasp.soar 12
+13	0	OPERATOR initialize-gp initialize-gp.soar 13
+14	0	OPERATOR introduce-me introduce-me.soar 14
+15	0	OPERATOR memorize-person memorize-person.soar 15
+16	0	OPERATOR navigate navigate.soar 16
+17	0	OPERATOR point-obj point-obj.soar 17
+18	0	OPERATOR prohibitions-in-run-time prohibitions-in-run-time.soar 18
+19	0	OPERATOR recognize-person recognize-person.soar 19
+20	0	OPERATOR record record.soar 20
+21	0	OPERATOR search-object search-object.soar 21
+22	0	OPERATOR search-person search-person.soar 22
+END

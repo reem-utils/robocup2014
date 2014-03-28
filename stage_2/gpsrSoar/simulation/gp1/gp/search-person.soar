@@ -1,0 +1,21 @@
+sp {gp*propose*search-person
+   (state <s> ^name gp
+              ^person <p>
+              ^robot <r>)
+   (<r> ^locId <rloc>)
+   (<p> ^locId <rloc>
+         -^near yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name search-person
+         ^persToSearch <p>)
+}
+
+sp {gp*apply*search-person
+   (state <s> ^operator <op>)
+   (<op> ^name search-person
+         ^persToSearch <p>)
+-->
+   (<p> ^near yes)
+}
+

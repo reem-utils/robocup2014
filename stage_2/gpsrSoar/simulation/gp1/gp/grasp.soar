@@ -1,0 +1,29 @@
+sp {gp*propose*grasp*obj1
+   (state <s> ^name gp
+              ^robot <r>
+              ^object <obj>)
+   (<r> ^locId <rloc>
+        ^obj1Id -1)
+   (<obj> ^locId <rloc>
+          ^found yes
+         -^grasped yes
+         -^delivered yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name grasp
+         ^objToGrasp <obj>
+         ^withRob <r>)
+}
+
+sp {gp*apply*grasp
+   (state <s> ^operator <op>)
+   (<op> ^name grasp
+         ^objToGrasp <obj>
+         ^withRob <r>)
+   (<r> ^obj1Id <robjid>)
+   (<obj> ^id <objid>)
+-->
+   (<r> ^obj1Id <objid>
+                <robjid> -)
+   (<obj> ^grasped yes)
+}

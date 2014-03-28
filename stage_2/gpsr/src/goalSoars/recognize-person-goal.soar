@@ -1,0 +1,10 @@
+sp {gp*monitor*detect*goal*achived
+  (state <s> ^name gp
+        ^robot <r>
+        ^io.output-link <out>
+        ^person <pers1>)
+  (<pers1> ^id PERSON
+           ^recognized yes)
+-->
+   (<out> ^achived.true 1)
+}

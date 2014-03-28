@@ -1,0 +1,8 @@
+#detect_door_position: [1.8, 2.5, 0.0]
+detect_door_position: [0.0, 0.0, 0.0]
+#detect_door_orientation: [0, 0, 0.675, 0.738]
+detect_door_orientation: [0, 0, 0, 0]
+usersaid: [[{object: 'energy drink'}], [{location: 'sams table'}], [{loc: 'sams table'}], [{action: 'yes'}]]
+
+#GermanOpenDrinks:      "redbull | juice | beer | water | wine | coke"
+#GermanOpenPersonNames: "james | john | robert | michael | william | david | richard | charles | joseph | thomas | mary | patricia | linda | barbara | elizabeth | jennifer | maria | susan | margret | dorothy"

@@ -1,0 +1,26 @@
+sp {gp*monitor*detect*goal*achived
+  (state <s> ^name gp
+        ^robot <r>
+        ^io.output-link <out>
+        ^object <obj1>
+        ^person <pers1>)
+  (<r> ^obj1Id -1)
+  (<obj1> ^id 0
+           ^delivered yes)
+  (<pers1> ^id 12
+           ^obj1Id 0)
+-->
+   (<out> ^achived.true 1)
+}
+
+sp {gp*apply*detect*goal*achived*remove-achived
+   (state <s> ^io.output-link <out>)
+
+   (<out> ^achived <st>)
+   (<st> ^status complete)
+
+-->
+   (<out> ^achived <st> -)
+   (write (crlf) |The problem has been solved|)
+   (halt)
+}

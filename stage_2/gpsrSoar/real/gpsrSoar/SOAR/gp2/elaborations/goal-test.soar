@@ -1,0 +1,70 @@
+sp {gp*propose*goal*achieved
+   (state <s> ^name gp
+              ^desired <d>)
+-->
+   (<s> ^operator <op> + >)
+   (<op> ^name goal-achieved)
+}
+
+sp {gp*elaborate*goal*different*value
+   (state <s> ^name gp
+              ^desired <d>
+              ^operator <op> +
+              ^<element> <el>)
+   (<op> ^name goal-achieved)
+   # (<d> ^<element> <del>)
+   # (<del> ^id <ide>
+   #        ^<atr> <val1>)
+   (<el> ^id <ide>
+         ^<atr> <val1>)
+   (<d> ^<element> <del>)
+   (<del> ^id <ide>
+          ^<atr> {<> <val1> <val2>})
+-->
+   (<s> ^operator <op> ~)
+}
+
+sp {gp*elaborate*goal*missing*value
+   (state <s> ^name gp
+              ^desired <d>
+              ^operator <op> +
+              ^<element> <el>)
+   (<op> ^name goal-achieved)
+   (<d> ^<element> <del>)
+   (<del> ^id <id>
+          ^<atr> <val>)
+   (<el> ^id <id>
+         -^<atr> <val>)
+-->
+   (<s> ^operator <op> ~)
+}
+
+
+sp {gp*apply*goal*achieved
+   (state <s> ^operator <op>
+              ^desired <d>
+              ^io.output-link <out>)
+   (<op> ^name goal-achieved)
+-->
+   (<out> ^achieved.true 1)
+}
+
+sp {gp*apply*detect*goal*achieved*remove-achieved
+   (state <s> ^io.output-link <out>)
+
+   (<out> ^achieved <st>)
+   (<st> ^status complete)
+
+-->
+   (<out> ^achieved <st> -)
+   (write (crlf) |The problem has been solved|)
+   (interrupt)
+}
+
+
+#sp {gp*achived*best
+#   (state <s> ^name gp
+#              ^operator <o1> = <o2>)
+#   (<o1> ^name goal-achieved)
+#-->
+#   (<s> ^operator <o2> -)}

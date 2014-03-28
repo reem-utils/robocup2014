@@ -1,0 +1,49 @@
+sp {gp*propose*search-person
+   (state <s> ^name gp
+              ^person <p>
+              ^location <l>
+              ^robot <r>)
+   (<r> ^locId <rloc>)
+   (<l> ^id <rloc>)
+   (<p> -^found yes)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name search-person
+         ^persToSearch <p>
+         ^toLoc <l>)
+}
+
+sp {gp*apply*search-person
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name search-person
+         ^persToSearch <p>
+         ^toLoc <rloc>)
+   (<p> ^id <pid>)
+-->
+   (<out> ^search-person.pers <pid>)
+}
+
+sp {gp*apply*search-person*remove-search-person
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^person <p>)
+   (<op> ^name search-person
+         ^persToSearch <pop>
+          ^toLoc <rloc>)
+  
+   (<rloc> ^id <rlocid>)
+   (<pop> ^id <popid>)
+   (<p> ^id <popid>
+        ^locId <plocid>)
+   
+   (<out> ^search-person <st>)
+   (<st> ^status complete)
+-->
+   (<p> ^near yes)
+   (<p> ^found yes)
+   (<p> ^locId <rlocid>
+                <plocid> -)
+
+   (<out> ^search-person <st> -)
+}

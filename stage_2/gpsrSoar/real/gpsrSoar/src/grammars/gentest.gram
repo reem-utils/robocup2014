@@ -1,0 +1,45 @@
+#JSGF V1.0;
+grammar general;
+
+public <basic> = (<action> | <garbage>) ;
+
+
+<action> = (<goto>  | <bringit> | <find> | <give>);
+
+<goto>   = (<gocommand> to <determinant> <location>);
+<bringit>= (<bringcommand> (<determinant>  <obj_category>) (to | from) <determinant> <loc_category> );
+<find>   = (<finditcmd> <determinant> <obj_category>);
+<give>   = (<givecommand> me <determinant> <obj_category>);
+<pointat> = (point at <determinant> <loc_category>);
+
+
+<gocommand>   = (go | move | navigate);
+<bringcommand>= (bring | carry);
+<finditcmd>   = (detect | find | identify);
+<givecommand> = (give | get);
+
+
+<determinant> = (the | an | a | some);
+
+
+<names> = ( Michael | Jessica | Christopher | Ashley | Matthew | Brittany | Joshua | Amanda | Daniel | Samantha | David | Sarah | Andrew | Stephanie | James | Jennifer | Justin | Elizabeth | Joseph | Lauren );
+
+<location> = ( bench | (hallway table) | hanger | (umbrella stand) | bar | (side table) | (kitchen table) | (kitchen counter) | stove | (trash bin) | cupboard | sink | fridge | bed | dresser | sideboard | (bedside table) | bookshelf | pantry | cabinet | (dinner table) | (couch table) | (arm chair) | sofa | (tv counter) |  plant );
+
+<item> = ( deodorant | (tooth paste) | cleaner | (fresh discs) | (beer bottle) | fanta | (beer can) | coke | sponge | (seven up) | (chocolate milk) | (tomato sauce) | (energy drink) | (peanut butter) | (chicken noodles) | (orange juice) | milk | marmelade | (apple juice) | (veggie noodles) | (garlic sauce) | chocolate | cookies | drops | crackers | marmalade);
+
+<obj_category> = (drink | food | (cleaning stuff) | snack);
+
+<loc_category> = (shelf | table |  seat |  seating );
+
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+

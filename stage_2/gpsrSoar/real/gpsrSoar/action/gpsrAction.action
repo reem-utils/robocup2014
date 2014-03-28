@@ -1,0 +1,9 @@
+#goal definition
+order[] orderList
+---
+#result definition
+string   outcome
+---
+#feedback
+uint8   order_id
+

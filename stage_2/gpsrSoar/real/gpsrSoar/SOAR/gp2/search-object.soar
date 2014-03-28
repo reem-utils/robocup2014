@@ -1,0 +1,88 @@
+sp {gp*propose*search-object
+   (state <s> ^name gp
+              ^object <obj>
+              ^location <l>
+              ^robot <r>
+              ^desired <d>)
+   (<r> ^locId <rloc>)
+   (<l> ^id <rloc>)
+   (<obj> ^id <oid>
+          ^found no
+           ^locId <rloc>)
+   (<d> ^object.id <oid>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name search-object
+         ^objToSearch <obj>
+         ^toLoc <l>)
+}
+
+sp {gp*propose*navigate-to*search-object
+   (state <s> ^name gp
+              ^object <obj>
+              ^location <l>
+              ^robot <r>
+              ^desired <d>)
+   (<r> ^locId <rloc>)
+   (<l> ^id <oloc>)
+   (<obj> ^id <oid>
+          ^found no
+          ^locId {<> <rloc> <oloc>})
+   (<d> ^object.id <oid>)
+-->
+   (<s> ^operator <op> + >)
+   (<op> ^name navigate
+         ^toLoc <l>)
+}
+
+sp {gp*apply*search-object
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name search-object
+         ^objToSearch <obj>
+         ^toLoc <rloc>)
+   (<obj> ^id <objid>)
+-->
+   (<out> ^search-object.obj <objid>)
+}
+
+sp {gp*apply*search-object*remove-search-object
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^object <obj>)
+   (<op> ^name search-object
+         ^objToSearch <pobj>
+         ^toLoc <rloc>)
+   
+   (<rloc> ^id <rlocid>)
+   (<pobj> ^id <idobj>)
+   (<obj> ^locId <objlocid>
+          ^id <idobj>)
+
+   
+   (<out> ^search-object <st>)
+   (<st> ^status complete)
+-->
+   (<obj> ^found yes
+                 no -)
+   (<obj> ^near yes
+                no -)
+   (<obj> ^locId <rlocid>
+                 <objlocid> -)
+
+   (<out> ^search-object <st> -)
+}
+
+sp {gp*elaborate*find*object
+   (state <s> ^name gp
+              ^operator <op1> <op2> +
+              ^desired <d>)
+   (<op1> ^name search-object
+         ^objToSearch.id <id>)
+   (<op2> ^name navigate)
+   (<d> ^name find
+        ^object.id <it>)
+-->
+   (<s> ^operator <op1> >
+        ^operator <op2> -)}
+         

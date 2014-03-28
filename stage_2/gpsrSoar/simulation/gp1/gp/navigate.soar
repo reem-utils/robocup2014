@@ -1,0 +1,25 @@
+sp {gp*propose*navigate
+   (state <s> ^name gp
+              ^robot <r>
+              ^localization <l>)
+   (<r> ^locId <rloc>)
+   (<l> ^id <> <rloc>)
+   (<l> ^id <> -1)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name navigate
+         ^withRob <r>
+         ^toLoc <l>)
+}
+
+sp {gp*apply*navigate
+   (state <s> ^operator <op>)
+   (<op> ^name navigate
+         ^withRob <r>
+         ^toLoc <l>)
+   (<r> ^locId <rlocid>)
+   (<l> ^id <lid>)
+-->
+   (<r> ^locId <lid>
+               <rlocid> -)
+}

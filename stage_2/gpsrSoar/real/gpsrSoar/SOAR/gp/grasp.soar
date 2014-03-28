@@ -1,0 +1,51 @@
+# podria tenir falles
+sp {gp*propose*grasp*obj1
+   (state <s> ^name gp
+              ^robot <r>
+              ^object <obj>)
+   (<r> ^locId <rloc>
+        ^obj1Id -1)
+   (<obj> ^locId <rloc>
+          ^near yes
+         -^grasped yes
+         -^delivered yes)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name grasp
+         ^objToGrasp <obj>
+         ^withRob <r>)
+}
+
+sp {gp*apply*grasp
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name grasp
+         ^objToGrasp <obj>)
+   (<obj> ^id <objid>)
+-->
+   (<out> ^grasp.obj <objid>)
+}
+
+sp {gp*apply*grasp*remove-grasp
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^object <obj>
+              ^robot <r>)
+   (<op> ^name grasp
+         ^objToGrasp <objop>)
+   
+   (<r> ^obj1Id <robjid>)
+   
+   (<objop> ^id <objid>)
+   (<obj> ^id <objid>)
+   
+   (<out> ^grasp <st>)
+   (<st> ^status complete)
+
+-->
+   (<r> ^obj1Id <objid>
+                <robjid> -)
+   (<obj> ^grasped yes)
+   
+   (<out> ^grasp <st> -)
+}
