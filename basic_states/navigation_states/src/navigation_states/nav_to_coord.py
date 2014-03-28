@@ -23,10 +23,11 @@ NAVIGATION_TOPIC_NAME = '/move_base'
 
 
 class createNavGoal(smach.State):
-    def __init__(self):
+    def __init__(self, frame_id):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
 							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal','standard_error'])
-
+        self.frame_id = frame_id
+        
     def execute(self, userdata):
         nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
 									userdata.nav_to_coord_goal[1], 
@@ -39,7 +40,7 @@ class createNavGoal(smach.State):
         """Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
         Returns a MoveBaseGoal"""
         mb_goal = MoveBaseGoal()
-        mb_goal.target_pose.header.frame_id = '/map' # Note: the frame_id must be map
+        mb_goal.target_pose.header.frame_id = self.frame_id # Note: the frame_id must be map
         mb_goal.target_pose.pose.position.x = x
         mb_goal.target_pose.pose.position.y = y
         mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
@@ -63,7 +64,7 @@ class nav_to_coord(smach.StateMachine):
     """
 
     
-    def __init__(self):
+    def __init__(self,frame_id='/map'):
         """
         Constructor for nav_to_coord.
         """
@@ -75,7 +76,7 @@ class nav_to_coord(smach.StateMachine):
         with self: 
 
             smach.StateMachine.add('CreateNavGoal',
-                                   createNavGoal(),
+                                   createNavGoal(frame_id),
                                    transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
             
             def move_res_cb(userdata, result_status, result):

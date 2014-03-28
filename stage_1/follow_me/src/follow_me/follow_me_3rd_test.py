@@ -12,14 +12,23 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-from follow_me.follow_me_init import FollowMeInit
+from follow_me_3rd import follow_me_3rd
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
 
+#TODO: it's incomplate, hear we will have to know what ID it will need
+class prepare_msg(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
+                             output_keys=[])
 
-class follow_me_init_error(smach.State):
+    def execute(self, userdata):
+        rospy.loginfo("preparing msgs")
+        return 'succeeded'
+
+class follow_me_3rd_error(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'], output_keys=['standard_error'])
 
@@ -29,23 +38,29 @@ class follow_me_init_error(smach.State):
         return 'aborted'
 
 def main():
-    rospy.init_node('follow_me_init_test')
+    rospy.init_node('follow_me_2nd_test')
 
-    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
     with sm:
+        sm.userdata.standard_error='OK'
+        # it prepare the name and the function for drope
+        smach.StateMachine.add(
+            'prepare_msg',
+            prepare_msg(),
+            transitions={'succeeded':'follow_me3rd_test','aborted' : 'aborted','preempted':'preempted'})
         # it call the drop_face state
         smach.StateMachine.add(
-            'follow_init_test',
-            FollowMeInit(),
+            'follow_me3rd_test',
+            follow_me_3rd(),
             transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted'})
         smach.StateMachine.add(
             'follow_me_info',
-            follow_me_init_error(),
-            transitions={'succeeded': 'dummy', 'aborted':'dummy'})
+            follow_me_3rd_error(),
+            transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'follow_me_init_introspection', sm, '/FMI_ROOT')
+        'follow_me_3rd_introspection', sm, '/FM3_ROOT')
     sis.start()
 
     sm.execute()
