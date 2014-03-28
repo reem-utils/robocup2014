@@ -17,6 +17,26 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
+class prepareData(smach.State):
+    
+    def __init__(self, poi_name):
+        
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                            input_keys=['nav_to_poi_name'], output_keys=['nav_to_poi_name'])
+        self.poi_name = poi_name
+        
+    def execute(self, userdata):
+           
+        if not self.poi_name and not userdata.nav_to_poi_name:
+            rospy.logerr("Poi_name isn't set")
+            return 'aborted'
+        
+        #Priority in init
+        userdata.nav_to_poi_name = self.poi_name if self.poi_name else userdata.nav_to_poi_name   
+        
+        return 'succeeded'
+    
+
 # In this state we will transform de pois to coord
 class translate_coord(smach.State):
     def __init__(self):
@@ -30,7 +50,7 @@ class translate_coord(smach.State):
         locationName=userdata.nav_to_poi_name
         foundLocation = False
         #important to do add the .yalm before
-        pois = rospy.get_param("/mmap/poi/submap_0") # todo need de mmap
+        pois = rospy.get_param("/mmap/poi/submap_0")
        
         for key, value in pois.iteritems():
          
@@ -44,7 +64,7 @@ class translate_coord(smach.State):
             return 'succeeded'
         else :
             userdata.standard_error='Poi not found'
-            rospy.loginfo( FAIL +'POI NOT FOUND im locking for'+locationName+ENDC) # todo change to loginfo
+            rospy.loginfo( FAIL +'POI NOT FOUND im locking for'+locationName+ENDC)
             return 'aborted'
 
 
@@ -56,7 +76,7 @@ class nav_to_poi(smach.StateMachine):
     No parameters.
 
     Optional parameters:
-    No optional parameters
+    No optional parameters# todo need de mmap
 
     Input keys: 
         nav_to_poi_name: String that contain the poi information
@@ -66,7 +86,7 @@ class nav_to_poi(smach.StateMachine):
 
   
     """
-    def __init__(self):
+    def __init__(self, poi_name = None):
 
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
         						input_keys=['nav_to_poi_name'],
@@ -77,6 +97,10 @@ class nav_to_poi(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.standard_error=''
             self.userdata.nav_to_coord_goal=[0.0,0.0,0.0]
+
+            smach.StateMachine.add('PrepareData',
+               prepareData(poi_name),
+               transitions={'succeeded':'translate_coord', 'aborted':'aborted'})
 
             # We transform the poi to coordenates
             smach.StateMachine.add(
