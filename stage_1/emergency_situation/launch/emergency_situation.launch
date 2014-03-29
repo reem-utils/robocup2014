@@ -1,0 +1,18 @@
+
+<launch>
+	<!-- load the Parameters configuration file -->
+	<!-- yaml files for navigation and object locations -->
+	<!-- fake action server nodes-->
+	
+	<node pkg="tts_mock"
+	      type="tts_as.py"
+	      name="tts"
+	      output="screen">
+	</node>
+	<node pkg="emergency_situation"
+	      type="emergency_situation_main.py"
+	      name="emergency_situation"
+	      output="screen">
+	</node>
+	
+</launch>
