@@ -13,8 +13,10 @@ import smach
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
-
+from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
+from util_states.topic_reader import topic_reader
+from geometry_msgs.msg import PoseStamped
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -48,12 +50,13 @@ class prepare_poi_person_emergency(smach.State):
         return 'succeeded'
 
 class prepare_tts(smach.State):
-    def __init__(self):
+    def __init__(self, tts_text_phrase):
         smach.State.__init__(self, 
             outcomes=['succeeded','aborted', 'preempted'], 
             output_keys=['tts_text']) 
-    def execute(self, userdata, tts_text_phrase=''):
-        userdata.tts_text = tts_text_phrase
+        self.tts_text_phrase_in = tts_text_phrase
+    def execute(self, userdata):
+        userdata.tts_text = self.tts_text_phrase_in
 
         return 'succeeded'
 
@@ -90,7 +93,7 @@ class Save_People_Emergency(smach.StateMachine):
         with self:           
             self.userdata.emergency_location = []
 
-            userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
                 'Prepare_Say_Rescue',
                 prepare_tts('I am going to rescue you!'),
@@ -121,15 +124,17 @@ class Save_People_Emergency(smach.StateMachine):
 
             #Register Position --> TODO? or done?
             #Output keys: topic_output_msg & standard_error
-            userdata.position_stamped = ''
+            self.userdata.position_stamped = ''
             smach.StateMachine.add(
                 'Register_Position',
                 topic_reader('amcl_pose', PoseStamped, 30),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
                 remapping={'topic_output_msg':'position_stamped', 'standard_error':'standard_error'})
+            #Save_Info(): Saves the emergency info and generates a pdf file
+            #input_keys: position_stamped
 
             smach.StateMachine.add(
                 'Save_Info',
-                Save_Info(),
+                DummyStateMachine(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

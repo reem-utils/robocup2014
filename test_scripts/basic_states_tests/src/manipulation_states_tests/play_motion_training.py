@@ -33,7 +33,7 @@ def main():
     rospy.init_node('get_current_position')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_motion_to_play = 'home'
+        sm.userdata.manip_motion_to_play = 'wave'
         sm.userdata.manip_time_to_play = 8.0
         smach.StateMachine.add(
             'dummy_state',

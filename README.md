@@ -1,4 +1,4 @@
 robocup2014
 ===========
 
-This repo contains the code related to robocup2014 with LaSalle university and PAL Robotics
+This repo contains the code related to RoboCup@Home 2014 with BES La Salle (Ramon Llull University) and PAL Robotics. -- REEM@LaSalle Team.
