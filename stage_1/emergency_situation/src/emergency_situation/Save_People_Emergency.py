@@ -16,7 +16,7 @@ from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -34,7 +34,7 @@ class DummyStateMachine(smach.State):
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
-        rospy.sleep(3)
+        rospy.sleep(1)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
@@ -109,7 +109,8 @@ class Save_People_Emergency(smach.StateMachine):
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             smach.StateMachine.add(
                 'Go_To_Person',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             #It should be Speech Recognition: ListenTo(?)
@@ -124,12 +125,17 @@ class Save_People_Emergency(smach.StateMachine):
 
             #Register Position --> TODO? or done?
             #Output keys: topic_output_msg & standard_error
-            self.userdata.position_stamped = ''
+            #amcl_pose : PoseWithCovarianceStamped()
+            #TODO: At the moment /amcl_pose in gazebo is not working properly
+            self.userdata.position_stamped = PoseWithCovarianceStamped()
+
             smach.StateMachine.add(
                 'Register_Position',
-                topic_reader('amcl_pose', PoseStamped, 30),
-                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
-                remapping={'topic_output_msg':'position_stamped', 'standard_error':'standard_error'})
+                DummyStateMachine(),
+                #topic_reader('/amcl_pose', PoseWithCovarianceStamped, 30),
+                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'}
+                #remapping={'topic_output_msg':'position_stamped', 'standard_error':'standard_error'}
+                )
             #Save_Info(): Saves the emergency info and generates a pdf file
             #input_keys: position_stamped
 
