@@ -98,7 +98,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
         with self:           
             self.userdata.emergency_location = []
-
+            self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
                 'Prepare_Ask_Object',

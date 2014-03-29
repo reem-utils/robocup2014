@@ -41,11 +41,11 @@ class prepare_poi_emergency(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
-
+        self.poi_type_in = poi_type
     def execute(self,userdata):
-        if poi_type == 'arena_door_out':
+        if self.poi_type_in == 'arena_door_out':
             userdata.nav_to_poi_name='arena_door_out'    
-        elif poi_type == 'emergency_room':
+        elif self.poi_type_in == 'emergency_room':
             userdata.nav_to_poi_name='emergency_room'
 
         return 'succeeded'
@@ -100,6 +100,7 @@ class emergency_situation_sm(smach.StateMachine):
             # We prepare the information to go to the init door
             self.userdata.manip_motion_to_play = 'home'
             self.userdata.manip_time_to_play = 4.0
+            self.userdata.tts_lang = 'en_US'
             smach.StateMachine.add(
                 'Arms_Home',
                 play_motion_sm(),
