@@ -126,7 +126,6 @@ def call_point_at(): #TODO
 # 	out = f.execute()
 # 	return out
 
-
 def call_find_object(object_name, loc_name):
 	print "SM : find_object %s" % (object_name)
 	'''
@@ -139,7 +138,6 @@ def call_find_object(object_name, loc_name):
 	'''
 	time.sleep(3)
 	return "succeeded"
-
 
 def call_grasp(obj):
 	"""print "SM : grasp %s" % (obj)
