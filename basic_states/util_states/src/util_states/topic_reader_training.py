@@ -31,11 +31,12 @@ class PrintUserdataPose(smach.State):
         return 'succeeded'
 
 def main():
+    rospy.init_node('Topic_reader')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
         
-        topic_name = '/sonar_base'
-        topic_type = Range
+        topic_name = '/amcl_pose'
+        topic_type = PoseWithCovarianceStamped
         topic_time_out = 60
         
         smach.StateMachine.add(

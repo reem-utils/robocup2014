@@ -98,7 +98,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
         with self:           
             self.userdata.emergency_location = []
-
+            self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
                 'Prepare_Ask_Object',
@@ -124,9 +124,11 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Prepare_Go_To_Person',
                 prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+            #TODO: nav_to_poi()
             smach.StateMachine.add(
                 'Go_To_Person',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
 
             #Give the grabbed object to the person
