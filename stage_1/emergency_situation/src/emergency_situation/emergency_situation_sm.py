@@ -55,8 +55,9 @@ class prepare_tts(smach.State):
         smach.State.__init__(self, 
             outcomes=['succeeded','aborted', 'preempted'], 
             output_keys=['tts_text']) 
+        self.tts_text_phrase_in = tts_text_phrase
     def execute(self, userdata):
-        userdata.tts_text = tts_text_phrase
+        userdata.tts_text = self.tts_text_phrase_in
 
         return 'succeeded'
 
@@ -143,10 +144,11 @@ class emergency_situation_sm(smach.StateMachine):
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
-           # smach.StateMachine.add(
-           #     'Search_People',
-           #     Search_People_Emergency(),
-           #     transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
+            smach.StateMachine.add(
+                'Search_Person',
+                #Search_People_Emergency(),
+                DummyStateMachine(),
+                transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
 
             # Userdata input:
             # person_location: PoseStamped (?)
@@ -191,10 +193,11 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
 
             #What is Wait for Ambulance or People Mean? Person detection?
-#            smach.StateMachine.add(
-#                'Wait_for_Ambulance_Person',
-#                Wait_for_Ambulance_Person(),
-#                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+            smach.StateMachine.add(
+                'Wait_for_Ambulance_Person',
+                #Wait_for_Ambulance_Person(),
+                DummyStateMachine(),
+                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             
             smach.StateMachine.add(
                 'Prepare_TTS_2',
@@ -213,7 +216,7 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_to_emergency_room_2',
                 nav_to_poi(),
-                transitions={'succeeded':'DummyStateMachine', 'aborted':'DummyStateMachine', 'preempted':'DummyStateMachine'})
+                transitions={'succeeded':'Dummy_Wait', 'aborted':'Dummy_Wait', 'preempted':'Dummy_Wait'})
 
             smach.StateMachine.add(
                 'Dummy_Wait',

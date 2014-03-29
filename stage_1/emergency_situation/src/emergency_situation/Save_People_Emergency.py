@@ -130,9 +130,11 @@ class Save_People_Emergency(smach.StateMachine):
                 topic_reader('amcl_pose', PoseStamped, 30),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
                 remapping={'topic_output_msg':'position_stamped', 'standard_error':'standard_error'})
+            #Save_Info(): Saves the emergency info and generates a pdf file
+            #input_keys: position_stamped
 
             smach.StateMachine.add(
                 'Save_Info',
-                Save_Info(),
+                DummyStateMachine(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
