@@ -78,7 +78,7 @@ class Save_People_Emergency(smach.StateMachine):
     No optional parameters
 
     Input_keys:
-    @key: emergency_person_location: person's location (Geometry or PoseStamped)
+    @key: person_location: person's location (Geometry or PoseStamped)
 
     Output Keys:
         none
