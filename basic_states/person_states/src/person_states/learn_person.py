@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 
+"""
+@author: Roger Boldu
+"""
 import rospy
 import smach
 
@@ -15,6 +18,7 @@ class Dumy_state(smach.State):
 
     def execute(self, userdata):
         rospy.sleep(2)
+        rospy.loginfo("i'm in de dummy of learning person")
         return 'succeded'
      
 
