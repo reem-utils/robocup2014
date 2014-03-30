@@ -8,6 +8,7 @@
 import rospy
 import smach
 import math
+from smach.user_data import UserData
 
 
 ENDC = '\033[0m'
@@ -32,6 +33,7 @@ from sensor_msgs.msg import Range
 from util_states.topic_reader import topic_reader
 from bzrlib import switch
 from nose import case
+from navigation_states.get_current_robot_pose import get_current_robot_pose
 
 ultraNow=0
 
@@ -45,94 +47,209 @@ class init_var(smach.State):
             userdata.ultraSound=[]
             userdata.ultraNow=0
             return 'succeeded'
-class pinta(smach.State):
+class pinta_ultra_sound(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'],output_keys=[],input_keys=['ultraSound'])
     def execute(self, userdata):
             #userdata.ultra_sound_filtered=22
-            rospy.sleep(1)
             rospy.loginfo(OKGREEN+"i'm in dummy pinta var")
             rospy.loginfo(str(userdata.ultraSound[0]))
             rospy.loginfo(str(userdata.ultraSound[1]))
             rospy.loginfo(str(userdata.ultraSound[2]))
             rospy.loginfo(str(userdata.ultraSound[3])+ENDC)
-            rospy.sleep(5)
             return 'succeeded'
-class process_ultraSound(smach.State):
+        
+        
+        
+        
+class process_laser(smach.State):
     def __init__(self):
-        smach.State.__init__(self,outcomes=['no_finish','finish'],input_keys=['ultraSound_msg','ultraSound','ultraNow'],
-                             output_keys=['ultraSound','ultraNow'])
-       
+        smach.State.__init__(self, outcomes=['succeeded'],
+                             input_keys=['Laser_msg'],
+                             output_keys=['Laser_status'])
+    def execute(self, userdata):
+            #userdata.ultra_sound_filtered=22
+        min_distance = 1
+        length=len(userdata.Laser_msg.ranges)  
+        
+        if userdata.Laser_msg.ranges[1]<min_distance and userdata.Laser_msg.ranges[length-1]<min_distance :
+            userdata.Laser_status=True
+        else :
+            userdata.Laser_status=False
+            rospy.loginfo(OKGREEN)
+            rospy.loginfo("//////////////////////////////////LASER/////////////////////////////")
+            
+            rospy.loginfo(str(userdata.Laser_msg.ranges[1]))
+            rospy.loginfo(str(userdata.Laser_msg.ranges[length]))
+            rospy.loginfo(ENDC)
+        return 'succeeded'
+
+
+class process_info(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['elevator','no_elevator'],
+                             input_keys=['Laser_status','pose_2','pose_1','ultraSound_status'])
     def execute(self,userdata):
-        '''
-        ultrasound tipe
-        uint8 ULTRASOUND=0
-        uint8 INFRARED=1
-        std_msgs/Header header
-          uint32 seq
-          time stamp
-          string frame_id
-        uint8 radiation_type
-        float32 field_of_view
-        float32 min_range
-        float32 max_range
-        float32 range
-        '''
+        rospy.loginfo(OKGREEN)
+        rospy.loginfo(str(userdata.Laser_status))
+        rospy.loginfo(str(userdata.pose_2))
+        rospy.loginfo(str(userdata.pose_1))
+        rospy.loginfo(str(userdata.ultraSound_status))
+        rospy.loginfo(ENDC)
+        return 'no_elevator'
+     
+class get_ultra_sound(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['succeeded'],input_keys=[],
+                             output_keys=['ultraSound_status'])
+    def execute(self,userdata):
+        Finish =False
+        distance=0.5
+        aux=Range()
+        ultra=[]
+        pep = False
+        ultra.append(pep)
+        ultra.append(pep)
+        ultra.append(pep)
+        ultra.append(pep)
+        ultra.append(pep)
+        ultraSound=[]
         
-        aux=userdata.ultraSound_msg
-        
-        if userdata.ultraNow==0 :       
+        while Finish==False:
+            aux = rospy.wait_for_message('/sonar_base', Range, 60)
+            
+            
+            if ultra[0]==False :       
                 if (aux.header.frame_id=='base_sonar_02_link'):
-                    userdata.ultraSound=[] # i reset the vector
-                    userdata.ultraSound.append(aux)
-                    rospy.loginfo(str(userdata.ultraSound_msg))
-                    userdata.ultraNow=1
-                    return 'no_finish'
-        if userdata.ultraNow==1 :       
+                    ultraSound.append(aux)
+                    rospy.loginfo("0")
+                    ultra[0]=True
+            if ultra[1]==False :       
                 if (aux.header.frame_id=='base_sonar_05_link'):
-                    userdata.ultraSound.append(aux)
-                    rospy.loginfo(str(userdata.ultraSound_msg))
-                    userdata.ultraNow=2
-                    return 'no_finish'
-        if userdata.ultraNow==2 :       
+                    ultraSound.append(aux)
+                    rospy.loginfo("1")
+                    ultra[1]=True
+            if ultra[2]==False :       
                 if (aux.header.frame_id=='base_sonar_08_link'):
-                    userdata.ultraSound.append(aux)
-                    rospy.loginfo(str(userdata.ultraSound_msg))
-                    userdata.ultraNow=3
-                    return 'no_finish'
-        if userdata.ultraNow==3 :       
+                    ultraSound.append(aux)
+                    rospy.loginfo("2")
+                    ultra[2]=True
+            if ultra[3]==False :       
                 if (aux.header.frame_id=='base_sonar_11_link'):
-                    userdata.ultraSound.append(aux)
-                    rospy.loginfo(str(userdata.ultraSound_msg))
-                    userdata.ultraNow=0
-                    return 'finish'    
+                    ultraSound.append(aux)
+                    rospy.loginfo("3")
+                    ultra[3]=True
+            if ultra[0]==True and ultra[1]==True and ultra[2]==True and ultra[3]==True :
+                Finish = True
         
-        #userdata.ultraNow=0        
-        return 'no_finish'                                    
-                
+        if ultraSound[0]<distance and ultraSound[1]<distance and ultraSound[2]<distance and ultraSound[3]<distance :
+            userdata.ultraSound_status=True
+        else :
+            userdata.ultraSound_status=False
+            rospy.loginfo(OKGREEN)
+            rospy.loginfo("////////////////////////////ULTRA/////////////////////////////////////////")
+            rospy.loginfo(str(ultraSound[0]))
+            rospy.loginfo(str(ultraSound[1]))
+            rospy.loginfo(str(ultraSound[2]))
+            rospy.loginfo(str(ultraSound[3]))
+            rospy.loginfo(ENDC)
+        return 'succeeded'
+     
+class get_ultra_sound3(smach.State):
+     
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['succeeded'],input_keys=['ultraSound'],
+                             output_keys=['ultraSound_status'])
+    def execute(self,userdata):
+        userdata.ultraSound_status=True
+        return 'succeeded'
+        distance=0.5
+        Finish =False
+        aux=Range()
+        ultraNow=0
+         
+        while Finish==False:
+            aux = rospy.wait_for_message('/sonar_base', Range, 60)
+            
+            
+            if ultraNow==0 :       
+                if (aux.header.frame_id=='base_sonar_02_link'):
+                    ultraSound=[] # i reset the vector
+                    ultraSound.append(aux)
+                    rospy.loginfo(str(ultraSound[0]))
+                    ultraNow=1
+            if ultraNow==1 :       
+                if (aux.header.frame_id=='base_sonar_05_link'):
+                    ultraSound.append(aux)
+                    rospy.loginfo(str(ultraSound[1]))
+                    ultraNow=2
+            if ultraNow==2 :       
+                if (aux.header.frame_id=='base_sonar_08_link'):
+                    ultraSound.append(aux)
+                    rospy.loginfo(str(ultraSound[2]))
+                    ultraNow=3
+            if ultraNow==3 :       
+                if (aux.header.frame_id=='base_sonar_11_link'):
+                    ultraSound.append(aux)
+                    rospy.loginfo(str(ultraSound[3]))
+                    ultraNow=0
+                    Finish=True 
+        if ultraSound[0]<distance and ultraSound[1]<distance and ultraSound[2]<distance and ultraSound[3]<distance :
+            userdata.ultraSound_status=True
+        else :
+            userdata.ultraSound_status=False
+        return 'succeeded'
+
+        
+                    
+                                  
     
 class CheckElevator(smach.StateMachine):
     def __init__(self, distToHuman=0.9):
         smach.StateMachine.__init__(self,
-                                    ['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['in_personTrackingData'])
+                                    ['succeeded', 'preempted', 'aborted'])
         with self:
 
 
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                  transitions={'succeeded': "READ_TRACKER_TOPIC"})
-
-            smach.StateMachine.add('READ_TRACKER_TOPIC',
+                                  transitions={'succeeded': "GET_CURRENT_POSE_1"})
+            
+            '''
+            smach.StateMachine.add('READ_UltraSound_TOPIC',
                                    topic_reader(topic_name='/sonar_base',
                                                 topic_type=Range,topic_time_out=60),
                                    transitions={'succeeded':'PROCESS_ULTRA_SOUND'},
                                    remapping={'topic_output_msg': 'ultraSound_msg'})
-            smach.StateMachine.add('PROCESS_ULTRA_SOUND',
-                       process_ultraSound(),
-                      transitions={'no_finish': 'READ_TRACKER_TOPIC','finish':'print'})
+            '''
             
-            smach.StateMachine.add('print',
-                       pinta(),
-                      transitions={'succeeded': 'succeeded'})
+            smach.StateMachine.add('GET_CURRENT_POSE_1',
+                                   get_current_robot_pose(),
+                      transitions={'succeeded': 'GET_ULTRA_SOUND'},
+                      remapping={'current_robot_pose':'pose_1'})
+            
+            smach.StateMachine.add('GET_ULTRA_SOUND',
+                       get_ultra_sound(),
+                      transitions={'succeeded':'READ_Laser_TOPIC'})
+            
+            smach.StateMachine.add('READ_Laser_TOPIC',
+                                   topic_reader(topic_name='/scan_filtered',
+                                                topic_type=LaserScan,topic_time_out=60),
+                                   transitions={'succeeded':'PROCESS_LASER'},
+                                   remapping={'topic_output_msg': 'Laser_msg'})
+                        
+            smach.StateMachine.add('PROCESS_LASER',
+                       process_laser(),
+                      transitions={'succeeded': 'GET_CURRENT_POSE_2'})
+            
+            smach.StateMachine.add('GET_CURRENT_POSE_2',
+                                   get_current_robot_pose(),
+                      transitions={'succeeded': 'PROCESS_INFO'},
+                      remapping={'current_robot_pose':'pose_2'})
+            
+            smach.StateMachine.add('PROCESS_INFO',
+                                   process_info(),
+                      transitions={'elevator':'succeeded','no_elevator':'INIT_VAR'})
+            
+
                              
