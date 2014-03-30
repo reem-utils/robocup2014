@@ -98,41 +98,44 @@ class emergency_situation_sm(smach.StateMachine):
         sm = smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:           
+
+            # Put the arms at the 'Home' position, in order improve the security
             # We prepare the information to go to the init door
             self.userdata.manip_motion_to_play = 'home'
             self.userdata.manip_time_to_play = 4.0
-            self.userdata.tts_lang = 'en_US'
             smach.StateMachine.add(
                 'Arms_Home',
                 play_motion_sm(),
                 transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
+            #Prepare the data for the speech: language and time to wait
             self.userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_lang = 'en_US'
             smach.StateMachine.add(
                 'Prepare_TTS_1',
                 prepare_tts("I am ready to save people"),
                 transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
-
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say(),
                 transitions={'succeeded':'Prepare_Door_Out_Arena', 'aborted':'Prepare_Door_Out_Arena', 'preempted':'Prepare_Door_Out_Arena'})
 
-            #TODO: Define the poi for the output of the room 
+            # Pass the entry room
+            # TODO: Define the poi for the output of the room 
             # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
             smach.StateMachine.add(
                 'Prepare_Door_Out_Arena',
                 prepare_poi_emergency('arena_door_out'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
-
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 #EnterRoomSM(),
                 DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
-            #TODO: Define the name of the room to enter (defined by the OC)
-            #If Aborted (not supposed to), retry?
+            # Go to the emergency location            
+            # TODO: Define the name of the room to enter (defined by the OC)
+            # If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Prepare_Poi_Emergency_1',
                 prepare_poi_emergency('emergency_room'),
@@ -144,18 +147,16 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
-            #  - emergency_person_location: PoseStamped/Geometry_msg (?)
+            #  - person_location: PoseStamped/Geometry_msg (?)
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
             smach.StateMachine.add(
                 'Search_Person',
-                #Search_People_Emergency(),
-                DummyStateMachine(),
+                Search_People_Emergency(),
+                #DummyStateMachine(),
                 transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
-            self.userdata.person_location = PoseStamped()
-            self.userdata.person_location.pose.position.x = 1
-            self.userdata.person_location.pose.position.y = 1
+
             # Userdata input:
             # person_location: PoseStamped (?)
             # It is a SuperStateMachine (contains submachines) with these functionalities (draft):
