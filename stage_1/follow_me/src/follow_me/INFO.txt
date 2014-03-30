@@ -1,0 +1,8 @@
+
+
+El sonar_02 és devant
+El 05 és el de l'esquerra
+el 08 és el de radera
+el 11 és el de la dreta
+
+hi ha 3 ultrasons a cada costat del robot, en total són 12 ultrasons

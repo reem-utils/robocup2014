@@ -6,21 +6,12 @@ import rospy
 import smach
 
 from follow_operator import FollowOperator
+from check_elevator import CheckElevator
 
 
 
-class check_elevator(smach.State):
 
-    def __init__(self):
-        smach.State.__init__(
-            self,
-            outcomes=['succeeded', 'aborted','preempted'])
 
-    def execute(self, userdata):
-        rospy.sleep(2)
-        rospy.loginfo("i'm in dummy elevator state")
-       # userdata.standard_error="Dummy"
-        return 'succeeded'
 '''     
 class Follow_operator(smach.State):
 
@@ -63,7 +54,7 @@ class follow_me_1st(smach.Concurrence):
             # it have to say: i'm in the elevator
             # it have to sent a goal in a less distance of the operator
             smach.Concurrence.add('CHECK_ELEVATOR',
-                            check_elevator())
+                            CheckElevator())
                   
                
             

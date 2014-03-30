@@ -67,4 +67,13 @@ class get_current_robot_pose(smach.StateMachine):
 		rospy.loginfo('GetCurrentPose')
 		with self:
 			#self.userdata.current_robot_pose = [0.0,0.0,0.0]
-			smach.StateMachine.add('GetPose', GetPoseSubscribe(), transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+			smach.StateMachine.add('GetPose', GetPoseSubscribe(), transitions={'succeeded':'succeeded', 
+																			'aborted':'aborted', 
+																			'preempted':'preempted'})
+			
+			
+			
+			
+			
+			
+			
