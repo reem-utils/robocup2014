@@ -17,6 +17,8 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from gesture_states.gesture_detection_sm import gesture_detection_sm
+from gesture_detection_mock.msg import Gesture
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -28,8 +30,7 @@ import random
 class DummyStateMachine(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) #todo: i have to delate de output_key
+            input_keys=[])
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
@@ -45,9 +46,18 @@ class prepare_tts(smach.State):
         self.tts_text_phrase_in = tts_text_phrase
     def execute(self, userdata):
         userdata.tts_text = self.tts_text_phrase_in
-
         return 'succeeded'
 
+class Analyze_Wave(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['gesture_detected'], output_keys=['person_location'])
+    def execute(self, userdata):
+        if (userdata.gesture_detected.Gesture_name.data == "Wave"):
+            userdata.person_location = userdata.gesture_detected.gesture_position #Type: geometry_msgs/Pose
+            return 'succeeded'
+        else:
+            userdata.person_location = None
+            return 'aborted'
 
 class Search_People_Emergency(smach.StateMachine):
     """
@@ -94,9 +104,12 @@ class Search_People_Emergency(smach.StateMachine):
                 transitions={'succeeded':'Detect_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
 
             # Search for a Wave Gesture
-            # Output_keys: wave_coord (?)
+            # Output_keys: gesture_detected: type Gesture
             smach.StateMachine.add(
                 'Detect_Wave',
-                DummyStateMachine(),
-                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'},
-                remapping={'wave_coord':'person_location'})
+                gesture_detection_sm(),
+                transitions={'succeeded':'Analyze_Wave', 'aborted':'Analyze_Wave', 'preempted':'Analyze_Wave'})
+            smach.StateMachine.add(
+                'Analyze_Wave',
+                Analyze_Wave(),
+                transitions('succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'))
