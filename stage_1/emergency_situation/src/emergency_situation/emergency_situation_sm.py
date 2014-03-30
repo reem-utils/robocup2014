@@ -18,7 +18,9 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
 from emergency_situation.Save_People_Emergency import Save_People_Emergency
-from geometry_msgs.msg import PoseStamped
+from emergency_situation.Search_People_Emergency import Search_People_Emergency
+
+from geometry_msgs.msg import PoseStamped, Pose
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -147,7 +149,7 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
-            #  - person_location: PoseStamped/Geometry_msg (?)
+            #  - person_location: PoseStamped/-->Pose<-- (?)
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
