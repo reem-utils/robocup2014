@@ -23,7 +23,7 @@ OKGREEN = '\033[92m'
 class read_topic_gestures(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                             input_keys=[''],
+                             input_keys=['gesture_detected'],
          output_keys=['standard_error','gesture_detected'])
 
     def execute(self, userdata):
@@ -41,7 +41,7 @@ class read_topic_gestures(smach.State):
             userdata.standard_error="Time live of Gesture Detection"
             return 'aborted'
 
-class detect_object(smach.StateMachine): 
+class gesture_detection_sm(smach.StateMachine): 
     """
     Executes a SM that subscribe in a topic and return what gestures are detected.
     
