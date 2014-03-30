@@ -79,8 +79,8 @@ class process_laser(smach.State):
             rospy.loginfo(OKGREEN)
             rospy.loginfo("//////////////////////////////////LASER/////////////////////////////")
             
-            rospy.loginfo(str(userdata.Laser_msg.ranges[1]))
-            rospy.loginfo(str(userdata.Laser_msg.ranges[length]))
+            rospy.loginfo(str(userdata.Laser_msg.ranges[0]))
+            rospy.loginfo(str(userdata.Laser_msg.ranges[length-1]))
             rospy.loginfo(ENDC)
         return 'succeeded'
 
