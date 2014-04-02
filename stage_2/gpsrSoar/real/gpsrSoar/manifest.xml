@@ -13,6 +13,8 @@
   <depend package="rospy"/>
   <depend package="smach"/>
   <depend package="smach_ros"/>
+  <depend package="gpsr"/>
+
 
   <!--<depend package="pal_smach_utils"/>
   <depend package="move_base_msgs"/>
