@@ -184,7 +184,6 @@ class emergency_situation_sm(smach.StateMachine):
             #--> Database of objects and their location
             #                           --> Manip/Grab 
             # 
-
             smach.StateMachine.add(
                 'Get_Person_Desired_Object',
                 Get_Person_Desired_Object(),
