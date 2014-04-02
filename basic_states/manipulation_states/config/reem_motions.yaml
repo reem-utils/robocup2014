@@ -1,5 +1,31 @@
 play_motion:
   motions:
+    give_object_left:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
+        arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
+        arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
+        arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0, 0.4, 0.2, 0.1, 0.8, 0.3, 0.1, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        time_from_start: 0.0
+      meta:
+        name: Give Object Left
+        usage: Manipulation
+        description: Reach the left arm to the person in front.
+    give_object_right:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
+        arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
+        arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
+        arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4,
+          0.2, 0.1, 0.8, 0.3, 0.1, 0.0]
+        time_from_start: 0.0
+      meta:
+        name: Give Object Right
+        usage: Manipulation
+        description: Reach the right arm to the person in front.
     arms_t:
       joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
         arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
