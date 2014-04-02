@@ -70,7 +70,7 @@ class ListenRepeatSM(smach.StateMachine):
     def __init__(self, grammar = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                         input_keys=['grammar_name'],
-                                        output_keys=['asr_userSaid'])
+                                        output_keys=['asr_userSaid','asr_userSaid_tags'])
 
         with self:
             self.userdata.asr_userSaid = ''
