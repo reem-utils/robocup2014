@@ -1,7 +1,7 @@
 import roslib
 roslib.load_manifest('gpsrSoar')
 import nltk
-import grammarReader
+import grammarReader 
 
 #from gpsrSoar.grammarReader import grammarFileReader
 GFR = grammarReader.grammarFileReader
