@@ -47,15 +47,18 @@ message_generation)
  add_message_files(
    FILES
    tracker_people.msg
-   #Message2.msg
+   check_elevator.msg  
+ #Message2.msg
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
+ add_service_files(
+	FILES
+	EnableCheckElevator.srv
 #   FILES
 #   Service1.srv
 #   Service2.srv
-# )
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(

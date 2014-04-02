@@ -6,7 +6,8 @@ import rospy
 import smach
 
 from follow_operator import FollowOperator
-from check_elevator import CheckElevator
+from check_elevator_sm import look_for_elevator
+
 
 
 
@@ -54,7 +55,7 @@ class follow_me_1st(smach.Concurrence):
             # it have to say: i'm in the elevator
             # it have to sent a goal in a less distance of the operator
             smach.Concurrence.add('CHECK_ELEVATOR',
-                            CheckElevator())
+                            look_for_elevator())
                   
                
             
