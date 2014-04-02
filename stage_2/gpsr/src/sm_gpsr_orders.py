@@ -4,9 +4,9 @@ import smach
 from smach_ros import SimpleActionState
 import rospy
 
-from pal_smach_utils.utils.global_common import succeeded, preempted, aborted, transform_pose
-from pal_smach_utils.speech.sm_listen_orders import ListenOrders  # check if the SM is correctly defined
-from pal_smach_utils.speech.sound_action import SpeakActionState
+from util_states.global_common import transform_pose#,succeeded, preempted, aborted
+from speech_states.listen_to import ListenToSM  # instead of ListenOrders
+from speech_states.say import text_to_say # instead of SpeakActionState
 import understandOrders3 as parser
 from geometry_msgs.msg import Pose, Point
 from move_base_msgs.msg import MoveBaseGoal
@@ -206,12 +206,12 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                 'TELL_ABORTED_GO_TO',
-                SpeakActionState(text="Sorry I can't get to the initial point, referee could you come and tell me the command?"),
+                text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?"),
                 transitions={succeeded: 'LISTEN_ORDER'})
 
             smach.StateMachine.add(
                     'LISTEN_ORDER',
-                    ListenOrders(GRAMMAR_NAME=GRAMATICA),
+                    ListenToSM(GRAMMAR_NAME=GRAMATICA),
                     transitions={succeeded: 'ORDER_CONFIRMATION', aborted: 'LISTEN_ORDER'},
                     remapping={'o_userSaidData_text': 'o_userSaidData'})
 
@@ -227,7 +227,7 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                     'WRONG_WORD',
-                    SpeakActionState(text="Then I missunderstood the command, could you repeat?"),
+                    text_to_say(text="Then I missunderstood the command, could you repeat?"),
                     transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD'})
 
             smach.StateMachine.add(
@@ -238,14 +238,14 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTECE_RIGHT',
-                SpeakActionState(text="Sir yes sir. As you command Sir"),
+                text_to_say(text="Sir yes sir. As you command Sir"),
                 # call greeting movements!
                 # call states for message pools
                 transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD'})
 
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTENCE_WRONG',
-                SpeakActionState(text="I think I couldn't understand you, sir. Can you repeat the order?"),
+                text_to_say(text="I think I couldn't understand you, sir. Can you repeat the order?"),
                 transitions={succeeded: 'Check_ASR'})
 
             def announce_sentence_understood(userdata):
@@ -260,33 +260,32 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_SENTENCE_UNDERSTOOD',
-                SpeakActionState(text_cb=announce_sentence_understood, input_keys=['o_actionSet']),
+                text_to_say(text_cb=announce_sentence_understood, input_keys=['o_actionSet']),
                 transitions={succeeded: 'PUBLISH_ORDERS'})
 
             # smach.StateMachine.add(
             #     'GENERATE_GOALS',
             #     generateGoals(),
             #     transitions={succeeded: 'PUBLISH_ORDERS'})
-
-            smach.StateMachine.add(
-                    'PUBLISH_ORDERS',
-                    SimpleActionState(
-                        'gpsrSoar',
-                        gpsrActionAction,
-                        goal_slots=['orderList']),
-                    transitions={succeeded: 'Check_LOOP', aborted: 'TELL_ABORTED'},
-                    remapping={'orderList': 'o_actionSet'})
-
-            '''smach.StateMachine.add('STOP_GRASP_PROTOCOL',
-                                   CloseGraspPipelineSM(),
-                                   transitions={succeeded: succeeded,
-                                                aborted: aborted,
-                                                preempted: preempted})'''
-            
-            smach.StateMachine.add(
-                'TELL_ABORTED',
-                SpeakActionState(text="Sorry I couldn't execute the command in time, please give me another one"),
-                transitions={succeeded: 'Check_LOOP'})
+#gpsrSoar/real/gpsrSoar/src/interface.py
+    smach.StateMachine.add('PUBLISH_ORDERS',
+                        SimpleActionState(
+                            'gpsrSoar',
+                            gpsrActionAction,
+                            goal_slots=['orderList']),
+                        transitions={succeeded: 'Check_LOOP', aborted: 'TELL_ABORTED'},
+                        remapping={'orderList': 'o_actionSet'})
+    
+    '''smach.StateMachine.add('STOP_GRASP_PROTOCOL',
+                           CloseGraspPipelineSM(),
+                           transitions={succeeded: succeeded,
+                                        aborted: aborted,
+                                        preempted: preempted})'''
+    
+    smach.StateMachine.add(
+        'TELL_ABORTED',
+        text_to_say(text="Sorry I couldn't execute the command in time, please give me another one"),
+        transitions={succeeded: 'Check_LOOP'})
 
         
 
@@ -317,7 +316,7 @@ class testParsing(smach.StateMachine):
 
             smach.StateMachine.add(
                     'LISTEN_ORDER',
-                    ListenOrders(GRAMMAR_NAME=GRAMATICA),
+                    ListenToSM(GRAMMAR_NAME=GRAMATICA),
                     transitions={succeeded: 'PARSE_ORDER', aborted: 'LISTEN_ORDER'},
                     remapping={'o_userSaidData': 'o_userSaidData'})
 
@@ -329,14 +328,14 @@ class testParsing(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTECE_RIGHT',
-                SpeakActionState(text="Sir yes sir. As you command Sir"),
+                text_to_say(text="Sir yes sir. As you command Sir"),
                 # call greeting movements!
                 # call states for message pools
                 transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD'})
 
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTENCE_WRONG',
-                SpeakActionState(text="I think I couldn't understand you, sir. Can you repeat the order?"),
+                text_to_say(text="I think I couldn't understand you, sir. Can you repeat the order?"),
                 transitions={succeeded: 'Check_ASR'})
 
             def announce_sentence_understood(userdata):
@@ -351,6 +350,6 @@ class testParsing(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_SENTENCE_UNDERSTOOD',
-                SpeakActionState(text_cb=announce_sentence_understood, input_keys=['o_actionSet']),
+                text_to_say(text_cb=announce_sentence_understood, input_keys=['o_actionSet']),
                 transitions={succeeded: 'Check_LOOP'})
 

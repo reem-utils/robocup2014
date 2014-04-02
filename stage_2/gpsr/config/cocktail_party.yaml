@@ -1,0 +1,32 @@
+door_distance: 1.2  # Meters after enter room
+recognize_caller_timeout: 120
+listen_to_name_timeout: 10
+take_single_order_timeout: 10
+
+#These variables changes the behavior of the robot.
+all_at_a_time: false  # (true|false) If this variable is true, the robot will serve the drinks after take all the drink orders. Otherwise, will take ONE order at a time and serve.
+ask_to_come: false    # (true|false) If true, when taking the drink orders will ask the person to come instead MoveToCaller (This variable 'true' is not working perfect yet.
+rotation_left: true   # (true|false) If this variable is True, the robot will start moving left if no movements are found. Will rotate right otherwise.
+
+sleep_move_caller: 10  # (int) When taking drink orders, if move_to_caller aborts or $ask_to_come is true, will ask the person to come and sleep X seconds. 
+
+#room_guests: business
+room_drinks: drinks_location
+party_room: party_room
+exit: exit
+
+number_persons: 3   # Number of persons to be served according with the robocup rules.
+drinks_grammar_name: robocup/drinks
+people_grammar_name: robocup/iam
+
+#Topics
+topic_usersaid: /usersaid
+topic_recognized_gestures: /recognized_gestures
+
+#Actions
+action_move_base: /move_base
+action_move_by: /move_by/move_base
+action_sound: /sound
+action_face_recognition: /face_recognition
+action_head_controller: /head_traj_controller/point_head_action
+#Services

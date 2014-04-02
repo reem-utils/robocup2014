@@ -1,0 +1,11 @@
+#detect_door_position: [1.8, 2.5, 0.0]
+detect_door_position: [0.0, 0.0, 0.0]
+#detect_door_orientation: [0, 0, 0.675, 0.738]
+detect_door_orientation: [0, 0, 0, 0]
+face_recognition: []
+usersaid: [[{name: 'andrew'}], [{name: 'brian'}], [{name: 'charles'}], [{action: 'goto', location: 'business'}], [{action: 'bring', object: 'coke'}, 'first order'], [{action: 'bring', object: 'fanta'}, 'second order'], [{action: 'bring', object: 'milk'}, 'third order']]
+
+
+#GermanOpenobjects:     "redbull | juice | beer | water | wine | coke"
+#GermanOpenPersonNames: "james | john | robert | michael | william | david | richard | charles | joseph | thomas | mary | patricia | linda | barbara | elizabeth | jennifer | maria | susan | margret | dorothy"
+#Robocup2013PersonNames:  "michael | christopher | matthew | joshua | daniel | david | andrew | james | justin | joseph | jessica | ashley | brittany | amanda | samantha | sarah | stephanie | jennifer | elizabeth | lauren "

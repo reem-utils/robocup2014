@@ -5,7 +5,8 @@ roslib.load_manifest('gpsr')
 import rospy
 import smach
 import smach_ros
-from pal_smach_utils.utils.global_common import succeeded, preempted, aborted
+#from pal_smach_utils.utils.global_common import succeeded, preempted, aborted
+
 from sm_gpsr_orders import gpsrOrders
 
 

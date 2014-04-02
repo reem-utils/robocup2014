@@ -9,13 +9,13 @@
   -->
 
 
-  <rosparam file="$(find pal_smach_utils)/config/robocup_params.yaml"
+  <rosparam file="$(find gpsr)/config/robocup_params.yaml"
       command="load" ns="robocup_params" />
 
-  <rosparam file="$(find cocktail_party)/config/cocktail_party.yaml"
+  <rosparam file="$(find gpsr)/config/cocktail_party.yaml"
       command="load" ns="cocktail_party" />
 
-  <!-- <rosparam file="$(find cocktail_party)/config/simulation.yaml" 
+  <!-- <rosparam file="$(find gpsr)/config/simulation.yaml" 
       command="load" ns="mock_config" /> -->
   <!-- GPSR understanding module -->
   
