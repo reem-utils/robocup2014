@@ -10,10 +10,12 @@
   <node
     pkg="tts_mock" type="tts_as.py"
     name="tts_mock"/>  
-  
+    
+<!-- We need to write in the CMD what we want to hear
   <node
     pkg="asr_mock" type="asr_srv.py"
     name="asr_mock"/>
+-->
     
   <node
     pkg="face_detection" type="face_recognition.py"
@@ -23,11 +25,11 @@
     pkg="person_detection" type="person_recognition.py"
     name="person_detection_mock"/ -->
       
-  <!-- include file="$(find object_recognition_mock)/launch/object_recognition_mock.launch" / -->
-  <!-- include file="$(find coord_translator)/launch/coord_translator.launch" / -->
-  <!-- include file="$(find arm_navigation_mock)/launch/arm_navigation_mock.launch" / -->
-  <!-- include file="$(find close_hand_mock)/launch/close_hand_mock.launch" / -->
-  <!-- include file="$(find move_base_mock)/launch/move_base_mock.launch"/ -->
+  <!-- include file="$(find object_recognition_mock)/launch/object_recognition_mock.launch" / 	-->
+  <!-- include file="$(find coord_translator)/launch/coord_translator.launch" / 				-->
+  <!-- include file="$(find arm_navigation_mock)/launch/arm_navigation_mock.launch" / 			-->
+  <!-- include file="$(find close_hand_mock)/launch/close_hand_mock.launch" / 					-->
+  <!-- include file="$(find move_base_mock)/launch/move_base_mock.launch"/ 						-->
 
   <!-- GPSR understanding module -->
   <!-- include file="$(find gpsr)/launch/gpsrOrders.launch"/ -->

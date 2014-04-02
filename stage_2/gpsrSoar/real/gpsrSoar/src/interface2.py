@@ -12,20 +12,18 @@ from translator import idx2obj, obj2idx
 from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 
-# from pal_smach_utils.navigation.follow_and_stop import FollowAndStop
-from pal_smach_utils.utils.find_person import FindPersonStateMachine as FindPersonSM
-from pal_smach_utils.grasping.complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
-from pal_smach_utils.grasping.search_object_with_confidence import SearchObjectWithConfidenceStateMachine as SearchObjSM
-from pal_smach_utils.navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
+
+#TODO: find_person import FindPersonSM
+#TODO: complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
+#TODO: search_object_with_confidence import SearchObjectWithConfidenceStateMachine as SearchObjSM
+from navigation_states import nav_to_poi #navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
 # from pal_smach_utils.navigation.follow_and_stop import FollowAndStop as FollowMeSM
-from pal_smach_utils.utils.learn_face import LearnFaceStateMachine as LearnPersonSM
+#TODO: learn_face import LearnFaceStateMachine as LearnPersonSM
 #from pal_smach_utils.utils.point_at import SMPointInFront as PointAtSM
-from pal_smach_utils.grasping.sm_release import ReleaseObjectStateMachine as ReleaseSM
-from pal_smach_utils.grasping.initialise_and_close_grasp import InitGraspPipelineSM, CloseGraspPipelineSM
-from pal_smach_utils.utils.recognize_face import RecognizeFaceStateMachine as RecognizePersonSM
-from pal_smach_utils.utils.introduce_yourself import IntroduceYourselfStateMachine as IntroduceSM
-from pal_smach_utils.speech.sound_action import SpeakActionState
-from pal_smach_utils.utils.global_common import succeeded, preempted, aborted
+#TODO: grasping.sm_release import ReleaseObjectStateMachine as ReleaseSM
+#TODO: recognize_face import RecognizeFaceStateMachine as RecognizePersonSM
+#TODO: introduce_yourself import IntroduceYourselfStateMachine as IntroduceSM
+#TODO: sound_action import SpeakActionState <-- listen to
 
 #edit your path in gpsrSoar/src/pathscript.py
 
@@ -55,7 +53,8 @@ except ImportError:
 SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar"
 
 def call_go_to(loc_name):
-	out = aborted
+    '''
+    out = aborted
 	tries = 0
 	while(out==aborted and tries<3):
 		if loc_name == 'exit':
@@ -65,92 +64,98 @@ def call_go_to(loc_name):
 			tosay = "I'm going to the "+loc_name
 			speak = SpeakActionState(text=tosay)
 			speak.execute(ud=None)
-			mr = MoveToRoomSM()
-			mr.userdata._data = {'room_name': loc_name.replace(' ', '_')}
+			mr = nav_to_poi()
+			mr.userdata._data = {'nav_to_poi_name': loc_name.replace(' ', '_')}#{'room_name': loc_name.replace(' ', '_')}
 			#mr.userdata.room_name = loc_name
 			out = mr.execute()
 		tries = tries+1
 
-	return succeeded
-	
-	#time.sleep(3)
-	#return "succeeded"
+	return succeeded '''
+    
+    print 'call_go_to' 
+    time.sleep(3)  
+    return "succeeded" 
 	
 
 def call_exit(): #TODO well
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : go_to exit"
-		tosay = "I'm going to the exit"
-		speak = SpeakActionState(text=tosay)
-		speak.execute(ud=None)
-		mr = MoveToRoomSM()
-		mr.userdata._data = {'room_name': 'pre_exit'} #preguntar gerard
-		#mr.userdata.room_name = loc_name
-		out = mr.execute()
-		# sr = ServiceState('/alive_engine/stop', Empty)
-		# out = sr.execute(ud=None)
-		mr.userdata._data = {'room_name': 'exit'}
-		out = mr.execute()
+    '''	out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : go_to exit"
+        tosay = "I'm going to the exit"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        mr = nav_to_poi()#MoveToRoomSM()
+        mr.userdata._data = {'nav_to_poi_name': 'pre_exit'}#{'room_name': 'pre_exit'} #preguntar gerard
+        #mr.userdata.room_name = loc_name
+        out = mr.execute()
+        # sr = ServiceState('/alive_engine/stop', Empty)
+        # out = sr.execute(ud=None)
+        mr.userdata._data = {'nav_to_poi_name': 'exit'}#{'room_name': 'exit'}
+        out = mr.execute() 
+        
+        tries = tries+1
+    
+    return succeeded ''' 
 
-		tries = tries+1
-
-	return succeeded
-	'''time.sleep(3)
-	return "succeeded"'''
+    print 'call_exit'   
+    time.sleep(3)   
+    return "succeeded"  
 
 def call_learn_person():
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : learn_person"
-		tosay = "I'm going to learn the person in front of me"
-		speak = SpeakActionState(text=tosay)
-		speak.execute(ud=None)
-		
-		lp = LearnPersonSM()
-		out = lp.execute()
-		#PersonName = lp.userdata.out_person_name
-		tries = tries+1
-
-	#time.sleep(3)
-	return succeeded #(out, PersonName)
-	'''
-	time.sleep(3)
-	return "succeeded"'''
+    '''	out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : learn_person"
+        tosay = "I'm going to learn the person in front of me"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        
+        lp = LearnPersonSM()
+        out = lp.execute()
+        #PersonName = lp.userdata.out_person_name
+        tries = tries+1
+    
+    #time.sleep(3)
+    return succeeded #(out, PersonName)'''
+    
+    print 'call_learn_person'
+    time.sleep(3)
+    return "succeeded"
 
 def call_recognize_person(): 
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : recognize_person" 
-		tosay = "I'm going to recognize the person in front of me"
-		speak = SpeakActionState(text=tosay)
-		speak.execute(ud=None)
-		rp = RecognizePersonSM()
-		out = rp.execute()
-		PersonName = rp.userdata.out_person_name
-		tries = tries+1
-
-	return succeeded #(out, PersonName)
-	
-	'''
-	time.sleep(3)
-	return "succeeded" '''
+    '''	out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : recognize_person" 
+        tosay = "I'm going to recognize the person in front of me"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        rp = RecognizePersonSM()
+        out = rp.execute()
+        PersonName = rp.userdata.out_person_name
+        tries = tries+1
+    
+    return succeeded #(out, PersonName)	'''
+    
+    print 'call_recognize_person'
+    time.sleep(3)
+    return "succeeded" 
 
 def call_introduce(): 
-	print "SM : introduce" 
+    '''	print "SM : introduce" 
+    
+    intro = IntroduceSM()
+    out = intro.execute()
+    return succeeded '''
+    
+    print 'call_introduce'
+    time.sleep(3)
+    return "succeeded"
 
-	intro = IntroduceSM()
-	out = intro.execute()
-	return succeeded
-	'''
-	time.sleep(3)
-	return "succeeded"'''
-
-def call_point_at(): #TO TEST
-	out = aborted
+def call_point_at(): #TO TEST	
+    '''
+    out = aborted
 	tries = 0
 	while(out==aborted and tries<3):
 		print "SM : point_at" 
@@ -162,15 +167,22 @@ def call_point_at(): #TO TEST
 		tries = tries+1
 
 	return succeeded
+    '''
+    print 'call_point_at'
+    time.sleep(3)
+    return "succeeded"
 
 def call_follow(): #TODO
-	print "SM : follow-me" 
-	tosay = "I'm going to follow you"
-	speak = SpeakActionState(text=tosay)
-	speak.execute(ud=None)
-	sm =FollowAndStop(0.9, 'gpsr_follow')
-	out = sm.execute(ud=None)
-	return succeeded
+    print "SM : follow-me" 
+    '''
+    tosay = "I'm going to follow you"
+    speak = SpeakActionState(text=tosay)
+    speak.execute(ud=None)
+    sm =FollowMeSM(0.9, 'gpsr_follow')
+    out = sm.execute(ud=None)
+    '''
+    time.sleep(3)
+    return succeeded
 # 	print "SM : follow" 
 # 	f = FollowMeSM()
 # 	out = f.execute()
@@ -178,107 +190,116 @@ def call_follow(): #TODO
 
 
 def call_find_object(object_name, loc_name):
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : find_object %s" % (object_name)
-		tosay = "I'm going to search for "+object_name
-		speak = SpeakActionState(text=tosay)	
-		speak.execute(ud=None)
-		sm = SearchObjSM()
-		sm.userdata.object_to_search_for = object_name
-		sm.execute()
-		for i in range(len(sm.userdata.object_found.object_list)):
-			try:
-				sm.userdata.object_found.object_list[i].name == object_name
-				return succeeded
-			except IndexError:
-				tries = tries+1
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : find_object %s" % (object_name)
+        tosay = "I'm going to search for "+object_name
+        speak = SpeakActionState(text=tosay)	
+        speak.execute(ud=None)
+        sm = SearchObjSM()
+        sm.userdata.object_to_search_for = object_name
+        sm.execute()
+        for i in range(len(sm.userdata.object_found.object_list)):
+            try:
+                sm.userdata.object_found.object_list[i].name == object_name
+                return succeeded
+            except IndexError:
+                tries = tries+1
 
 
 
-	if (out == aborted):
-		tosayn = "Here it should be the " + object_name + " but I can't see it"
-		speakn = SpeakActionState(text=tosayn)	
-		speakn.execute(ud=None)
-
-	return succeeded
-	'''
-	time.sleep(3)
-	return "succeeded"'''
+    if (out == aborted):
+        tosayn = "Here it should be the " + object_name + " but I can't see it"
+        speakn = SpeakActionState(text=tosayn)	
+        speakn.execute(ud=None)
+    return succeeded
+    '''
+    print 'call_find_object'
+    time.sleep(3)
+    return "succeeded"
 
 
 def call_grasp(obj):
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<5):
-		print "SM : grasp %s" % (obj)
-		tosay = "I'm going to grasp the " + obj
-		speak = SpeakActionState(text=tosay)
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<5):
+        print "SM : grasp %s" % (obj)
+        tosay = "I'm going to grasp the " + obj
+        speak = SpeakActionState(text=tosay)
+        
+        speak.execute(ud=None)
+        grasp = GraspSM()
+        grasp.userdata._data = {'object_to_search_for': obj, 'ask_for_help_key': False}
+        out = grasp.execute()
+        tries = tries+1
 
-		speak.execute(ud=None)
-		grasp = GraspSM()
-		grasp.userdata._data = {'object_to_search_for': obj, 'ask_for_help_key': False}
-		out = grasp.execute()
-		tries = tries+1
+    return succeeded
+    '''
+    print 'call_grasp'
+    time.sleep(3)
+    return "succeeded"
 
-	return succeeded
-	'''
-	time.sleep(3)
-	return "succeeded"
-	'''
 
 def call_find_person(person_name):
-	# print "SM : find_person %s" % (person_name)
-	# tosay = "I'm going to search for a person" #+person_name
-	# speak = SpeakActionState(text=tosay)
-	# speak.execute(ud=None)
- #   	fp = FindPersonSM()
- #   	out = fp.execute()
- #   	#found_person = fp.userdata.closest_person
- #   	return succeeded
-	
-   	time.sleep(3)
-   	return "succeeded"
+    # print "SM : find_person %s" % (person_name)
+    # tosay = "I'm going to search for a person" #+person_name
+    # speak = SpeakActionState(text=tosay)
+    # speak.execute(ud=None)
+#   	fp = FindPersonSM()
+#   	out = fp.execute()
+#   	#found_person = fp.userdata.closest_person
+#   	return succeeded
+    print 'call_find_person'
+    time.sleep(3)
+    return "succeeded"
 
 def call_bring_to(person_name): #Solo hace release TODO
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : bring_to %s" % (person_name)
-		tosay = "Take it please"
-		speak = SpeakActionState(text=tosay)
-		speak.execute(ud=None)
-		r = ReleaseSM()
-		r.userdata.releasing_position = None;
-		out = r.execute()
-
-   	return succeeded
-   	
-   	'''
-   	time.sleep(3)
-   	return "succeeded" '''
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : bring_to %s" % (person_name)
+        tosay = "Take it please"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        r = ReleaseSM()
+        r.userdata.releasing_position = None;
+        out = r.execute()
+    
+    return succeeded
+    
+    '''
+    print 'call_bring_to'
+    time.sleep(3)
+    return "succeeded" 
 
 def call_ask_name():
-	print "SM : ask_name" 
-	return call_learn_person()
-	'''
-	time.sleep(3)
-   	return "succeeded"'''
+    '''
+    print "SM : ask_name" 
+    return call_learn_person()
+    '''
+    print 'call_ask_name'
+    time.sleep(3)
+    return "succeeded"
 
 def call_introduce_me():
-	out = aborted
-	tries = 0
-	while(out==aborted and tries<3):
-		print "SM : introduce_me" 
-		intr = IntroduceSM()
-		out = intr.execute()
-		tries = tries+1
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : introduce_me" 
+        intr = IntroduceSM()
+        out = intr.execute()
+        tries = tries+1
 
-	return succeeded
-	'''
-	time.sleep(3)
-   	return "succeeded"'''
+    return succeeded
+    '''
+    print 'call_introduce_me'
+    time.sleep(3)
+    return "succeeded"
 
 
 def define_prohibitions(): #TODO

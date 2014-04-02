@@ -277,18 +277,6 @@ class gpsrOrders(smach.StateMachine):
                 text_to_say(text="I think I couldn't understand you, sir. Can you repeat the order?", wait_before_speaking=0),
                 transitions={'succeeded': 'Check_ASR'})
 
-            """
-            def announce_sentence_understood(userdata):
-                announced = "I understood that I should: \n"
-                for command in userdata.o_actionSet:
-                    announced = announced + "%s %s %s %s \n" % (
-                        command.action,
-                        command.location,
-                        command.person,
-                        command.item)
-                userdata.tts_text = announced
-                return 'succeeded'
-            """
 
             smach.StateMachine.add(
                 'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation',
@@ -297,7 +285,7 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_SENTENCE_UNDERSTOOD',
-                text_to_say(text='I SHOULDNT BE SAING THIS. CHECK LINE 279 OF sm_gpsr_order', wait_before_speaking=0),# input_keys=['o_actionSet']),
+                text_to_say(),# input_keys=['o_actionSet']),
                 transitions={'succeeded': 'PUBLISH_ORDERS'})
 
             # smach.StateMachine.add(
@@ -386,6 +374,6 @@ class testParsing(smach.StateMachine):
 
             smach.StateMachine.add(
                 'ANNOUNCE_SENTENCE_UNDERSTOOD',
-                text_to_say(text='I SHOULDNT BE SAING THIS. CHECK LINE 382 OF sm_gpsr_order', wait_before_speaking=0),# input_keys=['o_actionSet']),
+                text_to_say(),# input_keys=['o_actionSet']),
                 transitions={succeeded: 'Check_LOOP'})
 
