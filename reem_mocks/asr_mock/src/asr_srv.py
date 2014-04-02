@@ -132,7 +132,7 @@ class AsrService():
 if __name__ == '__main__':
     rospy.init_node('asr_srv')
     rospy.loginfo("Initializing asr_srv")
-    pathFile = os.path.abspath("") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
+    pathFile = os.path.expanduser("~") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
     if os.path.exists(pathFile):
         asr = AsrService(pathFile)
         asr.run()
