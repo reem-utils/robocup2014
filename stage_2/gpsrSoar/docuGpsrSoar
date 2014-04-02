@@ -1,0 +1,23 @@
+-------------------------
+-- launch files ---------
+-------------------------
+
+gpsr.launch:
+	--> nominat a caca
+		carrega el yaml de cocktail_party
+
+
+
+
+
+
+
+
+----------------------
+-- *.py files---------
+----------------------
+
+interface: 
+	Bucle que Fake-executa les comandes que rep de l'agent (kernel)
+	--a preguntar per tema agent i kernel
+
