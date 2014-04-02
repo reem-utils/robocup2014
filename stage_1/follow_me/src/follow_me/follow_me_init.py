@@ -3,7 +3,9 @@
 ### FOLLOW_ME.PY ###
 import smach
 import rospy
-
+"""
+@author: Roger Boldu
+"""
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'

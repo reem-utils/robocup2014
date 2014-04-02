@@ -19,13 +19,16 @@ class topic_reader_state(smach.State):
         self.topic_type = topic_type
         self.topic_time_out = topic_time_out
     def execute(self, userdata):
+        
         try:
+            rospy.loginfo('[TopicReader] In Execute')
             _topic_info = rospy.wait_for_message(self.topic_name, self.topic_type, self.topic_time_out)
             userdata.topic_output_msg = _topic_info
             userdata.standard_error = "Topic Reader : No Error "
             return 'succeeded'
         except rospy.ROSException:
             userdata.standard_error = "Topic Reader : TimeOut Error"
+            userdata.topic_output_msg = ''
             return 'aborted'
         
 class topic_reader(smach.StateMachine):

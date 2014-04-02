@@ -16,7 +16,7 @@ from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -28,24 +28,27 @@ import random
 class DummyStateMachine(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[], 
-            output_keys=['nav_to_poi_name']) #todo: i have to delate de output_key
+            input_keys=[]) #todo: i have to delate de output_key
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
-        rospy.sleep(3)
+        rospy.sleep(1)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
-class prepare_poi_person_emergency(smach.State):
+class prepare_coord_person_emergency(smach.State):
     def __init__(self):
          smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['person_location'], 
-            output_keys=['nav_to_poi_name']) 
+            output_keys=['nav_to_coord_goal']) 
 
-    def execute(self,userdata, poi_type='arena_door_out'):
-        userdata.nav_to_poi_name = userdata.person_location
+    def execute(self,userdata):
+        roll, pitch, yaw = euler_from_quaternion([userdata.person_location.orientation.x,
+                                userdata.person_location.orientation.y,
+                                userdata.person_location.orientation.z,
+                                userdata.person_location.orientation.w])
+        userdata.nav_to_coord_goal = [userdata.person_location.position.x, userdata.person_location.position.y, yaw]
 
         return 'succeeded'
 
@@ -78,7 +81,7 @@ class Save_People_Emergency(smach.StateMachine):
     No optional parameters
 
     Input_keys:
-    @key: emergency_person_location: person's location (Geometry or PoseStamped)
+    @key: person_location: person's location (Pose or PoseStamped)
 
     Output Keys:
         none
@@ -92,7 +95,7 @@ class Save_People_Emergency(smach.StateMachine):
 
         with self:           
             self.userdata.emergency_location = []
-
+            self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
             smach.StateMachine.add(
                 'Prepare_Say_Rescue',
@@ -103,13 +106,15 @@ class Save_People_Emergency(smach.StateMachine):
                 text_to_say(),
                 transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
 
+            # TODO: instead of using nav_to_poi(), we'll be using nav_to_coord(), as we have the coordenates of the person in emergency
             smach.StateMachine.add(
                 'Prepare_Go_To_Person',
-                prepare_poi_person_emergency(),
+                prepare_coord_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             smach.StateMachine.add(
                 'Go_To_Person',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_coord('\base_link'),
                 transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             #It should be Speech Recognition: ListenTo(?)
@@ -123,16 +128,17 @@ class Save_People_Emergency(smach.StateMachine):
                 transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
 
             #Register Position --> TODO? or done?
-            #Output keys: topic_output_msg & standard_error
-            self.userdata.position_stamped = ''
+            #Output keys: emergency_location 
+            #TODO: At the moment /amcl_pose in gazebo is not working properly
             smach.StateMachine.add(
                 'Register_Position',
-                topic_reader('amcl_pose', PoseStamped, 30),
-                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
-                remapping={'topic_output_msg':'position_stamped', 'standard_error':'standard_error'})
+                DummyStateMachine(),
+                #get_current_robot_pose(),
+                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'}
+                #remapping={'current_robot_pose':'emergency_location'}
+                )
             #Save_Info(): Saves the emergency info and generates a pdf file
-            #input_keys: position_stamped
-
+            #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
                 DummyStateMachine(),

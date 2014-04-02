@@ -29,7 +29,7 @@ OKGREEN = '\033[92m'
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 
 
-# its the tracker learn person...
+
 class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'],output_keys=['time_last_found'])
@@ -39,17 +39,6 @@ class init_var(smach.State):
             rospy.loginfo("i'm in dummy init var")
             return 'succeeded'
 # its the tracker learn person...
-class read_topic(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['tracking_msg'],
-                             output_keys=['tracking_msg'])
-    def execute(self, userdata):
-            rospy.sleep(1)
-            userdata.tracking_msg=Pose()
-            userdata.tracking_msg.position.x=22
-            userdata.tracking_msg.position.y=22
-            rospy.loginfo("i'm in dummy read topic")
-            return 'succeeded'
         
         # its the tracker learn person...
 class filter_and_process(smach.State):
@@ -192,7 +181,7 @@ class FollowOperator(smach.StateMachine):
 
         with self:
             
-#TODO i don't know if it's the correct form to stop de face tracking
+#TODO i don't know if it's the currect form to stop de face tracking
             #smach.StateMachine.add('DISABLE_FACE_TRACKING',
              #                          ServiceState('/personServer/faceTracking/stop'),
               #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})

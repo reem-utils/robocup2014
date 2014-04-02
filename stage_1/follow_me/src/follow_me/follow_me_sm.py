@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 # vim: expandtab ts=4 sw=4
 
+"""
+@author: Roger Boldu
+"""
+
 import smach
 import rospy
 

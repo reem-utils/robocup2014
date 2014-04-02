@@ -98,8 +98,9 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
         with self:           
             self.userdata.emergency_location = []
-
+            self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
+
             smach.StateMachine.add(
                 'Prepare_Ask_Object',
                 prepare_tts('What would you like me to bring?'),
@@ -108,13 +109,18 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Ask_Object',
                 text_to_say(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                transitions={'succeeded':'Listen_to_Desire', 'aborted':'Listen_to_Desire', 'preempted':'Listen_to_Desire'})
 
-            #TODO: ASR : Automatic Speech Recognition: Whay_say/Listen_to
-            
+            # TODO: ASR : Automatic Speech Recognition: Whay_say/Listen_to
+            # TODO: Activate_ASR + Read_ASR + DeActivate_ASR
+            smach.StateMachine.add(
+                'Listen_to_Desire',
+                DummyStateMachine(),
+                #Listen_to(),
+                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
             #Find Object + Grab Object SM
             smach.StateMachine.add(
-                'Grab_Object',
+                'Go_Grab_Object',
                 #Find_and_grab_object(),
                 DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
@@ -124,9 +130,11 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Prepare_Go_To_Person',
                 prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+            #TODO: nav_to_poi()
             smach.StateMachine.add(
                 'Go_To_Person',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
 
             #Give the grabbed object to the person

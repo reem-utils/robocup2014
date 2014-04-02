@@ -18,6 +18,9 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
 from emergency_situation.Save_People_Emergency import Save_People_Emergency
+from emergency_situation.Search_People_Emergency import Search_People_Emergency
+
+from geometry_msgs.msg import PoseStamped, Pose
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -32,7 +35,7 @@ class DummyStateMachine(smach.State):
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
-        rospy.sleep(3)
+        rospy.sleep(1)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
@@ -41,11 +44,11 @@ class prepare_poi_emergency(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
-
+        self.poi_type_in = poi_type
     def execute(self,userdata):
-        if poi_type == 'arena_door_out':
+        if self.poi_type_in == 'arena_door_out':
             userdata.nav_to_poi_name='arena_door_out'    
-        elif poi_type == 'emergency_room':
+        elif self.poi_type_in == 'emergency_room':
             userdata.nav_to_poi_name='emergency_room'
 
         return 'succeeded'
@@ -97,6 +100,8 @@ class emergency_situation_sm(smach.StateMachine):
         sm = smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:           
+
+            # Put the arms at the 'Home' position, in order improve the security
             # We prepare the information to go to the init door
             self.userdata.manip_motion_to_play = 'home'
             self.userdata.manip_time_to_play = 4.0
@@ -105,49 +110,53 @@ class emergency_situation_sm(smach.StateMachine):
                 play_motion_sm(),
                 transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
+            #Prepare the data for the speech: language and time to wait
             self.userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_lang = 'en_US'
             smach.StateMachine.add(
                 'Prepare_TTS_1',
                 prepare_tts("I am ready to save people"),
                 transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
-
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say(),
                 transitions={'succeeded':'Prepare_Door_Out_Arena', 'aborted':'Prepare_Door_Out_Arena', 'preempted':'Prepare_Door_Out_Arena'})
 
-            #TODO: Define the poi for the output of the room 
+            # Pass the entry room
+            # TODO: Define the poi for the output of the room 
             # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
             smach.StateMachine.add(
                 'Prepare_Door_Out_Arena',
                 prepare_poi_emergency('arena_door_out'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
-
             smach.StateMachine.add(
                 'Enter_Room_Arena',
-                EnterRoomSM(),
+                #EnterRoomSM(),
+                DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
-            #TODO: Define the name of the room to enter (defined by the OC)
-            #If Aborted (not supposed to), retry?
+            # Go to the emergency location            
+            # TODO: Define the name of the room to enter (defined by the OC)
+            # If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Prepare_Poi_Emergency_1',
                 prepare_poi_emergency('emergency_room'),
                 transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
             smach.StateMachine.add(
                 'Go_to_emergency_room',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
-            #  - emergency_person_location: PoseStamped/Geometry_msg (?)
+            #  - person_location: PoseStamped/-->Pose<-- (?)
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
             smach.StateMachine.add(
                 'Search_Person',
-                #Search_People_Emergency(),
-                DummyStateMachine(),
+                Search_People_Emergency(),
+                #DummyStateMachine(),
                 transitions={'succeeded':'Save_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
 
             # Userdata input:
@@ -175,7 +184,6 @@ class emergency_situation_sm(smach.StateMachine):
             #--> Database of objects and their location
             #                           --> Manip/Grab 
             # 
-
             smach.StateMachine.add(
                 'Get_Person_Desired_Object',
                 Get_Person_Desired_Object(),
@@ -189,7 +197,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
 
             #What is Wait for Ambulance or People Mean? Person detection?
@@ -215,7 +224,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
             smach.StateMachine.add(
                 'Go_to_emergency_room_2',
-                nav_to_poi(),
+                DummyStateMachine(),
+                #nav_to_poi(),
                 transitions={'succeeded':'Dummy_Wait', 'aborted':'Dummy_Wait', 'preempted':'Dummy_Wait'})
 
             smach.StateMachine.add(
