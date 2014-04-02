@@ -9,7 +9,7 @@ Created on 08/03/2014
 import rospy
 import smach
 from face_states.learn_face import learn_face
-from speech_states.say_sm import text_to_say
+from speech_states.say import text_to_say
 from speech_states.listen_to import ListenToSM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -27,20 +27,6 @@ class prepare_name(smach.State):
 
         userdata.name = userdata.asr_userSaid
         
-        return 'succeeded'
-
-
-class prepare_ask_name(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=[],
-                                output_keys=['tts_text','tts_wait_before_speaking'])
-
-    def execute(self, userdata):
-
-        userdata.tts_text = "Hi, what's your name?"
-        userdata.tts_wait_before_speaking = 0
-
         return 'succeeded'
     
 class prepare_say_name(smach.State):
@@ -85,14 +71,8 @@ class SaveFaceSM(smach.StateMachine):
             
             # Ask for name
             smach.StateMachine.add(
-                'prepare_ask_name',
-                prepare_ask_name(),
-                transitions={'succeeded': 'ask_name', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-                        
-            smach.StateMachine.add(
                 'ask_name',
-                text_to_say(),
+                text_to_say("Hi, what's your name?"),
                 transitions={'succeeded': 'listen_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

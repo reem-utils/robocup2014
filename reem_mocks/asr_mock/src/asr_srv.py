@@ -1,18 +1,20 @@
 #! /usr/bin/env python
 
 import rospy
+import os
+import select
+import sys
 
 from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage, actiontag
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
-
-MOCK_SAID = "what is the capital of spain"
-
 class AsrService():
     """ASR Mock service 
         
-        This mock service will simulate reem hearing  someone saying MOCK_SAID
-        also simulate grammar analysis of what it hearint [bring] & [coke]   on line 88 (if want to change modifie there)
+        This mock service will simulate reem hearing someone saying MOCK_SAID
+        also simulate grammar analysis of what it hearing.
+        It will read tags.txt with the tags that you want to recognize. 
+        The file must be in the same folder than asr_srv.py
         
         exemple of using tags in pyton:
         
@@ -32,8 +34,9 @@ class AsrService():
     
     """
     
-    def __init__(self):
+    def __init__(self, fileName = None):
         rospy.loginfo("Initializing asrservice")
+        self.fileName = fileName
         self.enabled_asr = False
         self.current_grammar = ""
         self.enabled_grammar = False
@@ -41,13 +44,15 @@ class AsrService():
         self.asrservice = rospy.Service('/asr_server', ASRService, self.asr_grammar_cb)
         rospy.loginfo("asr service initialized")
         self.usersaid_pub = rospy.Publisher('/asr_event', ASREvent)
-        
+
+    def isData(self):
+        return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+      
     def asr_grammar_cb(self, req):
         """Callback of asr service requests """
-        #req = ASRServiceRequest() # trick to autocomplete
         resp = ASRServiceResponse()
         for curr_req in req.request.requests:
-            rospy.loginfo("In the for loop")
+
             if curr_req == req.request.ACTIVATION:
                 if req.request.activation.action == ASRActivation.ACTIVATE:
                     self.enabled_asr = True
@@ -81,6 +86,7 @@ class AsrService():
             elif curr_req == req.request.LANGUAGE:
                 self.current_lang = req.request.lang.language
                 rospy.loginfo("ASR: Changing lang to: '%s'" % req.request.lang.language)
+                print "Write a sentence:"
                 
             #elif curr_req == ASRServiceRequest.request.STATUS: # always return status
             
@@ -97,30 +103,41 @@ class AsrService():
         """Publishing usersaid when grammar is enabled """
         # TODO: add tags, add other fields, take into account loaded grammar to put other text in the recognized sentence
         while not rospy.is_shutdown():
+
             if self.enabled_asr and self.enabled_grammar:
-                recognized_sentence = ASREvent()
-                recognized_sentence.recognized_utterance.text = MOCK_SAID
-                recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
-                #recognized_sentence.recognized_utterance.tags = []
-                tag = actiontag()
-                tag.key = 'info'
-                tag.value = 'president'
-                recognized_sentence.recognized_utterance.tags.append(tag);
-                tag = actiontag()
-                tag.key = 'country'
-                tag.value = 'spain'
-                recognized_sentence.recognized_utterance.tags.append(tag);
-                recognized_sentence.active = self.enabled_asr
-                self.usersaid_pub.publish(recognized_sentence)
+
+                #Check for a new sentence
+                if self.isData():
+
+                    MOCK_SAID = sys.stdin.readline()
+                    recognized_sentence = ASREvent()
+                    recognized_sentence.recognized_utterance.text = MOCK_SAID[:len(MOCK_SAID)-1:] 
+                    recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
+
+                    # Tags from file
+                    with open(self.fileName) as myfile:
+                        for line in myfile:
+                            name, var = line.partition("=")[::2]
+                            tag = actiontag()
+                            tag.key = name
+                            tag.value = var
+                            recognized_sentence.recognized_utterance.tags.append(tag);
+                    
+                    recognized_sentence.active = self.enabled_asr
+                    self.usersaid_pub.publish(recognized_sentence)
+
             rospy.sleep(1)
-        
-        
+
                 
 if __name__ == '__main__':
     rospy.init_node('asr_srv')
     rospy.loginfo("Initializing asr_srv")
-    asr = AsrService()
-    asr.run()
+    pathFile = os.path.abspath("") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
+    if os.path.exists(pathFile):
+        asr = AsrService(pathFile)
+        asr.run()
+    else:
+        print "File doesn't exists"
   
 
 # vim: expandtab ts=4 sw=4
