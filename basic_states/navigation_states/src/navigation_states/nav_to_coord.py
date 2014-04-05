@@ -57,7 +57,9 @@ class nav_to_coord(smach.StateMachine):
 
     This SM navigates to a given coordenates using the parameter: "nav_to_coord_goal"
     This input data should be a (x,y,yaw) point
-    
+    With frame_id param you can indicate if the coord are from the map (frame_id = /map)
+    or from the robot (frame_id = /base_link). By default it is /map. 
+
     @input_keys: nav_to_coord_goal type list [x, y, yaw] where x, y are float, and yaw a float representing
     rotation in radians
     @output_keys: standard_error string representing the possible error
