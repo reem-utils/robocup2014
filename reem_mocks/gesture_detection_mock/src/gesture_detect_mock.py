@@ -20,9 +20,15 @@ fakeorientation=1.6
 information = True
 
 class Gesture_Service():
-    """
-    Gesture Detection Mock    
-    """
+
+	"""
+	Gesture Detection Mock  
+
+	Run the topic of face recognition:
+		/gesture_detection/gesture
+
+	Always recognize the wave gesture
+	"""
     def __init__(self):
         rospy.loginfo("Initializing gesture_detection")
         self.mGesture_pub=rospy.Publisher('/gesture_detection/gesture',Gesture)
