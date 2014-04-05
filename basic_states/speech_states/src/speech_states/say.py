@@ -96,6 +96,10 @@ class text_to_say(smach.StateMachine):
         
         with self: 
             
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
+            
             smach.StateMachine.add('PrepareData',
                                    prepareData(text, wait_before_speaking, lang),
                                    transitions={'succeeded':'CreateSayGoal', 'aborted':'aborted'})
