@@ -17,7 +17,20 @@ from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEn
 from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseResponse
 
 class FaceService():
-    """Face recognition Mock service """
+    """
+        Face recognition Mock service 
+	    Run the Services of face recognition:
+			/pal_face/recognizer
+			/pal_face/start_enrollment
+			/pal_face/stop_enrollment
+			/pal_face/set_database
+
+		Run the topic of face recognition:
+			/pal_face/recognizer
+
+		If you press a key, it learn a new face.
+		Always is the same face, if you want to change the values need to modify the code. 
+		"""
     
     def __init__(self):
         rospy.loginfo("Initializing face_recognition_server")
