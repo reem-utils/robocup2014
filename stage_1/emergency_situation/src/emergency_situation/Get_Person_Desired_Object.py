@@ -14,6 +14,7 @@ from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
+from speech_states.ask_question import AskQuestionSM
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
@@ -100,27 +101,49 @@ class Get_Person_Desired_Object(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-
+            # Ask for the object to bring to the person
+            # Output: 
+            #   - string 'userSaid'
+            #   - actiontag[] 'asr_userSaid_tags'
+            # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
-                'Prepare_Ask_Object',
-                prepare_tts('What would you like me to bring?'),
-                transitions={'succeeded':'Say_Ask_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
+                'Ask_Question',
+                AskQuestionSM(text='What would you like me to bring?', grammar=None),
+                transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
+#            smach.StateMachine.add(
+#                'Prepare_Ask_Object',
+#                prepare_tts('What would you like me to bring?'),
+#                transitions={'succeeded':'Say_Ask_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
 
-            smach.StateMachine.add(
-                'Say_Ask_Object',
-                text_to_say(),
-                transitions={'succeeded':'Listen_to_Desire', 'aborted':'Listen_to_Desire', 'preempted':'Listen_to_Desire'})
+#            smach.StateMachine.add(
+#                'Say_Ask_Object',
+#                text_to_say(),
+#                transitions={'succeeded':'Listen_to_Desire', 'aborted':'Listen_to_Desire', 'preempted':'Listen_to_Desire'})
 
             # TODO: ASR : Automatic Speech Recognition: Whay_say/Listen_to
             # TODO: Activate_ASR + Read_ASR + DeActivate_ASR
+#            smach.StateMachine.add(
+#                'Listen_to_Desire',
+#                DummyStateMachine(),
+#                #Listen_to(),
+#                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
+
+            # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
+            # Input keys: actiontag[] 'asr_userSaid_tags'
+            # Output keys: object
             smach.StateMachine.add(
-                'Listen_to_Desire',
+                'Process_Tags',
+                Process_Tags(),
+                transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
+
+            smach.StateMachine.add(
+                'Go_To_Object_Place',
                 DummyStateMachine(),
-                #Listen_to(),
-                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
+                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Go_To_Object_Place', 'preempted':'Go_To_Object_Place'})
+
             #Find Object + Grab Object SM
             smach.StateMachine.add(
-                'Go_Grab_Object',
+                'Find_and_grab_object',
                 #Find_and_grab_object(),
                 DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
@@ -143,3 +166,17 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 DummyStateMachine(),
                 #move_hands_form('ungrab', 'left'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
