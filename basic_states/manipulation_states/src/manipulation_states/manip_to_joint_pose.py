@@ -129,7 +129,7 @@ class manip_to_joint_pose(smach.StateMachine):
     """
         
     def __init__(self):
-        rospy.init_node("manip_to_joint_pose")
+        #rospy.init_node("manip_to_joint_pose")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['manip_joint_names','manip_joint_group', 'manip_goal_joint_pose'],
                                     output_keys=['standard_error'])

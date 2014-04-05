@@ -114,7 +114,7 @@ class manip_to_pose(smach.StateMachine):
     """
     
     def __init__(self):
-        rospy.init_node("manip_to_pose")
+        #rospy.init_node("manip_to_pose")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['manip_group', 'manip_goal_pose', 'manip_end_link'],
                                     output_keys=['standard_error'])
