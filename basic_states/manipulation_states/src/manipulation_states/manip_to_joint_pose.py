@@ -110,8 +110,9 @@ class manip_to_joint_pose(smach.StateMachine):
     """
     Executes a SM that makes the upper body movement of the robot.
     It needs a joint goal and moves the body part to that goal.
+    Joint Goal: A goal for the joint name to move.
     It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.
-        
+
     Required parameters: None
     
     Optional parameters: None
@@ -126,10 +127,33 @@ class manip_to_joint_pose(smach.StateMachine):
          
     Output keys:
         @key standard_error: Error
+
+    @Usage:
+         sm.userdata.manip_joint_group = 'right_arm'
+        joint_list_right_arm_straight_down = [0, 0, 0,
+                                          0, 0, 0,
+                                          0]
+        a_joint_list = [0.376906673976, 0.114372113957,
+                                          0, 0, 0,
+                                          0]
+        
+        joint_list_right_arm_shake_hand_pose = [0.376906673976, 0.114372113957, -0.198407737748,
+                                            1.36616457377, 0.970099953413, 0.108292227188,
+                                            -0.822999433641]
+        sm.userdata.manip_goal_joint_pose = a_joint_list
+
+        sm.userdata.manip_joint_names = ['arm_right_1_joint', 'arm_right_2_joint', 'arm_right_3_joint',
+                   'arm_right_4_joint', 'arm_right_5_joint', 'arm_right_6_joint',
+                   'arm_right_7_joint']
+        
+        smach.StateMachine.add(
+            'dummy_state',
+            manip_to_joint_pose(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
     """
         
     def __init__(self):
-        rospy.init_node("manip_to_joint_pose")
+        #rospy.init_node("manip_to_joint_pose")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['manip_joint_names','manip_joint_group', 'manip_goal_joint_pose'],
                                     output_keys=['standard_error'])

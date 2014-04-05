@@ -23,7 +23,13 @@ fakeorientation=1.6
 information=True
 
 class Follow_me_Service():
-    """track people Mock service """
+	"""
+	Follow me Mock 
+
+	Run the topic of face recognition:
+		/people_tracker/person
+
+	"""
     
     def __init__(self):
         rospy.loginfo("Initializing tracker_people_service")

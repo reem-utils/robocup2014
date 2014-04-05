@@ -93,7 +93,7 @@ class create_move_group_pose_goal(smach.State):
 class manip_to_pose(smach.StateMachine):
     """
     Executes a SM that makes the upper body movement of the robot.
-    It needs a 3D pose goal and moves the body part to that goal.
+    It needs a 3D pose goal in the Space and moves the body part to that goal.
     It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.    
     Required parameters: None
     
@@ -110,11 +110,25 @@ class manip_to_pose(smach.StateMachine):
          
     Output keys:
         standard_error: Error
+       
+    @Usage:
+
+        sm.userdata.manip_group = 'right_arm'
         
+        sm.userdata.manip_goal_pose = Point(0.25, -0.25, 1.2) # right_arm arm_right_tool_link can definitely get here
+
+        sm.userdata.manip_end_link = 'hand_right_grasping_frame'
+        
+        smach.StateMachine.add(
+            'dummy_state',
+            manip_to_pose(),
+            transitions={'succeeded': 'print','preempted':'preempted', 'aborted':'aborted'})
+        smach.StateMachine.add('print', print_userdata(), transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+         
     """
     
     def __init__(self):
-        rospy.init_node("manip_to_pose")
+        #rospy.init_node("manip_to_pose")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['manip_group', 'manip_goal_pose', 'manip_end_link'],
                                     output_keys=['standard_error'])

@@ -47,12 +47,14 @@ def main():
         smach.StateMachine.add(
             'prepare_msg',
             prepare_msg(),
-            transitions={'succeeded':'follow_me1st_test','aborted' : 'aborted','preempted':'preempted'})
+            transitions={'succeeded':'follow_me1st_test','aborted' : 'aborted',
+                         'preempted':'preempted'})
         # it call the drop_face state
         smach.StateMachine.add(
             'follow_me1st_test',
             follow_me_1st(),
-            transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted'})
+            transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted',
+                         'ELEVATOR':'succeeded', 'LOST':'aborted'})
         smach.StateMachine.add(
             'follow_me_info',
             follow_me_1st_error(),

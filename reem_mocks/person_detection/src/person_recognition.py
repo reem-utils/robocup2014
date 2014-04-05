@@ -17,7 +17,12 @@ from pal_detection_msgs.msg import Detection2d, FaceDetection, LegDetections
 from geometry_msgs.msg import Point
 
 class PersonTopic():
-    """Face recognition Mock service """
+    	"""
+	Person detection Mock 
+
+	Run the topic of face recognition:
+		/pal_person/recognizer
+ 	"""
     
     def __init__(self):
         rospy.loginfo("Initializing person_recognizer topic")
@@ -60,7 +65,7 @@ class PersonTopic():
         return person
         
     def run(self):
-        """Publishing usersaid when face recognitionL is enabled """
+        
         while not rospy.is_shutdown():
             
             if self.isData():
@@ -83,7 +88,7 @@ class PersonTopic():
         
         
 if __name__ == '__main__':
-    rospy.init_node('face_recognizer_srv')
-    rospy.loginfo("Initializing face_recognizer_srv")
+    rospy.init_node('person_recognizer_srv')
+    rospy.loginfo("Initializing person_recognizer_srv")
     face = PersonTopic()
     face.run()
