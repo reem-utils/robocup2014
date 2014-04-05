@@ -1,4 +1,4 @@
-locations: ["bench", "hallway_table", "hanger", "umbrella_stand", "bar", "side_table", "kitchen_table", "kitchen_counter", "stove", "trash_bin", "cupboard", "sink", "fridge", "bed", "dresser", "sideboard", "bedside_table", "bookshelf", "pantry", "cabinet", "dinner_table", "couch_table", "arm_chair", "sofa", "tv_counter",  "plant", "exit"]
+locations: ["bench", "hallway_table", "hanger", "umbrella_stand", "bar", "side_table", "kitchen_table", "kitchen_counter", "stove", "trash_bin", "cupboard", "sink", "fridge", "bed", "dresser", "sideboard", "bedside_table", "bookshelf", "pantry", "cabinet", "dinner_table", "couch_table", "arm_chair", "sofa", "tv_counter",  "plant", "exit", "referee"]
 
 items: ["deodorant", "tooth_paste", "cleaner", "fresh_discs", "fanta", "beer_can", "coke", "sponge", "seven_up", "chocolate_milk", "tomato_sauce", "energy_drink", "peanut_butter", "chicken_noodles", "orange_juice", "milk", "apple_juice", "veggie_noodles", "garlic_sauce", "chocolate", "cookies", "drops", "crackers", "marmalade"]
 

@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 
-import roslib; roslib.load_manifest('actionlib_tutorials')
+import roslib; roslib.load_manifest('gpsrSoar')
 import rospy
 import interface2 as interface
 # from grammarReader import grammarFileReader as GFR
 from grammarReader import grammarFileWriter2 as GFR
-from GenerateGoalScript import * #thi imports world, person, location, item, robot and compileInit. Also imports NO, YES and ignore constants
+from GenerateGoalScript import world, person, location, item, robot, compileInit
+from GenerateGoalScript import NO, YES, ignore
 from translator import obj2idx, get_list, get_obj_location, idx2obj
 from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM
 from speech_states.listen_general_command import askCategory as askCategorySM
@@ -19,7 +20,6 @@ grammarNames['items'] = 'item'
 grammarNames['categories'] = 'category'
 try:
   per = GFR(wordset=grammarNames)
-  # print 'bla'
 except IOError:
   PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/gentest.gram"
   print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 21"
