@@ -21,7 +21,10 @@ information = True
 
 class Gesture_Service():
     """
-    Gesture Detection Mock    
+    Gesture Detection Mock
+    It is a mock service, in which it sends a Gesture MSG (Pose) and the name of the detected geture.
+
+    TODO: The position should be changing in a constant time.
     """
     def __init__(self):
         rospy.loginfo("Initializing gesture_detection")
