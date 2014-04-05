@@ -81,7 +81,7 @@ class look_for_elevator(smach.StateMachine):
     def __init__(self, sleep=1):
         smach.StateMachine.__init__(
             self,
-            outcomes=['succeeded', 'lost'],
+            outcomes=['succeeded'],
             input_keys=["in_learn_person"])
         self.sleep=sleep
         

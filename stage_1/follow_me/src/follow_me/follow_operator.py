@@ -16,6 +16,7 @@ from geometry_msgs.msg import Pose, PoseStamped, Quaternion, Point
 from util_states.math_utils import *
 from tf.transformations import quaternion_from_euler
 from navigation_states.nav_to_coord import nav_to_coord
+from navigation_states.nav_to_coord_concurrent import nav_to_coord_concurrent
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
 from follow_me.msg import tracker_people # TODO: maybe we have to change it
@@ -213,13 +214,14 @@ class FollowOperator(smach.StateMachine):
                        no_follow(time_occluded),
                        transitions={'lost': 'lost',
                                     'occluded': 'READ_TRACKER_TOPIC'})
-            
+           # /move_base_simple/goal
             smach.StateMachine.add('CALCULETE_GOAL',
                        calculete_goal(distToHuman),
                        transitions={'succeeded': 'SEND_GOAL',
                                     'aborted': 'READ_TRACKER_TOPIC'})
+            
             smach.StateMachine.add('SEND_GOAL',
-                       nav_to_coord('/base_link'),
+                       nav_to_coord_concurrent('/base_link'),
                        transitions={'succeeded':'DEBUG', 'preempted':'DEBUG', 'aborted':'DEBUG'})    
             # it have to desaper 
             smach.StateMachine.add('DEBUG',
