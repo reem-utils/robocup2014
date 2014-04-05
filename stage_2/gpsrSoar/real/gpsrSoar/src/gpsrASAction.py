@@ -125,7 +125,8 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 
 def ask_category(category):
  ad = askCategorySM(GRAMMAR_NAME = category)
- ad.userdata._data = {'cat': category}
+#ad.userdata._data = {'cat': category}
+ ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
@@ -135,7 +136,8 @@ def ask_category(category):
 
 def ask_category_loc(category):
  ad = askCategoryLocSM(GRAMMAR_NAME = category)
- ad.userdata._data = {'cat': category}
+# ad.userdata._data = {'cat': category}
+ ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['loc_name']
@@ -259,7 +261,7 @@ class gpsrASAction(object):
     if command.location in loc_categories:
       # print 'ther should be a print here'
       loca = ask_category_loc(command.location)
-      # print loca
+      # print locaask_category
       # print loca
       # print self._world.location
       # print len(self._world.location)
