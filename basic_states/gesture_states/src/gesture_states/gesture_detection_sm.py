@@ -55,7 +55,7 @@ class gesture_detection_sm(smach.StateMachine):
        
     output keys:
         standard_error: inform what is the problem
-        gesture_detected: 
+        gesture_detected: Gesture msg 
     No io_keys.
 
     Nothing must be taken into account to use this SM.
