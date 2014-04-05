@@ -58,6 +58,11 @@ class move_hands_form(smach.StateMachine):
     No input_keys
     
     No output_keys
+
+    @Usage:
+        smach.StateMachine.add('dummy_state',
+                                move_hands_form(hand_pose_name="grasp", hand_side="right"),
+                                transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
     """
     def __init__(self, hand_pose_name, hand_side):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])

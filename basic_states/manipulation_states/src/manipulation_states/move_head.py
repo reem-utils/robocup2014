@@ -78,6 +78,14 @@ class move_head(smach.StateMachine):
         @key move_head_pose: indicates poses for the joints to reach : 2 joints [head1, head2]
         
         Range: [-1,1] 
+
+    @Usage:
+        sm.userdata.move_head_pose = [0.1, 1]        
+        smach.StateMachine.add(
+            'dummy_state',
+            move_head(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+        
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 

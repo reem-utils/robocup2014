@@ -72,7 +72,7 @@ class create_move_group_joints_goal(smach.State):
 class move_joints_group(smach.StateMachine):
     
     """
-    This SM moves a group of joints from a group controller.
+    This SM moves a group of joints from a group controller. It Does Not use the MoveIt Algorithm
 
 
     Required parameters: 
