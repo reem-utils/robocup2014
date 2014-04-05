@@ -34,7 +34,8 @@ class prepareData(smach.State):
         elif self.hand_pose == "grasp":
             userdata.move_hand_pose = [5, 5, 5]
         elif self.hand_pose == "pre_grasp":
-            userdata.move_hand_pose = [0.1, 5, 5]
+            #userdata.move_hand_pose = [0.1, 5, 5]
+            userdata.move_hand_pose = [5, 0.1, 0.1]
 
         self.move_hand_side_out = self.hand_side_self+'_hand_controller'
         userdata.move_hand_side = self.hand_side_self

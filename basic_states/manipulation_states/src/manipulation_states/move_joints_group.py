@@ -89,7 +89,7 @@ class move_joints_group(smach.StateMachine):
         @key standard_error: Error
     """
     def __init__(self, move_joint_group_in):
-        rospy.init_node("move_joints_group_node")
+        #rospy.init_node("move_joints_group_node")
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                                     input_keys=['move_joint_group','move_joint_poses', 'move_joint_list'],
                                     output_keys=['standard_error'])
