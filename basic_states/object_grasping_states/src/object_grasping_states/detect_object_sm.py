@@ -29,7 +29,6 @@ class read_topic_objects(smach.State):
 
     def execute(self, userdata):
         
-       # message=FaceDetections()
         message = rospy.wait_for_message('/object_detect/recognizer', ObjectDetection, 60)
         
         # Check the distance between the robot and the doo
@@ -53,8 +52,7 @@ class detect_object(smach.StateMachine):
     No parameters.
 
     Optional parameters:
-             minConfidence, is the value to filter the face TODO: i don't know
-                             what value for default is ok
+             minConfidence, is the value to filter the object
     No optional parameters
 
 
