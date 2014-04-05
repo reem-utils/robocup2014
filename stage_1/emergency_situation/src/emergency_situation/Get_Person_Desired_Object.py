@@ -109,7 +109,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Ask_Question',
                 AskQuestionSM(text='What would you like me to bring?', grammar=None),
-                transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
+                transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
 #            smach.StateMachine.add(
 #                'Prepare_Ask_Object',
 #                prepare_tts('What would you like me to bring?'),
@@ -129,8 +129,13 @@ class Get_Person_Desired_Object(smach.StateMachine):
 #                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
 
             # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
+            # Input keys: actiontag[] 'asr_userSaid_tags'
+            # Output keys: object
             smach.StateMachine.add(
-                'Process_Tags')
+                'Process_Tags',
+                Process_Tags(),
+                transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
+
             smach.StateMachine.add(
                 'Go_To_Object_Place',
                 DummyStateMachine(),
@@ -161,3 +166,17 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 DummyStateMachine(),
                 #move_hands_form('ungrab', 'left'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
