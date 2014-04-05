@@ -86,6 +86,15 @@ class move_hands(smach.StateMachine):
         
         Joints:
         [0.1, 0.1, 0,1] = Open Hands 
+
+    @Usage: 
+        self.move_hand_side_out = "right_hand_controller"
+        self.userdata.move_hand_pose = [0.1, 0.1, 0.1]
+        userdata.move_hand_side = 'right'
+        smach.StateMachine.add('Move_Hands',
+                                    move_hands(self.move_hand_side_out),
+                                    transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
     """
     def __init__(self, move_joint_group_in):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 

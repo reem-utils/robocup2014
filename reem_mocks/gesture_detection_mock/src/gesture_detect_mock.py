@@ -20,6 +20,7 @@ fakeorientation=1.6
 information = True
 
 class Gesture_Service():
+<<<<<<< HEAD
 
 	"""
 	Gesture Detection Mock  
@@ -29,6 +30,14 @@ class Gesture_Service():
 
 	Always recognize the wave gesture
 	"""
+=======
+    """
+    Gesture Detection Mock
+    It is a mock service, in which it sends a Gesture MSG (Pose) and the name of the detected geture.
+
+    TODO: The position should be changing in a constant time.
+    """
+>>>>>>> 1c79ea5fb5986935b9a35cfe06ed6ea8e02a0560
     def __init__(self):
         rospy.loginfo("Initializing gesture_detection")
         self.mGesture_pub=rospy.Publisher('/gesture_detection/gesture',Gesture)

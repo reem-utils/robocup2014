@@ -34,7 +34,8 @@ class prepareData(smach.State):
         elif self.hand_pose == "grasp":
             userdata.move_hand_pose = [5, 5, 5]
         elif self.hand_pose == "pre_grasp":
-            userdata.move_hand_pose = [0.1, 5, 5]
+            #userdata.move_hand_pose = [0.1, 5, 5]
+            userdata.move_hand_pose = [5, 0.1, 0.1]
 
         self.move_hand_side_out = self.hand_side_self+'_hand_controller'
         userdata.move_hand_side = self.hand_side_self
@@ -57,6 +58,11 @@ class move_hands_form(smach.StateMachine):
     No input_keys
     
     No output_keys
+
+    @Usage:
+        smach.StateMachine.add('dummy_state',
+                                move_hands_form(hand_pose_name="grasp", hand_side="right"),
+                                transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
     """
     def __init__(self, hand_pose_name, hand_side):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])

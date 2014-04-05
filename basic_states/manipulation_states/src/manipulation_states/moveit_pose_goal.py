@@ -87,7 +87,7 @@ def create_move_group_pose_goal(goal_pose=Pose(), group="right_arm_torso", end_l
 
 
 if __name__=='__main__':
-    rospy.init_node("moveit_snippet")
+    #rospy.init_node("moveit_snippet")
 
     rospy.loginfo("Connecting to move_group AS")
     moveit_ac = actionlib.SimpleActionClient('/move_group', MoveGroupAction)
