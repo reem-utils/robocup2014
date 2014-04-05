@@ -19,7 +19,8 @@ from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 from smach_ros.simple_action_state import SimpleActionState
 from manipulation_states.play_motion_sm import play_motion_sm
-
+from speech_states.say import text_to_say
+from manipulation_states.move_hands_form import move_hands_form
 
 class prepare_ask_person_object(smach.State):
     def __init__(self):
@@ -71,6 +72,8 @@ class ask_give_object_grasping(smach.StateMachine):
         with self:
             # Preparation of the Ask Process
             # Input Data: 'object_to_grasp'
+            self.userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_lang = 'en_us'
             smach.StateMachine.add('Prepare_Ask_Person_Object',
                                     prepare_ask_person_object(),
                                     transitions={'succeeded':'Ask_Person_Object', 'preempted':'Ask_Person_Object', 'aborted':'Ask_Person_Object'})
@@ -80,11 +83,11 @@ class ask_give_object_grasping(smach.StateMachine):
                                     transitions={'succeeded':'Reach_Arm', 'preempted':'Reach_Arm', 'aborted':'Reach_Arm'})
             
             # Reach the arm
-            userdata.manip_motion_to_play = 'give_object_right'
-            userdata.manip_time_to_play = 8.0
+            self.userdata.manip_motion_to_play = 'give_object_right'
+            self.userdata.manip_time_to_play = 8.0
             smach.StateMachine.add('Reach_Arm',
                                     play_motion_sm(),
-                                    transitions={'succeeded':'Open_hand', 'preempted':'preempted', 'aborted':'aborted'})
+                                    transitions={'succeeded':'Open_hand', 'preempted':'Open_hand', 'aborted':'Open_hand'})
             
             # Open the hand
             smach.StateMachine.add('Open_hand', 
