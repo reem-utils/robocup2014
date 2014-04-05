@@ -57,8 +57,9 @@ class prepareData(smach.State):
 class AskQuestionSM(smach.StateMachine):
 
     """      
-        This function will do a question, listen the answer ant then confirm it.
-
+        This function will do a question, listen the answer and then confirm it.
+        If return succeeded, the confirm answer was yes. Otherwise, it return aborted
+        
         @input string text or tts_text
         @output string asr_userSaid
         @output actiontag[] asr_userSaid_tags

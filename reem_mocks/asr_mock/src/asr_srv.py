@@ -11,9 +11,9 @@ from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceRe
 class AsrService():
     """ASR Mock service 
         
-        This mock service will simulate reem hearing someone saying MOCK_SAID
-        also simulate grammar analysis of what it hearing.
-        It will read tags.txt with the tags that you want to recognize. 
+        This mock service will simulate reem hearing someone saying MOCK_SAID. Also simulate grammar analysis of what it hearing.
+        It will read tags.txt with the tags that you want to recognize, simulating the grammar. 
+        We can input a sentence to simulate what the robbot had listen. 
         The file must be in the same folder than asr_srv.py
         
         exemple of using tags in pyton:

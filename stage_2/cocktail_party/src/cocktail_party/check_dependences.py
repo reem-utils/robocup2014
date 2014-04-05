@@ -27,7 +27,8 @@ ACTION_LIST_NAMES = [  # #################### Actions #####################
 
 PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/party_room",
-                     "/mmap/poi/submap_0/storage_room"]
+                     "/mmap/poi/submap_0/storage_room",
+                     "/mmap/poi/submap_0/leave_room"]
                      
 
 class UserdataHacked():

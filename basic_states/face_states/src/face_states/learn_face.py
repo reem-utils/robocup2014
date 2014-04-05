@@ -42,12 +42,13 @@ class learn_face(smach.StateMachine):
     Required parameters : 
     No parameters.
 
-    Optional parameters: learning_time, by default is 5 seconds
-    No optional parameters
+    Optional parameters: 
+	learning_time, by default is 5 seconds
 
-
-    input keys: name, it's the name of the person who will enroll
-    output keys: standard_error, whit the error
+    input keys: 
+	name, it's the name of the person who will enroll
+    output keys: 
+	standard_error, string with the error
     No io_keys.
 
     Nothing must be taken into account to use this SM.

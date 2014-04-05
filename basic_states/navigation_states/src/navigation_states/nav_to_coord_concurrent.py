@@ -19,12 +19,6 @@ from geometry_msgs.msg import Quaternion
 from tf.transformations import quaternion_from_euler
 
 # Constants
-'''
-It works like nav_to_coord, the difference is that you don need to wait the final
-@ input : navigation_goal= x, y, yaw
-@ No output
-@ optional you can put a frame_id, if you don't put it will be the /map
-'''
 
 
 class send_goal(smach.State):
@@ -74,11 +68,13 @@ class nav_to_coord_concurrent(smach.StateMachine):
 
     This SM navigates to a given coordenates using the parameter
     This input data should be a (x,y,yaw) point
+    It works like nav_to_coord, the difference is that you don need to wait the final
     
     @input_keys: nav_to_coord_goal type list [x, y, yaw] where x, y are float, and yaw a float representing
     rotation in radians
     @output_keys: standard_error string representing the possible error
-    """
+    @optional you can put a frame_id, if you don't put it will be the /map
+   """
 
     
     def __init__(self,frame_id='/map'):

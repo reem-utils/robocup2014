@@ -128,7 +128,7 @@ class CocktailPartySM(smach.StateMachine):
             # Go to the storage room
             smach.StateMachine.add(
                 'go_to_storage',
-                DummyStateMachine(),
+                nav_to_poi('storage_room'),
                 transitions={'succeeded': 'search_food_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -149,7 +149,7 @@ class CocktailPartySM(smach.StateMachine):
             # Go to the party room
             smach.StateMachine.add(
                 'go_to_party',
-                DummyStateMachine(),
+                nav_to_poi('party_room'),
                 transitions={'succeeded': 'search_for_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -185,7 +185,7 @@ class CocktailPartySM(smach.StateMachine):
             # Leaving the arena  
             smach.StateMachine.add(
                 'leaving_arena',
-                DummyStateMachine(),
+                nav_to_poi('leave_arena'),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 

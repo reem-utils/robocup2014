@@ -69,10 +69,10 @@ class recognize_face(smach.StateMachine):
 
     Optional parameters:
                     name, of the person that you are looking for, it will return
-                        aborted if can't find
+                        aborted if can't find 
 
     input keys:
-            Name, it's optional of the person we are looking for, i can be or ""o the name
+            Name, it's optional of the person we are looking for, it can be the name or ""
     output keys:
             standard_error: inform what is the problem
             face, is a message that have FaceDetection, 
