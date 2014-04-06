@@ -102,7 +102,7 @@ class follow_me_2nd(smach.StateMachine):
                 
                 sm.add('CHECK_DOOR',
                                 look_for_elevator_door())
-                # hear i have to listen if they say me to get out the live
+                # here i have to listen if they say me to get out of the lift
                 sm.add('LISTEN_OPERATOR_FOR_EXIT',
                                 dummy_listen())
                 
