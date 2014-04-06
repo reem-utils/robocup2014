@@ -8,8 +8,9 @@ from grammarReader import grammarFileWriter2 as GFR
 from GenerateGoalScript import world, person, location, item, robot, compileInit
 from GenerateGoalScript import NO, YES, ignore
 from translator import obj2idx, get_list, get_obj_location, idx2obj 
+
+from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM 
 '''
-from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM
 from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
 '''
@@ -116,12 +117,14 @@ def new_world(loc_list):
   return w
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
- '''ad = askMissingInfoSM()
- ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+ ad = askMissingInfoSM(Type=Type, objectName=objectName)
+ #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+ #ad.userdata.dataType = Type
+ #ad.userdata.object_name = objectName
  out = ad.execute()
  loc = ad.userdata._data['location_name']
  return loc  #-------------------'''
- return 'fridge'
+ #return 'fridge'
 
 def ask_category(category):
  '''ad = askCategorySM(GRAMMAR_NAME = category)
