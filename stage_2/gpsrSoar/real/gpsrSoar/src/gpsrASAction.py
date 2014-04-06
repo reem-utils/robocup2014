@@ -10,10 +10,10 @@ from GenerateGoalScript import NO, YES, ignore
 from translator import obj2idx, get_list, get_obj_location, idx2obj 
 
 from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM 
-'''
+
 from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
-'''
+
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
@@ -125,17 +125,16 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
  loc = ad.userdata._data['location_name']
  return loc  #-------------------'''
  #return 'fridge'
+  
+ 
 
 def ask_category(category):
- '''ad = askCategorySM(GRAMMAR_NAME = category)
-#ad.userdata._data = {'cat': category}
- ad.userdata.cat = category
+ ad = askCategorySM(GRAMMAR_NAME = category)
  out = ad.execute()
- print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ ob = obj2idx(ad.userdata.object_name, 'ITEMS')
  return obj   #--------------'''
- return 'milk'
+ #return 'milk'
 
 def ask_category_loc(category):
  '''ad = askCategoryLocSM(GRAMMAR_NAME = category)

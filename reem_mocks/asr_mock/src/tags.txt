@@ -1,2 +1,1 @@
-yes=yeah
-no=noo
+location=drink

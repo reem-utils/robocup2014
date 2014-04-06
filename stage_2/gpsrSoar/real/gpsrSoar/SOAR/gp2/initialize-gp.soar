@@ -51,7 +51,7 @@ sp {gp*apply*initialize-gp
 
       (<obj1> ^delivered no
            ^pointed no
-           ^locId 12
+           ^locId 0
            ^toBeGrasped no
            ^grasped no
            ^found no
