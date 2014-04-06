@@ -141,4 +141,13 @@
 		No io_keys.
 
 		Nothing must be taken into account to use this SM.
-		"""    
+		""" 
+
+	listen_and_check_word: ListenWordSM (StateMachine)   
+		"""      
+		This StateMachine listen a word and compare if it is the desired word.
+		It returns succeeded if the word matches. Otherwise, aborted. 
+
+		@input string word or word_to_listen
+
+		"""

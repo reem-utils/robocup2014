@@ -120,7 +120,7 @@ class AsrService():
                             name, var = line.partition("=")[::2]
                             tag = actiontag()
                             tag.key = name
-                            tag.value = var
+                            tag.value = var[:len(var)-1:] 
                             recognized_sentence.recognized_utterance.tags.append(tag);
                     
                     recognized_sentence.active = self.enabled_asr
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         asr = AsrService(pathFile)
         asr.run()
     else:
-        print "File doesn't exists"
+        print "File doesn't exists. Maybe you need to change your path =D"
   
 
 # vim: expandtab ts=4 sw=4
