@@ -49,8 +49,9 @@ class ProcessCommand(smach.State):
 class SayYesOrNoSM(smach.StateMachine):
     """
     Executes a SM that learns one face. 
-    The robot listen the person and returns succeeded in case that he said yes
-    and aborted if said no. 
+    The robot listen the person and returns: 
+    -succeeded   in case that he said yes
+    -aborted     if said no. 
 
     Required parameters:
     No parameters.

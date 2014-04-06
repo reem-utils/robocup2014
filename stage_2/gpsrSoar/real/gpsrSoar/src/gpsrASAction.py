@@ -1,15 +1,16 @@
 #! /usr/bin/env python
 
-import roslib; roslib.load_manifest('actionlib_tutorials')
+import roslib; roslib.load_manifest('gpsrSoar')
 import rospy
 import interface2 as interface
 # from grammarReader import grammarFileReader as GFR
 from grammarReader import grammarFileWriter2 as GFR
-from GenerateGoalScript import * #thi imports world, person, location, item, robot and compileInit. Also imports NO, YES and ignore constants
+from GenerateGoalScript import world, person, location, item, robot, compileInit
+from GenerateGoalScript import NO, YES, ignore
 from translator import obj2idx, get_list, get_obj_location, idx2obj
-#from pal_smach_utils.speech.listen_general_command import askMissingInfo as askMissingInfoSM
-#from pal_smach_utils.speech.listen_general_command import askCategory as askCategorySM
-#from pal_smach_utils.speech.listen_general_command import askCategoryLoc as askCategoryLocSM
+from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM
+from speech_states.listen_general_command import askCategory as askCategorySM
+from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
@@ -19,7 +20,6 @@ grammarNames['items'] = 'item'
 grammarNames['categories'] = 'category'
 try:
   per = GFR(wordset=grammarNames)
-  # print 'bla'
 except IOError:
   PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/gentest.gram"
   print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 21"
@@ -125,7 +125,8 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 
 def ask_category(category):
  ad = askCategorySM(GRAMMAR_NAME = category)
- ad.userdata._data = {'cat': category}
+#ad.userdata._data = {'cat': category}
+ ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
@@ -135,7 +136,8 @@ def ask_category(category):
 
 def ask_category_loc(category):
  ad = askCategoryLocSM(GRAMMAR_NAME = category)
- ad.userdata._data = {'cat': category}
+# ad.userdata._data = {'cat': category}
+ ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['loc_name']
@@ -259,7 +261,7 @@ class gpsrASAction(object):
     if command.location in loc_categories:
       # print 'ther should be a print here'
       loca = ask_category_loc(command.location)
-      # print loca
+      # print locaask_category
       # print loca
       # print self._world.location
       # print len(self._world.location)
