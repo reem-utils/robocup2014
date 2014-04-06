@@ -10,6 +10,7 @@ from util_states.global_common import *
 from util_states.topic_reader import topic_reader
 from std_msgs.msg import *
 from speech_states.activate_asr import ActivateASR
+from speech_states.read_asr import ReadASR
 from speech_states.deactivate_asr import DeactivateASR
 
 from pal_interaction_msgs.msg import *
@@ -19,6 +20,8 @@ from speech_states.say import text_to_say
 #from pal_smach_utils.speech.did_you_say_yes_or_no_sm import HearingConfirmationSM
 from speech_states.say_yes_or_no import SayYesOrNoSM
 #from pal_smach_utils.utils.timeout_container import SleepState
+
+from pal_interaction_msgs.msg._ASREvent import ASREvent
 
 MOVE_BASE_ACTION_NAME = 'move_base'
 
@@ -121,7 +124,7 @@ class RecogCommand(smach.StateMachine):
                             
                             smach.StateMachine.add('LISTEN_COMMAND_CONFIRMATION',
                                                    SayYesOrNoSM(),
-                                                   transitions={'succeeded': 'PRINT_MESSAGE',
+                                                   transitions={'succeeded': 'DISABLE_GRAMMAR',
                                                                 'aborted': 'SLEEP_STATE',
                                                                 'preempted': 'preempted'},
                                                    remapping={'in_message_heard': 'word_heard'})
@@ -147,44 +150,34 @@ class askMissingInfo(smach.StateMachine):
                 with self:
 
                         smach.StateMachine.add('ENABLE_GRAMMAR',
-                                               activate_ars(GRAMMAR_NAME),
+                                               ActivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'ASK_LOCATION_PREPARATION'})
-
-                        def askData(userdata):
-                          self.userdata.text = "I don't know where the " + userdata.object_name + 'is. Do you know where could I find it?'
-                          return 'succeeded'
-
-                        smach.StateMachine.add('ASK_LOCATION_PREPARATION',
-                                                askData(),
-                                                transitions={'succeeded': 'ASK_LOCATION', 'aborted': 'aborted'})
                         
                         smach.StateMachine.add('ASK_LOCATION',
-                                                text_to_say(self.userdata.text),
+                                                text_to_say("I don't know where the " + userdata.object_name + 'is. Do you know where could I find it?'),
                                                 transitions={succeeded: 'HEAR_COMMAND', 'aborted': 'aborted'})
+
+                        smach.StateMachine.add('HEAR_COMMAND',
+                                               ReadASR(),
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_LOCATION', 'preempted': 'preempted'},
+                                               remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
                         
-                        def bring_location_cb(userdata, message):
+                        def bring_location_cb(self):
                             # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                            locationtag = [tag for tag in message.tags if tag.key == 'location']
+                            locationtag = [tag for tag in self.userdata.userSaidTags if tag.key == 'location']
                             try: 
-                              userdata.location_name = locationtag[0].value
+                              self.userdata.location_name = locationtag[0].value
                               return 'succeeded'
                             except:
                               return 'aborted'
 
-                        smach.StateMachine.add('HEAR_COMMAND',
-                                               topic_reader(topic_name='usersaid',topic_type=asrresult,topic_time_out=10),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_LOCATION', 'preempted': 'preempted'},
-                                               remapping={'topic_output_msg': 'userSaidData'})
-
-
                         smach.StateMachine.add('BRING_LOCATION',
-                                               bring_location_cb(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT_PREPARATION', 'preempted': 'preempted'},
-                                               
-                        smach.StateMachine.add('PRINT_MESSAGE',
-                                               PrintUserData(),
-                                               transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
-                        
+                                               bring_location_cb(self),
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
+#                         smach.StateMachine.add('PRINT_MESSAGE',
+#                                                PrintUserData(),
+#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})                         
+
 #                         def confirm_object(userdata):
 #                             self.userdata.text = "Okay! I'll go to"+ userdata.location_name
 #                         return 'succeeded'
@@ -193,46 +186,39 @@ class askMissingInfo(smach.StateMachine):
 #                                                confirm_object(),
 #                                                transitions={'succeeded': 'CONFIRM_OBJECT',
 #                                                             'aborted': 'DISABLE_GRAMMAR'})
-                        
+#-----------------------                        
                         smach.StateMachine.add('CONFIRM_OBJECT',
-                                               text_to_say("Okay! I'll go to"+ userdata.location_name),#self.userdata.text),
-                                               transitions={'succeeded': 'DISABLE_GRAMMAR',
-                                                            'aborted': 'DISABLE_GRAMMAR'})
-
-
-                        smach.StateMachine.add('RECOGNIZE_COMMAND',
-                                               RecognizeCommand(command_key, command_value),
-                                               transitions={'notvalid_command': 'NOT_VALID_COMMAND',
-                                                            'valid_command': 'VALID_COMMAND',
-                                                            'preempted': 'preempted',
-                                                            'aborted': 'aborted'},
-                                               remapping={'speechData': 'userSaidData'})
-
-                        intro_text = "Ok, understood."
+                                                text_to_say("Okay! I'll go to"+ userdata.location_name),
+                                                transitions={'succeeded': 'DISABLE_GRAMMAR', 'aborted': 'DISABLE_GRAMMAR'})
+                         
+                        smach.StateMachine.add('RECOGNIZE_COMMAND', RecognizeCommand(command_key, command_value),
+                                                transitions={'notvalid_command': 'NOT_VALID_COMMAND',
+                                                'valid_command': 'VALID_COMMAND', 'preempted': 'preempted', 'aborted': 'aborted'},
+                                                remapping={'speechData': 'userSaidData'})
+ 
                         smach.StateMachine.add('VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("Ok, understood."),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR'})
-
-                        intro_text = "I couldn't understand what you said. Can you repeat?"
+ 
                         smach.StateMachine.add('NOT_VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("I couldn't understand what you said. Can you repeat?"),
                                                transitions={'succeeded': 'HEAR_COMMAND'})
-
+ 
                         smach.StateMachine.add('DISABLE_GRAMMAR',
                                                DeactivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'succeeded'})
 
 
 class config_question(smach.State):
-        
+         
         def __init__(self):
           smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], input_keys=['cat'], output_keys=['objectList'])
-
+ 
         def execute(self, userdata):
+            
+          rospy.loginfo('=============================================================================================')
           from translator import get_category_list
           userdata.objectList = get_category_list(Category=userdata.cat)
-          print userdata.objectList
-          print "caca"
           return 'succeeded'
 
 class askCategory(smach.StateMachine):
@@ -251,64 +237,51 @@ class askCategory(smach.StateMachine):
                                                 transitions={'succeeded': 'ENABLE_GRAMMAR'},
                                                 remapping={'DataType': 'DataType', 'objectList': 'objectList'})
 
-#                         def catQuestion(self):
-#                             rospy.logerr("CACAAA")
-#                             self.userdata.text = 'You asked me for a ' + self.userdata.cat + '. I could bring you ' + ', '.join(self.userdata.objectList) + '. which ' + self.userdata.cat + ' do you prefer?'
-#                              
-#                             return 'succeeded'
-#  
-#                         smach.StateMachine.add('ASK_INFO_PREPARATION',
-#                                                catQuestion(self),
-#                                                transitions={'succeeded': 'ASK_INFO',
-#                                                             'aborted': 'aborted'})
+                        smach.StateMachine.add('ENABLE_GRAMMAR',
+                                               ActivateASR(GRAMMAR_NAME),
+                                               transitions={'succeeded': 'ASK_INFO'})
                         
                         smach.StateMachine.add('ASK_INFO',
                                                text_to_say('You asked me for a ' + self.userdata.cat + '. I could bring you ' + ', '.join(self.userdata.objectList) + '. which ' + self.userdata.cat + ' do you prefer?'),
                                                transitions={'succeeded': 'HEAR_COMMAND',
                                                             'aborted': 'aborted'})
+                     
+                        smach.StateMachine.add('HEAR_COMMAND',
+                                               ReadASR(),
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_ORDER', 'preempted': 'preempted'},
+                                               remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
 
-                        smach.StateMachine.add('ENABLE_GRAMMAR',
-                                               ActivateASR(GRAMMAR_NAME),
-                                               transitions={'succeeded': 'ASK_INFO'})
-
-                        def bring_order_cb(userdata, message):
+                        def bring_order_cb(self):
                             # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                            objecttag = [tag for tag in message.tags if tag.key == 'object']
+                            objecttag = [tag for tag in self.userdata.userSaidTags if tag.key == 'object']
                             try: 
-                              userdata.object_name = objecttag[0].value
+                              self.userdata.object_name = objecttag[0].value
                               return 'succeeded'
                             except:
-                              return 'aborted'                
-
-                        smach.StateMachine.add('HEAR_COMMAND',
-                                               topic_reader(topic_name='usersaid',topic_type=asrresult,topic_time_out=10),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_ORDER', 'preempted': 'preempted'},
-                                               remapping={'topic_output_msg': 'userSaidData'})
+                              return 'aborted'
 
                         smach.StateMachine.add('BRING_ORDER',
-                                               bring_order_cb(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT_PREPARATION', 'preempted': 'preempted'},
+                                               bring_order_cb(self),
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
                                                
-                        smach.StateMachine.add('PRINT_MESSAGE',
-                                               PrintUserData(),
-                                               transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
+#                         smach.StateMachine.add('PRINT_MESSAGE',
+#                                                PrintUserData(),
+#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
 
-                        def confirm_object(userdata):
-                          self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
-                        return 'succeeded'
-
-                        smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
-                                               confirm_object(),
-                                               transitions={'succeeded': 'CONFIRM_OBJECT',
-                                                            'aborted': 'DISABLE_GRAMMAR'})
+#                         def confirm_object(userdata):
+#                           self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
+#                         return 'succeeded'
+# 
+#                         smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
+#                                                confirm_object(),
+#                                                transitions={'succeeded': 'CONFIRM_OBJECT',
+#                                                             'aborted': 'DISABLE_GRAMMAR'})
                         
-                        smach.StateMachine.add('CONFIRM_OBJECT',
-                                               text_to_say(self.userdata.text),
-                                               transitions={'succeeded': 'DISABLE_GRAMMAR',
-                                                            'aborted': 'DISABLE_GRAMMAR'})
+                        smach.StateMachine.add('CONFIRM_OBJECT', text_to_say("Okay! I'll go to " + userdata.location_name),
+                                               transitions={'succeeded': 'DISABLE_GRAMMAR', 'aborted': 'DISABLE_GRAMMAR'})
 
 
-                        smach.StateMachine.add('RECOGNIZE_COMMAND',
+                        smach.StateMachine.add('RECOGNIZE_COMMAND', 
                                                RecognizeCommand(command_key, command_value),
                                                transitions={'notvalid_command': 'NOT_VALID_COMMAND',
                                                             'valid_command': 'VALID_COMMAND',
@@ -316,14 +289,12 @@ class askCategory(smach.StateMachine):
                                                             'aborted': 'aborted'},
                                                remapping={'speechData': 'userSaidData'})
 
-                        intro_text = "Ok, understood."
                         smach.StateMachine.add('VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("Ok, understood."),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR'})
 
-                        intro_text = "Sorry, I couldn't understand what you said. Can you repeat?"
                         smach.StateMachine.add('NOT_VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("Sorry, I couldn't understand what you said. Can you repeat?"),
                                                transitions={'succeeded': 'HEAR_COMMAND'})
 
                         smach.StateMachine.add('DISABLE_GRAMMAR',
@@ -382,23 +353,24 @@ class askCategoryLoc(smach.StateMachine):
 
                         smach.StateMachine.add('BRING_ORDER',
                                                bring_order_cb(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT_PREPARATION', 'preempted': 'preempted'},
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'},                                              
+                                               remapping={'topic_output_msg': 'userSaidData'})
                                                
-                        smach.StateMachine.add('PRINT_MESSAGE',
-                                               PrintUserData(),
-                                               transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
-
-                        def confirm_object(userdata):
-                          self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
-                        return 'succeeded'
-
-                        smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
-                                               confirm_object(),
-                                               transitions={'succeeded': 'CONFIRM_OBJECT',
-                                                            'aborted': 'DISABLE_GRAMMAR'})
+#                         smach.StateMachine.add('PRINT_MESSAGE',
+#                                                PrintUserData(),
+#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
+ 
+#                         def confirm_object(userdata):
+#                           self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
+#                         return 'succeeded'
+# 
+#                         smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
+#                                                confirm_object(),
+#                                                transitions={'succeeded': 'CONFIRM_OBJECT',
+#                                                             'aborted': 'DISABLE_GRAMMAR'})
                         
                         smach.StateMachine.add('CONFIRM_OBJECT',
-                                               text_to_say(self.userdata.text),
+                                               text_to_say("Okay! I'll go to %s." % (userdata.location_name)),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR',
                                                             'aborted': 'DISABLE_GRAMMAR'})
 
