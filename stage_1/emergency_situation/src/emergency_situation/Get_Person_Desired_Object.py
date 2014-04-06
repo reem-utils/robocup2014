@@ -17,6 +17,7 @@ from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
 from manipulation_states.play_motion_sm import play_motion_sm
 from manipulation_states.move_hands_form import move_hands_form 
+from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
 
@@ -148,8 +149,11 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Find_and_grab_object',
                 #Find_and_grab_object(),
                 DummyStateMachine(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
-
+                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+            smach.StateMachine.add(
+                'Grasp_fail_Ask_Person',
+                ask_give_object_grasping(),
+                transitions=transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
             #Go to person
             smach.StateMachine.add(
                 'Prepare_Go_To_Person',
