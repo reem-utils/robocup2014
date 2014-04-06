@@ -114,37 +114,35 @@ def new_world(loc_list):
   return w
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
- ad = askMissingInfoSM()
+ '''ad = askMissingInfoSM()
  ad.userdata._data = {'dataType': Type, 'object_name':objectName}
  out = ad.execute()
  loc = ad.userdata._data['location_name']
- print loc
- print loc
- return loc
-  # return 'charger'
+ return loc  #-------------------'''
+ return 'fridge'
 
 def ask_category(category):
- ad = askCategorySM(GRAMMAR_NAME = category)
+ '''ad = askCategorySM(GRAMMAR_NAME = category)
 #ad.userdata._data = {'cat': category}
  ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
  # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- return obj
-  # return 'coke'
+ return obj   #--------------'''
+ return 'milk'
 
 def ask_category_loc(category):
- ad = askCategoryLocSM(GRAMMAR_NAME = category)
+ '''ad = askCategoryLocSM(GRAMMAR_NAME = category)
 # ad.userdata._data = {'cat': category}
- ad.userdata.cat = category
+ #ad.userdata.cat = category
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['loc_name']
  print obj
  # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- return obj
-  # return 'coke'
+ return obj    #---------------------'''
+ return 'coke'
 
 def check_object_location(obj):
   if obj != '':
@@ -185,7 +183,6 @@ class gpsrASAction(object):
         success = True
       else: 
         if len(self._goal.orderList) == self._goalDonei:
-        # if 3 == self._goalDonei:
           self._result.outcome = 'succeeded'
           rospy.loginfo('%s: Succeeded' % self._action_name)
           self._as.set_succeeded(self._result)
@@ -194,11 +191,6 @@ class gpsrASAction(object):
           self._world.update_world(self._last_goal)
 
           self.print_goal()
-
-
-
-
-
   
     """
       for i in xrange(1, goal.order):
@@ -218,7 +210,7 @@ class gpsrASAction(object):
     perss = []
     locc = []
     itt = []
-    for c in commands:
+    for c in commands:      #extract elements from orderList and put them in the following arrays
       if c.person != '':
         if c.person not in perss:
           iperson += 1
