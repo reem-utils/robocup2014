@@ -200,7 +200,7 @@ class gpsrOrders(smach.StateMachine):
 
                 return move_base_goal
 
-            smach.StateMachine.add(
+            smach.StateMachine.add( 
                     'init_SM',
                     init_parameters(),
                     transitions={'succeeded': 'Check_ASR'},
