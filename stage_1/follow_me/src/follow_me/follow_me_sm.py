@@ -59,7 +59,7 @@ class wait_for_stard(smach.State):
         if userdata.asr_userSaid=="Follow me":
             return 'succeded' # todo locks to .gram
         else :
-            print (FAIL +"I listen diferent a diferent thing   " +  str(userdata.asr_userSaid) + ENDC)
+            rospy.loginfo (FAIL +"I listen diferent a diferent thing   " +  str(userdata.asr_userSaid) + ENDC)
             return 'aborted'
         return 'succeeded'
 
@@ -70,8 +70,8 @@ class FollowMe(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
-        with self:
-
+        with self:  
+            
             self.userdata.standard_error='OK'
             smach.StateMachine.add('INIT_FOLLOW',
                                    FollowMeInit(),
@@ -80,7 +80,7 @@ class FollowMe(smach.StateMachine):
 
             smach.StateMachine.add('FOLLOW_ME_1rst',
                                    follow_me_1st(),
-                                   transitions={'ELEVATOR':'FOLLOW_ME_2nd', 'LOST':'FOLLOW_ME_1rst'})
+                                   transitions={'succeeded':'FOLLOW_ME_2nd', 'aborted':'FOLLOW_ME_1rst'})
             
             # in this state i will wait that the door it comes open
             smach.StateMachine.add('FOLLOW_ME_2nd',

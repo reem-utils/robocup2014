@@ -21,17 +21,21 @@ def child_term_cb(outcome_map):
     if outcome_map['FOLLOW_OPERATOR'] == 'lost':
         rospy.loginfo(OKGREEN + "It lost the person ends" + ENDC)
         return True
-
+    else:
+        rospy.loginfo(OKGREEN + "finish with " + str(outcome_map['FOLLOW_OPERATOR'])  + ENDC)
     # terminate all running states if BAR finished
     if outcome_map['CHECK_ELEVATOR'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
+        rospy.loginfo(OKGREEN + "check elevator ends, i have found a elevator" + ENDC)
         return True
-
+        #return 'ELEVATOR'  
     # in all other case, just keep running, don't terminate anything
     return False
 
-def out_cb(outcome_map):
+def out_cb_follow(outcome_map):
+    
+    rospy.loginfo(OKGREEN + "maybbe bybe" + ENDC)
     if outcome_map['CHECK_ELEVATOR'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "bye bye elevator" + ENDC)
         return 'ELEVATOR'    
     elif outcome_map['FOLLOW_OPERATOR'] == 'lost':
         return 'LOST'    
@@ -40,7 +44,7 @@ def out_cb(outcome_map):
     
     
 # TODO: now i'm not listen hear... maybe will be intesting
-class follow_me_1st(smach.Concurrence):
+class follow_me_1st(smach.StateMachine):
     """
     Executes a SM that do the first part of the follow_me.
     This part consist in follow the operator,
@@ -54,24 +58,27 @@ class follow_me_1st(smach.Concurrence):
         CHECK_ELEVATOR
     """
     def __init__(self, distToHuman=0.9):
-
-        smach.Concurrence.__init__(self,outcomes=['ELEVATOR', 'LOST'],
-                                   default_outcome='LOST',input_keys=["in_learn_person"],
-                                   child_termination_cb = child_term_cb,
-                                   outcome_cb=out_cb)
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],input_keys=['in_learn_person'])
         
-       # rospy.set_param("/params_learn_and_follow_operator_test/distance_to_human", distToHuman)
+        with self:
+            sm=smach.Concurrence(outcomes=['ELEVATOR', 'LOST','preempted'],
+                                    default_outcome='ELEVATOR',input_keys=["in_learn_person"],
+                                    child_termination_cb = child_term_cb,
+                                    outcome_cb=out_cb_follow,output_keys=[])
+            
+            with sm:
     
-        with self:  
-    
-            self.userdata.standard_error='OK'
-            smach.Concurrence.add('FOLLOW_OPERATOR',
-                            FollowOperator())
-            #This it will return if it's in the elevator, and if it's in the elevator
-            # it have to say: i'm in the elevator
-            # it have to sent a goal in a less distance of the operator
-            smach.Concurrence.add('CHECK_ELEVATOR',
-                            look_for_elevator())
+                smach.Concurrence.add('FOLLOW_OPERATOR',
+                                FollowOperator(distToHuman))
+                #This it will return if it's in the elevator, and if it's in the elevator
+                # it have to say: i'm in the elevator
+                # it have to sent a goal in a less distance of the operator
+                smach.Concurrence.add('CHECK_ELEVATOR',
+                                look_for_elevator())
+            
+            smach.StateMachine.add('FOLLOW_AND_CHECKING', sm,
+                                     transitions={'ELEVATOR':'succeeded',
+                                                 'LOST':'aborted','preempted':'succeeded'})
                   
                
             
