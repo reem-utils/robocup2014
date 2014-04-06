@@ -87,7 +87,7 @@ class nav_to_coord_concurrent(smach.StateMachine):
                                  output_keys=['standard_error'])
         self.coord_pub= rospy.Publisher('/move_base_simple/goal', PoseStamped)
         with self: 
-
+            self.userdata.standard_error='OK'
             smach.StateMachine.add('CreateNavGoal',
                                    createNavGoal(frame_id),
                                    transitions={'succeeded':'SEND_GOAL', 'aborted':'aborted'})

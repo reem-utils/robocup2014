@@ -13,7 +13,7 @@ OKGREEN = '\033[92m'
 
 
 from speech_states.say import text_to_say
-from speech_states.listen_to import  ListenToSM
+#from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
 
@@ -22,22 +22,23 @@ FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
 START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
 LEARNED_PERSON_FRASE = "Let's go buttercup."
+START_FRASE="Hello, my name is REEM! What do you want me to do today?"
 
 
 
 # It's only becouse i can't import the file... i can't understand
-class LearnPerson(smach.StateMachine):
+class LearnPerson(smach.State):
 
     def __init__(self): 
-        smach.State.__init__(self, input_keys=['asr_userSaid'],
+        smach.State.__init__(self, input_keys=['asr_userSaid'],output_keys=['in_learn_person','asr_userSaid'],
                              outcomes=['succeeded','aborted', 'preempted'])
 
     def execute(self, userdata):
-        
+        userdata.in_learn_person="hello"
         rospy.loginfo("shhhhhhhhh")
         return 'succeeded'
     
-class wait_for_stard(smach.StateMachine):
+class wait_for_start(smach.State):
 
     def __init__(self): 
         smach.State.__init__(self, input_keys=['asr_userSaid'],
@@ -51,22 +52,31 @@ class wait_for_stard(smach.StateMachine):
         else :
             print (FAIL +"I listen diferent a diferent thing   " +  str(userdata.asr_userSaid) + ENDC)
             return 'aborted'
-        
 
-#Main
+# this state is not good! realy this i have to change for the robot listen
+class  ListenToSM(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted'],
+                             output_keys=['asr_userSaid'])
+    def execute(self,userdata):
+        userdata.asr_userSaid="Follow me" 
+        rospy.loginfo("this is a dummy state FOR LISTENTO")
+        return 'succeeded'
+    
 class FollowMeInit(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],output_keys=['standard_error'])
+        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],output_keys=['standard_error','in_learn_person'])
 
         with self:
-            self.userdata.standard_error='OK'
-            self.userdata.tts_text="Hello, my name is REEM! What do you want me to do today?"
             self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
+            self.userdata.standard_error='OK'
             smach.StateMachine.add('INTRO',
-                                   text_to_say(),
+                                   text_to_say(START_FRASE),
                                    transitions={'succeeded': 'Listen','aborted':'aborted'})
 
-            ### 2. It listen the comand    
+            ### 2. It listen the command    
             self.userdata.grammar_name="follow_me.gram" #TODO ha de ser igual que la del sergi
             smach.StateMachine.add('Listen',
                                    ListenToSM(),
@@ -75,13 +85,12 @@ class FollowMeInit(smach.StateMachine):
           
             # it locks if it's the command correct, if not it will try again
             smach.StateMachine.add('FOLLOW_ME_COMMAND',
-                                   wait_for_stard(),
+                                   wait_for_start(),
                                    transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
                                                 'aborted': 'Listen'})
 
-            self.userdata.tts_text = START_FOLLOW_FRASE # todo it doesn0t work i'm waiting for cris
             smach.StateMachine.add('START_FOLLOWING_COME_CLOSER',
-                                   text_to_say(),
+                                   text_to_say(START_FOLLOW_FRASE),
                                    transitions={'succeeded': 'SM_LEARN_PERSON','aborted':'aborted'})
 
             # it learns the person that we have to follow
@@ -90,7 +99,6 @@ class FollowMeInit(smach.StateMachine):
                                    transitions={'succeeded': 'SM_STOP_LEARNING',
                                                 'aborted': 'aborted'})
 
-            self.userdata.tts_text = LEARNED_PERSON_FRASE # todo it doesn0t work i'm waiting for cris
             smach.StateMachine.add('SM_STOP_LEARNING',
-                                   text_to_say(),
+                                   text_to_say(LEARNED_PERSON_FRASE),
                                    transitions={'succeeded': 'succeeded','aborted':'aborted'})

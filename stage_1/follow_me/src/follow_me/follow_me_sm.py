@@ -18,6 +18,7 @@ from speech_states.say import text_to_say
 from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
+from follow_me_init import FollowMeInit
 from follow_me_1st import follow_me_1st
 from follow_me_2nd import follow_me_2nd
 from follow_me_3rd import follow_me_3rd
@@ -71,10 +72,11 @@ class FollowMe(smach.StateMachine):
 
         with self:
 
-
+            self.userdata.standard_error='OK'
             smach.StateMachine.add('INIT_FOLLOW',
-                                   FollowMeInit_dummy(),
-                                   transitions={'succeeded': 'FOLLOW_ME_1rst'})
+                                   FollowMeInit(),
+                                   transitions={'succeeded': 'FOLLOW_ME_1rst', 
+                                                'preempted':'FOLLOW_ME_1rst', 'aborted':'FOLLOW_ME_1rst'})
 
             smach.StateMachine.add('FOLLOW_ME_1rst',
                                    follow_me_1st(),
