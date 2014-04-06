@@ -18,7 +18,7 @@ from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 from util_states.topic_reader import topic_reader
 from smach_ros.simple_action_state import SimpleActionState
-from manip_to_pose import manip_to_pose
+from manipulation_states.manip_to_pose import manip_to_pose
 
 class print_userdata(smach.State):
     def __init__(self):

@@ -16,7 +16,8 @@ OKGREEN = '\033[92m'
 
 from speech_states.say import text_to_say
 from speech_states.listen_to import  ListenToSM
-from learn_person import LearnPerson
+#from learn_person import LearnPerson
+
 from follow_me_init import FollowMeInit
 from follow_me_1st import follow_me_1st
 from follow_me_2nd import follow_me_2nd
@@ -27,7 +28,26 @@ FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
 LEARNED_PERSON_FRASE = "Let's go buttercup."
 
-class wait_for_stard(smach.StateMachine):
+class FollowMeInit_dummy(smach.State):
+    def __init__(self): 
+      smach.State.__init__(self, input_keys=[],
+                           outcomes=['succeeded'])
+    
+    def execute(self,userdata):
+        rospy.loginfo (OKGREEN +"I'm followin dummy state   "  + ENDC)
+        return 'succeeded'
+    
+class follow_me_3rd_dummy(smach.State):
+    def __init__(self): 
+      smach.State.__init__(self, input_keys=[],
+                           outcomes=['succeeded'])
+    
+    def execute(self,userdata):
+        rospy.loginfo (OKGREEN +"I'm followin dummy 3 state   "  + ENDC)
+        return 'succeeded'
+
+
+class wait_for_stard(smach.State):
 
     def __init__(self): 
         smach.State.__init__(self, input_keys=['asr_userSaid'],
@@ -43,6 +63,8 @@ class wait_for_stard(smach.StateMachine):
             return 'aborted'
         return 'succeeded'
 
+
+    
 #Main
 class FollowMe(smach.StateMachine):
     def __init__(self):
@@ -50,18 +72,20 @@ class FollowMe(smach.StateMachine):
 
         with self:
 
-
+            self.userdata.standard_error='OK'
             smach.StateMachine.add('INIT_FOLLOW',
                                    FollowMeInit(),
-                                   transitions={'succeeded': 'FOLLOW_ME_COMMAND'})
+                                   transitions={'succeeded': 'FOLLOW_ME_1rst', 
+                                                'preempted':'FOLLOW_ME_1rst', 'aborted':'FOLLOW_ME_1rst'})
 
             smach.StateMachine.add('FOLLOW_ME_1rst',
                                    follow_me_1st(),
-                                   transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+                                   transitions={'ELEVATOR':'FOLLOW_ME_2nd', 'LOST':'FOLLOW_ME_1rst'})
             
+            # in this state i will wait that the door it comes open
             smach.StateMachine.add('FOLLOW_ME_2nd',
                                    follow_me_2nd(),
                                    transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
-            smach.StateMachine.add('FOLLOW_ME_3rd',
-                                   follow_me_3rd(),
-                                   transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+#             smach.StateMachine.add('FOLLOW_ME_3rd',
+#                                    follow_me_3rd_dummy(),
+#                                    transitions={'succeeded': 'succeeded'})

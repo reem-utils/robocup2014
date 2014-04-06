@@ -53,8 +53,7 @@ def main():
         smach.StateMachine.add(
             'follow_me1st_test',
             follow_me_1st(),
-            transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted',
-                         'ELEVATOR':'succeeded', 'LOST':'aborted'})
+            transitions={'ELEVATOR':'succeeded', 'LOST':'aborted'})
         smach.StateMachine.add(
             'follow_me_info',
             follow_me_1st_error(),

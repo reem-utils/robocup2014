@@ -48,13 +48,7 @@ class filter_and_process(smach.State):
                              input_keys=['tracking_msg','tracking_msg_filtered'],
                              output_keys=['tracking_msg_filtered'])
     def execute(self, userdata):
-            
-            # if the message is perfect i d'ont have to do anything, 
-            #only return if it's in the message or not
-            aux=tracker_people()
-            aux.pose.position.x
-            aux.pose.position.y
-            #userdata.tracking_msg_filtered=tracker_people()
+
             userdata.tracking_msg_filtered=userdata.tracking_msg.pose    
             
             #userdata.tracking_msg_filtered='hello'
@@ -84,7 +78,7 @@ class no_follow(smach.State):
                 return 'occluded'
         
        
-class calculete_goal(smach.State):
+class calculate_goal(smach.State):
     def __init__(self, distanceToHuman=0.9):
         smach.State.__init__(self, outcomes=['succeeded','aborted'],
                              input_keys=['tracking_msg_filtered','nav_to_coord_goal'],
@@ -96,6 +90,7 @@ class calculete_goal(smach.State):
         new_pose = Pose()
         new_pose.position.x = userdata.tracking_msg_filtered.position.x
         new_pose.position.y = userdata.tracking_msg_filtered.position.y
+        
         unit_vector = normalize_vector(new_pose.position)
         position_distance = vector_magnitude(new_pose.position)
         rospy.loginfo(" Position data from Reem to person:")
@@ -108,7 +103,6 @@ If person is closer than the distance given, we wont move but we might rotate.
 We want that if the person comes closer, the robot stays in the place.
 Thats why we make desired distance zero if person too close.
 """
-
 
         distance_des = 0.0
         if position_distance >= self.distanceToHuman: 
@@ -127,12 +121,6 @@ Thats why we make desired distance zero if person too close.
         rospy.loginfo(' Distance that REEM will move towards the person : ' + str(distance_des))
         rospy.loginfo(' Degrees that REEM will rotate : ' + str(alfa_degree))
 
-       # nav_goal_msg.header.stamp = rospy.Time.now()
-        #nav_goal_msg.header.frame_id = "/base_link"
-        #nav_goal_msg.pose.position = dist_vector
-        #nav_goal_msg.pose.orientation = Quaternion(*quaternion_from_euler(0, 0, alfa))
-        #rospy.loginfo(' This is the Nav Goal We send to REEM: ' + str(nav_goal_msg))
-        #userdata.nav_to_coord_goal= nav_goal_msg
  
         userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
         return 'succeeded'
@@ -181,11 +169,11 @@ class FollowOperator(smach.StateMachine):
         
 
         with self:
-            
+            self.userdata.standard_error='OK'
 #TODO i don't know if it's the currect form to stop de face tracking
             #smach.StateMachine.add('DISABLE_FACE_TRACKING',
-             #                          ServiceState('/personServer/faceTracking/stop'),
-              #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
+            #                          ServiceState('/personServer/faceTracking/stop'),
+            #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
             #self. userdata.tracking_msg=Pose()
             
             smach.StateMachine.add('INIT_VAR',
@@ -207,7 +195,7 @@ class FollowOperator(smach.StateMachine):
                                                 'no_pausible':'READ_TRACKER_TOPIC'})
             smach.StateMachine.add('I_KNOW',
                        reset_occluded_timer(),
-                       transitions={'succeeded': 'CALCULETE_GOAL'})
+                       transitions={'succeeded': 'CALCULATE_GOAL'})
             
             # hear we will comprobate the time, if its greater than LOST_TIME it will return Lost
             smach.StateMachine.add('I_DONT_KNOW',
@@ -215,8 +203,8 @@ class FollowOperator(smach.StateMachine):
                        transitions={'lost': 'lost',
                                     'occluded': 'READ_TRACKER_TOPIC'})
            # /move_base_simple/goal
-            smach.StateMachine.add('CALCULETE_GOAL',
-                       calculete_goal(distToHuman),
+            smach.StateMachine.add('CALCULATE_GOAL',
+                       calculate_goal(distToHuman),
                        transitions={'succeeded': 'SEND_GOAL',
                                     'aborted': 'READ_TRACKER_TOPIC'})
             
