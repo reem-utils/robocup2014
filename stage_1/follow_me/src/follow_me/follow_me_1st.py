@@ -54,6 +54,7 @@ class follow_me_1st(smach.Concurrence):
         CHECK_ELEVATOR
     """
     def __init__(self, distToHuman=0.9):
+
         smach.Concurrence.__init__(self,outcomes=['ELEVATOR', 'LOST'],
                                    default_outcome='LOST',input_keys=["in_learn_person"],
                                    child_termination_cb = child_term_cb,
@@ -63,7 +64,7 @@ class follow_me_1st(smach.Concurrence):
     
         with self:  
     
-            
+            self.userdata.standard_error='OK'
             smach.Concurrence.add('FOLLOW_OPERATOR',
                             FollowOperator())
             #This it will return if it's in the elevator, and if it's in the elevator
