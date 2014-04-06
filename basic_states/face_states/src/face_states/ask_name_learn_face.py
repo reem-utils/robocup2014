@@ -10,7 +10,7 @@ import rospy
 import smach
 from face_states.learn_face import learn_face
 from speech_states.say import text_to_say
-from speech_states.listen_to import ListenToSM
+from speech_states.ask_question import AskQuestionSM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -20,14 +20,19 @@ OKGREEN = '\033[92m'
 class prepare_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['asr_userSaid'],
+                                input_keys=['asr_answer', 'asr_answer_tags'],
                                 output_keys=['name'])
 
     def execute(self, userdata):
 
-        userdata.name = userdata.asr_userSaid
-        
-        return 'succeeded'
+        # Tags
+        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'name']
+        if tags:
+            name = tags[0].value
+            userdata.name = name
+            return 'succeeded'
+        else: 
+            return 'aborted'
     
 class prepare_say_name(smach.State):
     def __init__(self):
@@ -39,7 +44,8 @@ class prepare_say_name(smach.State):
 
         userdata.tts_text = "Nice to meet you " + userdata.name
         userdata.tts_wait_before_speaking = 0
-
+        userdata.tts_lang = None
+        
         return 'succeeded'
     
 class SaveFaceSM(smach.StateMachine):
@@ -71,15 +77,8 @@ class SaveFaceSM(smach.StateMachine):
             
             # Ask for name
             smach.StateMachine.add(
-                'ask_name',
-                text_to_say("Hi, what's your name?"),
-                transitions={'succeeded': 'listen_name', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-            
-            # Listen the name
-            smach.StateMachine.add(
                 'listen_name',
-                ListenToSM(),
+                AskQuestionSM("Hi, what's your name?", "iam.gram"),
                 transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -87,8 +86,15 @@ class SaveFaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 "prepare_name",
                 prepare_name(),
-                transitions={'succeeded': 'learn_face', 'aborted': 'aborted', 
+                transitions={'succeeded': 'learn_face', 'aborted': 'ask_name_again', 
                 'preempted': 'preempted'})  
+            
+            # Ask for name again
+            smach.StateMachine.add(
+                'ask_name_again',
+                text_to_say("Sorry, I don't understand you. Can you repeat your name, please?"),
+                transitions={'succeeded': 'listen_name', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
            
             # Start learning
             smach.StateMachine.add(
