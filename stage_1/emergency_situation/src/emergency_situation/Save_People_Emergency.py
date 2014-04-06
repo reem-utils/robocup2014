@@ -17,6 +17,7 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+#from emergency_situation.GeneratePDF_State import GeneratePDF_State
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -104,18 +105,19 @@ class Save_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Rescue',
                 text_to_say(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             # TODO: instead of using nav_to_poi(), we'll be using nav_to_coord(), as we have the coordenates of the person in emergency
-            smach.StateMachine.add(
-                'Prepare_Go_To_Person',
-                prepare_coord_person_emergency(),
-                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
-            smach.StateMachine.add(
-                'Go_To_Person',
-                DummyStateMachine(),
-                #nav_to_coord('\base_link'),
-                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
+            # It is done in the Search_People_Emergency SM
+#            smach.StateMachine.add(
+#                'Prepare_Go_To_Person',
+#                prepare_coord_person_emergency(),
+#                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+#            smach.StateMachine.add(
+#                'Go_To_Person',
+#                DummyStateMachine(),
+#                #nav_to_coord('\base_link'),
+#                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             #It should be Speech Recognition: ListenTo(?)
             smach.StateMachine.add(
@@ -142,5 +144,6 @@ class Save_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Save_Info',
                 DummyStateMachine(),
+                #GeneratePDF_State(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
