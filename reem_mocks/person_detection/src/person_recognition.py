@@ -17,13 +17,12 @@ from pal_detection_msgs.msg import Detection2d, FaceDetection, LegDetections
 from geometry_msgs.msg import Point
 
 class PersonTopic():
-    	"""
+    """
 	Person detection Mock 
 
 	Run the topic of face recognition:
 		/pal_person/recognizer
  	"""
-    
     def __init__(self):
         rospy.loginfo("Initializing person_recognizer topic")
         self.person_pub= rospy.Publisher('/pal_person/recognizer', PersonDetections) 
