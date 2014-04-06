@@ -129,15 +129,12 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
  
 
 def ask_category(category):
- '''ad = askCategorySM(GRAMMAR_NAME = category)
-#ad.userdata._data = {'cat': category}
- ad.userdata.cat = category
+ ad = askCategorySM(GRAMMAR_NAME = category)
  out = ad.execute()
- print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ ob = obj2idx(ad.userdata.object_name, 'ITEMS')
  return obj   #--------------'''
- return 'milk'
+ #return 'milk'
 
 def ask_category_loc(category):
  '''ad = askCategoryLocSM(GRAMMAR_NAME = category)

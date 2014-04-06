@@ -169,9 +169,9 @@ class BringOrderObject(smach.State):
                                      input_keys=['userSaidTags'],
                                      output_keys=['object_name'])
 
-        def execute(self):
+        def execute(self, userdata):
                   # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                objecttag = [tag for tag in self.userdata.userSaidTags if tag.key == 'object']
+                objecttag = [tag for tag in userdata.userSaidTags if tag.key == 'object']
                 try: 
                   self.userdata.object_name = objecttag[0].value
                   return 'succeeded'
@@ -246,23 +246,29 @@ class config_question(smach.State):
         def execute(self, userdata):
           from translator import get_category_list
           userdata.objectList = get_category_list(Category=userdata.cat)
+          
           return 'succeeded'
 
 class askCategory(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
-                smach.StateMachine.__init__(self, outcomes = ['succeeded', 'preempted', 'aborted'], input_keys=['cat','objectList'])
-                GRAMMAR_NAME = 'robocup/' + GRAMMAR_NAME
+                smach.StateMachine.__init__(self, outcomes = ['succeeded', 'preempted', 'aborted'])
+                #GRAMMAR_NAME = 'robocup/' + GRAMMAR_NAME
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
+                self.userdata.location_name = ''
+                self.userdata.grammar_name = ''
+                self.userdata.tts_wait_before_speaking = 0
+                self.userdata.tts_text = ''
+                self.userdata.tts_lang = ''
                 
                 with self:
 
                         smach.StateMachine.add('CONFG_QUESTION',
                                                 config_question(),
                                                 transitions={'succeeded': 'ENABLE_GRAMMAR'},
-                                                remapping={'DataType': 'DataType', 'objectList': 'objectList'})
+                                                remapping={'cat': 'cat', 'objectList': 'objectList'})
 
                         smach.StateMachine.add('ENABLE_GRAMMAR',
                                                ActivateASR(GRAMMAR_NAME),
@@ -285,17 +291,8 @@ class askCategory(smach.StateMachine):
 #                         smach.StateMachine.add('PRINT_MESSAGE',
 #                                                PrintUserData(),
 #                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
-
-#                         def confirm_object(userdata):
-#                           self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
-#                         return 'succeeded'
-# 
-#                         smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
-#                                                confirm_object(),
-#                                                transitions={'succeeded': 'CONFIRM_OBJECT',
-#                                                             'aborted': 'DISABLE_GRAMMAR'})
                         
-                        smach.StateMachine.add('CONFIRM_OBJECT', text_to_say("Okay! I'll go to " + userdata.location_name),
+                        smach.StateMachine.add('CONFIRM_OBJECT', text_to_say("Okay! I'll go to " + self.userdata.location_name),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR', 'aborted': 'DISABLE_GRAMMAR'})
 
 
@@ -334,6 +331,15 @@ class askCategoryLoc(smach.StateMachine):
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
                 GRAMMAR_NAME='robocup/' + GRAMMAR_NAME.replace(' ', '_')
+                
+                self.userdata.cat = GRAMMAR_NAME
+                self.userdata.objectList = []
+                self.userdata.location_name = ''
+                self.userdata.grammar_name = ''
+                self.userdata.tts_wait_before_speaking = 0
+                self.userdata.tts_text = ''
+                self.userdata.tts_lang = ''
+                
                 with self:
 
                         smach.StateMachine.add('CONFG_QUESTION',
@@ -347,7 +353,7 @@ class askCategoryLoc(smach.StateMachine):
 
                         #blabla
                         smach.StateMachine.add('ASK_INFO',
-                                               text_to_say('You said a ' + userdata.cat + '. I could go to ' + ', '.join(userdata.locList) + '. Which ' + userdata.cat + ' do you prefer?'),
+                                               text_to_say('You said a ' + userdata.cat + '. I could go to ' + ', '.join(self.userdata.locList) + '. Which ' + self.userdata.cat + ' do you prefer?'),
                                                transitions={'succeeded': 'HEAR_COMMAND',
                                                             'aborted': 'aborted'})
 
@@ -377,18 +383,9 @@ class askCategoryLoc(smach.StateMachine):
 #                         smach.StateMachine.add('PRINT_MESSAGE',
 #                                                PrintUserData(),
 #                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
- 
-#                         def confirm_object(userdata):
-#                           self.userdata.text = "Okay! I'll go to %s." % (userdata.location_name)
-#                         return 'succeeded'
-# 
-#                         smach.StateMachine.add('CONFIRM_OBJECT_PREPARATION',
-#                                                confirm_object(),
-#                                                transitions={'succeeded': 'CONFIRM_OBJECT',
-#                                                             'aborted': 'DISABLE_GRAMMAR'})
-                        
+                         
                         smach.StateMachine.add('CONFIRM_OBJECT',
-                                               text_to_say("Okay! I'll go to %s." % (userdata.location_name)),
+                                               text_to_say("Okay! I'll go to " + self.userdata.location_name),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR',
                                                             'aborted': 'DISABLE_GRAMMAR'})
 

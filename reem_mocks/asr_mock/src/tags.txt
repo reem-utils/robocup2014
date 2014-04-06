@@ -1,1 +1,1 @@
-location=bench
+location=drink
