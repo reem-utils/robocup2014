@@ -9,18 +9,22 @@ Created on 22/03/2014
 
 import rospy
 import smach
+import math
+
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
 from face_states.ask_name_learn_face import SaveFaceSM
+from face_states.searching_person import searching_person
 from gesture_states.gesture_recognition import GestureRecognition 
-
+from util_states.math_utils import normalize_vector, vector_magnitude
+from geometry_msgs.msg import Pose
 
 # Constants
 NUMBER_OF_ORDERS = 3
-
+DummyStateMachine
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -38,7 +42,6 @@ class DummyStateMachine(smach.State):
         rospy.sleep(3)
         return 'succeeded'
 
-
 class prepare_ask_person_back(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -51,7 +54,7 @@ class prepare_ask_person_back(smach.State):
         
         return 'succeeded'
     
-class prepare_coord(smach.State):
+class prepare_coord_wave(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['gesture_detection'],
@@ -64,6 +67,34 @@ class prepare_coord(smach.State):
         userdata.nav_to_coord_goal.yaw  = userdata.gesture_detection.orientation.w
         
         return 'succeeded'
+
+class prepare_coord_order(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['face'],
+                                output_keys=['standard_error', 'nav_to_coord_goal'])
+
+    def execute(self, userdata):
+        
+        new_pose = Pose()
+        new_pose.position.x = userdata.face.position.x
+        new_pose.position.y = userdata.face.position.y
+
+        unit_vector = normalize_vector(userdata.nav_to_coord_goal)
+        position_distance = vector_magnitude(new_pose.position)
+
+        distance_des = 0.0
+        if position_distance >= self.distanceToHuman: 
+            distance_des = position_distance - self.distanceToHuman
+        else:
+            rospy.loginfo(" Person too close => not moving, just rotate")
+ 
+        alfa = math.atan2(new_pose.position.y, new_pose.position.x)
+        
+        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        
+        return 'succeeded'
+
 
 class checkLoop(smach.State):
     def __init__(self):
@@ -121,13 +152,13 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'gesture_recognition',
                 GestureRecognition('wave'),
-                transitions={'succeeded': 'prepare_coord', 'aborted': 'ask_for_person', 
+                transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'ask_for_person', 
                 'preempted': 'preempted'}) 
 
             # Prepare the goal to the person that is waving
             smach.StateMachine.add(
-                'prepare_coord',
-                prepare_coord(),
+                'prepare_coord_wave',
+                prepare_coord_wave(),
                 transitions={'succeeded': 'go_to_person_wave', 'aborted': 'aborted', 
                 'preempted': 'preempted'})             
             
@@ -190,14 +221,21 @@ class CocktailPartySM(smach.StateMachine):
             # Search for person -> He could change his position
             smach.StateMachine.add(
                 'search_for_person',
-                DummyStateMachine(),
+                searching_person(),
                 transitions={'succeeded': 'go_to_person', 'aborted': 'prepare_ask_for_person_back', 
                 'preempted': 'preempted'}) 
-
+            
+            # Prepare the goal to the person that ask for the order
+            smach.StateMachine.add(
+                'prepare_coord_order',
+                prepare_coord_order(),
+                transitions={'succeeded': 'go_to_person_order', 'aborted': 'aborted', 
+                'preempted': 'preempted'})             
+            
             # Go to person
             smach.StateMachine.add(
-                'go_to_person',
-                DummyStateMachine(),
+                'go_to_person_order',
+                nav_to_coord('/base_link'),
                 transitions={'succeeded': 'deliver_drink', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
