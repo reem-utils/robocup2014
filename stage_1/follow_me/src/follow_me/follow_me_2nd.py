@@ -21,6 +21,7 @@ class init_var(smach.State):
             outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
 
     def execute(self, userdata):
+        rospy.loginfo(OKGREEN+"I'M in the second part of the follow_me"+ENDC)
         rospy.sleep(2)
         userdata.standard_error="Dummy"
         return 'succeeded'
@@ -30,10 +31,13 @@ class dummy_listen(smach.State):
     def __init__(self):
         smach.State.__init__(
                             self,
-                            outcomes=['succeeded', 'aborted'],input_keys=[],output_keys=[])
+                            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
 
     def execute(self, userdata):
-        rospy.sleep(2)
+        while (1):
+            if self.preempt_requested():
+                return 'preempted'
+            
         return 'succeeded'
     
 class say_out (smach.State):
@@ -84,7 +88,7 @@ class follow_me_2nd(smach.StateMachine):
             self.userdata.standar_error="ok"
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'succeeded',
+                                   transitions={'succeeded': 'CONCURRENCE',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             
