@@ -68,10 +68,7 @@ class move_head(smach.StateMachine):
     
     Optional parameters: None
     
-    Output keys: (?) 
-        @key move_joint_group: indicates the controller associated with the joints
-        @key move_joint_list: indicates the joints to control/move
-        @key move_joint_poses: indicates the pose/s for each joint              
+    Output keys: 
         @key standard_error: Error 
     
     Input keys:
