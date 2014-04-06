@@ -3,8 +3,9 @@
 	manip_to_joint_pose: manip_to_joint_pose (StateMachine)
 		"""
 		Executes a SM that makes the upper body movement of the robot.
-		It needs a joint goal and moves the body part to that goal.
-		It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.
+	    It needs a joint goal and moves the body part to that goal.
+	    Joint Goal: A goal for the joint name to move.
+	    It uses MoveIt! A software for body manipulation. It analyzes the best path to reach to the pose/goal.
 
 		Required parameters: None
 
@@ -54,10 +55,7 @@
 		Optional parameters: None
 
 		Output keys: (?) 
-		@key move_joint_group: indicates the controller associated with the joints
-		@key move_joint_list: indicates the joints to control/move
-		@key move_joint_poses: indicates the pose/s for each joint              
-		@key standard_error: Error 
+			@key standard_error: Error 
 
 		Input keys:
 		@key move_hand_side: indicates the side of the hand
@@ -87,41 +85,39 @@
 	
 	move_head: move_head (StateMachine)
 		"""
-		This SM moves a the HEAD group of joints.
-
-		Required parameters: None
-
-		Optional parameters: None
-
-		Output keys: (?) 
-		@key move_joint_group: indicates the controller associated with the joints
-		@key move_joint_list: indicates the joints to control/move
-		@key move_joint_poses: indicates the pose/s for each joint              
-		@key standard_error: Error 
-
-		Input keys:
-		@key move_head_pose: indicates poses for the joints to reach : 2 joints [head1, head2]
-
-		Range: [-1,1] 
+		This SM moves the HEAD group of joints.
+    
+    	Required parameters: None
+    
+	    Optional parameters: None
+	    
+	    Output keys: 
+	        @key standard_error: Error 
+	    
+	    Input keys:
+	        @key move_head_pose: indicates poses for the joints to reach : 2 joints [head1, head2]
+	        
+	        Range: [-1,1] 
+			Range: [-1,1] 
 		"""
 
 	move_joints_group: move_joints_group (StateMachine)
 		"""
-		This SM moves a group of joints from a group controller.
+		This SM moves a group of joints from a group controller. 
+	    It Does Not use the MoveIt Algorithm
 
-
-		Required parameters: 
-		@param move_joint_group_in: indicates the controller associated with the joints 
-
-		Optional parameters: None
-
-		Input keys:
-		@key move_joint_group: indicates the controller associated with the joints
-		@key move_joint_list: indicates the joints to control/move
-		@key move_joint_poses: indicates the pose/s for each joint              
-
-		Output keys:
-		@key standard_error: Error
+	    Required parameters: 
+	        @param move_joint_group_in: indicates the controller associated with the joints 
+	    
+	    Optional parameters: None
+	    
+	    Input keys:
+	        @key move_joint_group: indicates the controller associated with the joints
+	        @key move_joint_list: indicates the joints to control/move
+	        @key move_joint_poses: indicates the pose/s for each joint              
+	         
+	    Output keys:
+	        @key standard_error: Error
 		"""
 
 	play_motion_sm: play_motion_sm (StateMachine)
@@ -169,3 +165,22 @@
 		"""	
 
 
+	ask_give_object_grasping(StateMachine):
+		"""
+	    Executes a SM that: 
+       		Asks the person to give a object ['object_to_grasp']. 
+	        The robot will extend its arm and open its hand.
+
+	    It should be called only when the --Grasp-- of the object has failed,
+	    which includesd the object_detection and the grasping per sé.
+	        
+	    Required parameters: None
+	    
+	    Optional parameters: None
+	    
+	    Input keys:
+	        @key object_to_grasp: indicates the object's name we want to grasp.            
+	         
+	    Output keys:
+	        @key standard_error: Error
+		"""
