@@ -153,7 +153,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
-                transitions=transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
             #Go to person
             smach.StateMachine.add(
                 'Prepare_Go_To_Person',
