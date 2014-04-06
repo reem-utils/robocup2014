@@ -46,14 +46,17 @@ class DeactivateASR(smach.StateMachine):
     @input string grammar_name
 
     """
-    def __init__(self):
+    def __init__(self, grammar = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['grammar_name'],
                     output_keys=[])
         
         with self:
     
-
+            smach.StateMachine.add('PrepareData',
+                                   prepareData(grammar),
+                                   transitions={'succeeded':'Deactivate_Asr', 'aborted':'aborted'})
+            
             # Deactivating asr service to stop listening 
             @smach.cb_interface(input_keys=['grammar_name'])
             def AsrServerRequestDeactivate_cb(userdata, request):
