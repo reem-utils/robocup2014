@@ -14,6 +14,7 @@ from navigation_states.enter_room import EnterRoomSM
 from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say import text_to_say
 from face_states.ask_name_learn_face import SaveFaceSM
+from gesture_states.gesture_detection_sm import gesture_detection_sm
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -100,7 +101,7 @@ class CocktailPartySM(smach.StateMachine):
             # Go to the person -> we assume that gesture will return the position
             smach.StateMachine.add(
                 'go_to_person',
-                nav_to_coord(),
+                nav_to_coord('/base_link'),
                 transitions={'succeeded': 'learning_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
