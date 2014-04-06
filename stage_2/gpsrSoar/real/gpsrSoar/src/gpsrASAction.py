@@ -7,10 +7,12 @@ import interface2 as interface
 from grammarReader import grammarFileWriter2 as GFR
 from GenerateGoalScript import world, person, location, item, robot, compileInit
 from GenerateGoalScript import NO, YES, ignore
-from translator import obj2idx, get_list, get_obj_location, idx2obj
+from translator import obj2idx, get_list, get_obj_location, idx2obj 
+'''
 from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM
 from speech_states.listen_general_command import askCategory as askCategorySM
-from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM
+from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
+'''
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
