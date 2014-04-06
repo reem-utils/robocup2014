@@ -1,0 +1,7 @@
+<launch>
+
+<!-- TODO: maybe we need to delete the params before loading them -->
+<include file="$(find cocktail_party)/launch/cocktail_party_params.launch" />
+<!-- TODO: launch sm -->
+
+</launch>
