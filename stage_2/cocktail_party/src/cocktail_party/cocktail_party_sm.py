@@ -13,8 +13,10 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say import text_to_say
+from speech_states.ask_question import AskQuestionSM
 from face_states.ask_name_learn_face import SaveFaceSM
-from gesture_states.gesture_detection_sm import gesture_detection_sm
+from gesture_states.gesture_recognition import GestureRecognition 
+
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -36,6 +38,32 @@ class DummyStateMachine(smach.State):
         rospy.sleep(3)
         return 'succeeded'
 
+
+class prepare_ask_person_back(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['name'],
+                                output_keys=['standard_error', 'tts_text'])
+
+    def execute(self, userdata):
+        
+        userdata.tts_text = "I can't see you " + userdata.name + ". Can you come to me, please?"
+        
+        return 'succeeded'
+    
+class prepare_coord(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['gesture_detection'],
+                                output_keys=['standard_error', 'nav_to_coord_goal'])
+
+    def execute(self, userdata):
+        
+        userdata.nav_to_coord_goal.x = userdata.gesture_detection.position.x
+        userdata.nav_to_coord_goal.y = userdata.gesture_detection.position.y
+        userdata.nav_to_coord_goal.yaw  = userdata.gesture_detection.orientation.w
+        
+        return 'succeeded'
 
 class checkLoop(smach.State):
     def __init__(self):
@@ -68,11 +96,9 @@ class CocktailPartySM(smach.StateMachine):
     Optional parameters:
     No optional parameters
 
-
     No input keys.
     No output keys.
     No io_keys.
-    
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
@@ -94,18 +120,25 @@ class CocktailPartySM(smach.StateMachine):
             # Gesture recognition -> Is anyone waving?
             smach.StateMachine.add(
                 'gesture_recognition',
-                DummyStateMachine(),
-                transitions={'succeeded': 'go_to_person', 'aborted': 'ask_for_person', 
+                GestureRecognition('wave'),
+                transitions={'succeeded': 'prepare_coord', 'aborted': 'ask_for_person', 
                 'preempted': 'preempted'}) 
 
+            # Prepare the goal to the person that is waving
+            smach.StateMachine.add(
+                'prepare_coord',
+                prepare_coord(),
+                transitions={'succeeded': 'go_to_person_wave', 'aborted': 'aborted', 
+                'preempted': 'preempted'})             
+            
             # Go to the person -> we assume that gesture will return the position
             smach.StateMachine.add(
-                'go_to_person',
+                'go_to_person_wave',
                 nav_to_coord('/base_link'),
                 transitions={'succeeded': 'learning_person', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
-            # Go to the person -> we assume that gesture will return the position
+            # Ask for person if it can see anyone
             smach.StateMachine.add(
                 'ask_for_person',
                 text_to_say("I can't see anyone. Can anyone come to me, please?"),
@@ -122,7 +155,7 @@ class CocktailPartySM(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                DummyStateMachine(),
+                AskQuestionSM("What would you like to drink?"),
                 transitions={'succeeded': 'go_to_storage', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
@@ -158,7 +191,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_for_person',
                 DummyStateMachine(),
-                transitions={'succeeded': 'go_to_person', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_to_person', 'aborted': 'prepare_ask_for_person_back', 
                 'preempted': 'preempted'}) 
 
             # Go to person
@@ -168,6 +201,19 @@ class CocktailPartySM(smach.StateMachine):
                 transitions={'succeeded': 'deliver_drink', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
+            # Ask for person if it can see anyone
+            smach.StateMachine.add(
+                'prepare_ask_for_person_back',
+                prepare_ask_person_back(),
+                transitions={'succeeded': 'ask_for_person_back', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
+            smach.StateMachine.add(
+                'ask_for_person_back',
+                text_to_say(),
+                transitions={'succeeded': 'deliver_drink', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
             # Deliver Drink
             smach.StateMachine.add(
                 'deliver_drink',
@@ -178,11 +224,10 @@ class CocktailPartySM(smach.StateMachine):
             # End of loop?
             smach.StateMachine.add(
                 'check_loop',
-                DummyStateMachine(),
+                checkLoop(),
                 transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'leaving_arena'}) 
 
-            
             # Leaving the arena  
             smach.StateMachine.add(
                 'leaving_arena',

@@ -25,7 +25,7 @@ def main():
         smach.StateMachine.add(
             'CheckDepencences',
             CheckDependencesState(),
-            transitions={'succeeded': 'RoboZooSM', 'aborted': 'aborted'}) 
+            transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
    
         smach.StateMachine.add(
             'CocktailPartySM',
