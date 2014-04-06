@@ -16,6 +16,7 @@ from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
 from manipulation_states.play_motion_sm import play_motion_sm
+from manipulation_states.move_hands_form import move_hands_form 
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
 
@@ -108,7 +109,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
                 'Ask_Question',
-                AskQuestionSM(text='What would you like me to bring?', grammar=None),
+                AskQuestionSM(text='What would you like me to bring?', grammar='emergency_drinks'),
                 transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
 #            smach.StateMachine.add(
 #                'Prepare_Ask_Object',
@@ -133,13 +134,14 @@ class Get_Person_Desired_Object(smach.StateMachine):
             # Output keys: object
             smach.StateMachine.add(
                 'Process_Tags',
-                Process_Tags(),
+                DummyStateMachine(),
+                #Process_Tags(),
                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
 
             smach.StateMachine.add(
                 'Go_To_Object_Place',
                 DummyStateMachine(),
-                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Go_To_Object_Place', 'preempted':'Go_To_Object_Place'})
+                transitions={'succeeded':'Find_and_grab_object', 'aborted':'Go_To_Object_Place', 'preempted':'Go_To_Object_Place'})
 
             #Find Object + Grab Object SM
             smach.StateMachine.add(
@@ -163,8 +165,8 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
-                DummyStateMachine(),
-                #move_hands_form('ungrab', 'left'),
+                #DummyStateMachine(),
+                move_hands_form(hand_pose_name='full_open', hand_side='right'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
 
 
@@ -179,4 +181,3 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
 
 
-            

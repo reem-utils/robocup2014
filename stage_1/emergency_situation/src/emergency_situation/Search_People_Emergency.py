@@ -112,4 +112,9 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Analyze_Wave',
                 Analyze_Wave(),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
+            smach.StateMachine.add(
+                'Go_to_Wave',
+                DummyStateMachine(),
+                #Go_To_Wave(),
+                transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
