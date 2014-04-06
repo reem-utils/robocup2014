@@ -100,7 +100,7 @@ class RecogCommand(smach.StateMachine):
                         smach.StateMachine.add('ENABLE_GRAMMAR',
                                                ActivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'HEAR_COMMAND'})
-
+ 
                         smach.StateMachine.add('HEAR_COMMAND',
                                                topic_reader(topic_name='usersaid',topic_type=asrresult,topic_time_out=15),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'PROCESS_COMMAND', 'preempted': 'preempted'},
@@ -143,36 +143,48 @@ class RecogCommand(smach.StateMachine):
                                                transitions={'succeeded': 'succeeded'})
 
 
+class BringLocationAsk(smach.State):
+
+        def __init__(self,time):
+                smach.State.__init__(self,
+                                     outcomes=['succeeded', 'preempted', 'aborted'],
+                                     input_keys=['userSaidTags'],
+                                     output_keys=['location_name'])
+
+        def execute(self):
+                # actiontag = [tag for tag in message.tags if tag.key == 'action']
+                locationtag = [tag for tag in userdata.userSaidTags if tag.key == 'location']
+                try: 
+                  userdata.location_name = locationtag[0].value
+                  return 'succeeded'
+                except:
+                  return 'aborted'
+
+
 class askMissingInfo(smach.StateMachine):
 
-        def __init__(self, GRAMMAR_NAME='robocup/locations', command_key='finn', command_value='xxx'):
+        def __init__(self, Type, objectName, GRAMMAR_NAME='robocup/locations', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+                
+                self.userdata.dataType = Type
+                self.userdata.object_name = objectName
                 with self:
 
                         smach.StateMachine.add('ENABLE_GRAMMAR',
                                                ActivateASR(GRAMMAR_NAME),
-                                               transitions={'succeeded': 'ASK_LOCATION_PREPARATION'})
+                                               transitions={'succeeded': 'ASK_LOCATION'})
                         
                         smach.StateMachine.add('ASK_LOCATION',
-                                                text_to_say("I don't know where the " + userdata.object_name + 'is. Do you know where could I find it?'),
-                                                transitions={succeeded: 'HEAR_COMMAND', 'aborted': 'aborted'})
+                                                text_to_say("I don't know where the " + self.userdata.object_name + 'is. Do you know where could I find it?'),
+                                                transitions={'succeeded': 'HEAR_COMMAND', 'aborted': 'aborted'})
 
                         smach.StateMachine.add('HEAR_COMMAND',
                                                ReadASR(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_LOCATION', 'preempted': 'preempted'},
                                                remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
                         
-                        def bring_location_cb(self):
-                            # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                            locationtag = [tag for tag in self.userdata.userSaidTags if tag.key == 'location']
-                            try: 
-                              self.userdata.location_name = locationtag[0].value
-                              return 'succeeded'
-                            except:
-                              return 'aborted'
-
                         smach.StateMachine.add('BRING_LOCATION',
-                                               bring_location_cb(self),
+                                               BringLocationAsk(self),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
 #                         smach.StateMachine.add('PRINT_MESSAGE',
 #                                                PrintUserData(),
@@ -188,7 +200,7 @@ class askMissingInfo(smach.StateMachine):
 #                                                             'aborted': 'DISABLE_GRAMMAR'})
 #-----------------------                        
                         smach.StateMachine.add('CONFIRM_OBJECT',
-                                                text_to_say("Okay! I'll go to"+ userdata.location_name),
+                                                text_to_say("Okay! I'll go to"+ self.userdata.location_name),
                                                 transitions={'succeeded': 'DISABLE_GRAMMAR', 'aborted': 'DISABLE_GRAMMAR'})
                          
                         smach.StateMachine.add('RECOGNIZE_COMMAND', RecognizeCommand(command_key, command_value),
