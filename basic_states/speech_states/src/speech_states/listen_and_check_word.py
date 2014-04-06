@@ -24,9 +24,6 @@ class checkData(smach.State):
 
         word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
         
-        print ">"+word[0].value+"<"
-        print ">"+userdata.word_to_listen+"<"
-        
         if word and word[0].value == userdata.word_to_listen:
             rospy.loginfo("Match!")
             return 'succeeded'
