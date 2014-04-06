@@ -4,7 +4,7 @@
 	<!-- yaml files for navigation and object locations -->
 	<!-- fake action server nodes-->
 	<node pkg="gesture_detection_mock"
-	      type="gesture_detect_mock"
+	      type="gesture_detect_mock.py"
 	      name="gesture_detect"
   	      output="screen">
 	</node>
