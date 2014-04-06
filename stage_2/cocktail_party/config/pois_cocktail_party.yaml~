@@ -1,0 +1,22 @@
+numberOfSubMaps: 1
+poi:
+  submap_0:
+    init_avoid_that: [submap_0, init_avoid_that, -2.0, -2.0, 0]
+    avoid_that: [submap_0, avoid_that, -2.0, -2.0, 0]
+
+    init_pick_and_place: [submap_0, init_pick_and_place, -2.0, -2.0, 0]
+    pick_and_place: [submap_0, pick_and_place, -2.0, -2.0, 0]
+    waste_bin: [submap_0, waste_bin, -2.0, -2.0, 0] 
+
+    init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
+    fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
+
+    init_find_me: [submap_0, init_find_me, -2.0, -2.0, 0]
+    find_me: [submap_0, find_me, -2.0, -2.0, 0]
+
+    init_what_say: [submap_0, init_what_say, -2.0, -2.0, 0]
+
+    point_room_one: [submap_0, point_room_one, 3.0, 3.0, 0]
+    point_room_two: [submap_0, point_room_two, -3.0, 0.0, 0]
+    point_room_three: [submap_0, point_room_three, 3.0, -3.0, 0]
+
