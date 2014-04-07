@@ -7,7 +7,6 @@ import smach
 from smach import *
 
 from util_states.global_common import *
-from util_states.topic_reader import topic_reader
 from std_msgs.msg import *
 from speech_states.activate_asr import ActivateASR
 from speech_states.read_asr import ReadASR
@@ -102,11 +101,10 @@ class RecogCommand(smach.StateMachine):
                                                transitions={'succeeded': 'HEAR_COMMAND'})
  
                         smach.StateMachine.add('HEAR_COMMAND',
-                                               topic_reader(topic_name='usersaid',topic_type=asrresult,topic_time_out=15),
+                                               ReadASR(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'PROCESS_COMMAND', 'preempted': 'preempted'},
-                                               remapping={'topic_output_msg': 'userSaidData'})
-                                
-
+                                               remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
+                        
                         smach.StateMachine.add('PROCESS_COMMAND',
                                                ProcessCommandState(),
                                                transitions={'succeeded': 'ASK_COMMAND_CONFIRMATION' if ask_for_confirmation else 'PRINT_MESSAGE',
@@ -149,16 +147,16 @@ class BringLocationAsk(smach.State):
                 smach.State.__init__(self,
                                      outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['userSaidTags'],
-                                     output_keys=['location_name'])                    
-                print '________________________________________________'
+                                     output_keys=['location_name']) 
+                
         def execute(self, userdata):
-                # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                rospy.loginfo( "_:::::::::::::::::::::::::::::::::::::")
-                locationtag = [tag for tag in userdata.userSaidTags if tag.key == 'location']
-                try: 
-                  userdata.location_name = locationtag[0].value                  
+            try: 
+                  for tag in userdata.userSaidTags :
+                    if tag.key == 'location':
+                      userdata.location_name = tag.value
                   return 'succeeded'
-                except:
+            except:
+                  print 'faaaail object'
                   return 'aborted'
 
 class BringOrderObject(smach.State):
@@ -170,15 +168,37 @@ class BringOrderObject(smach.State):
                                      output_keys=['object_name'])
 
         def execute(self, userdata):
-                  # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                objecttag = [tag for tag in userdata.userSaidTags if tag.key == 'object']
-                try: 
-                  self.userdata.object_name = objecttag[0].value
+            try: 
+                  for tag in userdata.userSaidTags :
+                    if tag.key == 'object':
+                      userdata.object_name = tag.value
                   return 'succeeded'
-                except:
+            except:
+                  print 'faaaail object'
                   return 'aborted'
+              
+class BringOrderLoc(smach.State):
 
+        def __init__(self):
+                smach.State.__init__(self,
+                                     outcomes=['succeeded', 'preempted', 'aborted'],
+                                     input_keys=['userSaidTags'],
+                                     output_keys=['loc_name'])
 
+        def execute(self, userdata):
+                  # actiontag = [tag for tag in message.tags if tag.key == 'action']
+#                 objecttag = [tag for tag in self.userdata.userSaidTags if tag.key == 'loc']
+#                 try: 
+#                   self.userdata.loc_name = objecttag[0].value
+            try: 
+                  for tag in userdata.userSaidTags :
+                    if tag.key == 'loc':
+                      userdata.loc_name = tag.value
+                  return 'succeeded'
+            except:
+                  print 'faaaail location'
+                  return 'aborted'
+              
 class askMissingInfo(smach.StateMachine):
 
         def __init__(self, Type, objectName, GRAMMAR_NAME='robocup/locations', command_key='finn', command_value='xxx'):
@@ -199,7 +219,7 @@ class askMissingInfo(smach.StateMachine):
                                                transitions={'succeeded': 'ASK_LOCATION'})
                         
                         smach.StateMachine.add('ASK_LOCATION',
-                                                text_to_say("I don't know where the " + self.userdata.object_name + 'is. Do you know where could I find it?'),
+                                                text_to_say("I don't know where the " + self.userdata.object_name + ' is. Do you know where could I find it?'),
                                                 transitions={'succeeded': 'HEAR_COMMAND', 'aborted': 'aborted'})
 
                         smach.StateMachine.add('HEAR_COMMAND',
@@ -276,17 +296,17 @@ class askCategory(smach.StateMachine):
                         
                         smach.StateMachine.add('ASK_INFO',
                                                text_to_say('You asked me for a ' + self.userdata.cat + '. I could bring you ' + ', '.join(self.userdata.objectList) + '. which ' + self.userdata.cat + ' do you prefer?'),
-                                               transitions={'succeeded': 'HEAR_COMMAND',
+                                               transitions={'succeeded': 'HEAR_COMMAND_OBJECT',
                                                             'aborted': 'aborted'})
                      
-                        smach.StateMachine.add('HEAR_COMMAND',
+                        smach.StateMachine.add('HEAR_COMMAND_OBJECT',
                                                ReadASR(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_ORDER', 'preempted': 'preempted'},
+                                               transitions={'aborted': 'HEAR_COMMAND_OBJECT', 'succeeded': 'BRING_ORDER', 'preempted': 'preempted'},
                                                remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
 
                         smach.StateMachine.add('BRING_ORDER',
                                                BringOrderObject(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
+                                               transitions={'aborted': 'HEAR_COMMAND_OBJECT', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
                                                
 #                         smach.StateMachine.add('PRINT_MESSAGE',
 #                                                PrintUserData(),
@@ -310,7 +330,7 @@ class askCategory(smach.StateMachine):
 
                         smach.StateMachine.add('NOT_VALID_COMMAND',
                                                text_to_say("Sorry, I couldn't understand what you said. Can you repeat?"),
-                                               transitions={'succeeded': 'HEAR_COMMAND'})
+                                               transitions={'succeeded': 'HEAR_COMMAND_OBJECT'})
 
                         smach.StateMachine.add('DISABLE_GRAMMAR',
                                                DeactivateASR(GRAMMAR_NAME),
@@ -330,7 +350,7 @@ class askCategoryLoc(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
-                GRAMMAR_NAME='robocup/' + GRAMMAR_NAME.replace(' ', '_')
+                #GRAMMAR_NAME='robocup/' + GRAMMAR_NAME.replace(' ', '_')
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
@@ -361,24 +381,15 @@ class askCategoryLoc(smach.StateMachine):
                                                ActivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'ASK_INFO'})
 
-                        def bring_order_cb(userdata, message):
-                            # actiontag = [tag for tag in message.tags if tag.key == 'action']
-                            objecttag = [tag for tag in message.tags if tag.key == 'loc']
-                            try: 
-                              userdata.loc_name = objecttag[0].value
-                              return 'succeeded'
-                            except:
-                              return 'aborted'
 
                         smach.StateMachine.add('HEAR_COMMAND',
-                                               topic_reader(topic_name='usersaid',topic_type=asrresult,topic_time_out=10),
+                                               ReadASR(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'BRING_ORDER', 'preempted': 'preempted'},
-                                               remapping={'topic_output_msg': 'userSaidData'})
+                                               remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
 
                         smach.StateMachine.add('BRING_ORDER',
-                                               bring_order_cb(),
-                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'},                                              
-                                               remapping={'topic_output_msg': 'userSaidData'})
+                                               BringOrderLoc(),
+                                               transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'CONFIRM_OBJECT', 'preempted': 'preempted'})
                                                
 #                         smach.StateMachine.add('PRINT_MESSAGE',
 #                                                PrintUserData(),
@@ -398,14 +409,12 @@ class askCategoryLoc(smach.StateMachine):
                                                             'aborted': 'aborted'},
                                                remapping={'speechData': 'userSaidData'})
 
-                        intro_text = "Ok, understood."
                         smach.StateMachine.add('VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("Ok, understood."),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR'})
 
-                        intro_text = "Sorry, I couldn't understand what you said. Can you repeat?"
                         smach.StateMachine.add('NOT_VALID_COMMAND',
-                                               text_to_say(intro_text),
+                                               text_to_say("Sorry, I couldn't understand what you said. Can you repeat?"),
                                                transitions={'succeeded': 'HEAR_COMMAND'})
 
                         smach.StateMachine.add('DISABLE_GRAMMAR',
