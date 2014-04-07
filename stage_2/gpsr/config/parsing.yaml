@@ -1,7 +1,8 @@
 ASR_LOOP: True
 ASR_ON: "False"
-sentence1: "find a person, memorize the person and recognize him"
-sentence6: "grasp the coke bring the coke to business and tell something about yourself" 
 sentence: "bring me a drink"
-sentence11: "bring the coke to a sofa"
-sentence2: "bring a coke to the business bring a coke to the business bring a coke to the business "
+sentence1: "find a person then memorize the person and recognize him" #ko
+sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #ko
+sentence3: "bring the coke to a sofa" #ko (a incloure preguntar per persona)
+sentence4: "bring a coke to the bookshelf bring a coke to the bookshelf bring a coke to the bookshelf " #ko
+sentence5: "grasp the coke bring the coke to bookshelf and tell something about yourself" #ko  

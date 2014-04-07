@@ -3,6 +3,7 @@ import string
 from translator import get_list
 def grammarFileReader(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/general.gram'):
     # Reads a grammar until it finds the desired wordset
+    # Returns an array of the words wich mach the key given in wordset
     # Should accept wordset as string or list of strings
     # a singe wordset should be passed as a list of one item
     f = open(path,'r')

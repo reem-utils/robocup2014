@@ -19,7 +19,7 @@ from gpsrSoar.msg import gpsrActionAction
 # from GenerateGoalScript import printNewGoal
 
 # import rospy
-
+SENTENCE_SAID = '/parsing/sentence1'
 NUM_LOOPS_TODO = 3
 NUM_LOOPS_I = 0
 GRAMATICA = 'robocup/gentest'
@@ -72,7 +72,7 @@ class init_parameters(smach.State):
         smach.State.__init__(self, outcomes=['succeeded'],
             output_keys=['o_sentence', 'o_asrLoop', 'o_asrOn'])
     def execute(self, userdata):
-        userdata.o_sentence = rospy.get_param('/parsing/sentence')
+        userdata.o_sentence = rospy.get_param(SENTENCE_SAID)#'/parsing/sentence')
         userdata.o_asrLoop = rospy.get_param('/parsing/ASR_LOOP')
         userdata.o_asrOn = rospy.get_param('/parsing/ASR_ON')
         return 'succeeded'

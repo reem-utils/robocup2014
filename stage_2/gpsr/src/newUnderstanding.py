@@ -53,20 +53,20 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     except:
         sent = sent
     sent = sent.replace(',', '')
-    sent = sent.lower()
-    sent = sent.split()
+    sent = sent.lower()  #turns string into lewercase
+    sent = sent.split()  #separates the string into an array of words
     # print sent
     i = 0
     for word in sent:
-        sent[i] = word.strip("'").strip('"')
+        sent[i] = word.strip("'").strip('"')  #each strip function erases from word all ' in front an behind it
         i += 1
     grammarNames = {}
     grammarNames['persons'] = 'person'
     grammarNames['locations'] = 'location'
     grammarNames['items'] = 'item'
     try:
-        per = GFR(wordset=grammarNames)
-        # print 'bla'
+        per = GFR(wordset=grammarNames) #extreu a per un
+        #print 'bla'        
     except IOError:
         PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"
         print 'estem carregan la gramatica del PC i no del robot!!'
