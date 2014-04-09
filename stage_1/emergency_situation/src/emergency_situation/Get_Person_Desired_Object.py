@@ -178,10 +178,3 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
 
 
-
-
-
-
-
-
-
