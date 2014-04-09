@@ -1,41 +1,33 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+6 April 2014
 
-'''
-Created on 22/03/2014
-
-@author: Cristina De Saint Germain
-'''
+@author: Cristina De Saint Germain 
+"""
 
 import rospy
 import smach
 import smach_ros
 import actionlib
 
-from check_dependences import CheckDependencesState
-from cocktail_party_sm import CocktailPartySM
+from face_states.ask_name_learn_face import SaveFaceSM 
 
 def main():
-    rospy.init_node('cocktail_party')
+    rospy.init_node('ask_name_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-   
+
         smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
-   
-        smach.StateMachine.add(
-            'CocktailPartySM',
-            CocktailPartySM(),
+            'SaveFaceSM',
+            SaveFaceSM(),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
-    
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'cocktail_party', sm, '/CP_ROOT')
+        'saveface_test_introspection', sm, '/SAVEFACE_TEST')
     sis.start()
 
     sm.execute()

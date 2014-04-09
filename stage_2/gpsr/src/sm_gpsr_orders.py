@@ -172,11 +172,13 @@ class gpsrOrders(smach.StateMachine):
             self.userdata.tts_text=''
             self.userdata.tts_lang=''
             self.userdata.tts_wait_before_speaking=0
-            '''smach.StateMachine.add("START_GRASP_PROTOCOL",
+            '''
+            smach.StateMachine.add("START_GRASP_PROTOCOL",
                                    InitGraspPipelineSM(),
                                    transitions={succeeded: 'init_SM',
                                                 aborted: aborted,
-                                                preempted: aborted})'''
+                                                preempted: aborted})
+                                                '''
             
             def move_to_caller_goal_cb(userdata, nav_goal):
                 move_base_goal = MoveBaseGoal()
@@ -200,7 +202,7 @@ class gpsrOrders(smach.StateMachine):
 
                 return move_base_goal
 
-            smach.StateMachine.add(
+            smach.StateMachine.add( 
                     'init_SM',
                     init_parameters(),
                     transitions={'succeeded': 'Check_ASR'},

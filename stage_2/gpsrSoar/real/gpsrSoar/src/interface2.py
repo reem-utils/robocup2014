@@ -472,7 +472,7 @@ def main():
 
 	kernel.DestroyAgent(agent)
 	kernel.Shutdown()
-	del kernel
+	del kernelCommit
 
 
 if __name__ == "__main__":

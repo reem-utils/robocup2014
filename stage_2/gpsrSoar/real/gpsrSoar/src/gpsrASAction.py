@@ -7,10 +7,13 @@ import interface2 as interface
 from grammarReader import grammarFileWriter2 as GFR
 from GenerateGoalScript import world, person, location, item, robot, compileInit
 from GenerateGoalScript import NO, YES, ignore
-from translator import obj2idx, get_list, get_obj_location, idx2obj
-from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM
+from translator import obj2idx, get_list, get_obj_location, idx2obj 
+
+from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM 
+
 from speech_states.listen_general_command import askCategory as askCategorySM
-from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM
+from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
+
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
@@ -114,33 +117,33 @@ def new_world(loc_list):
   return w
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
- '''ad = askMissingInfoSM()
- ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+ ad = askMissingInfoSM(Type=Type, objectName=objectName)
+ #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+ #ad.userdata.dataType = Type
+ #ad.userdata.object_name = objectName
  out = ad.execute()
  loc = ad.userdata._data['location_name']
  return loc  #-------------------'''
- return 'fridge'
+ #return 'fridge'
+  
+ 
 
 def ask_category(category):
- '''ad = askCategorySM(GRAMMAR_NAME = category)
-#ad.userdata._data = {'cat': category}
- ad.userdata.cat = category
+ ad = askCategorySM(GRAMMAR_NAME = category)
  out = ad.execute()
- print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ print obj
  return obj   #--------------'''
- return 'milk'
+ #return 'milk'
 
 def ask_category_loc(category):
- '''ad = askCategoryLocSM(GRAMMAR_NAME = category)
-# ad.userdata._data = {'cat': category}
- #ad.userdata.cat = category
+ ad = askCategoryLocSM(GRAMMAR_NAME = category)
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['loc_name']
  print obj
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
  return obj    #---------------------'''
  return 'coke'
 
@@ -244,6 +247,8 @@ class gpsrASAction(object):
     # print 'blablabal'
     if command.item in categories:
       objct = ask_category(command.item)
+      print objct
+      print ('a dintre de objct hi ha ' + objct)
       self._world.item.id = obj2idx(objct, 'ITEMS')
       command.item = objct
       print idx2obj(self._world.item.id, 'ITEMS')

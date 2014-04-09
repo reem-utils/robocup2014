@@ -33,18 +33,21 @@ MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 
 class init_var(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'],output_keys=['time_last_found'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],output_keys=['time_last_found'])
     def execute(self, userdata):
             userdata.time_last_found=rospy.Time.now()
             rospy.sleep(1)
             rospy.loginfo("i'm in dummy init var")
+                    
+            if self.preempt_requested():
+                return 'preempted'
             return 'succeeded'
 # its the tracker learn person...
         
         # its the tracker learn person...
 class filter_and_process(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['find_it','not_found', 'no_pausible'],
+        smach.State.__init__(self, outcomes=['find_it','not_found', 'no_pausible','preempted'],
                              input_keys=['tracking_msg','tracking_msg_filtered'],
                              output_keys=['tracking_msg_filtered'])
     def execute(self, userdata):
@@ -53,25 +56,34 @@ class filter_and_process(smach.State):
             
             #userdata.tracking_msg_filtered='hello'
             rospy.loginfo("i'm in the dummy filter and process state")
+                    
+            if self.preempt_requested():
+                return 'preempted'
             return 'find_it'
 # it resset the time from last found, thats because i have find it 
 class reset_occluded_timer(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'],output_keys=['time_last_found'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],output_keys=['time_last_found'])
     def execute(self, userdata):
          
             userdata.time_last_found=rospy.Time.now()
             rospy.loginfo("i'm in dummy reset_occluded_timer")
+                    
+            if self.preempt_requested():
+                return 'preempted'
             return 'succeeded'
         
         #it will have to look how many time it pass from the last found_it
 class no_follow(smach.State):
     def __init__(self,time_occluded=30):
-        smach.State.__init__(self, outcomes=['lost','occluded'],input_keys=['time_last_found'])
+        smach.State.__init__(self, outcomes=['lost','occluded','preempted'],input_keys=['time_last_found'])
     def execute(self, userdata):
             aux=rospy.Time.now()
       
             rospy.loginfo("i'm in dummy learning face")
+                    
+            if self.preempt_requested():
+                return 'preempted'
             if (aux.secs-userdata.time_last_found)>self.time_occluded :
                 return 'lost'
             else :
@@ -80,7 +92,7 @@ class no_follow(smach.State):
        
 class calculate_goal(smach.State):
     def __init__(self, distanceToHuman=0.9):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
                              input_keys=['tracking_msg_filtered','nav_to_coord_goal'],
                              output_keys=['nav_to_coord_goal'])
         self.distanceToHuman=distanceToHuman
@@ -123,20 +135,17 @@ Thats why we make desired distance zero if person too close.
 
  
         userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+                
+        if self.preempt_requested():
+            return 'preempted'
         return 'succeeded'
 
-        
-        
-        
-        
-        
-        
         
         
         # it will send the cord
 class send_goal(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'],input_keys=['nav_goal_msg'],
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],input_keys=['nav_goal_msg'],
                              output_keys=['nav_goal_msg'])
         self.pub = rospy.Publisher(MOVE_BASE_TOPIC_GOAL, MoveBaseGoal)
     def execute(self, userdata):
@@ -144,11 +153,15 @@ class send_goal(smach.State):
             rospy.loginfo("i'm in dummy send_goal state")
             self.pub = rospy.Publisher(MOVE_BASE_TOPIC_GOAL, MoveBaseAction)
             self.pub.publish(userdata.nav_goal_msg)
+        
+            if self.preempt_requested():
+                return 'preempted'
             return 'succeeded'
+        
 
 class debug(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'],
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],
                              input_keys=['nav_goal_msg','tracking_msg_filtered','tracking_msg'])
     def execute(self, userdata):
             rospy.loginfo("i'm in dummy debug state")
@@ -158,60 +171,75 @@ class debug(smach.State):
 
 
 class FollowOperator(smach.StateMachine):
+    
+    '''
+    This is a follow operator state.
+    This state needs a in_learn_poerson that is a 
+    id that will have to look, i don't know the skill perfectly
+    
+    @input= userdata.in_learn_person
+    @Optional input = distToHuman
+    @Optional input = time_occluded
+    the optional parameters have to be passet in ()
+    @Output= I't not have a output
+    
+    @Outcomes= 'succeeded' : never will be succed because it's infinit
+                'lost' : if the time of occluded it's more than time_occluded
+                        for this reason is that we have lost
+                'preempted': It will be util to do a concurrent state machine
+    
+    '''
     #Its an infinite loop track_Operator
 
     def __init__(self, distToHuman=0.9,time_occluded=30):
         smach.StateMachine.__init__(
             self,
-            outcomes=['succeeded', 'lost'],
+            outcomes=['succeeded', 'lost','preempted'],
             input_keys=["in_learn_person"])
 
         
 
         with self:
             self.userdata.standard_error='OK'
-#TODO i don't know if it's the currect form to stop de face tracking
-            #smach.StateMachine.add('DISABLE_FACE_TRACKING',
-            #                          ServiceState('/personServer/faceTracking/stop'),
-            #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
-            #self. userdata.tracking_msg=Pose()
+
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                  transitions={'succeeded': "READ_TRACKER_TOPIC"})
+                                  transitions={'succeeded': "READ_TRACKER_TOPIC",'preempted':'preempted'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
                                    topic_reader(topic_name='/people_tracker/person',
                                                 topic_type=tracker_people,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
                                                 'aborted':'READ_TRACKER_TOPIC',
-                                                'preempted':'READ_TRACKER_TOPIC'},
+                                                'preempted':'preempted'},
                                    remapping={'topic_output_msg': 'tracking_msg'})
 
             smach.StateMachine.add('FILTER_AND_PROCESS',
                                    filter_and_process(),
                                    transitions={'find_it': 'I_KNOW',
                                                 'not_found': 'I_DONT_KNOW', 
-                                                'no_pausible':'READ_TRACKER_TOPIC'})
+                                                'no_pausible':'READ_TRACKER_TOPIC',
+                                                'preempted':'preempted'})
             smach.StateMachine.add('I_KNOW',
                        reset_occluded_timer(),
-                       transitions={'succeeded': 'CALCULATE_GOAL'})
+                       transitions={'succeeded': 'CALCULATE_GOAL','preempted':'preempted'})
             
             # hear we will comprobate the time, if its greater than LOST_TIME it will return Lost
             smach.StateMachine.add('I_DONT_KNOW',
                        no_follow(time_occluded),
                        transitions={'lost': 'lost',
-                                    'occluded': 'READ_TRACKER_TOPIC'})
+                                    'occluded': 'READ_TRACKER_TOPIC','preempted':'preempted'})
            # /move_base_simple/goal
             smach.StateMachine.add('CALCULATE_GOAL',
                        calculate_goal(distToHuman),
                        transitions={'succeeded': 'SEND_GOAL',
-                                    'aborted': 'READ_TRACKER_TOPIC'})
+                                    'aborted': 'READ_TRACKER_TOPIC','preempted':'preempted'})
             
             smach.StateMachine.add('SEND_GOAL',
                        nav_to_coord_concurrent('/base_link'),
-                       transitions={'succeeded':'DEBUG', 'preempted':'DEBUG', 'aborted':'DEBUG'})    
+                       transitions={'succeeded':'DEBUG', 'aborted':'DEBUG','preempted':'preempted'})    
             # it have to desaper 
             smach.StateMachine.add('DEBUG',
                        debug(),
-                       transitions={'succeeded': 'READ_TRACKER_TOPIC'})                       
+                       transitions={'succeeded': 'READ_TRACKER_TOPIC','preempted':'preempted'})                       

@@ -1,41 +1,35 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+6 April 2014
 
-'''
-Created on 22/03/2014
-
-@author: Cristina De Saint Germain
-'''
+@author: Cristina De Saint Germain 
+"""
 
 import rospy
 import smach
 import smach_ros
 import actionlib
 
-from check_dependences import CheckDependencesState
-from cocktail_party_sm import CocktailPartySM
+from speech_states.listen_and_check_word import ListenWordSM
 
 def main():
-    rospy.init_node('cocktail_party')
+    rospy.init_node('listen_word_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-   
+
+        sm.userdata.word_to_listen = None
+
         smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
-   
-        smach.StateMachine.add(
-            'CocktailPartySM',
-            CocktailPartySM(),
+            'ListenWordSM',
+            ListenWordSM("Follow me"),
             transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
-    
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'cocktail_party', sm, '/CP_ROOT')
+        'listen_word_test_introspection', sm, '/LISTEN_WORD_TEST')
     sis.start()
 
     sm.execute()

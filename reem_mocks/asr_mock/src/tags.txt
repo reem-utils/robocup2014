@@ -1,2 +1,2 @@
-yes=yeah
-no=noo
+object=coke
+location=fridge
