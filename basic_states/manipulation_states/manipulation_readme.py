@@ -54,8 +54,8 @@
 
 		Optional parameters: None
 
-		Output keys: (?) 
-			git@key standard_error: Error 
+		Output keys:
+			@key standard_error: Error 
 
 		Input keys:
 		@key move_hand_side: indicates the side of the hand
