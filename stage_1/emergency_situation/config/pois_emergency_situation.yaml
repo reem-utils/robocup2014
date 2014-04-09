@@ -1,0 +1,7 @@
+numberOfSubMaps: 1
+poi:
+  submap_0:
+    emergency_room: [submap_0, point_room_one, 3.0, 3.0, 0]
+    entry_door: [submap_0, point_room_two, -3.0, 0.0, 0]
+    entry_door_2: [submap_0, point_room_three, 3.0, -3.0, 0]
+

@@ -52,7 +52,12 @@ class wait_state(smach.State):
         
 class ask_give_object_grasping(smach.StateMachine):
     """
-    Executes a SM that: Asks the person to give a object ['object_to_grasp']. The robot will extend its arm and open its hand
+    Executes a SM that: 
+        Asks the person to give a object ['object_to_grasp']. 
+        The robot will extend its arm and open its hand.
+
+    It should be called only when the --Grasp-- of the object has failed,
+    which includesd the object_detection and the grasping per sé.
         
     Required parameters: None
     
