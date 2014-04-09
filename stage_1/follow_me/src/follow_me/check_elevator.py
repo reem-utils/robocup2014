@@ -62,12 +62,14 @@ class checkElevator():
         respone = EnableCheckElevatorResponse()
         if (req.enable) :
             self.enable=True
-            rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)
-            rospy.Subscriber("/scan_filtered", LaserScan, self.callback_Laser)
-            rospy.Subscriber("/amcl_pose",PoseWithCovarianceStamped,self.callback_Pose)
+            self.sonar_sub=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)
+            self.filter_sub=rospy.Subscriber("/scan_filtered", LaserScan, self.callback_Laser)
+            self.pose_sub=rospy.Subscriber("/amcl_pose",PoseWithCovarianceStamped,self.callback_Pose)
             #self.init_var()
         else :
-            # TODO: i have to unsubscribe
+            self.pose_sub.unregister()
+            self.sonar_sub.unregister()
+            self.filter_sub.unregister()
             self.enable=False
         
         return EnableCheckElevatorResponse()

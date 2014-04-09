@@ -13,10 +13,16 @@ OKGREEN = '\033[92m'
 from speech_states.say import text_to_say
 from follow_operator import FollowOperator
 from navigation_states.nav_to_coord import nav_to_coord
+from navigation_states.srv import NavigationGoBack, NavigationGoBackRequest, NavigationGoBackResponse
+from smach_ros import ServiceState
 
 SAY_COME_NEAR="CAN YOU APROACH A LITTLE BIT"
 SAY_LETS_GO="OK LETS GO AGAIN"
 SAY_GO_AGAIN="OK LETS GO AGAIN"
+
+METERSBACK=2
+
+
 
 class init_var(smach.State):
 
@@ -100,7 +106,8 @@ class recognize_person(smach.State):
     def execute(self,userdata):
         rospy.loginfo("i'm recognizing if the person is the correct person")
         return 'succeeded'
-        
+
+
 #Defining the state Machine of Learn Person
 class follow_me_3rd(smach.StateMachine):
 
@@ -117,17 +124,27 @@ class follow_me_3rd(smach.StateMachine):
             self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
             
+            def go_back_request(userdata,request):
+                start_request = NavigationGoBackRequest()
+                start_request.enable=True
+                start_request.meters=METERSBACK
+                return start_request
+            
             #maybe i will have to learn again
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
                                    transitions={'succeeded': 'GO_BACK',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
-            # it will go out from the lift
+            
+            # it will go from the lift
             smach.StateMachine.add('GO_BACK',
-                       go_back(),
-                       transitions={'succeeded': 'WHERE_IS_IT',
-                                    'aborted': 'aborted','preempted':'preempted'})
+                                    ServiceState('/move_back',
+                                    NavigationGoBack,
+                                    request_cb = go_back_request),
+                                    transitions={'succeeded':'WHERE_IS_IT','aborted' : 'aborted','preempted':'preempted'})
+            
+
             
                         # it will go out from the lift
             smach.StateMachine.add('WHERE_IS_IT',
