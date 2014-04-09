@@ -1,5 +1,0 @@
-<launch>
-    <!-- Launch map pois for the cocktail party test-->
-        <rosparam file="$(find )/config/pois_emergency_situation.yaml" command="load" ns="mmap" />
-
-</launch>

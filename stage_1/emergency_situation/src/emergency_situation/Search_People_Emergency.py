@@ -125,7 +125,7 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Prepare_Go_To_Wave',
                 prepare_go_to_wave(),
-                transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
+                transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
 
             # smach.StateMachine.add(
             #     'Detect_Wave',
