@@ -18,6 +18,7 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from gesture_states.gesture_detection_sm import gesture_detection_sm
+from gesture_states.gesture_recognition import GestureRecognition 
 from gesture_detection_mock.msg import Gesture
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -47,6 +48,18 @@ class prepare_tts(smach.State):
     def execute(self, userdata):
         userdata.tts_text = self.tts_text_phrase_in
         return 'succeeded'
+
+class prepare_go_to_wave(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                            outcomes=['succeeded', 'aborted', 'preempted'],
+                            input_keys=['gesture_detection'],
+                            output_keys=['standard_error', 'nav_to_coord_goal'])
+    def execute(self, userdata):
+        userdata.nav_to_coord_goal.x = userdata.gesture_detection.position.x
+        userdata.nav_to_coord_goal.y = userdata.gesture_detection.position.y
+        userdata.nav_to_coord_goal.yaw  = userdata.gesture_detection.orientation.w
+        return 'succeeded'        
 
 class Analyze_Wave(smach.State):
     def __init__(self):
@@ -106,15 +119,24 @@ class Search_People_Emergency(smach.StateMachine):
             # Search for a Wave Gesture
             # Output_keys: gesture_detected: type Gesture
             smach.StateMachine.add(
-                'Detect_Wave',
-                gesture_detection_sm(),
-                transitions={'succeeded':'Analyze_Wave', 'aborted':'Analyze_Wave', 'preempted':'Analyze_Wave'})
+                'Gesture_Recognition',
+                GestureRecognition('wave'),
+                transitions={'succeeded':'Prepare_Go_To_Wave','aborted':'Gesture_Recognition', 'preempted':'preempted'})
             smach.StateMachine.add(
-                'Analyze_Wave',
-                Analyze_Wave(),
+                'Prepare_Go_To_Wave',
+                prepare_go_to_wave(),
                 transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
+
+            # smach.StateMachine.add(
+            #     'Detect_Wave',
+            #     gesture_detection_sm(),
+            #     transitions={'succeeded':'Analyze_Wave', 'aborted':'Analyze_Wave', 'preempted':'Analyze_Wave'})
+            # smach.StateMachine.add(
+            #     'Analyze_Wave',
+            #     Analyze_Wave(),
+            #     transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
             smach.StateMachine.add(
                 'Go_to_Wave',
-                DummyStateMachine(),
-                #Go_To_Wave(),
+                #DummyStateMachine(),
+                nav_to_coord('/base_link'),
                 transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
