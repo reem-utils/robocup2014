@@ -34,7 +34,7 @@ class init_var(smach.State):
 class go_back(smach.State):
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute (self,userdata):
         rospy.sleep(2)
@@ -45,7 +45,7 @@ class go_back(smach.State):
 class where_is_it(smach.State):
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['i_dont_know','ok_lets_go'], input_keys=['in_learn_person'])
+        smach.State.__init__(self, outcomes=['i_dont_know','ok_lets_go','preempted'], input_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.sleep(2)
         rospy.loginfo("i'm in a dumy state where i'm  looking if i know the person")
@@ -55,7 +55,7 @@ class where_is_it(smach.State):
     
 class learn_again(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
                               output_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.sleep(2)
@@ -74,7 +74,7 @@ class create_nav_goal(smach.State):
 #this state itt have to be make oot
 class gesture_recogniton(smach.State):
     def __init_(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
         
     def execute(self,userdata):
         rospy.loginfo("I'm in the dummy of recognition gesture")
@@ -86,7 +86,7 @@ class gesture_recogniton(smach.State):
 class create_nav_gesture_goal(smach.State):
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
     def execute(self,userdata):
         rospy.loginfo("I'm creating a goal with the gesture position")
         return'succeeded'
@@ -96,7 +96,7 @@ class create_nav_gesture_goal(smach.State):
 class recognize_person(smach.State):
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
     def execute(self,userdata):
         rospy.loginfo("i'm recognizing if the person is the correct person")
         return 'succeeded'
@@ -112,67 +112,66 @@ class follow_me_3rd(smach.StateMachine):
                                     output_keys=['standard_error'],input_keys=['in_learn_person'])
         
         with self:
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
             
             #maybe i will have to learn again
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'succeeded',
+                                   transitions={'succeeded': 'GO_BACK',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             # it will go out from the lift
             smach.StateMachine.add('GO_BACK',
                        go_back(),
-                       transitions={'succeeded': 'succeeded',
+                       transitions={'succeeded': 'WHERE_IS_IT',
                                     'aborted': 'aborted','preempted':'preempted'})
             
                         # it will go out from the lift
             smach.StateMachine.add('WHERE_IS_IT',
                        where_is_it(),
-                       transitions={'succeeded':'SAY_COME_NEAR','ok_lets_go':'SAY_LETS_GO'})
+                       transitions={'i_dont_know':'SAY_COME_NEAR','ok_lets_go':'SAY_LETS_GO','preempted':'preempted'})
             
             #this is when i don't remember the person
             smach.StateMachine.add('SAY_COME_NEAR',
                                    text_to_say(SAY_COME_NEAR),
-                                   transitions={'i_dont_know':'LEARN_AGAIN','aborted':'LEARN_AGAIN'})
+                                   transitions={'succeeded':'LEARN_AGAIN','aborted':'LEARN_AGAIN','preempted':'preempted'})
             
             #hear i will learn the peron another time
             smach.StateMachine.add('LEARN_AGAIN',
                                    learn_again(),
                                    transitions={'succeeded':'SAY_LETS_GO',
-                                                'aborted':'SAY_COME_NEAR'})
+                                                'aborted':'SAY_COME_NEAR','preempted':'preempted'})
             
             
             
             smach.StateMachine.add('SAY_LETS_GO',
                                    text_to_say(SAY_LETS_GO),
-                                   transitions={'succeeded':'TRACK_OPERATOR','aborted':'aborted'})  
+                                   transitions={'succeeded':'TRACK_OPERATOR','aborted':'aborted','preempted':'preempted'})  
             
             
-            
-            
-            smach.StateMachine.add('TRACK_OPERATOR',
-                                   FollowOperator(),
-                                   transtions={'succeeded':'succeeded',
-                                               'lost':'LOST','preempted':'preempted'})
+            smach.StateMachine.add('TRACK_OPERATOR',FollowOperator(),transitions={'succeeded':'succeeded',
+                                               'lost':'LOST_CREATE_GOAL','preempted':'preempted'})
             
             
             
             # i will prepere the navigation goal becouse i have lost the person   
             #the goal have to be a realy far goal   
-            smach.StateMachine.add('LOST',create_nav_goal(),
-                                   transtions={'succeeded':'succeeded',
-                                               'lost':'LOST','preempted':'preempted'})
+            smach.StateMachine.add('LOST_CREATE_GOAL',create_nav_goal(),
+                                   transitions={'succeeded':'SEARCH_OPERATOR',
+                                               'aborted':'SEARCH_OPERATOR','preempted':'preempted'})
             
             
             
-            
-            sm=smach.Concurrence(outcomes=['gesture_recongize', 'nav_finisheed'],
+            sm=smach.Concurrence(outcomes=['gesture_recongize', 'nav_finisheed','preempted'],
                         default_outcome='nav_finisheed',input_keys=["in_learn_person"],
                         child_termination_cb = child_term_cb,
                         outcome_cb=out_cb_follow,output_keys=[])
             
             with sm:
+                sm.userdata.standar_error="ok"
                 #this goal will be a realy far goal
                 smach.Concurrence.add('SEND_GOAL',
                                 nav_to_coord())
@@ -181,45 +180,40 @@ class follow_me_3rd(smach.StateMachine):
                                 gesture_recogniton())
             
             smach.StateMachine.add('SEARCH_OPERATOR', sm,
-                                     transitions={'gesture_recongize':'GO_TO_GHESTURE',
-                                                 'nav_finisheed':'aborted','preempted':'succeeded'})
+                                     transitions={'gesture_recongize':'CREATE_GESTURE_NAV_GOAL',
+                                                 'nav_finisheed':'SEARCH_OPERATOR','preempted':'preempted'})
            
         
             smach.StateMachine.add('CREATE_GESTURE_NAV_GOAL',
                                    create_nav_gesture_goal(),
-                                   transtions={'succeeded':'succeeded',
+                                   transitions={'succeeded':'GO_TO_GESTURE',
                                                'aborted':'aborted','preempted':'preempted'})
-            
-            
-            # in this state i will have lost the person, now i have to send a Goal realy far, and 
-            smach.StateMachine.add('CREATE_GESTURE_NAV_GOAL',
-                                   create_nav_gesture_goal(),
-                                   transtions={'succeeded':'GO_TO_GESTURE',
-                                               'aborted':'aborted','preempted':'preempted'})
-            
-            # in this state i will have lost the person, now i have to send a Goal realy far, and 
+
+
+
+            #if the navigation goal it's impossible it will be heare allways 
             smach.StateMachine.add('GO_TO_GESTURE',
                                    nav_to_coord('/base_link'),
-                                   transtions={'succeeded':'RECOGNIZE_PERSON',
-                                               'aborted':'GO_TO_GESTURE','preempted':'preempted'})  
+                                   transitions={'succeeded':'RECOGNIZE_PERSON',
+                                               'aborted':'RECOGNIZE_PERSON','preempted':'preempted'})  
             
             #when i'm whit the person i have to look if it's the person
             smach.StateMachine.add('RECOGNIZE_PERSON',
                                    recognize_person(),
-                                   transtions={'succeeded':'succeeded',
+                                   transitions={'succeeded':'SAY_GO_AGAIN',
                                                'aborted':'aborted','preempted':'preempted'})               
             
             
             
-            smach.StateMachine.add('RECOGNIZE_PERSON',
+            smach.StateMachine.add('SAY_GO_AGAIN',
                                    text_to_say(SAY_GO_AGAIN),
-                                   transtions={'succeeded':'succeeded',
-                                               'aborted':'aborted','preempted':'preempted'}) 
+                                   transitions={'succeeded':'FOLLOW_AGAIN',
+                                               'aborted':'SEARCH_OPERATOR','preempted':'preempted'}) 
             
             # hear i finish the state
             smach.StateMachine.add('FOLLOW_AGAIN',
                        FollowOperator(),
-                       transtions={'succeeded':'succeeded',
+                       transitions={'succeeded':'succeeded',
                                    'lost':'aborted','preempted':'preempted'}) 
             
             

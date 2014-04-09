@@ -158,10 +158,11 @@ class check_door_status(smach.StateMachine):
         # i look if the distance is OK
         if self.preempt_requested():
            return 'preempted'
-        if  userdata.check_elevator_msg.ultra_sound_door>CHECK_DOOR_OPEN :
-            return 'DOOR'
-        else :
+
+        if  not userdata.check_elevator_msg.ultra_sound_door:
             return 'NO_DOOR'
+        else :
+            return 'DOOR'
         
 class count_door(smach.StateMachine):
     def __init__(self):
@@ -223,7 +224,7 @@ class look_for_elevator_door(smach.StateMachine):
 
             smach.StateMachine.add('COUNT_DOOR',
                                    count_door(),
-                                   transitions={'succeeded': 'succeeded','not_yet':'READ_AUX', 'preempted':'preempted'})
+                                   transitions={'succeeded': 'STOP_CHECK_ELEVATOR','not_yet':'READ_AUX', 'preempted':'preempted'})
             smach.StateMachine.add('RESET_COUNT',
                                    reset_count(),
                                    transitions={'succeeded': 'READ_AUX','preempted':'preempted'})
