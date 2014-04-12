@@ -11,9 +11,13 @@ OKGREEN = '\033[92m'
 
 from check_elevator_sm import look_for_elevator_door
 from speech_states.say import text_to_say
+from speech_states.say_yes_or_no import SayYesOrNoSM
+from speech_states.listen_and_check_word import ListenWordSM
             
 SAY_OUT_FRASE= "OK IM GOING OUT"
-COMPROBATE_GO_OUT="DO YOU WANT TO GO OUT?"
+COMPROVATE_GO_OUT="DO YOU WANT TO GO OUT?"
+
+
 
 
 class init_var(smach.State):
@@ -122,7 +126,7 @@ class follow_me_2nd(smach.StateMachine):
                                 look_for_elevator_door())
                 # here i have to listen if they say me to get out of the lift
                 sm.add('LISTEN_OPERATOR_FOR_EXIT',
-                                dummy_listen())
+                                ListenWordSM("go out"))
                 
             smach.StateMachine.add('CONCURRENCE', sm, transitions={'OPERATOR': 'SAY_OUT',
                                                                    'DOOR_OPEN':'SAY_DO_YOU_WANT'})
@@ -130,18 +134,19 @@ class follow_me_2nd(smach.StateMachine):
             
             # it says i'm going out
             smach.StateMachine.add('SAY_OUT',
-                                   text_to_say(COMPROBATE_GO_OUT),
+                                   text_to_say(SAY_OUT_FRASE),
                                    transitions={'succeeded': 'succeeded',
                                     'aborted': 'aborted','preempted':'preempted'})
             # i detect that the door it's open, and i will asck to the operator if it want to go out
             smach.StateMachine.add('SAY_DO_YOU_WANT',
-                                   text_to_say(COMPROBATE_GO_OUT),
+                                   text_to_say(COMPROVATE_GO_OUT),
                                    transitions={'succeeded': 'YES_OR_NOT',
                                     'aborted': 'aborted','preempted':'preempted'})
-            #comprobate that the order it's ok
+         
+         
             smach.StateMachine.add('YES_OR_NOT',
-                                   listen_yes_or_not_dummy(),
-                                   transitions={'succeeded': 'succeeded',
+                                   SayYesOrNoSM(),
+                                   transitions={'succeeded': 'SAY_OUT',
                                     'aborted': 'INIT_VAR','preempted':'preempted'})
 
             
