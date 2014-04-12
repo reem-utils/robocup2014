@@ -33,9 +33,7 @@ def child_term_cb(outcome_map):
 
 def out_cb_follow(outcome_map):
     
-    rospy.loginfo(OKGREEN + "maybbe bybe" + ENDC)
     if outcome_map['CHECK_ELEVATOR'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "bye bye elevator" + ENDC)
         return 'ELEVATOR'    
     elif outcome_map['FOLLOW_OPERATOR'] == 'lost':
         return 'LOST'    
@@ -57,7 +55,7 @@ class follow_me_1st(smach.StateMachine):
         Follow
         CHECK_ELEVATOR
     """
-    def __init__(self, distToHuman=0.9):
+    def __init__(self, distToHuman=0.5):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],input_keys=['in_learn_person'])
         
         with self:
@@ -79,6 +77,8 @@ class follow_me_1st(smach.StateMachine):
             smach.StateMachine.add('FOLLOW_AND_CHECKING', sm,
                                      transitions={'ELEVATOR':'succeeded',
                                                  'LOST':'aborted','preempted':'succeeded'})
+            
+            
                   
                
             
