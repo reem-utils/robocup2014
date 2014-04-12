@@ -10,6 +10,7 @@ Created on Sat March 16 11:30:00 2013
 
 import rospy
 import smach
+from navigation_states.get_current_robot_pose import get_current_robot_pose
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
@@ -17,6 +18,7 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+
 #from emergency_situation.GeneratePDF_State import GeneratePDF_State
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -138,12 +140,13 @@ class Save_People_Emergency(smach.StateMachine):
             #TODO: At the moment /amcl_pose in gazebo is not working properly
             smach.StateMachine.add(
                 'Register_Position',
-                DummyStateMachine(),
-                #get_current_robot_pose(),
+                #DummyStateMachine(),
+                get_current_robot_pose(),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'}
                 #remapping={'current_robot_pose':'emergency_location'}
                 )
             #Save_Info(): Saves the emergency info and generates a pdf file
+            #TODO: PDF
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',

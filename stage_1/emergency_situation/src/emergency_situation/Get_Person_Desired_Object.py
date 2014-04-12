@@ -141,7 +141,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
 
             smach.StateMachine.add(
                 'Go_To_Object_Place',
-                DummyStateMachine(),
+                nav_to_poi('kitchen'),
                 transitions={'succeeded':'Find_and_grab_object', 'aborted':'Go_To_Object_Place', 'preempted':'Go_To_Object_Place'})
 
             #Find Object + Grab Object SM
