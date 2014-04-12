@@ -128,12 +128,18 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Prepare_Go_To_Wave',
                 prepare_go_to_wave(),
-                transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
+                transitions={'succeeded':'Say_Go_to_Wave', 'aborted':'Say_Go_to_Wave', 'preempted':'Say_Go_to_Wave'})
+            smach.StateMachine.add(
+                                   'Say_Go_to_Wave',
+                                   text_to_say('I am going to the wave position'),
+                                   transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
             smach.StateMachine.add(
                 'Go_to_Wave',
                 #DummyStateMachine(),
                 nav_to_coord('/base_link'),
                 transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+           
+            
             # smach.StateMachine.add(
             #     'Detect_Wave',
             #     gesture_detection_sm(),

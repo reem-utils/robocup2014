@@ -131,8 +131,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
             smach.StateMachine.add(
                 'Enter_Room_Arena',
-                #EnterRoomSM(),
-                DummyStateMachine(),
+                EnterRoomSM(),
+                #DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
             # Go to the emergency location            
@@ -193,7 +193,7 @@ class emergency_situation_sm(smach.StateMachine):
             #Retrying to go to entry_door until is succeeded
             smach.StateMachine.add(
                 'Prepare_Door_Out_Arena_2',
-                prepare_poi_emergency('arena_door_out'),
+                prepare_poi_emergency('entry_door_exit'),
                 transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
