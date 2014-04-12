@@ -101,21 +101,21 @@ class checkElevator():
         
     def callback_Sonar(self,data):
         
-        if (data.header.frame_id=='base_sonar_02_link'):
+        if (data.header.frame_id=='/base_sonar_02_link'):
                             self.ultraSound[0]=data
                             self.ultra[0]=True
 
         
-        if (data.header.frame_id=='base_sonar_05_link'):
+        if (data.header.frame_id=='/base_sonar_05_link'):
                             self.ultraSound[1]=data
                             self.ultra[1]=True
  
          
-        if (data.header.frame_id=='base_sonar_08_link'):
+        if (data.header.frame_id=='/base_sonar_08_link'):
                             self.ultraSound[2]=data
                             self.ultra[2]=True
         
-        if (data.header.frame_id=='base_sonar_11_link'):
+        if (data.header.frame_id=='/base_sonar_11_link'):
                             self.ultraSound[3]=data
                             self.ultra[3]=True 
         
@@ -156,12 +156,12 @@ class checkElevator():
             self.position_status=False      
     
     def proces_ultra_sound(self):
-
+        rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
         self.nUltra=0
         if (not self.ultra_sound_ready):
             self.ultra_status=False
         else :
-        
+           
             if self.ultraSound[0].range<FRONT_DISTANCE :
                 self.nUltra=self.nUltra+1
                 # Left
@@ -181,7 +181,7 @@ class checkElevator():
                 self.ultra_status=True
             else :
                 self.ultra_status=False
-                
+                rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
                 
                         
                 
@@ -202,8 +202,8 @@ class checkElevator():
                     msg.elevator=True
                 else :
                     msg.elevator=0
-                rospy.loginfo(OKGREEN)  
-                rospy.loginfo("\n"+str(msg)+ENDC)  
+                #rospy.loginfo(OKGREEN)  
+                #rospy.loginfo("\n"+str(msg)+ENDC)  
                 self.elevator_pub.publish(msg)    
             rospy.sleep(0.5)
         
