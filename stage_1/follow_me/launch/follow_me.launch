@@ -1,0 +1,11 @@
+
+<launch>
+	<!-- load the Parameters configuration file -->
+	<!-- yaml files for navigation and object locations -->
+	<!-- fake action server nodes-->
+	<node pkg="follow_me"
+	      type="follow_me_test.py"
+	      name="Follow_me_Test_node">
+  	     output="screen"> 
+	</node>
+</launch>

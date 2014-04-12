@@ -140,6 +140,7 @@ class FaceService():
                     face.position.x=-0.0874395146966
                     face.position.y= -0.0155512560159
                     face.position.z= 0.945071995258
+                    face.name="roger"
                     
                     self.recognized_face.faces.append(face)
            

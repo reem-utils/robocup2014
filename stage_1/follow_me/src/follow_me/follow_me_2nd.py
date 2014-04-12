@@ -58,7 +58,7 @@ class listen_yes_or_not_dummy (smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
     def execute(self):
-        rospy.loginfo("i'm in¡ the dumy state listen if its yeas or not")
+        rospy.loginfo("im in the dummy state listen if its yeas or not")
         return 'succeeded'
         
     # gets called when ANY child state terminates
@@ -66,7 +66,7 @@ def child_term_cb(outcome_map):
 
     # terminate all running states if walk_to_poi finished with outcome succeeded
     if outcome_map['CHECK_DOOR'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "the door it's open" + ENDC)
+        rospy.loginfo(OKGREEN + "the door its open" + ENDC)
         return True
     
     if outcome_map['LISTEN_OPERATOR_FOR_EXIT'] == 'succeeded':
