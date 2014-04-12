@@ -1,2 +1,5 @@
-yes=yeah
-no=noo
+object=coke
+location=fridge
+table=couch table
+yes=yes
+name=cris

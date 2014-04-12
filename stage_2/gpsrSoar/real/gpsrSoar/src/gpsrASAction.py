@@ -10,10 +10,9 @@ from GenerateGoalScript import NO, YES, ignore
 from translator import obj2idx, get_list, get_obj_location, idx2obj 
 
 from speech_states.listen_general_command import askMissingInfo as askMissingInfoSM 
-'''
 from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
-'''
+
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
@@ -25,7 +24,7 @@ try:
   per = GFR(wordset=grammarNames)
 except IOError:
   PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/gentest.gram"
-  print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 21"
+  print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 27"
   per = GFR(path=PATH, wordset=grammarNames)
 print per
 
@@ -62,8 +61,8 @@ persons[''] = ''
 items['']=''
 locations['']=''
 
-def new_world(loc_list):
-  p = person()
+def new_world(loc_list):  #generates a new world
+  p = person()      #generates a person, names it referee and ask the translator about its localtion
 
   p.id = str(obj2idx('referee', 'PERSONS'))
   p.locId = str(obj2idx('referee', 'LOCATIONS')) # 2'
@@ -76,7 +75,7 @@ def new_world(loc_list):
   p.found = NO
   # check! if person = referee, location = robot location
 
-  i = item()
+  i = item()    #initializes items in the new world
 
   i.id = '-1'
   i.locId =  '-1' #str(obj2idx('sams_table', 'LOCATIONS')) # '-1'
@@ -87,7 +86,7 @@ def new_world(loc_list):
   i.pointed = NO
 
 
-  r = robot()
+  r = robot() # puts the robot himself in its world map
 
   r.id = '1'
   r.locId = str(obj2idx('referee', 'LOCATIONS'))
@@ -98,7 +97,7 @@ def new_world(loc_list):
 
 
   l = []
-  for loc in loc_list:
+  for loc in loc_list: #adds the locations list to this world
     nl = location()
 
     nl.id = loc
@@ -106,15 +105,14 @@ def new_world(loc_list):
     l.append(nl)
 
 
-  w = world()
+  w = world() #generates a world and fill it with the objects we already created before.
 
   w.item = i
   w.person = p
   w.robot = r
   w.location = l
-  print w.robot.locId
 
-  return w
+  return w  #return this world
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
  ad = askMissingInfoSM(Type=Type, objectName=objectName)
@@ -125,29 +123,25 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
  loc = ad.userdata._data['location_name']
  return loc  #-------------------'''
  #return 'fridge'
-
+  
 def ask_category(category):
- '''ad = askCategorySM(GRAMMAR_NAME = category)
-#ad.userdata._data = {'cat': category}
- ad.userdata.cat = category
+ ad = askCategorySM(GRAMMAR_NAME = category)
  out = ad.execute()
- print str(type(ad.userdata))
  obj = ad.userdata._data['object_name']
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ print obj
  return obj   #--------------'''
- return 'milk'
+ #return 'milk'
 
-def ask_category_loc(category):
- '''ad = askCategoryLocSM(GRAMMAR_NAME = category)
-# ad.userdata._data = {'cat': category}
- #ad.userdata.cat = category
+def ask_category_loc(category): #sa de mirar aki
+ ad = askCategoryLocSM(GRAMMAR_NAME = category) 
  out = ad.execute()
  print str(type(ad.userdata))
  obj = ad.userdata._data['loc_name']
  print obj
- # ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+ #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
  return obj    #---------------------'''
- return 'coke'
+ #return 'coke'
 
 def check_object_location(obj):
   if obj != '':
@@ -172,11 +166,11 @@ class gpsrASAction(object):
     self._world = world()
     
   def execute_cb(self, goal):
-    self._goalDonei = 0
+    self._goalDonei = 0  #contador de goals
 
-    self._goal = goal
-    success = False
-    self._world = new_world(range(len(get_list('LOCATIONS'))))
+    self._goal = goal #saving our goal in self for more comfortable usage
+    success = False  #flag to know when we have succeed   
+    self._world = new_world(range(len(get_list('LOCATIONS'))))  #generates a new world
     print self._world.robot.locId
     self.print_goal()
     
@@ -215,7 +209,7 @@ class gpsrASAction(object):
     perss = []
     locc = []
     itt = []
-    for c in commands:      #extract elements from orderList and put them in the following arrays
+    for c in commands:      #extract elements from orderList and put them in the arrays previously initialized
       if c.person != '':
         if c.person not in perss:
           iperson += 1
@@ -229,7 +223,7 @@ class gpsrASAction(object):
           iloc += 1
           locc.append(c.location)
 
-    command = commands[self._goalDonei]
+    command = commands[self._goalDonei] #Extract one of he commands to command
 
     locc = get_list('LOCATIONS')
     
@@ -240,7 +234,7 @@ class gpsrASAction(object):
     # print command.location
     # print command.item
     # print command.person
-    
+
     # printNewGoal(oaction=command.action, oitem=items[command.item], operson=persons[command.person], olocation=locations[command.location])
     # printNewGoal(oaction='go_to', oitem=items[command.item], operson=persons[command.person], olocation=1)
     # compileInit(locations=iloc, persons=iperson, items=iitem, oaction=command.action, oitem=items[command.item], operson=persons[command.person], olocation=locations[command.location])
@@ -248,7 +242,10 @@ class gpsrASAction(object):
     # checks that the item is or not a category
     # print 'blablabal'
     if command.item in categories:
-      objct = ask_category(command.item)
+      print ("_------------command.item val : " + command.item + "\n_------------I les categories son: " + str(categories))
+      objct = ask_category(command.item)#----------------------------------
+      print objct
+      print ('a dintre de objct hi ha ' + objct)
       self._world.item.id = obj2idx(objct, 'ITEMS')
       command.item = objct
       print idx2obj(self._world.item.id, 'ITEMS')

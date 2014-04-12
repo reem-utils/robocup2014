@@ -3,6 +3,7 @@
 	<!-- load the Parameters configuration file -->
 	<!-- yaml files for navigation and object locations -->
 	<!-- fake action server nodes-->
+	<include file="$(find emergency_situation)/launch/emergency_situation_params.launch"/>
 	<node pkg="gesture_detection_mock"
 	      type="gesture_detect_mock.py"
 	      name="gesture_detect"

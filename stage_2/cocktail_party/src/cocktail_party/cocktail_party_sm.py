@@ -24,7 +24,6 @@ from geometry_msgs.msg import Pose
 
 # Constants
 NUMBER_OF_ORDERS = 3
-DummyStateMachine
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -57,30 +56,50 @@ class prepare_ask_person_back(smach.State):
 class prepare_coord_wave(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['gesture_detection'],
+                                input_keys=['gesture_detected', 'nav_to_coord_goal'],
                                 output_keys=['standard_error', 'nav_to_coord_goal'])
 
     def execute(self, userdata):
         
-        userdata.nav_to_coord_goal.x = userdata.gesture_detection.position.x
-        userdata.nav_to_coord_goal.y = userdata.gesture_detection.position.y
-        userdata.nav_to_coord_goal.yaw  = userdata.gesture_detection.orientation.w
+        x = userdata.gesture_detected.gesture_position.position.x
+        y = userdata.gesture_detected.gesture_position.position.y
+        yaw  = userdata.gesture_detected.gesture_position.orientation.w
+        
+        userdata.nav_to_coord_goal = [x, y, yaw]
+        rospy.logwarn("X: " + str(x) + " Y: " + str(y) + " yaw: " + str(yaw))
         
         return 'succeeded'
 
-class prepare_coord_order(smach.State):
+class process_order(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['face'],
-                                output_keys=['standard_error', 'nav_to_coord_goal'])
+                                input_keys=["asr_answer","asr_answer_tags"],
+                                output_keys=['object_to_grasp'])
 
+    def execute(self, userdata):
+        
+        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
+        if tags:
+            name = tags[0].value
+            userdata.object_to_grasp = name
+            return 'succeeded'
+        
+        return 'aborted'
+
+class prepare_coord_order(smach.State):
+    def __init__(self, distanceToHuman=0.9):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['face', 'nav_to_coord_goal'],
+                                output_keys=['standard_error', 'nav_to_coord_goal'])
+        self.distanceToHuman = distanceToHuman
+        
     def execute(self, userdata):
         
         new_pose = Pose()
         new_pose.position.x = userdata.face.position.x
         new_pose.position.y = userdata.face.position.y
 
-        unit_vector = normalize_vector(userdata.nav_to_coord_goal)
+        unit_vector = normalize_vector(new_pose.position)
         position_distance = vector_magnitude(new_pose.position)
 
         distance_des = 0.0
@@ -137,16 +156,17 @@ class CocktailPartySM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
+            self.userdata.gesture_name = ''
             
             # Must we say something to start? "I'm ready" or something
             # Must we wait for the spoken order? 
             
             # We wait for open door and go inside
-            smach.StateMachine.add(
-                'wait_for_door',
-                EnterRoomSM("party_room"),
-                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
+#             smach.StateMachine.add(
+#                 'wait_for_door',
+#                 EnterRoomSM("party_room"),
+#                 transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
+#                 'preempted': 'preempted'}) 
 
             # Gesture recognition -> Is anyone waving?
             smach.StateMachine.add(
@@ -186,10 +206,17 @@ class CocktailPartySM(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to drink?"),
-                transitions={'succeeded': 'go_to_storage', 'aborted': 'aborted', 
+                AskQuestionSM("What would you like to drink?", "drink.gram"),
+                transitions={'succeeded': 'process_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
+            # Process the answer
+            smach.StateMachine.add(
+                'process_order',
+                process_order(),
+                transitions={'succeeded': 'go_to_storage', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
             # Go to the storage room
             smach.StateMachine.add(
                 'go_to_storage',
@@ -222,7 +249,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_for_person',
                 searching_person(),
-                transitions={'succeeded': 'go_to_person', 'aborted': 'prepare_ask_for_person_back', 
+                transitions={'succeeded': 'prepare_coord_order', 'aborted': 'prepare_ask_for_person_back', 
                 'preempted': 'preempted'}) 
             
             # Prepare the goal to the person that ask for the order

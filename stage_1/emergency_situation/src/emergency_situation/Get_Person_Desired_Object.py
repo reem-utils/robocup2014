@@ -159,7 +159,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Prepare_Go_To_Person',
                 prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
-            #TODO: nav_to_poi()
+            #TODO: POI For Person in Emergency
             smach.StateMachine.add(
                 'Go_To_Person',
                 DummyStateMachine(),
@@ -172,13 +172,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 #DummyStateMachine(),
                 move_hands_form(hand_pose_name='full_open', hand_side='right'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-
-
-
-
-
-
-
 
 
 

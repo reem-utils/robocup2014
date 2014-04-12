@@ -1,11 +1,12 @@
+
+import roslib
+roslib.load_manifest('gpsrSoar')
+import nltk
+from grammarReader import grammarFileReader as GFR
+
 exceptions_list = ['exit']
 exception_cb = {}
 not_verb_relations = ['det', 'amod']
-import nltk
-from grammarReader import grammarFileReader as GFR
-import roslib
-
-
 
 def checkNames(sentence):
     nameList = GFR(wordset={'names': 'nameshort'})['names']

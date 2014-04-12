@@ -1,0 +1,33 @@
+
+<launch>
+	<!-- load the Parameters configuration file -->
+	<!-- yaml files for navigation and object locations -->
+	<!-- fake action server nodes-->
+	<node pkg="person_detection"
+	      type="follow_me_mock.py"
+	      name="Follow_me_Service_node">
+  	      
+	</node>
+	
+	<node pkg="tts_mock"
+	      type="tts_as.py"
+	      name="tts_node">
+	
+	</node>
+	<node pkg="asr_mock"
+	      type="asr_srv.py"
+	      name="asr_node">
+	
+	</node>
+	<node pkg="follow_me"
+	      type="check_elevator.py"
+	      name="CheckElevator_node">
+	
+	</node>
+	<node pkg="navigation_states"
+	      type="nav_back.py"
+	      name="NavigationBack_node">
+	
+	</node>
+
+</launch>

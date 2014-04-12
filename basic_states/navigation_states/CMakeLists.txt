@@ -52,11 +52,11 @@ catkin_python_setup()
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
+ add_service_files(
+   FILES
+   NavigationGoBack.srv
 #   Service2.srv
-# )
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -66,10 +66,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   nav_msgs
-# )
+ generate_messages(
+  DEPENDENCIES
+   #nav_msgs
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -83,7 +83,7 @@ catkin_python_setup()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES navigation_states
-#  CATKIN_DEPENDS actionlib nav_msgs rospy smach_ros
+ CATKIN_DEPENDS actionlib nav_msgs rospy smach_ros
 #  DEPENDS system_lib
 )
 

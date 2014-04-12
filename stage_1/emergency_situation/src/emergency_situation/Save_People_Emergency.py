@@ -128,7 +128,11 @@ class Save_People_Emergency(smach.StateMachine):
                 'Ask_Status',
                 text_to_say(),
                 transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
-
+            #TODO: Do we have to add an SayYesOrNoSM?
+            # smach.StateMachine.add(
+            #     'Yes_No',
+            #     SayYesOrNoSM(),
+            #     transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
             #Register Position --> TODO? or done?
             #Output keys: emergency_location 
             #TODO: At the moment /amcl_pose in gazebo is not working properly

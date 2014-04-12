@@ -171,6 +171,24 @@ class debug(smach.State):
 
 
 class FollowOperator(smach.StateMachine):
+    
+    '''
+    This is a follow operator state.
+    This state needs a in_learn_poerson that is a 
+    id that will have to look, i don't know the skill perfectly
+    
+    @input= userdata.in_learn_person
+    @Optional input = distToHuman
+    @Optional input = time_occluded
+    the optional parameters have to be passet in ()
+    @Output= I't not have a output
+    
+    @Outcomes= 'succeeded' : never will be succed because it's infinit
+                'lost' : if the time of occluded it's more than time_occluded
+                        for this reason is that we have lost
+                'preempted': It will be util to do a concurrent state machine
+    
+    '''
     #Its an infinite loop track_Operator
 
     def __init__(self, distToHuman=0.9,time_occluded=30):
@@ -183,11 +201,7 @@ class FollowOperator(smach.StateMachine):
 
         with self:
             self.userdata.standard_error='OK'
-#TODO i don't know if it's the currect form to stop de face tracking
-            #smach.StateMachine.add('DISABLE_FACE_TRACKING',
-            #                          ServiceState('/personServer/faceTracking/stop'),
-            #                         transitions={'succeeded': 'FIX_HEAD_POSITION'})
-            #self. userdata.tracking_msg=Pose()
+
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),

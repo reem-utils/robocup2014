@@ -53,20 +53,20 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     except:
         sent = sent
     sent = sent.replace(',', '')
-    sent = sent.lower()
-    sent = sent.split()
-    # print sent
+    sent = sent.lower()  #turns string into lowercase
+    sent = sent.split()  #separates the string into an array of words
+    print "\n\n=== The sentence sent to the parser is: " + str(sent) + "\n\n"
     i = 0
     for word in sent:
-        sent[i] = word.strip("'").strip('"')
+        sent[i] = word.strip("'").strip('"')  #each strip function erases from word all ' and " in front an behind it
         i += 1
     grammarNames = {}
     grammarNames['persons'] = 'person'
     grammarNames['locations'] = 'location'
     grammarNames['items'] = 'item'
-    try:
-        per = GFR(wordset=grammarNames)
-        # print 'bla'
+    try:            #fills per with an array of arrays each for one category with all their posible values in them
+        per = GFR(wordset=grammarNames) 
+        #print 'bla'        
     except IOError:
         PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"
         print 'estem carregan la gramatica del PC i no del robot!!'
@@ -86,7 +86,13 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     #     value = tree.height() + len(tree.leaves())
     #     return value
     # print 'heyehyehyeyeh'
+    print ("==========sent=========")
+    print sent
+    print ("=========fi sent========")
     trees = pars.nbest_parse(sent)
+    print ("==========trees=========")
+    print trees
+    print ("=========fi trees========")
     if len(trees) == 0:
         print 'The sentence is not from CAT1 in the robocup'
         t = 'unk'

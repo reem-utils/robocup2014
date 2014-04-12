@@ -38,7 +38,7 @@ class prepare_say_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['name'],
-                                output_keys=['tts_text','tts_wait_before_speaking'])
+                                output_keys=['tts_text','tts_wait_before_speaking', 'tts_lang'])
 
     def execute(self, userdata):
 

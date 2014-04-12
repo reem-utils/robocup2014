@@ -49,7 +49,7 @@ class GeneratePDF_State(smach.State):
         print "\nPendrive Location: %s\n" % self.pendrive_location
 
     def execute(self, userdata):
-        rospy.loginfo("Informing Fire Department...............")
+        rospy.loginfo("Informing Ambulance...............")
         no_of_people_need_assistance = ImageCreator(location_list=userdata.location_list, 
                                         origin=IMAGE_ORIGIN,
                                         scale=RESOLUTION, 
@@ -61,5 +61,12 @@ class GeneratePDF_State(smach.State):
         print "PDF CREATED in  " + PKG_PATH + '/config/reem3.pdf'
         rospy.loginfo("Copying file to %s/reem3.pdf" % self.pendrive_location)
         shutil.copy(PKG_PATH + '/config/' + "reem3.pdf", self.pendrive_location + '/reem3.pdf')
-        rospy.loginfo("Fire department informed successfully !!!!")
+        rospy.loginfo("Ambulance informed successfully !!!!")
         return succeeded
+
+
+
+
+
+
+

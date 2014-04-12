@@ -1,4 +1,4 @@
-import stparser as par
+import stparser as par #uses standfor parser (not workin for us)
 a = par.StanfordParser(8)
 sentence = "Go to the kitchen take a bottle from the table and find me at the station"
 
