@@ -5,7 +5,6 @@ ROBOT = 'ROBOT'
 ITEM = 'ITEM'
 DESIRE = 'DESIRE'
 
-
 NO = 'no'
 YES = 'yes'
 ignore = 'ignore'
@@ -18,7 +17,6 @@ class goal():
         self.item = oitem
         self.location = olocation
 
-
 class item():
     def __init__(self):
         self.id = ignore
@@ -28,7 +26,6 @@ class item():
         self.grasped = ignore
         self.delivered = ignore
         self.pointed = ignore
-
 
 class person():
     def __init__(self):
@@ -41,13 +38,11 @@ class person():
         self.askedName = ignore
         self.followed = ignore
         self.found = ignore
-
-
+        
 class location():
     def __init__(self):
         self.id = ignore
         self.pointed_at = ignore
-
 
 class robot():
     def __init__(self):
@@ -56,7 +51,6 @@ class robot():
         self.obj1Id = ignore
         self.introduced = ignore
         self.pointedAtLoc = ignore
-
 
 class world():
     def __init__(self):
@@ -406,7 +400,6 @@ class world():
         self.item.toBeGrasped = NO
         self.robot.obj1Id = GOAL.item
 
-
 def printNewGoal(oaction='go_to', oitem=0, operson=0, olocation='kitchen',
     templatefile='-goal.soar', goalfile='goal-test'):
     oaction = oaction.replace('_', '-')
@@ -435,11 +428,9 @@ def printNewGoal(oaction='go_to', oitem=0, operson=0, olocation='kitchen',
     tempfile.close()
     targfile.close()
 
-
 def convert(element):
     el = '<l' + str(element) + '>'
     return el
-
 
 def compileInit(oaction='go_to', oitem=0, operson=0, olocation=0,
     templatefile='init-template.soar', goalfile='initialize-gp.soar', locations=0, persons=0, items=0, current_world=world()):
