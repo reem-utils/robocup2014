@@ -138,8 +138,8 @@ if __name__ == '__main__':
     rospack_instance = rospkg.RosPack()
     asr_mock_path = rospack_instance.get_path("asr_mock")
     #pathFile = os.path.expanduser("~") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
-    pathFile = os.path.expanduser(asr_mock_path)
-    if os.path.exists(pathFile):
+    pathFile = os.path.expanduser(asr_mock_path) + "/src/tags.txt"
+    if os.path.exists(pathFile): # this should check if its a file not just "exists"
         asr = AsrService(pathFile)
         asr.run()
     else:
