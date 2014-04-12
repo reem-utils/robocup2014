@@ -80,9 +80,14 @@ class FollowMe(smach.StateMachine):
 
             smach.StateMachine.add('FOLLOW_ME_1rst',
                                    follow_me_1st(),
-                                   transitions={'succeeded':'FOLLOW_ME_2nd', 'aborted':'FOLLOW_ME_1rst'})
+                                   transitions={'succeeded':'TEXT', 'aborted':'FOLLOW_ME_1rst','preempted':'TEXT'})
             
             # in this state i will wait that the door it comes open
+            smach.StateMachine.add('TEXT',
+                       text_to_say("NICE LIFT"),
+                       transitions={'succeeded': 'FOLLOW_ME_2nd','aborted':'aborted'})
+            
+            
             smach.StateMachine.add('FOLLOW_ME_2nd',
                                    follow_me_2nd(),
                                    transitions={'succeeded': 'FOLLOW_ME_3rd', 'aborted':'aborted'})

@@ -26,8 +26,9 @@ MAXMETERS=3 # this is the maximum numer of meters that can move the robot back
 MAXTIME=15 # numer maxim of time that the robot can be going back
 MINTDIST=0.30
 IMPACT=100 # every back sensor that give a impact result increments INC, and the no impact decrement DEC
-INC=30 #every detection it will increment 
-DEC=2 # no detections will decrement 
+INC=40 #every detection it will increment 
+DEC=10 # no detections will decrement 
+SPEED_X=-0.3 # that is a back speed
 '''
 @this is a navigation
 @The maximum value of Distance is 3 meters
@@ -53,6 +54,7 @@ class navigation_back():
         self.enable=False
         self.time_init= rospy.get_rostime()
         self.impacte=0
+        self.goal_achieved=False
         
     def nav_back_srv(self,req):
         
@@ -64,10 +66,14 @@ class navigation_back():
                 self.time_init= rospy.get_rostime()
                 self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)
                 self.impacte=0
+                self.goal_achieved = False
             else :
                 
                 self.enable=False
                 self.pub_stop()
+            
+            while not self.goal_achieved :
+                rospy.sleep(0.1)
             
             return NavigationGoBackResponse()
         else :
@@ -90,7 +96,7 @@ class navigation_back():
             self.movment=False
     def pub_move(self):
         msg=Twist()
-        msg.linear.x= -0.2
+        msg.linear.x= SPEED_X
         msg.linear.y=0
         msg.linear.z=0
         msg.angular.x=0
@@ -111,7 +117,7 @@ class navigation_back():
         
     def callback_Sonar(self,data):
         
-        if (data.header.frame_id==('base_sonar_07_link' )):
+        if (data.header.frame_id==('/base_sonar_07_link' )):
             if data.range<MINTDIST :
                 self.impacte=self.impacte+INC
                 
@@ -120,7 +126,7 @@ class navigation_back():
                
                 if self.impacte<0 :
                     self.impacte=0
-        elif (data.header.frame_id==('base_sonar_08_link')):
+        elif (data.header.frame_id==('/base_sonar_08_link')):
             if data.range<MINTDIST :
                 self.impacte=self.impacte+INC
                
@@ -130,7 +136,7 @@ class navigation_back():
                 if self.impacte<0 :
                     self.impacte=0
             
-        elif (data.header.frame_id==('base_sonar_09_link')):
+        elif (data.header.frame_id==('/base_sonar_09_link')):
             if data.range<MINTDIST :
                 self.impacte=self.impacte+INC
                 
@@ -140,9 +146,7 @@ class navigation_back():
                 
                 if self.impacte<0 :
                     self.impacte=0
-            
-            
-            
+        
     
     def run(self):
         msg=Twist()
@@ -160,11 +164,12 @@ class navigation_back():
                         rospy.loginfo(FAIL+"TIME OUT MOVE_BACK"+ENDC)
                     if  self.impacte>=IMPACT :
                         rospy.loginfo(FAIL+"IMPACT"+ENDC)
+                    self.goal_achieved=True # TODO: this is complicate
                     self.pub_stop()
                     self.enable=False
                     self.ultra_subs.unregister()
                     
-                rospy.sleep(0.02)
+                rospy.sleep(0.01)
             else :
                 rospy.sleep(3)
         
@@ -173,6 +178,7 @@ class navigation_back():
         
 if __name__ == '__main__':
     rospy.init_node('navigation_back_service')
+    rospy.sleep(1)
     rospy.loginfo("navigation_back_srv")
     navigation = navigation_back()
     navigation.run()
