@@ -67,7 +67,7 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 5)
 
-   (<d> ^name bring-to
+   (<d> ^name bring-from
         ^person <pp>
         ^object <ii>
         ^robot <rr>)

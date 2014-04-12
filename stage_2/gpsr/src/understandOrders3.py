@@ -197,7 +197,7 @@ class orderList():
 
         # sentence = "bring the coke to John_NN and leave the apartment"
 
-        acts = readFiles.inv_functionList()
+        acts = readFiles.inv_functionList()  #Load VerbCategories.txt
         # c = a.batch_parse(sentence)
 
         # # c = a.batch_parse(sentence.lower())
@@ -216,8 +216,10 @@ class orderList():
         # n = change_exceptions(s, deps)
 
         commands = parseSentence(sentence)
+        print("----------------comands---------------")
         print commands
-        if commands == 'unk':
+        print("----------------fi comands---------------")
+        if commands == 'unk':       #if parserSentence couldnt return a thing return self fith confidence = 0 and finish
             self.confidence = '0'
             return self
         
@@ -236,15 +238,11 @@ class orderList():
                 if s == 'VB':
                     action = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
                 elif s == 'ITEM':
-                    # item = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
                     item = '_'.join(prod.rhs())
                 elif s == 'PERSON':
-                    person = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
+                    person = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")     
                 elif s == 'LOCATION':
-                    # print '_'.join(prod.rhs()) + ' a veure que tinc aqui'
                     location = '_'.join(prod.rhs())
-
-                    # location = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
                 elif s == 'PRON':
                     r = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
                     if r == 'it':

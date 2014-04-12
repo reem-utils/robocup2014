@@ -37,7 +37,7 @@ class functionList(dict):
 """
 
 
-class inv_functionList(functionList):
+class inv_functionList(functionList):   #Load the relations between a verb and the action it shall trigger
     def __init__(self):
         PATH = roslib.packages.get_pkg_dir("gpsr")
         File = PATH + '/src/VerbCategories.txt'
