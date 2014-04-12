@@ -19,7 +19,7 @@ from gpsrSoar.msg import gpsrActionAction
 # from GenerateGoalScript import printNewGoal
 
 # import rospy
-SENTENCE_SAID = '/parsing/sentence1'
+SENTENCE_SAID = '/parsing/sentence'
 NUM_LOOPS_TODO = 3
 NUM_LOOPS_I = 0
 GRAMATICA = 'robocup/gentest'
@@ -78,7 +78,7 @@ class init_parameters(smach.State):
         return 'succeeded'
 
 
-class check_AsrOn(smach.State):
+class check_AsrOn(smach.State): #Per implementar de debo (utilitzarem i i_asrOn)
     def __init__(self):
         smach.State.__init__(self, outcomes=['ASR_ON', 'ASR_OFF', 'aborted'],
             input_keys=['i_sentence', 'i_asrOn'],
@@ -171,7 +171,9 @@ class gpsrOrders(smach.StateMachine):
 
             self.userdata.tts_text=''
             self.userdata.tts_lang=''
-            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_wait_before_speaking=0            
+            self.userdata.referee = 'referee'
+            
             '''
             smach.StateMachine.add("START_GRASP_PROTOCOL",
                                    InitGraspPipelineSM(),
@@ -215,20 +217,11 @@ class gpsrOrders(smach.StateMachine):
             #         remapping={'referee_position': 'out_referee_position'},
             #         transitions={succeeded: 'LISTEN_ORDER', aborted: 'aborted'})
 
-            
-            smach.StateMachine.add(
-                    'Check_LOOP',
-                    checkAsrLoopState,
-                    transitions={'LOOP_ON': 'Check_ASR', 'LOOP_OFF': 'succeeded', 'aborted': 'Check_ASR'},
-                    remapping={'i_asrLoop': 'asrLoop'})
-
             smach.StateMachine.add(
                     'Check_ASR',
                     check_AsrOn(),
                     transitions={'ASR_ON': 'LISTEN_ORDER', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
                     remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
-
-            self.userdata.referee = 'referee'
 
             smach.StateMachine.add('GO_TO_REFEREE',
                    nav_to_poi(),#MoveToRoomStateMachine(),
@@ -314,7 +307,12 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add('TELL_ABORTED',
                         text_to_say(text="Sorry I couldn't execute the command in time, please give me another one", wait_before_speaking=0),
                         transitions={'succeeded': 'Check_LOOP'})
-
+            
+            smach.StateMachine.add(
+                    'Check_LOOP',
+                    checkAsrLoopState,
+                    transitions={'LOOP_ON': 'Check_ASR', 'LOOP_OFF': 'succeeded', 'aborted': 'Check_ASR'},
+                    remapping={'i_asrLoop': 'asrLoop'})
         
 
 

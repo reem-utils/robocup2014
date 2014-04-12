@@ -207,7 +207,7 @@ class askMissingInfo(smach.StateMachine):
                 self.userdata.dataType = Type
                 self.userdata.object_name = objectName
                 self.userdata.location_name = ''
-                self.userdata.grammar_name = ''
+                self.userdata.grammar_name = GRAMMAR_NAME
                 self.userdata.tts_wait_before_speaking = 0
                 self.userdata.tts_text = ''
                 self.userdata.tts_lang = ''
@@ -278,7 +278,7 @@ class askCategory(smach.StateMachine):
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
                 self.userdata.location_name = ''
-                self.userdata.grammar_name = ''
+                self.userdata.grammar_name = GRAMMAR_NAME
                 self.userdata.tts_wait_before_speaking = 0
                 self.userdata.tts_text = ''
                 self.userdata.tts_lang = ''
@@ -354,8 +354,9 @@ class askCategoryLoc(smach.StateMachine):
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
+                self.userdata.locList = []
                 self.userdata.location_name = ''
-                self.userdata.grammar_name = ''
+                self.userdata.grammar_name = GRAMMAR_NAME
                 self.userdata.tts_wait_before_speaking = 0
                 self.userdata.tts_text = ''
                 self.userdata.tts_lang = ''
@@ -373,7 +374,7 @@ class askCategoryLoc(smach.StateMachine):
 
                         #blabla
                         smach.StateMachine.add('ASK_INFO',
-                                               text_to_say('You said a ' + userdata.cat + '. I could go to ' + ', '.join(self.userdata.locList) + '. Which ' + self.userdata.cat + ' do you prefer?'),
+                                               text_to_say('You said a ' + self.userdata.cat + '. I could go to ' + ', '.join(self.userdata.locList) + '. Which ' + self.userdata.cat + ' do you prefer?'),
                                                transitions={'succeeded': 'HEAR_COMMAND',
                                                             'aborted': 'aborted'})
 
