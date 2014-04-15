@@ -53,12 +53,13 @@ class prepare_go_to_wave(smach.State):
     def __init__(self):
         smach.State.__init__(self,
                             outcomes=['succeeded', 'aborted', 'preempted'],
-                            input_keys=['gesture_detection'],
+                            input_keys=['gesture_detected', 'nav_to_coord_goal'],
                             output_keys=['standard_error', 'nav_to_coord_goal'])
     def execute(self, userdata):
-        userdata.nav_to_coord_goal.x = userdata.gesture_detection.position.x
-        userdata.nav_to_coord_goal.y = userdata.gesture_detection.position.y
-        userdata.nav_to_coord_goal.yaw  = userdata.gesture_detection.orientation.w
+        userdata.nav_to_coord_goal = [userdata.gesture_detected.gesture_position.position.x, userdata.gesture_detected.gesture_position.position.y, 
+                                            userdata.gesture_detected.gesture_position.orientation.w]
+        #userdata.nav_to_coord_goal.y = userdata.gesture_detected.gesture_position.position.y
+        #userdata.nav_to_coord_goal.yaw  = userdata.gesture_detected.gesture_position.orientation.w
         return 'succeeded'        
 
 class Analyze_Wave(smach.State):
@@ -114,10 +115,12 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Search',
                 text_to_say(),
-                transitions={'succeeded':'Detect_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
+                transitions={'succeeded':'Gesture_Recognition', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
 
             # Search for a Wave Gesture
             # Output_keys: gesture_detected: type Gesture
+            self.userdata.gesture_name = 'wave'
+            self.userdata.nav_to_coord = [0, 0, 0]
             smach.StateMachine.add(
                 'Gesture_Recognition',
                 GestureRecognition('wave'),
@@ -125,8 +128,18 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Prepare_Go_To_Wave',
                 prepare_go_to_wave(),
-                transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
-
+                transitions={'succeeded':'Say_Go_to_Wave', 'aborted':'Say_Go_to_Wave', 'preempted':'Say_Go_to_Wave'})
+            smach.StateMachine.add(
+                                   'Say_Go_to_Wave',
+                                   text_to_say('I am going to the wave position'),
+                                   transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
+            smach.StateMachine.add(
+                'Go_to_Wave',
+                #DummyStateMachine(),
+                nav_to_coord('/base_link'),
+                transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+           
+            
             # smach.StateMachine.add(
             #     'Detect_Wave',
             #     gesture_detection_sm(),
@@ -135,8 +148,4 @@ class Search_People_Emergency(smach.StateMachine):
             #     'Analyze_Wave',
             #     Analyze_Wave(),
             #     transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
-            smach.StateMachine.add(
-                'Go_to_Wave',
-                #DummyStateMachine(),
-                nav_to_coord('/base_link'),
-                transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+            

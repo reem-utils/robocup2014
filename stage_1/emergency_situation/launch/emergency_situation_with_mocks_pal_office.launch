@@ -1,0 +1,30 @@
+
+<launch>
+	<!-- load the Parameters configuration file -->
+	<!-- yaml files for navigation and object locations -->
+	<!-- fake action server nodes-->
+	<include file="$(find emergency_situation)/launch/emergency_situation_params_pal_office.launch"/>
+	<node pkg="gesture_detection_mock"
+	      type="gesture_detect_mock.py"
+	      name="gesture_detect"
+  	      output="screen">
+	</node>
+	
+	<node pkg="tts_mock"
+	      type="tts_as.py"
+	      name="tts"
+	      output="screen">
+	</node>
+	<node pkg="asr_mock"
+	      type="asr_srv.py"
+	      name="asr"
+	      output="screen">
+	</node>
+
+	<node pkg="emergency_situation"
+	      type="emergency_situation_main.py"
+	      name="emergency_situation"
+	      output="screen">
+	</node>
+	
+</launch>

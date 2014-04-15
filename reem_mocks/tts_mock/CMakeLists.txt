@@ -7,7 +7,7 @@ project(tts_mock)
 find_package(catkin REQUIRED COMPONENTS
   pal_interaction_msgs
   rospy
-  text_to_speech
+  #text_to_speech
 )
 
 ## System dependencies are found with CMake's conventions

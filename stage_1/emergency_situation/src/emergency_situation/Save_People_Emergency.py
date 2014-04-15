@@ -10,6 +10,7 @@ Created on Sat March 16 11:30:00 2013
 
 import rospy
 import smach
+from navigation_states.get_current_robot_pose import get_current_robot_pose
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
@@ -17,6 +18,7 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+
 #from emergency_situation.GeneratePDF_State import GeneratePDF_State
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -82,7 +84,7 @@ class Save_People_Emergency(smach.StateMachine):
     No optional parameters
 
     Input_keys:
-    @key: person_location: person's location (Pose or PoseStamped)
+    @key: output_keys: person's location (Pose or PoseStamped)
 
     Output Keys:
         none
@@ -92,7 +94,7 @@ class Save_People_Emergency(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['person_location'])
+                                    output_keys=['person_location'])
 
         with self:           
             self.userdata.emergency_location = []
@@ -138,16 +140,21 @@ class Save_People_Emergency(smach.StateMachine):
             #TODO: At the moment /amcl_pose in gazebo is not working properly
             smach.StateMachine.add(
                 'Register_Position',
-                DummyStateMachine(),
-                #get_current_robot_pose(),
-                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'}
-                #remapping={'current_robot_pose':'emergency_location'}
+                #DummyStateMachine(),
+                get_current_robot_pose(),
+                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
+                remapping={'current_robot_pose':'person_location'}
                 )
             #Save_Info(): Saves the emergency info and generates a pdf file
+            #TODO: PDF
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions={'succeeded':'Say_Save', 'aborted':'Say_Save', 'preempted':'preempted'})
+            smach.StateMachine.add(
+                                   'Say_Save',
+                                   text_to_say('Information Saved'),
+                                   transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
