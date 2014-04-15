@@ -24,11 +24,13 @@ from sensor_msgs.msg import Range # that is the ultrasound msgs
 
 MAXMETERS=3 # this is the maximum numer of meters that can move the robot back
 MAXTIME=15 # numer maxim of time that the robot can be going back
-MINTDIST=0.30
-IMPACT=100 # every back sensor that give a impact result increments INC, and the no impact decrement DEC
-INC=40 #every detection it will increment 
-DEC=10 # no detections will decrement 
+MINDIST=0.30
 SPEED_X=-0.3 # that is a back speed
+
+
+
+MAXIM_INIT=200 # it'a a initialitzation value, it have to be bigger than ultraSounds Range
+NUM_MOSTRES=3
 '''
 @this is a navigation
 @The maximum value of Distance is 3 meters
@@ -39,12 +41,11 @@ SPEED_X=-0.3 # that is a back speed
 class navigation_back():
     
     def __init__(self):
-        rospy.loginfo("Initializing navigation_back")
+        rospy.loginfo("Initializing reverse")
         
         self.nav_pub= rospy.Publisher('/mobile_base_controller/cmd_vel', Twist)
-        self.nav_srv = rospy.Service('/move_back',NavigationGoBack, self.nav_back_srv)
+        self.nav_srv = rospy.Service('/reverse',NavigationGoBack, self.nav_back_srv)
         self.odom_subs = rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.check_Odometry)
-        
         #self.odom_subs.unregister()
         self.init_var()
         
@@ -56,29 +57,44 @@ class navigation_back():
         self.impacte=0
         self.goal_achieved=False
         
+        # ulta sound variables
+        self.sonar=3*[NUM_MOSTRES*[MAXIM_INIT]]
+        self.num_sonar=3*[0]
+        self.resultat=3*[MAXIM_INIT]
+        
+        self.impacte=False
+        self.time_out=False
+        
+        
     def nav_back_srv(self,req):
         
         if (req.meters<=MAXMETERS) :
             if (req.enable) :
+               
                 self.enable=True
                 self.meters=req.meters#number of meters that we have to do
                 self.Odometry_init=self.Odometry_actual
                 self.time_init= rospy.get_rostime()
-                self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)
-                self.impacte=0
-                self.goal_achieved = False
+                self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)   
+                self.run()
             else :
-                
                 self.enable=False
                 self.pub_stop()
             
-            while not self.goal_achieved :
-                rospy.sleep(0.1)
             
-            return NavigationGoBackResponse()
+            if (self.time_out or self.impacte):
+                rospy.loginfo("ABORTING!!!")
+                if self.time_out :
+                    rospy.loginfo("TIME OUT")
+                if self.impacte :
+                    rospy.loginfo("IMPACT")
+                return "ABORTED"
+            else :
+                return NavigationGoBackResponse()
         else :
             self.pub_stop()
             return "To much distance"
+        
         
     def check_Odometry(self,data):
         self.Odometry_actual=data
@@ -90,10 +106,12 @@ class navigation_back():
         
         unit_vector = normalize_vector(position_navigate.position)
         position_distance = vector_magnitude(position_navigate.position)
+        
         if (position_distance<self.meters) :
-            self.movment=True
-        else :
             self.movment=False
+        else :
+            self.movment=True
+            
     def pub_move(self):
         msg=Twist()
         msg.linear.x= SPEED_X
@@ -117,54 +135,65 @@ class navigation_back():
         
     def callback_Sonar(self,data):
         
-        if (data.header.frame_id==('/base_sonar_07_link' )):
-            if data.range<MINTDIST :
-                self.impacte=self.impacte+INC
+        if (data.header.frame_id==(('base_sonar_07_link' ) or ('/base_sonar_07_link' ))):
+                self.sonar[0][self.num_sonar[0]]=data.range
+                self.num_sonar[0]=self.num_sonar[0]+1
+                aux=sum(self.sonar[0])
+                self.resultat[0]=aux/NUM_MOSTRES
+                if self.num_sonar[0]>=NUM_MOSTRES :
+                    self.num_sonar[0]=0
                 
-            else :
-                self.impacte=self.impacte-DEC
-               
-                if self.impacte<0 :
-                    self.impacte=0
-        elif (data.header.frame_id==('/base_sonar_08_link')):
-            if data.range<MINTDIST :
-                self.impacte=self.impacte+INC
-               
-            else :
-                self.impacte=self.impacte-DEC
-               
-                if self.impacte<0 :
-                    self.impacte=0
+        elif (data.header.frame_id==(('base_sonar_08_link')or ('/base_sonar_08_link' ))):
+                self.sonar[1][self.num_sonar[1]]=data.range
+                self.num_sonar[1]=self.num_sonar[1]+1
+                aux=sum(self.sonar[1])
+                self.resultat[1]=aux/NUM_MOSTRES
+                if self.num_sonar[1]>=NUM_MOSTRES :
+                    self.num_sonar[1]=0
+
             
-        elif (data.header.frame_id==('/base_sonar_09_link')):
-            if data.range<MINTDIST :
-                self.impacte=self.impacte+INC
-                
-            else :
-                
-                self.impacte=self.impacte-DEC
-                
-                if self.impacte<0 :
-                    self.impacte=0
+        elif (data.header.frame_id==(('base_sonar_09_link')or ('/base_sonar_09_link' ))):
+                self.sonar[2][self.num_sonar[2]]=data.range
+                self.num_sonar[2]=self.num_sonar[2]+1
+                aux=sum(self.sonar[2])
+                self.resultat[2]=aux/NUM_MOSTRES
+                if self.num_sonar[2]>=NUM_MOSTRES :
+                    self.num_sonar[2] =0              
         
-    
+    def proces_ultraSound(self):
+        
+        
+        if self.resultat[0]<MINDIST or self.resultat[1]<MINDIST or self.resultat[2]<MINDIST :
+            rospy.loginfo(str(self.resultat))
+            rospy.loginfo(str(self.sonar))
+            self.impacte= True
+        else :
+            self.impacte= False
+            
+            
+    def proces_time(self):
+        time_actual=rospy.get_rostime()
+        time=time_actual.secs-self.time_init.secs
+        
+        if time<MAXTIME :
+            self.time_out = False
+            
+        else :
+            self.time_out = True
+        
+        
+            
     def run(self):
-        msg=Twist()
         
-        while not rospy.is_shutdown():
-            time_actual=rospy.get_rostime()
-            
-            time=time_actual.secs-self.time_init.secs
+        while not rospy.is_shutdown() and self.enable:
+           
             if self.enable: 
                 self.proces_odometry()
-                if self.movment and time<MAXTIME and self.impacte<IMPACT :
+                self.proces_ultraSound()
+                self.proces_time()
+                if not self.movment and not self.time_out and not self.impacte :
                     self.pub_move()
-                else :
-                    if time>MAXTIME :
-                        rospy.loginfo(FAIL+"TIME OUT MOVE_BACK"+ENDC)
-                    if  self.impacte>=IMPACT :
-                        rospy.loginfo(FAIL+"IMPACT"+ENDC)
-                    self.goal_achieved=True # TODO: this is complicate
+                else : 
                     self.pub_stop()
                     self.enable=False
                     self.ultra_subs.unregister()
@@ -172,16 +201,18 @@ class navigation_back():
                 rospy.sleep(0.01)
             else :
                 rospy.sleep(3)
-        
+    def bucle(self):
+        while not rospy.is_shutdown():
+            rospy.sleep(3)
         
         
         
 if __name__ == '__main__':
-    rospy.init_node('navigation_back_service')
+    rospy.init_node('navigation_reverse_service')
     rospy.sleep(1)
-    rospy.loginfo("navigation_back_srv")
+    rospy.loginfo("navigation_reverse_srv")
     navigation = navigation_back()
-    navigation.run()
+    navigation.bucle()
     
     
   
