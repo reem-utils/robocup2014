@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   pal_interaction_msgs
   rospy
   smach_ros
-  text_to_speech
+ # text_to_speech
 )
 
 ## System dependencies are found with CMake's conventions

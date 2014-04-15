@@ -11,7 +11,8 @@ import rospy
 import smach
 
 from smach_ros import SimpleActionState
-from text_to_speech.msg import SoundAction, SoundGoal 
+#from text_to_speech.msg import SoundAction, SoundGoal 
+from pal_interaction_msgs.msg import SoundAction, SoundGoal 
 
 # Constants
 TTS_TOPIC_NAME = '/sound'
