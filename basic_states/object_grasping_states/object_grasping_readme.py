@@ -1,6 +1,6 @@
 # Mock server
 
-	rosrun grasping_mosk object_detection_mock.py
+	rosrun grasping_mock object_detection_mock.py
 		"""
 		This is a Service for Object Recognition.
 
@@ -29,6 +29,27 @@
 		output keys:
 		standard_error: inform what is the problem
 		object: ObjectDetectionMessage
+		No io_keys.
+
+		Nothing must be taken into account to use this SM.
+		"""
+
+	get_object_information: GetObjectInfoSM (StateMachine)
+		"""
+		Executes a SM that search for object. 
+		Given the object name, it search which place is the most probably that we can find it. 
+
+		Required parameters:
+		No parameters.
+
+		Optional parameters:
+		No optional parameters
+
+		Input keys:
+			object_name: string with the object's name
+		Output keys:
+			object_location: string with the place most probably  
+			standard_error: String that show what kind of error could be happened
 		No io_keys.
 
 		Nothing must be taken into account to use this SM.

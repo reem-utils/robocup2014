@@ -13,7 +13,7 @@ import actionlib
 from rospy.core import rospyinfo
 from smach_ros import ServiceState
 
-from grasping_mock.msg import ObjectDetection
+from grasping_mock.msg import ObjectDetections
 from grasping_mock.srv import Recognizer, RecognizerRequest, RecognizerResponse
 
 ENDC = '\033[0m'
@@ -24,20 +24,20 @@ OKGREEN = '\033[92m'
 class read_topic_objects(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                             input_keys=['objectm'],
-         output_keys=['standard_error','objectm'])
+                             input_keys=['objects'],
+         output_keys=['standard_error','objects'])
 
     def execute(self, userdata):
         
-        message = rospy.wait_for_message('/object_detect/recognizer', ObjectDetection, 60)
+        message = rospy.wait_for_message('/object_detect/recognizer', ObjectDetections, 60)
         
         # Check the distance between the robot and the doo
         if message!= None:
-            userdata.objectm = message
+            userdata.objects = message
             userdata.standard_error="Detect_Object OK"
             return 'succeeded'
         else:
-            userdata.objectm=None
+            userdata.objects=None
             userdata.standard_error="Time live of Object Detection"
             return 'aborted'
 
@@ -68,7 +68,7 @@ class detect_object(smach.StateMachine):
     def __init__(self,minConfidence=90.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=[], 
-                                 output_keys=['standard_error','objectm'])
+                                 output_keys=['standard_error','objects'])
         
         with self:
             # call request for Recognizer
