@@ -30,7 +30,7 @@ def main():
         smach.StateMachine.add(
             'RestaurantSM',
             RestaurantSM(),
-            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
+            transitions={'succeeded': 'succeeded', 'aborted': 'aborted','preempted':'preempted'})
 
     
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!

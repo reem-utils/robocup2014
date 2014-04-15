@@ -1,0 +1,20 @@
+#JSGF V1.0;
+
+grammar first;
+
+public <basic> = (  ( <begin> is the <info> {obj.put("info",$.$value)} of <country> {obj.put("country",$.$value);} ) | <garbage> ) {obj.put("external","1");}; 
+
+<begin> = what | who;
+<info> = capital | president;
+<country> = spain | germany | holland | portugal | france | italy | russia | catalonia;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 
