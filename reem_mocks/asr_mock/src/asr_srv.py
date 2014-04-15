@@ -43,7 +43,7 @@ class AsrService():
         self.current_grammar = ""
         self.enabled_grammar = False
         self.current_lang = ""
-        self.asrservice = rospy.Service('/asr_server', ASRService, self.asr_grammar_cb)
+        self.asrservice = rospy.Service('/asr_service', ASRService, self.asr_grammar_cb)
         rospy.loginfo("asr service initialized")
         self.usersaid_pub = rospy.Publisher('/asr_event', ASREvent)
 
