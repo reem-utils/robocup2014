@@ -12,7 +12,7 @@ import smach
 import math
 
 from navigation_states.nav_to_poi import nav_to_poi
-from navigation_states.enter_room import EnterRoomSM
+#from navigation_states.enter_room import EnterRoomSM
 from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
@@ -21,6 +21,7 @@ from face_states.searching_person import searching_person
 from gesture_states.gesture_recognition import GestureRecognition 
 from util_states.math_utils import normalize_vector, vector_magnitude
 from geometry_msgs.msg import Pose
+from restaurant_guide_phase import restaurantGuide
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -86,6 +87,12 @@ class RestaurantSM(smach.StateMachine):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
+            self.userdata.nav_to_poi_name=None
+            self.userdata.standard_error='OK'
+            self.userdata.grammar_name="restaurant.gram"
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
             
@@ -95,7 +102,7 @@ class RestaurantSM(smach.StateMachine):
             # Guide phase
             smach.StateMachine.add(
                 'guide_phase',
-                DummyStateMachine(),
+                restaurantGuide(),
                 transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -124,7 +131,7 @@ class RestaurantSM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_object',
                 DummyStateMachine(),
-                transitions={'succeeded': 'grasp_food_order', 'aborted': 'aborted', 
+                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Grasp Object
@@ -152,8 +159,8 @@ class RestaurantSM(smach.StateMachine):
             smach.StateMachine.add(
                 'check_loop',
                 checkLoop(),
-                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
-                'preempted': 'preempted', 'end':'leaving_arena'}) 
+                transitions={'succeeded': 'process_order', 'aborted': 'aborted', 
+                'preempted': 'preempted', 'end':'leaving_ordering'}) 
 
             # Leaving the arena  
             smach.StateMachine.add(

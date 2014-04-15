@@ -7,9 +7,12 @@ import smach
 
 
 
-
-from follow_me.follow_me_init import FollowMeInit
-from follow_me.follow_operator import FollowOperator
+from restaurant_follow_operator import FollowOperator #  this don't have to be heare
+from speech_states.say import text_to_say
+from speech_states.say_yes_or_no import SayYesOrNoSM
+from speech_states.listen_and_check_word import ListenWordSM
+from restaurant_listen_operator import ListenOperator
+            
 
 """
 RESTAURANT_guide.PY
@@ -17,7 +20,7 @@ RESTAURANT_guide.PY
 """
 
 
-SAY_FINISH_FOLLOWING= "OK, now we can stard ordering"
+SAY_FINISH_FOLLOWING= "OK, now we can stard ordering 33"
 SAY_LETS_GO=" i'M READY, WHEN YOU WANT WE CAN START"
 
 import roslib
@@ -37,12 +40,7 @@ OKGREEN = '\033[92m'
 
 
 
-from speech_states.say import text_to_say
-from speech_states.say_yes_or_no import SayYesOrNoSM
-from speech_states.listen_and_check_word import ListenWordSM
-            
-SAY_OUT_FRASE= "OK IM GOING OUT"
-COMPROVATE_GO_OUT="DO YOU WANT TO GO OUT?"
+
 
 
 
@@ -52,10 +50,10 @@ class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
+            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"I'M in the resteurant"+ENDC)
+        rospy.loginfo(OKGREEN+"I'M in the restaurant"+ENDC)
         rospy.sleep(2)
         userdata.standard_error="Dummy"
         return 'succeeded'
@@ -64,11 +62,12 @@ class init_var(smach.State):
 
     
 
-class learn_person (smach.State):
+class learn_person(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
-    def execute(self):
-        rospy.loginfo("im learning a face")
+        smach.State.__init__(self, outcomes=['succeeded',
+                                    'aborted','preempted'])
+    def execute(self,userdata):
+        rospy.loginfo("im learning a person")
         return 'succeeded'
              
         
@@ -76,27 +75,30 @@ class ListenOperator_dummy(smach.State):
     # gets called when ANY child state terminates
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
-    def execute(self):
+    def execute(self,userdata):
+        rospy.sleep()
         rospy.loginfo("im dummy listen the operator")
         return 'succeeded'
         
 def child_term_cb(outcome_map):
 
     # terminate all running states if walk_to_poi finished with outcome succeeded
-    if outcome_map['FOLLOW_ME'] == 'Lost':
-        rospy.loginfo(OKGREEN + "the door its open" + ENDC)
+    if outcome_map['FOLLOW_ME'] == 'lost':
+        
         return True
     
     if outcome_map['LISTEN_OPERATOR_RESTAURANT'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "the operator say me go out" + ENDC)
+        
         return True
     # in all other case, just keep running, don't terminate anything
     return False
 
 def out_cb(outcome_map):
     if outcome_map['FOLLOW_ME'] == 'lost':
-        return 'Lost'    
-    elif outcome_map['LISTEN_OPERATOR'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "the door its open" + ENDC)
+        return 'lost'    
+    elif outcome_map['LISTEN_OPERATOR_RESTAURANT'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "the operator me go out" + ENDC)
         return 'succeeded'    
 
     return 'aborted'
@@ -109,52 +111,52 @@ class restaurantGuide(smach.StateMachine):
 
     def __init__(self):
         smach.StateMachine.__init__(self,
-                                    outcomes=['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['standard_error'])
+                                    outcomes=['succeeded', 'preempted', 'aborted'])
         
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
-            self.userdata.standar_error="ok"
+            self.userdata.nav_to_poi_name=None
+            self.userdata.standard_error='OK'
+            self.userdata.grammar_name="restaurant.gram"
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'LEARN_PERSON',
+                                   transitions={'succeeded': 'Start',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             smach.StateMachine.add('LEARN_PERSON',
                        learn_person(),
-                       transitions={'succeeded': 'CONCURRENCE',
+                       transitions={'succeeded': 'Start',
                                     'aborted': 'LEARN_PERSON','preempted':'preempted'})
             
-            
-                        # it says i'm STARTING FOLLOWING YOU
-            smach.StateMachine.add('Finished',
+        
+            smach.StateMachine.add('Start',
                                    text_to_say(SAY_LETS_GO),
-                                   transitions={'succeeded': 'succeeded',
+                                   transitions={'succeeded': 'CONCURRENCE',
                                     'aborted': 'aborted','preempted':'preempted'})
             
             
             sm=smach.Concurrence(outcomes=['succeeded', 'lost'],
-                                   default_outcome='lost',
+                                   default_outcome='succeeded',
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
                 
              
             with sm:
-                # it follow the person infinit
+                # it follow the person for long time
                 sm.add('FOLLOW_ME',
                                 FollowOperator())
                 # here it have to listen and put pois in the map
                 sm.add('LISTEN_OPERATOR_RESTAURANT',
-                                ListenOperator_dummy())
+                                ListenOperator())
                 
-            smach.StateMachine.add('CONCURRENCE', sm, transitions={'succeeded': 'Finished',
-                                                                   'Lost':'CONCURRENCE','preempted':'preempted'})
+            smach.StateMachine.add('CONCURRENCE', sm, transitions={'succeeded': 'FINISH',
+                                                                   'lost':'CONCURRENCE'})
             
             
             # it say finsih that then we can stard serving orders
-            smach.StateMachine.add('Finished',
+            smach.StateMachine.add('FINISH',
                                    text_to_say(SAY_FINISH_FOLLOWING),
                                    transitions={'succeeded': 'succeeded',
                                     'aborted': 'aborted','preempted':'preempted'})

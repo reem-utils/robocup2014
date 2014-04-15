@@ -20,17 +20,15 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
 SERVICES_LIST_NAMES = []  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
-                    "/play_motion",
                     "/move_base",
                     "/sound"]
 
-PARAMS_LIST_NAMES = [  # #################### Params #####################
-                     "/mmap/poi/submap_0/object_one",
+PARAMS_LIST_NAMES = ["/mmap/poi/submap_0/object_one",
                      "/mmap/poi/submap_0/object_two",
                      "/mmap/poi/submap_0/delivery_one",
                      "/mmap/poi/submap_0/delivery_two",
                      "/mmap/poi/submap_0/delivery_three",
-                     "/mmap/poi/submap_0/ordering"]
+                     "/mmap/poi/submap_0/ordering"]  # #################### Params #####################
 
 class UserdataHacked():
     def __init__(self):

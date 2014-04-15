@@ -22,12 +22,26 @@ class Extraction_cb(smach.State):
                                 output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
-        rospy.loginfo("extracting message from topic")
+        rospy.logwarn("------------------------------------------------------------------extracting message from topic")
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
+        rospy.logwarn(userdata.topic_output_msg)
         userdata.asr_userSaid_tags = userdata.topic_output_msg.recognized_utterance.tags
         userdata.standard_error = ''
     
         return 'succeeded'  
+
+class Topic_Checker(smach.State):
+    
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                                input_keys=['topic_output_msg'],
+                                output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
+    
+    def execute(self, userdata):
+        rospy.logwarn("------------------------------------------------------------------extracting message from topic")
+        if userdata.topic_output_msg.event_id == 2:    
+            return 'succeeded'  
+        return 'aborted'
 
 class ReadASR(smach.StateMachine):
     """
@@ -48,7 +62,12 @@ class ReadASR(smach.StateMachine):
             # topic reader state
             smach.StateMachine.add('topicReader',
                     topic_reader_state('/asr_event', ASREvent, 30),
-                    transitions={'succeeded': 'Process', 'aborted': 'aborted', 'preempted': 'preempted'})
+                    transitions={'succeeded': 'topicChecker', 'aborted': 'aborted', 'preempted': 'preempted'})
+            
+             # Process asr_event -> asr_userSaid state       
+            smach.StateMachine.add('topicChecker',
+                    Topic_Checker(),
+                    transitions={'succeeded': 'Process', 'aborted':'topicReader'})
 
             # Process asr_event -> asr_userSaid state       
             smach.StateMachine.add('Process',
