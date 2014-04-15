@@ -1,0 +1,7 @@
+<launch>
+
+<!-- TODO: maybe we need to delete the params before loading them -->
+<include file="$(find restaurant)/launch/restaurant_params.launch" />
+<!-- TODO: launch sm -->
+
+</launch>
