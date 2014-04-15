@@ -17,7 +17,7 @@ RESTAURANT_guide.PY
 """
 
 
-SAY_FINISH_FOLLOWING= "i have finished following you"
+SAY_FINISH_FOLLOWING= "OK, now we can stard ordering"
 SAY_LETS_GO=" i'M READY, WHEN YOU WANT WE CAN START"
 
 import roslib
@@ -55,24 +55,13 @@ class init_var(smach.State):
             outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"I'M in the second part of the follow_me"+ENDC)
+        rospy.loginfo(OKGREEN+"I'M in the resteurant"+ENDC)
         rospy.sleep(2)
         userdata.standard_error="Dummy"
         return 'succeeded'
      
 
-class dummy_listen(smach.State):
-    def __init__(self):
-        smach.State.__init__(
-                            self,
-                            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
 
-    def execute(self, userdata):
-        while (1):
-            if self.preempt_requested():
-                return 'preempted'
-            
-        return 'succeeded'
     
 
 class learn_person (smach.State):
@@ -81,9 +70,7 @@ class learn_person (smach.State):
     def execute(self):
         rospy.loginfo("im learning a face")
         return 'succeeded'
-        
-        
-        
+             
         
 class ListenOperator_dummy(smach.State):
     # gets called when ANY child state terminates
@@ -96,22 +83,21 @@ class ListenOperator_dummy(smach.State):
 def child_term_cb(outcome_map):
 
     # terminate all running states if walk_to_poi finished with outcome succeeded
-    if outcome_map['CHECK_DOOR'] == 'succeeded':
+    if outcome_map['FOLLOW_ME'] == 'Lost':
         rospy.loginfo(OKGREEN + "the door its open" + ENDC)
         return True
     
-    if outcome_map['LISTEN_OPERATOR_FOR_EXIT'] == 'succeeded':
+    if outcome_map['LISTEN_OPERATOR_RESTAURANT'] == 'succeeded':
         rospy.loginfo(OKGREEN + "the operator say me go out" + ENDC)
         return True
-
     # in all other case, just keep running, don't terminate anything
     return False
 
 def out_cb(outcome_map):
-    if outcome_map['LISTEN_OPERATOR_FOR_EXIT'] == 'succeeded':
-        return 'DOOR_OPEN'    
-    elif outcome_map['CHECK_DOOR'] == 'succeeded':
-        return 'OPERATOR'    
+    if outcome_map['FOLLOW_ME'] == 'lost':
+        return 'Lost'    
+    elif outcome_map['LISTEN_OPERATOR'] == 'succeeded':
+        return 'succeeded'    
 
     return 'aborted'
 
@@ -150,8 +136,8 @@ class restaurantGuide(smach.StateMachine):
                                     'aborted': 'aborted','preempted':'preempted'})
             
             
-            sm=smach.Concurrence(outcomes=['succeeded', 'Lost'],
-                                   default_outcome='Lost',
+            sm=smach.Concurrence(outcomes=['succeeded', 'lost'],
+                                   default_outcome='lost',
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
                 
              
@@ -160,14 +146,14 @@ class restaurantGuide(smach.StateMachine):
                 sm.add('FOLLOW_ME',
                                 FollowOperator())
                 # here it have to listen and put pois in the map
-                sm.add('LISTEN_OPERATOR',
+                sm.add('LISTEN_OPERATOR_RESTAURANT',
                                 ListenOperator_dummy())
                 
             smach.StateMachine.add('CONCURRENCE', sm, transitions={'succeeded': 'Finished',
                                                                    'Lost':'CONCURRENCE','preempted':'preempted'})
             
             
-            # it says i'm going out
+            # it say finsih that then we can stard serving orders
             smach.StateMachine.add('Finished',
                                    text_to_say(SAY_FINISH_FOLLOWING),
                                    transitions={'succeeded': 'succeeded',
