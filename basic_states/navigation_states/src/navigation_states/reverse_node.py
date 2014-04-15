@@ -24,13 +24,13 @@ from sensor_msgs.msg import Range # that is the ultrasound msgs
 
 MAXMETERS=3 # this is the maximum numer of meters that can move the robot back
 MAXTIME=15 # numer maxim of time that the robot can be going back
-MINDIST=0.050
+MINDIST=0.30
 SPEED_X=-0.3 # that is a back speed
 
 
 
-MAXIM_INIT=200
-NUM_MOSTRES=5
+MAXIM_INIT=200 # it'a a initialitzation value, it have to be bigger than ultraSounds Range
+NUM_MOSTRES=3
 '''
 @this is a navigation
 @The maximum value of Distance is 3 meters
@@ -70,6 +70,7 @@ class navigation_back():
         
         if (req.meters<=MAXMETERS) :
             if (req.enable) :
+               
                 self.enable=True
                 self.meters=req.meters#number of meters that we have to do
                 self.Odometry_init=self.Odometry_actual
@@ -82,13 +83,14 @@ class navigation_back():
             
             
             if (self.time_out or self.impacte):
+                rospy.loginfo("ABORTING!!!")
                 if self.time_out :
                     rospy.loginfo("TIME OUT")
                 if self.impacte :
                     rospy.loginfo("IMPACT")
                 return "ABORTED"
             else :
-                return NavigationGoBackResponse
+                return NavigationGoBackResponse()
         else :
             self.pub_stop()
             return "To much distance"
@@ -133,18 +135,15 @@ class navigation_back():
         
     def callback_Sonar(self,data):
         
-        if (data.header.frame_id==('base_sonar_07_link' )):
-                rospy.loginfo("77777777777777777777777777777777777"+"      num   " +OKGREEN+str(self.num_sonar[0])+ENDC)
+        if (data.header.frame_id==(('base_sonar_07_link' ) or ('/base_sonar_07_link' ))):
                 self.sonar[0][self.num_sonar[0]]=data.range
                 self.num_sonar[0]=self.num_sonar[0]+1
-                rospy.loginfo(str(self.sonar[0]))
                 aux=sum(self.sonar[0])
                 self.resultat[0]=aux/NUM_MOSTRES
                 if self.num_sonar[0]>=NUM_MOSTRES :
                     self.num_sonar[0]=0
                 
-        elif (data.header.frame_id==('base_sonar_08_link')+"      num   " +OKGREEN+str(self.num_sonar[1])+ENDC):
-                rospy.loginfo("8888888888888888888888888888")
+        elif (data.header.frame_id==(('base_sonar_08_link')or ('/base_sonar_08_link' ))):
                 self.sonar[1][self.num_sonar[1]]=data.range
                 self.num_sonar[1]=self.num_sonar[1]+1
                 aux=sum(self.sonar[1])
@@ -153,8 +152,7 @@ class navigation_back():
                     self.num_sonar[1]=0
 
             
-        elif (data.header.frame_id==('base_sonar_09_link')):
-                rospy.loginfo("99999999999999999999999999999"+"      num   " +OKGREEN+str(self.num_sonar[2])+ENDC)
+        elif (data.header.frame_id==(('base_sonar_09_link')or ('/base_sonar_09_link' ))):
                 self.sonar[2][self.num_sonar[2]]=data.range
                 self.num_sonar[2]=self.num_sonar[2]+1
                 aux=sum(self.sonar[2])
@@ -171,11 +169,15 @@ class navigation_back():
             self.impacte= True
         else :
             self.impacte= False
+            
+            
     def proces_time(self):
         time_actual=rospy.get_rostime()
         time=time_actual.secs-self.time_init.secs
+        
         if time<MAXTIME :
             self.time_out = False
+            
         else :
             self.time_out = True
         
@@ -188,7 +190,7 @@ class navigation_back():
             if self.enable: 
                 self.proces_odometry()
                 self.proces_ultraSound()
-                
+                self.proces_time()
                 if not self.movment and not self.time_out and not self.impacte :
                     self.pub_move()
                 else : 
