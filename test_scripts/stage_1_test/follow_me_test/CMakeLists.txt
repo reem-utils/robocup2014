@@ -1,16 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(speech_states)
+project(follow_me_test)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  actionlib
-  pal_interaction_msgs
-  rospy
-  smach_ros
- # text_to_speech
-)
+find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -19,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -69,7 +63,7 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   pal_interaction_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ###################################
@@ -83,8 +77,8 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES speech_states
-#  CATKIN_DEPENDS actionlib pal_interaction_msgs rospy smach_ros text_to_speech
+#  LIBRARIES follow_me_test
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -95,24 +89,21 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
 
 ## Declare a cpp library
-# add_library(speech_states
-#   src/${PROJECT_NAME}/speech_states.cpp
+# add_library(follow_me_test
+#   src/${PROJECT_NAME}/follow_me_test.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(speech_states_node src/speech_states_node.cpp)
+# add_executable(follow_me_test_node src/follow_me_test_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(speech_states_node speech_states_generate_messages_cpp)
+# add_dependencies(follow_me_test_node follow_me_test_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(speech_states_node
+# target_link_libraries(follow_me_test_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -131,7 +122,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS speech_states speech_states_node
+# install(TARGETS follow_me_test follow_me_test_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -156,7 +147,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_speech_states.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_follow_me_test.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

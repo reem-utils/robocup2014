@@ -181,7 +181,7 @@ class checkElevator():
                 self.ultra_status=True
             else :
                 self.ultra_status=False
-                rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
+                #rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
                 
                         
                 

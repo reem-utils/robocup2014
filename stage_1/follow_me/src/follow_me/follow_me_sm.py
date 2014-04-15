@@ -25,9 +25,7 @@ from follow_me_3rd import follow_me_3rd
  
 FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
-START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
-LEARNED_PERSON_FRASE = "Let's go buttercup."
-
+LIFT_TEXT="this lift is really small"
 class FollowMeInit_dummy(smach.State):
     def __init__(self): 
       smach.State.__init__(self, input_keys=[],
@@ -71,8 +69,12 @@ class FollowMe(smach.StateMachine):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
         with self:  
-            
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
             self.userdata.standard_error='OK'
+            self.userdata.standard_error='OK'
+            
             smach.StateMachine.add('INIT_FOLLOW',
                                    FollowMeInit(),
                                    transitions={'succeeded': 'FOLLOW_ME_1rst', 
@@ -84,7 +86,7 @@ class FollowMe(smach.StateMachine):
             
             # in this state i will wait that the door it comes open
             smach.StateMachine.add('TEXT',
-                       text_to_say("NICE LIFT"),
+                       text_to_say(LIFT_TEXT),
                        transitions={'succeeded': 'FOLLOW_ME_2nd','aborted':'aborted'})
             
             
