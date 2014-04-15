@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: Roger Boldu
+Created on Tue Oct 22 12:00:00 2013
+
+@author: Roger Boldú
 """
 
 
@@ -10,7 +12,7 @@ import smach
 import smach_ros
 
 #from smach_ros import SimpleActionState, ServiceState
-from follow_me.follow_me_1st import *
+from follow_me_2nd import follow_me_2nd
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -19,26 +21,24 @@ OKGREEN = '\033[92m'
 #TODO: it's incomplate, hear we will have to know what ID it will need
 class prepare_msg(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],output_keys=['in_learn_person'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
+                             output_keys=[])
 
     def execute(self, userdata):
-        userdata.in_learn_person='ok'
         rospy.loginfo("preparing msgs")
         return 'succeeded'
 
-class follow_me_1st_error(smach.State):
+class follow_me_2nd_error(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'],
-                              output_keys=['standard_error'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted'],input_keys=['standard_error'], output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo('info of follo_me_1st')
+        rospy.loginfo('info of follo_me_2nd')
         rospy.loginfo( FAIL +"standard_error :==   "+str(userdata.standard_error) + ENDC)
         return 'aborted'
 
 def main():
-    rospy.loginfo('follow_me_1st_test')
-    rospy.init_node('follow_me_1st_test')
+    rospy.init_node('follow_me_2nd_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
     with sm:
@@ -47,21 +47,20 @@ def main():
         smach.StateMachine.add(
             'prepare_msg',
             prepare_msg(),
-            transitions={'succeeded':'follow_me1st_test','aborted' : 'aborted',
-                         'preempted':'preempted'})
+            transitions={'succeeded':'follow_me2nd_test','aborted' : 'aborted','preempted':'preempted'})
         # it call the drop_face state
         smach.StateMachine.add(
-            'follow_me1st_test',
-            follow_me_1st(),
-            transitions={'ELEVATOR':'succeeded', 'LOST':'aborted'})
+            'follow_me2nd_test',
+            follow_me_2nd(),
+            transitions={'succeeded':'succeeded','aborted' : 'follow_me_info','preempted':'preempted'})
         smach.StateMachine.add(
             'follow_me_info',
-            follow_me_1st_error(),
+            follow_me_2nd_error(),
             transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'follow_me_1st_introspection', sm, '/FM1_ROOT')
+        'follow_me_2nd_introspection', sm, '/FM2_ROOT')
     sis.start()
 
     sm.execute()

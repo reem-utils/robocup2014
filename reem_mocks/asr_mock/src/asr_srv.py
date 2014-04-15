@@ -4,6 +4,8 @@ import rospy
 import os
 import select
 import sys
+import rospkg
+
 
 from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage, actiontag
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
@@ -132,8 +134,12 @@ class AsrService():
 if __name__ == '__main__':
     rospy.init_node('asr_srv')
     rospy.loginfo("Initializing asr_srv")
-    pathFile = os.path.expanduser("~") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
-    if os.path.exists(pathFile):
+    # Esta en la misma carpeta, hace falta?
+    rospack_instance = rospkg.RosPack()
+    asr_mock_path = rospack_instance.get_path("asr_mock")
+    #pathFile = os.path.expanduser("~") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
+    pathFile = os.path.expanduser(asr_mock_path) + "/src/tags.txt"
+    if os.path.exists(pathFile): # this should check if its a file not just "exists"
         asr = AsrService(pathFile)
         asr.run()
     else:
