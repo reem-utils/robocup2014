@@ -5,3 +5,15 @@ poi:
     storage_room: [submap_0, storage_room, -1.0, 0.0, 0]
     leave_room: [submap_0, leave_room, 1.0, -1.0, 0]
 
+object:
+  information:
+    coke: [information, coke, beverage]
+    pringles: [information, pringles, snack]
+
+  beverage:
+    storage_room: [beverage, storage_room, 0.90]
+    party_room: [beverage, party_room, 0.00]
+
+  snack:
+    storage_room: [snack, storage_room, 0.90]
+    party_room: [snack, party_room, 0.00]
