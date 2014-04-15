@@ -37,7 +37,7 @@ class prepareData(smach.State):
 class DeactivateASR(smach.StateMachine):
 
     """
-    This state machine deactivate the ASR Server. It needs a grammar.
+    This state machine deactivate the ASR service. It needs a grammar.
 
     smach.StateMachine.add('ActivateASRTest',
                     DeactivateASR("JungleParty"),
@@ -60,17 +60,17 @@ class DeactivateASR(smach.StateMachine):
             # Deactivating asr service to stop listening 
             @smach.cb_interface(input_keys=['grammar_name'])
             def AsrServerRequestDeactivate_cb(userdata, request):
-                rospy.loginfo("Deactivating Asr server")
+                rospy.loginfo("Deactivating Asr service")
                 requ = ASRSrvRequest()
                 requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
-                requ.activation.action = ASRActivation.DEACTIVATE                
-                requ.grammar.action = ASRGrammarMngmt.ENABLE
-                requ.grammar.grammarName = userdata.grammar_name       
+                requ.activation.action = ASRActivation.PAUSE                
+                requ.model.action = ASRGrammarMngmt.ENABLE
+                requ.model.modelName = userdata.grammar_name       
                 requ.lang.language = 'en_US'
                 return requ
             
             smach.StateMachine.add('Deactivate_Asr',
-                    ServiceState('/asr_server',
+                    ServiceState('/asr_service',
                     ASRService,
                     request_cb = AsrServerRequestDeactivate_cb,
                     input_keys = ['grammar_name']),
