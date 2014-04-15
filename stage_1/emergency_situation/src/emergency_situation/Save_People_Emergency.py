@@ -143,8 +143,7 @@ class Save_People_Emergency(smach.StateMachine):
                 #DummyStateMachine(),
                 get_current_robot_pose(),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
-                remapping={'current_robot_pose':'person_location'}
-                )
+                remapping={'current_robot_pose':'person_location'})
             #Save_Info(): Saves the emergency info and generates a pdf file
             #TODO: PDF
             #input_keys: emergency_location

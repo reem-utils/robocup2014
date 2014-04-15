@@ -1,5 +1,5 @@
-# Sample platypus document
-# From the FAQ at reportlab.org/oss/rl-toolkit/faq/#1.1
+
+#! /usr/bin/env python
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table
 from reportlab.lib.styles import getSampleStyleSheet
@@ -31,19 +31,19 @@ def myLaterPages(canvas, doc):
 '''
 
 
-def create_pdf(file_location, no_of_people_need_assistance):
+def create_pdf(file_location):
     doc = SimpleDocTemplate(file_location+'reem3.pdf')
     Story = []
     styleN = styles["Normal"]
     styleH = styles['Heading1']
 
-    I_fire = Image(file_location+'fire.png')
-    I_fire.drawHeight = 0.5 * inch * I_fire.drawHeight / I_fire.drawWidth
-    I_fire.drawWidth = 0.5 * inch
+    # I_fire = Image(file_location+'fire.png')
+    # I_fire.drawHeight = 0.5 * inch * I_fire.drawHeight / I_fire.drawWidth
+    # I_fire.drawWidth = 0.5 * inch
 
-    I_people = Image(file_location+'cross.png')
-    I_people.drawHeight = 0.5 * inch * I_people.drawHeight / I_people.drawWidth
-    I_people.drawWidth = 0.5 * inch
+    # I_people = Image(file_location+'cross.png')
+    # I_people.drawHeight = 0.5 * inch * I_people.drawHeight / I_people.drawWidth
+    # I_people.drawWidth = 0.5 * inch
 
     im = Image(file_location+"logo.png")
     im_map = Image(file_location + "map_with_cross.png")
@@ -51,7 +51,7 @@ def create_pdf(file_location, no_of_people_need_assistance):
     im_map.drawHeight = 3*inch*im_map.drawHeight/im_map.drawWidth
     im_map.drawWidth=3*inch
 
-    text1 = ("This report is prepared by REEM.")
+    text1 = ("This report is prepared by REEM and REEM@LaSalle.")
     text2 = ("Legend")
     text3 = ("The Emergency location is described approximately below:")
     text4 = ("Description of Emergency: Person in bad condition.")
