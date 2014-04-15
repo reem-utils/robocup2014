@@ -144,8 +144,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Go_to_emergency_room', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
             smach.StateMachine.add(
                 'Go_to_emergency_room',
-                DummyStateMachine(),
-                #nav_to_poi(),
+                #DummyStateMachine(),
+                nav_to_poi(),
                 transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
