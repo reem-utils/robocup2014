@@ -84,7 +84,7 @@ class Save_People_Emergency(smach.StateMachine):
     No optional parameters
 
     Input_keys:
-    @key: output_keys: person's location (Pose or PoseStamped)
+    @key: person_location: person's location (Pose or PoseStamped)
 
     Output Keys:
         none
@@ -94,7 +94,7 @@ class Save_People_Emergency(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['person_location'])
+                                    input_keys=['person_location'])
 
         with self:           
             self.userdata.emergency_location = []

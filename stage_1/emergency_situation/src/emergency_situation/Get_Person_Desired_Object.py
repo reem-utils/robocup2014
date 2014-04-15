@@ -42,11 +42,10 @@ class DummyStateMachine(smach.State):
 
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_person_emergency(smach.State):
-    def __init__(self, poi_type='arena_door_out'):
+    def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['person_location'], 
             output_keys=['nav_to_poi_name']) 
-        self.poi_type_in = poi_type
     def execute(self,userdata):
         userdata.nav_to_poi_name = userdata.person_location
 
@@ -65,12 +64,18 @@ class prepare_tts(smach.State):
 
 class Process_Tags(smach.State):
     def __init__(self):
-        smach.State.__init__(self,
-                             outcomes=['succeeded', 'aborted', 'preempted'],
-                             output_keys=['object_to_grasp'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=["asr_answer","asr_answer_tags"],
+                                output_keys=['object_to_grasp'])
+
     def execute(self, userdata):
-        userdata.object_to_grasp = 'coke'
-        return 'succeeded'
+        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
+        if tags:
+            name = tags[0].value
+            userdata.object_to_grasp = name
+            return 'succeeded'
+        
+        return 'aborted'
         
 class Get_Person_Desired_Object(smach.StateMachine):
     """
@@ -174,7 +179,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_To_Person',
                 DummyStateMachine(),
-                #nav_to_poi(),
+                nav_to_poi(),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
                                    'Say_Give_Object',

@@ -54,7 +54,7 @@ def create_pdf(file_location, no_of_people_need_assistance):
     text1 = ("This report is prepared by REEM.")
     text2 = ("Legend")
     text3 = ("The Emergency location is described approximately below:")
-    text4 = ("Description of fire: Smoke detected in kitchen. Approximate location is marked on the map.")
+    text4 = ("Description of Emergency: Person in bad condition.")
 
     
     p1 = Paragraph(text1, styleH)
