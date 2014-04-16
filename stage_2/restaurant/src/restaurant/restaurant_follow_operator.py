@@ -201,6 +201,12 @@ class FollowOperator(smach.StateMachine):
         
 
         with self:
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
+            self.userdata.nav_to_poi_name=None
+            self.userdata.standard_error='OK'
+            self.userdata.grammar_name="restaurant.gram"
             self.userdata.standard_error='OK'
 
             

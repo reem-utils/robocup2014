@@ -15,6 +15,7 @@ from speech_states.listen_and_check_word import ListenWordSM
 from navigation_states.get_current_robot_pose import get_current_robot_pose 
 from speech_states.listen_to import ListenToSM    
 import roslib
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -55,11 +56,22 @@ class save_point(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
+            outcomes=['succeeded', 'aborted','preempted'],
+            input_keys=['current_robot_pose','object','current_robot_yaw'],output_keys=[])
 
     def execute(self, userdata):
+        aux=userdata.current_robot_pose
+        aux.pose.position.x
+        aux.pose.position.y
         rospy.loginfo(OKGREEN+"I Have a new point"+ENDC)
-        rospy.sleep(2)
+        
+        value=["submap_0",userdata.object,aux.pose.position.x,
+               aux.pose.position.y,userdata.current_robot_yaw]
+        
+        rospy.loginfo(OKGREEN+str(value)+ENDC)
+        
+        rospy.set_param("/restaurant/submap_0:"+str(userdata.object),value)
+        rospy.sleep(5)
         return 'succeeded'
     
     
@@ -72,7 +84,7 @@ class did_you_say(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"DID you say...."+ENDC)
-        rospy.sleep(2)
+
         return 'succeeded'
 
 class proces_Tags(smach.State):
@@ -81,14 +93,21 @@ class proces_Tags(smach.State):
         smach.State.__init__(
             self,
             outcomes=['new_position','finish',
-                                    'aborted','preempted'],input_keys=['asr_userSaid','asr_userSaid_tags'],output_keys=[])
+                            'aborted','preempted'],
+                             input_keys=['asr_userSaid','asr_userSaid_tags'],
+                             output_keys=['object'])
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"i'm lokking what tags are"+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
-        rospy.sleep(2)
-        return 'new_position'
+        userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
+        
+        if userdata.asr_userSaid=="finish" :
+            rospy.logwarn("-------------------------------------i'm have a fisnish order")
+            return 'finish'
+        else :
+            return 'new_position'
     
 class ListenOperator(smach.StateMachine):
 
@@ -106,12 +125,13 @@ class ListenOperator(smach.StateMachine):
             self.userdata.nav_to_poi_name=None
             self.userdata.standard_error='OK'
             self.userdata.grammar_name="restaurant.gram"
+            self.userdata.asr_userSaid=None
+            self.userdata.asr_userSaid_tags=None
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
                                    transitions={'succeeded': 'LISTEN_TO',
                                                 'aborted': 'aborted','preempted':'preempted'})
-            
             
             
             smach.StateMachine.add('LISTEN_TO',
