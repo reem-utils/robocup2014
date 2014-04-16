@@ -107,7 +107,8 @@ class emergency_situation_sm(smach.StateMachine):
             self.userdata.manip_time_to_play = 4.0
             smach.StateMachine.add(
                 'Arms_Home',
-                play_motion_sm(),
+                #play_motion_sm(),
+                DummyStateMachine(),
                 transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
             #Prepare the data for the speech: language and time to wait
@@ -131,8 +132,8 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
             smach.StateMachine.add(
                 'Enter_Room_Arena',
-                EnterRoomSM(),
-                #DummyStateMachine(),
+                #EnterRoomSM(),
+                DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
             # Go to the emergency location            
