@@ -178,7 +178,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #TODO: POI For Person in Emergency
             smach.StateMachine.add(
                 'Go_To_Person',
-                DummyStateMachine(),
+                #DummyStateMachine(),
                 nav_to_poi(),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
