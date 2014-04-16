@@ -16,6 +16,7 @@ from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.ask_question import AskQuestionSM
 from restaurant_guide_phase import restaurantGuide
 from restaurant_navigation import RestaurantNavigation
+from restaurant_order_phase import RestaurantOrder
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -91,15 +92,8 @@ class RestaurantSM(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to order?"),
-                transitions={'succeeded': 'process_order', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-            
-            # Process order
-            smach.StateMachine.add(
-                'process_order',
-                DummyStateMachine(),
-                transitions={'succeeded': 'search_object', 'aborted': 'aborted', 
+                RestaurantOrder(),
+                transitions={'succeeded': 'navigation_phase', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
             # Navigation Phase
