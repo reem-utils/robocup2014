@@ -11,7 +11,7 @@ import rospy
 import smach
 
 from smach_ros import ServiceState
-from pal_interaction_msgs.msg import ASRSrvRequest, ASRActivation, ASRGrammarMngmt
+from pal_interaction_msgs.msg import ASRSrvRequest, ASRActivation, ASRLangModelMngmt
 from pal_interaction_msgs.srv import ASRService
 
 class prepareData(smach.State):
@@ -64,7 +64,7 @@ class DeactivateASR(smach.StateMachine):
                 requ = ASRSrvRequest()
                 requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
                 requ.activation.action = ASRActivation.PAUSE                
-                requ.model.action = ASRGrammarMngmt.ENABLE
+                requ.model.action = ASRLangModelMngmt.ENABLE
                 requ.model.modelName = userdata.grammar_name       
                 requ.lang.language = 'en_US'
                 return requ

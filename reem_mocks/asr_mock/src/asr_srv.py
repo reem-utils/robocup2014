@@ -7,7 +7,7 @@ import sys
 import rospkg
 
 
-from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRGrammarMngmt, ASRLanguage, actiontag
+from pal_interaction_msgs.msg import ASRSrvRequest, ASRSrvResponse, ASREvent, ASRActivation, ASRLangModelMngmt, ASRLanguage, actiontag
 from pal_interaction_msgs.srv import ASRService, ASRServiceRequest, ASRServiceResponse
 
 class AsrService():
@@ -43,7 +43,7 @@ class AsrService():
         self.current_grammar = ""
         self.enabled_grammar = False
         self.current_lang = ""
-        self.asrservice = rospy.Service('/asr_server', ASRService, self.asr_grammar_cb)
+        self.asrservice = rospy.Service('/asr_service', ASRService, self.asr_grammar_cb)
         rospy.loginfo("asr service initialized")
         self.usersaid_pub = rospy.Publisher('/asr_event', ASREvent)
 
@@ -70,18 +70,18 @@ class AsrService():
 #                     rospy.loginfo("ASR: Resuming speech recognizer")
                     
             elif curr_req == req.request.GRAMMAR:
-                if req.request.grammar.action == ASRGrammarMngmt.ENABLE:
+                if req.request.model.action == ASRLangModelMngmt.ENABLE:
                     self.enabled_grammar = True
-                    self.current_grammar = req.request.grammar.grammarName
-                    rospy.loginfo("ASR: Enabling grammar '%s'" % req.request.grammar.grammarName)
-                if req.request.grammar.action == ASRGrammarMngmt.DISABLE:
+                    self.current_grammar = req.request.model.modelName
+                    rospy.loginfo("ASR: Enabling grammar '%s'" % req.request.model.modelName)
+                if req.request.model.action == ASRLangModelMngmt.DISABLE:
                     self.enabled_grammar = False
                     self.current_grammar = ""
                     rospy.loginfo("ASR: Disabling grammar")
-#                 if req.request.grammar.action == ASRGrammarMngmt.LOAD:
+#                 if req.request.grammar.action == ASRLangModelMngmt.LOAD:
 #                     self.current_grammar = req.request.grammar.grammarName
-#                     rospy.loginfo("ASR: Loading grammar '%s'" % ASRGrammarMngmt.grammarName)
-#                 if req.request.grammar.action == ASRGrammarMngmt.UNLOAD:
+#                     rospy.loginfo("ASR: Loading grammar '%s'" % ASRLangModelMngmt.grammarName)
+#                 if req.request.grammar.action == ASRLangModelMngmt.UNLOAD:
 #                     self.current_grammar = ""
 #                     rospy.loginfo("ASR: Unloading grammar")
                     
