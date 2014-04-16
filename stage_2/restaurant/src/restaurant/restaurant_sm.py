@@ -13,18 +13,9 @@ import math
 
 from navigation_states.nav_to_poi import nav_to_poi
 #from navigation_states.enter_room import EnterRoomSM
-from navigation_states.nav_to_coord import nav_to_coord
-from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
-from face_states.ask_name_learn_face import SaveFaceSM
-from face_states.searching_person import searching_person
-from gesture_states.gesture_recognition import GestureRecognition 
-from util_states.math_utils import normalize_vector, vector_magnitude
-from geometry_msgs.msg import Pose
 from restaurant_guide_phase import restaurantGuide
-
-# Constants
-NUMBER_OF_ORDERS = 3
+from restaurant_navigation import RestaurantNavigation
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -43,22 +34,6 @@ class DummyStateMachine(smach.State):
         rospy.sleep(3)
         return 'succeeded'
 
-class checkLoop(smach.State):
-    def __init__(self):
-        rospy.loginfo("Entering loop_test")
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
-                                input_keys=['loop_iterations'],
-                                output_keys=['standard_error', 'loop_iterations'])
-
-    def execute(self, userdata):
-        
-        if userdata.loop_iterations == NUMBER_OF_ORDERS:
-            return 'end'
-        else:
-            rospy.loginfo(userdata.loop_iterations)
-            userdata.standard_error='OK'
-            userdata.loop_iterations = userdata.loop_iterations + 1
-            return 'succeeded'
 
 class RestaurantSM(smach.StateMachine):
     """
@@ -127,40 +102,12 @@ class RestaurantSM(smach.StateMachine):
                 transitions={'succeeded': 'search_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-            # Search for object - The robot goes to the different object locations
+            # Navigation Phase
             smach.StateMachine.add(
-                'search_object',
-                DummyStateMachine(),
-                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
+                'navigation_phase',
+                RestaurantNavigation(),
+                transitions={'succeeded': 'leaving_ordering', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
-
-            # Grasp Object
-            smach.StateMachine.add(
-                'grasp_object',
-                DummyStateMachine(),
-                transitions={'succeeded': 'go_to_delivery', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-            
-            # Go to the delivery place
-            smach.StateMachine.add(
-                'go_to_delivery',
-                nav_to_poi(),
-                transitions={'succeeded': 'deliver_object', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-                        
-            # Deliver object
-            smach.StateMachine.add(
-                'deliver_object',
-                DummyStateMachine(),
-                transitions={'succeeded': 'check_loop', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-            
-            # End of loop?
-            smach.StateMachine.add(
-                'check_loop',
-                checkLoop(),
-                transitions={'succeeded': 'process_order', 'aborted': 'aborted', 
-                'preempted': 'preempted', 'end':'leaving_ordering'}) 
 
             # Leaving the arena  
             smach.StateMachine.add(
