@@ -38,7 +38,7 @@ class createPlayMotionGoal(smach.State):
 
 class prepareData(smach.State):
     
-    def __init__(self, motion, time):
+    def __init__(self, motion, time=4.0):
         
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                             input_keys=['manip_motion_to_play','manip_time_to_play'], output_keys=['manip_motion_to_play','manip_time_to_play'])
