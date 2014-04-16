@@ -195,7 +195,8 @@ class CheckDependencesState(smach.State):
     def check_delete_params(self):
         if self.param_delete:
             for param in self.param_delete:
-                rospy.delete_param(param)
+                if (rospy.get_param(param,False)):
+                    rospy.delete_param(param)
              
         else:
             self._print_warning("Not deleting any param")

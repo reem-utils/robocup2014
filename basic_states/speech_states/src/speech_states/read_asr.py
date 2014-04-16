@@ -61,6 +61,9 @@ class ReadASR(smach.StateMachine):
                     output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
         
         with self:
+            self.userdata.asr_userSaid=None
+            self.userdata.standard_error="OK"
+            self.userdata.asr_userSaid_tags=None
            
             # topic reader state
             smach.StateMachine.add('topicReader',
