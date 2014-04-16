@@ -169,21 +169,21 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             
             #Go to person
-            smach.StateMachine.add(
-                'Prepare_Go_To_Person',
-                prepare_poi_person_emergency(),
-                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'},
-                remapping={'nav_to_coord_goal':'person_location'})
-            #TODO: POI For Person in Emergency
+            # smach.StateMachine.add(
+            #     'Prepare_Go_To_Person',
+            #     prepare_poi_person_emergency(),
+            #     transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+            #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
                 #DummyStateMachine(),
                 #nav_to_poi(),
                 nav_to_coord('/map'),
-                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
+                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'},
+                remapping={'nav_to_coord_goal':'person_location'})
             smach.StateMachine.add(
                 'Say_Give_Object',
                 text_to_say('I am going to give you the Object you want.'),
