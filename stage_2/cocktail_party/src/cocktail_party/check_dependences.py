@@ -17,7 +17,8 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/scan_filtered",    
                     "/asr_event", 
                     "/pal_face/recognizer",
-                    "/gesture_detection/gesture"]
+                    "/gesture_detection/gesture",
+                    "/object_detect/recognize"]
 
 SERVICES_LIST_NAMES = []  # #################### Services #####################
                        
