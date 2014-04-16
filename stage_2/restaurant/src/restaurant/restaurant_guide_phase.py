@@ -30,18 +30,9 @@ DISTANCE_TO_FOLLOW = 1.0
 LEARN_PERSON_FLAG = True
 
 
-
-
-
-
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-
-
-
-
-
 
 
 
@@ -54,7 +45,6 @@ class init_var(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"I'M in the restaurant"+ENDC)
-        rospy.sleep(2)
         userdata.standard_error="Dummy"
         return 'succeeded'
      
@@ -65,9 +55,10 @@ class init_var(smach.State):
 class learn_person(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded',
-                                    'aborted','preempted'])
+                                    'aborted','preempted'],output_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.loginfo("im learning a person")
+        userdata.in_learn_person="temporal"
         return 'succeeded'
              
         
@@ -120,6 +111,7 @@ class restaurantGuide(smach.StateMachine):
             self.userdata.nav_to_poi_name=None
             self.userdata.standard_error='OK'
             self.userdata.grammar_name="restaurant.gram"
+            self.userdata.in_learn_person=None
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
@@ -139,7 +131,7 @@ class restaurantGuide(smach.StateMachine):
             
             
             sm=smach.Concurrence(outcomes=['succeeded', 'lost'],
-                                   default_outcome='succeeded',
+                                   default_outcome='succeeded',input_keys=["in_learn_person"],
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
                 
              
