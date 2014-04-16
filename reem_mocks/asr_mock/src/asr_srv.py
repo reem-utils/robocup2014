@@ -115,7 +115,7 @@ class AsrService():
                     recognized_sentence = ASREvent()
                     recognized_sentence.recognized_utterance.text = MOCK_SAID[:len(MOCK_SAID)-1:] 
                     recognized_sentence.recognized_utterance.confidence = recognized_sentence.recognized_utterance.CONFIDENCE_MAX
-
+                    recognized_sentence.event_id=2
                     # Tags from file
                     with open(self.fileName) as myfile:
                         for line in myfile:

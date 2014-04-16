@@ -1,8 +1,0 @@
-<launch>
-    <!-- Launch map pois for the cocktail party test-->
-	<rosparam file="$(find cocktail_party)/config/pois_basic_functionalities.yaml" command="load" ns="mmap" />
-
-
-    <!-- Launch questions and answers for the cocktail party test-->
-	<rosparam file="$(find cocktail_party)/config/questions.yaml" command="load" ns="question_list" />
-</launch>
