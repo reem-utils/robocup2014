@@ -57,7 +57,7 @@ class ObjectService():
 
                     objectm = ObjectDetection()
                     objectm.object_id = self.object_id
-                    objectm.object_name.data = str(name)
+                    objectm.object_name.data = name[:len(name)-1:]
                     objectm.position.x=-0.0874395146966
                     objectm.position.y= -0.0155512560159
                     objectm.position.z= 0.945071995258

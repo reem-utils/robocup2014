@@ -20,7 +20,7 @@ def main():
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
-    with sm:Poi
+    with sm:
    
         smach.StateMachine.add(
             'CheckDepencences',
