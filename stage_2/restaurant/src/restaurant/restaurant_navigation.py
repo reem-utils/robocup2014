@@ -76,7 +76,7 @@ class RestaurantNavigation(smach.StateMachine):
     """
     Executes a SM that does the Restaurant Navigation.
 
-    Given a array with the information {objectName, objectLocation, deliveryLocation}
+    Given an array with the information {objectName, objectLocation, deliveryLocation}
     the robot goes to the objectLocation, take it and deliver to the location. 
     It does the same while the array has objects.  
     
@@ -86,7 +86,8 @@ class RestaurantNavigation(smach.StateMachine):
     Optional parameters:
     No optional parameters
 
-    No input keys.
+    Input keys:
+        object_array: Array with the information of the order
     No output keys.
     No io_keys.
     """
