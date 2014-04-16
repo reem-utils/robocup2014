@@ -22,9 +22,9 @@ class Extraction_cb(smach.State):
                                 output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
-        rospy.logwarn("------------------------------------------------------------------extracting message from topic")
+        rospy.loginfo("------------------------------------------------------------------extracting message from topic")
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
-        rospy.logwarn(userdata.topic_output_msg)
+        rospy.loginfo(userdata.topic_output_msg)
         userdata.asr_userSaid_tags = userdata.topic_output_msg.recognized_utterance.tags
         userdata.standard_error = ''
     
@@ -38,7 +38,10 @@ class Topic_Checker(smach.State):
                                 output_keys=['asr_userSaid','standard_error', 'asr_userSaid_tags'])
     
     def execute(self, userdata):
-        rospy.logwarn("------------------------------------------------------------------extracting message from topic")
+        userdata.asr_userSaid=userdata.topic_output_msg.recognized_utterance.text
+        userdata.asr_userSaid_tags=userdata.topic_output_msg.recognized_utterance.tags
+        userdata.standard_error="OK"
+        rospy.loginfo("------------------------------------------------------------------extracting message from topic")
         if userdata.topic_output_msg.event_id == 2:    
             return 'succeeded'  
         return 'aborted'
