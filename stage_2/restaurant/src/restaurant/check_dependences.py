@@ -30,6 +30,9 @@ PARAMS_LIST_NAMES = ["/mmap/poi/submap_0/object_one",
                      "/mmap/poi/submap_0/delivery_three",
                      "/mmap/poi/submap_0/ordering"]  # #################### Params #####################
 
+PARAMS_DELETE_NAMES = ["/restaurant"]
+
+
 class UserdataHacked():
     def __init__(self):
         self.anything = "test"
@@ -57,7 +60,10 @@ class CheckDependencesState(smach.State):
     This State Machine check if the topics, actions, services are running and if is possible translate locations in the map.
     """
 
-    def __init__(self, topic_names=TOPIC_LIST_NAMES, service_names=SERVICES_LIST_NAMES, action_names=ACTION_LIST_NAMES, params_names=PARAMS_LIST_NAMES, input_keys=[], output_keys=[]):
+    def __init__(self, topic_names=TOPIC_LIST_NAMES,
+                  service_names=SERVICES_LIST_NAMES, action_names=ACTION_LIST_NAMES,
+                   params_names=PARAMS_LIST_NAMES, params_delete=PARAMS_DELETE_NAMES,
+                   input_keys=[], output_keys=[]):
         """Constructor for CheckDependencesState
 
         @type topic_names: list of strings
@@ -91,6 +97,7 @@ class CheckDependencesState(smach.State):
         self.service_names = service_names
         self.action_names = action_names
         self.params_names = params_names
+        self.param_delete=params_delete
         self.rostopic = rosgraph.masterapi.Master('/rostopic')
         self.coordinates = None  # Coordinates 'of kitchen for example', in the map.
         self.object_id = None  # Id of the objects 'coke for example' at the database.
@@ -184,11 +191,20 @@ class CheckDependencesState(smach.State):
                 self.__check_params(param)
         else:
             self._print_warning("Not checking. 'params_names' is empty")
-
+    
+    def check_delete_params(self):
+        if self.param_delete:
+            for param in self.param_delete:
+                rospy.delete_param(param)
+             
+        else:
+            self._print_warning("Not deleting any param")
+        
     def execute(self, userdata):  
         self.check_specific_topics()
         self.check_specific_services()
         self.check_specific_actions()
         self.check_specific_params()
+        self.check_delete_params()
 
         return 'succeeded' if self.ALL_OK else 'aborted'
