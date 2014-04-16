@@ -29,18 +29,15 @@ class proces_object(smach.State):
         # first of all i look if it's some faces
         if userdata.objects.objects:
             # i look in what option we are, if we are looking for a name o no
-            rospy.logerr(">"+ userdata.object_name +"<")
             
             if userdata.object_name!="":
                 userdata.objectd=[objectd for objectd in userdata.objects.objects if objectd.object_name.data==userdata.object_name]
                 if userdata.objectd:
                     userdata.objectd=userdata.objectd.pop()
                     userdata.standard_error="Recognize_object_Name OK"+userdata.standard_error
-                    rospy.logwarn("OK")
                     return 'succeeded'
                 else :
                     userdata.standard_error="Recognize:= Any object with that name"+userdata.standard_error
-                    rospy.logwarn("No object with that name")
                     return 'aborted'
             # if we are no looking for a face we will organize
             else:
@@ -52,7 +49,6 @@ class proces_object(smach.State):
         else:
             userdata.standard_error="no objects available"+userdata.standard_error
             userdata.objectd=None
-            rospy.logwarn("No objects available")
             return 'aborted'
 
 
@@ -62,8 +58,8 @@ class recognize_object(smach.StateMachine):
     
     It have 2 options:
         if you complete the name, it will return if
-            it find this face, and return the face message of it.
-        If you don't complete it will return the face with more confidence.
+            it find this object, and return the object message of it.
+        If you don't complete it will return the object with more confidence.
     
     
     Required parameters : 
