@@ -16,6 +16,7 @@ from navigation_states.get_current_robot_pose import get_current_robot_pose
 from speech_states.listen_to import ListenToSM    
 import roslib
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from roslaunch.loader import rosparam
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -24,28 +25,29 @@ OKGREEN = '\033[92m'
 
 
 SAY_OK= "OK, i have added this place, we can go for other one"
-SAY_REPEAD="Sorry, i dind't understand you, can you repead again"
+SAY_REPEAT="Sorry, i dind't understand you, can you repeat again"
 
 '''
 In this state machine, we will be listening the operator,
 and creating new pois of the places that are needed for
-proces the orther
+process the order
 '''
 
 
 
 
 
+#here i have to delete all params
 class init_var(smach.State):
 
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
+            outcomes=['succeeded', 'aborted','preempted'],
+            input_keys=['standard_error'],output_keys=['standard_error'])
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"I'M inicialitzating the vars of  the resteurant"+ENDC)
-        rospy.sleep(2)
+        rospy.loginfo(OKGREEN+"Init vars of  the restaurant"+ENDC)
         userdata.standard_error="Dummy"
         return 'succeeded'
     
@@ -69,9 +71,7 @@ class save_point(smach.State):
                aux.pose.position.y,userdata.current_robot_yaw]
         
         rospy.loginfo(OKGREEN+str(value)+ENDC)
-        
-        rospy.set_param("/restaurant/submap_0:"+str(userdata.object),value)
-        rospy.sleep(5)
+        rospy.set_param("/restaurant/submap_0/"+str(userdata.object),value)
         return 'succeeded'
     
     
@@ -98,13 +98,13 @@ class proces_Tags(smach.State):
                              output_keys=['object'])
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"i'm lokking what tags are"+ENDC)
+        rospy.loginfo(OKGREEN+"i'm looking what tags are"+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
         userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
         
         if userdata.asr_userSaid=="finish" :
-            rospy.logwarn("-------------------------------------i'm have a fisnish order")
+            rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
         else :
             return 'new_position'
@@ -144,10 +144,10 @@ class ListenOperator(smach.StateMachine):
             smach.StateMachine.add('DID_YOU_SAY',
                                    did_you_say(),
                                    transitions={'succeeded': 'PROCES_TAGS',
-                                                'aborted': 'CAN_YOU_REPEAD','preempted':'preempted'})
+                                                'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
             
-            smach.StateMachine.add('CAN_YOU_REPEAD',
-                       text_to_say(SAY_REPEAD),
+            smach.StateMachine.add('CAN_YOU_REPEAT',
+                       text_to_say(SAY_REPEAT),
                        transitions={'succeeded': 'LISTEN_TO',
                                     'aborted': 'LISTEN_TO','preempted':'preempted'})
                         
