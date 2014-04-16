@@ -23,10 +23,10 @@ def main():
     with sm:
    
         smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'RestaurantSM', 'aborted': 'aborted'}) 
-   
+             'CheckDepencences',
+             CheckDependencesState(),
+             transitions={'succeeded': 'RestaurantSM', 'aborted': 'aborted'}) 
+     
         smach.StateMachine.add(
             'RestaurantSM',
             RestaurantSM(),
