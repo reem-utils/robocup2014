@@ -48,6 +48,7 @@ class navigation_back():
         self.odom_subs = rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.check_Odometry)
         #self.odom_subs.unregister()
         self.init_var()
+        self.sonar_mutex_set = False
         
     def init_var(self):
         self.Odometry_actual=Odometry()
@@ -58,7 +59,8 @@ class navigation_back():
         self.goal_achieved=False
         
         # ulta sound variables
-        self.sonar=3*[NUM_MOSTRES*[MAXIM_INIT]]
+        #self.sonar=3*[NUM_MOSTRES*[MAXIM_INIT]]
+        self.sonar = [[MAXIM_INIT for y in xrange(NUM_MOSTRES)] for x in xrange(3)]
         self.num_sonar=3*[0]
         self.resultat=3*[MAXIM_INIT]
         
@@ -70,12 +72,18 @@ class navigation_back():
         
         if (req.meters<=MAXMETERS) :
             if (req.enable) :
-               
+                
+		self.impacte=False
+       		self.time_out=False
+		self.sonar=[[MAXIM_INIT for y in xrange(NUM_MOSTRES)] for x in xrange(3)]
+        	self.num_sonar=3*[0]
+        	self.resultat=3*[MAXIM_INIT]
+		self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)  
                 self.enable=True
                 self.meters=req.meters#number of meters that we have to do
                 self.Odometry_init=self.Odometry_actual
                 self.time_init= rospy.get_rostime()
-                self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)   
+                rospy.sleep(0.5)
                 self.run()
             else :
                 self.enable=False
@@ -84,6 +92,8 @@ class navigation_back():
             
             if (self.time_out or self.impacte):
                 rospy.loginfo("ABORTING!!!")
+            	rospy.loginfo(str(self.resultat))
+           	rospy.loginfo(str(self.sonar))
                 if self.time_out :
                     rospy.loginfo("TIME OUT")
                 if self.impacte :
@@ -93,7 +103,7 @@ class navigation_back():
                 return NavigationGoBackResponse()
         else :
             self.pub_stop()
-            return "To much distance"
+            return "Too much distance"
         
         
     def check_Odometry(self,data):
@@ -134,38 +144,54 @@ class navigation_back():
         self.nav_pub.publish(msg)
         
     def callback_Sonar(self,data):
-        
-        if (data.header.frame_id==(('base_sonar_07_link' ) or ('/base_sonar_07_link' ))):
+        while self.sonar_mutex_set:
+                rospy.sleep(0.01)
+        self.sonar_mutex_set = True
+       
+        timestamp = rospy.Time.now()
+        print str(timestamp) + ": Enter callback with frame_id == " + data.header.frame_id
+        if (data.header.frame_id==('/base_sonar_07_link')):
+                rospy.logwarn("sonar 0: " + str(data.range) + " in pos " + str(self.num_sonar[0]))
+                print "sonar matrix before setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
                 self.sonar[0][self.num_sonar[0]]=data.range
                 self.num_sonar[0]=self.num_sonar[0]+1
                 aux=sum(self.sonar[0])
                 self.resultat[0]=aux/NUM_MOSTRES
                 if self.num_sonar[0]>=NUM_MOSTRES :
                     self.num_sonar[0]=0
+                print "sonar matrix after setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
                 
-        elif (data.header.frame_id==(('base_sonar_08_link')or ('/base_sonar_08_link' ))):
+        elif (data.header.frame_id==('/base_sonar_08_link' )):
+                rospy.logwarn("sonar 1: " + str(data.range)  + " in pos " + str(self.num_sonar[1]))
+                print "sonar matrix before setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
                 self.sonar[1][self.num_sonar[1]]=data.range
                 self.num_sonar[1]=self.num_sonar[1]+1
                 aux=sum(self.sonar[1])
                 self.resultat[1]=aux/NUM_MOSTRES
                 if self.num_sonar[1]>=NUM_MOSTRES :
                     self.num_sonar[1]=0
+                print "sonar matrix after setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
 
             
-        elif (data.header.frame_id==(('base_sonar_09_link')or ('/base_sonar_09_link' ))):
+        elif (data.header.frame_id==('/base_sonar_09_link' )):
+                rospy.logwarn("sonar 2: " + str(data.range)  + " in pos " + str(self.num_sonar[2]))
+                print "sonar matrix before setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
                 self.sonar[2][self.num_sonar[2]]=data.range
                 self.num_sonar[2]=self.num_sonar[2]+1
                 aux=sum(self.sonar[2])
                 self.resultat[2]=aux/NUM_MOSTRES
                 if self.num_sonar[2]>=NUM_MOSTRES :
-                    self.num_sonar[2] =0              
+                    self.num_sonar[2] =0
+                print "sonar matrix after setting looks like:\n" + str(self.sonar[0]) + "\n" + str(self.sonar[1]) + "\n" + str(self.sonar[2])
+        print str(timestamp)  + ": Sexit callback == " + data.header.frame_id
+        self.sonar_mutex_set = False      
         
     def proces_ultraSound(self):
         
         
+ 	
+	
         if self.resultat[0]<MINDIST or self.resultat[1]<MINDIST or self.resultat[2]<MINDIST :
-            rospy.loginfo(str(self.resultat))
-            rospy.loginfo(str(self.sonar))
             self.impacte= True
         else :
             self.impacte= False
