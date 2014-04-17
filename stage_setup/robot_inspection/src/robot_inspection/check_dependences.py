@@ -25,10 +25,7 @@ ACTION_LIST_NAMES = [  # #################### Actions #####################
 
 PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/intermediate",
-                     "/mmap/poi/submap_0/door_init",
-                     "/mmap/poi/submap_0/door_exit",
-                     "/mmap/poi/submap_0/exit_init",
-                     "/mmap/poi/submap_0/exit_exit"]
+                     "/mmap/poi/submap_0/exit_door"]
                      
 
 class UserdataHacked():

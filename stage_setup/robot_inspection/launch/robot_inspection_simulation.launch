@@ -2,6 +2,12 @@
     <!-- Launch map pois for the robot inspection test-->
 	<rosparam file="$(find robot_inspection)/config/pois_robot_inspection.yaml" command="load" ns="mmap" />
 
+	<!-- Mocks -->
+	<node
+    	pkg="tts_mock" 
+    	type="tts_as.py"
+    	name="tts_mock" />   
+    
     <!-- State Machine -->
     <node 
     	pkg ="robot_inspection"
@@ -9,5 +15,5 @@
         name="robot_inspection"
         output="screen">
   	</node>
-      
+  
 </launch>
