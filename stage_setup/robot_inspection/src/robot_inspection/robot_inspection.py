@@ -22,10 +22,10 @@ def main():
 
     with sm:
 
-        smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'RobotInspectionSM', 'aborted': 'aborted'})
+   #     smach.StateMachine.add(
+   #         'CheckDepencences',
+   #         CheckDependencesState(),
+   #         transitions={'succeeded': 'RobotInspectionSM', 'aborted': 'aborted'})
         
         smach.StateMachine.add(
             'RobotInspectionSM',
