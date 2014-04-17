@@ -139,7 +139,7 @@ class follow_me_3rd(smach.StateMachine):
             
             # it will go from the lift
             smach.StateMachine.add('GO_BACK',
-                                    ServiceState('/move_back',
+                                    ServiceState('/reverse',
                                     NavigationGoBack,
                                     request_cb = go_back_request),
                                     transitions={'succeeded':'WHERE_IS_IT','aborted' : 'aborted','preempted':'preempted'})
