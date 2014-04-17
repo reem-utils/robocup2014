@@ -12,6 +12,7 @@ from translator import idx2obj, obj2idx
 from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 
+from speech_states.say import text_to_say
 
 #TODO: find_person import FindPersonSM
 #TODO: complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
@@ -52,6 +53,33 @@ except ImportError:
 
 SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar"
 
+
+class dummy(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
+    def execute(self, userdata):
+        return 'succeeded'
+        
+class speaker(smach.StateMachine):
+    
+    
+    def __init__(self, text=None):
+        #Initialization of the SMACH State machine
+        smach.StateMachine.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'])
+        
+        with self: 
+            
+            self.userdata.tts_wait_before_speaking=0
+            self.userdata.tts_text=None
+            self.userdata.tts_lang=None
+            
+            smach.StateMachine.add(
+                'SaySM',
+                #text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                dummy(),
+                transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
+
+
 def call_go_to(loc_name):
     '''
     out = aborted
@@ -72,11 +100,13 @@ def call_go_to(loc_name):
 
 	return succeeded '''
     
-    print 'call_go_to' 
+    tosay = "I'm going to the "+str(loc_name)
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_go_to')
     time.sleep(3)  
     return "succeeded" 
 	
-
 def call_exit(): #TODO well
     '''	out = aborted
     tries = 0
@@ -98,7 +128,9 @@ def call_exit(): #TODO well
     
     return succeeded ''' 
 
-    print 'call_exit'   
+    speak = speaker("I am going to the exit")
+    speak.execute()
+    rospy.logwarn('call_exit') 
     time.sleep(3)   
     return "succeeded"  
 
@@ -117,9 +149,13 @@ def call_learn_person():
         tries = tries+1
     
     #time.sleep(3)
-    return succeeded #(out, PersonName)'''
+    return succeeded #(out, PersonName)
+    '''
     
-    print 'call_learn_person'
+    tosay = "I'm going to learn the person in front of me"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_learn_person')
     time.sleep(3)
     return "succeeded"
 
@@ -138,7 +174,10 @@ def call_recognize_person():
     
     return succeeded #(out, PersonName)	'''
     
-    print 'call_recognize_person'
+    tosay = "I'm going to recognize the person in front of me"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_recognize_person')
     time.sleep(3)
     return "succeeded" 
 
@@ -149,7 +188,10 @@ def call_introduce():
     out = intro.execute()
     return succeeded '''
     
-    print 'call_introduce'
+    tosay = "I'm going to introduce somethink or someone"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_introduce')
     time.sleep(3)
     return "succeeded"
 
@@ -168,12 +210,16 @@ def call_point_at(): #TO TEST
 
 	return succeeded
     '''
-    print 'call_point_at'
+    
+    tosay = "I'm going to point"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_point_at')
     time.sleep(3)
     return "succeeded"
 
 def call_follow(): #TODO
-    print "SM : follow-me" 
+    rospy.logwarn("SM : follow-me")
     '''
     tosay = "I'm going to follow you"
     speak = SpeakActionState(text=tosay)
@@ -181,13 +227,16 @@ def call_follow(): #TODO
     sm =FollowMeSM(0.9, 'gpsr_follow')
     out = sm.execute(ud=None)
     '''
+    
+    tosay = "I'm going to follow you"
+    speak = speaker(tosay)
+    speak.execute()
     time.sleep(3)
     return succeeded
 # 	print "SM : follow" 
 # 	f = FollowMeSM()
 # 	out = f.execute()
 # 	return out
-
 
 def call_find_object(object_name, loc_name):
     '''
@@ -216,10 +265,13 @@ def call_find_object(object_name, loc_name):
         speakn.execute(ud=None)
     return succeeded
     '''
-    print 'call_find_object'
+    
+    tosay = "I'm going to seartch for " + object_name
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_find_object')
     time.sleep(3)
     return "succeeded"
-
 
 def call_grasp(obj):
     '''
@@ -238,10 +290,13 @@ def call_grasp(obj):
 
     return succeeded
     '''
-    print 'call_grasp'
+    
+    tosay = "I'm going to grasp the " + obj
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_grasp')
     time.sleep(3)
     return "succeeded"
-
 
 def call_find_person(person_name):
     # print "SM : find_person %s" % (person_name)
@@ -252,7 +307,11 @@ def call_find_person(person_name):
 #   	out = fp.execute()
 #   	#found_person = fp.userdata.closest_person
 #   	return succeeded
-    print 'call_find_person'
+
+    tosay = "I'm going to search for the person known as " + person_name
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_find_person')
     time.sleep(3)
     return "succeeded"
 
@@ -272,7 +331,10 @@ def call_bring_to(person_name): #Solo hace release TODO
     return succeeded
     
     '''
-    print 'call_bring_to'
+    tosay = "I'm going to bring somethink to " + person_name
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_bring_to')
     time.sleep(3)
     return "succeeded" 
 
@@ -281,7 +343,10 @@ def call_ask_name():
     print "SM : ask_name" 
     return call_learn_person()
     '''
-    print 'call_ask_name'
+    tosay = "I'm going to ask your name, prepare yourself"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn( 'call_ask_name')
     time.sleep(3)
     return "succeeded"
 
@@ -297,7 +362,11 @@ def call_introduce_me():
 
     return succeeded
     '''
-    print 'call_introduce_me'
+    
+    tosay = "I'm going to introduce myself"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn( 'call_introduce_me')
     time.sleep(3)
     return "succeeded"
 

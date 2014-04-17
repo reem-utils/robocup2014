@@ -68,8 +68,11 @@ sp {gp*apply*initialize-gp
            ^id 5)
 
    (<d> ^name bring-to
+        ^person <pp>
         ^object <ii>
         ^robot <rr>)
+   (<pp> ^obj1Id 6
+           ^id 5)
    (<ii> ^delivered yes
            ^id 6)
    (<rr> ^id 1)
