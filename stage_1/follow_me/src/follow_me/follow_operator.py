@@ -119,10 +119,11 @@ Thats why we make desired distance zero if person too close.
         distance_des = 0.0
         if position_distance >= self.distanceToHuman: 
             distance_des = position_distance - self.distanceToHuman
+            alfa = math.atan2(userdata.tracking_msg_filtered.position.y,userdata.tracking_msg_filtered.position.x)
         else:
-            rospy.loginfo(" Person too close => not moving, just rotate")
+            rospy.loginfo(OKGREEN+" Person too close => not moving, just rotate"+ENDC)
         #atan2 will return a value inside (-Pi, +Pi) so we can compute the correct quadrant
-        alfa = math.atan2(new_pose.position.y, new_pose.position.x)
+            alfa = math.atan2(new_pose.position.y, new_pose.position.x)
         dist_vector = multiply_vector(unit_vector, distance_des)
 
         alfa_degree = math.degrees(alfa)

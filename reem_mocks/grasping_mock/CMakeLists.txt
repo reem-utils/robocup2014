@@ -48,6 +48,7 @@ message_generation
 add_message_files(
   FILES
   ObjectDetection.msg
+  ObjectDetections.msg
 )
 
 ## Generate services in the 'srv' folder

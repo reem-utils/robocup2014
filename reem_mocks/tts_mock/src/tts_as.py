@@ -3,7 +3,8 @@
 import rospy
 import actionlib
 
-from text_to_speech.msg import SoundAction, SoundGoal, SoundResult 
+#from text_to_speech.msg import SoundAction, SoundGoal, SoundResult 
+from pal_interaction_msgs.msg import SoundAction, SoundGoal, SoundResult 
 
 class TtsActionServer:
   def __init__(self):

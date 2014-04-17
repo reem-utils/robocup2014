@@ -1,0 +1,15 @@
+numberOfSubMaps: 1
+poi:
+  submap_0:
+    object_one: [submap_0, object_one, 3.0, 3.0, 0]
+    object_two: [submap_0, object_two, -3.0, 0.0, 0]
+    delivery_one: [submap_0, delivery_one, 3.0, -3.0, 0]
+    delivery_two: [submap_0, delivery_two, 3.0, -3.0, 0]
+    delivery_three: [submap_0, delivery_three, 3.0, -3.0, 0]
+    ordering: [submap_0, ordering, 3.0, -3.0, 0]
+
+object:
+  information:
+    coke: [information, coke, beverage]
+    fanta: [information, fanta, beverage]
+    cookies: [information, cookies, snack]

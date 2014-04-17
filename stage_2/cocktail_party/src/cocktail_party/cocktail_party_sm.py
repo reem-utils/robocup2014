@@ -19,6 +19,7 @@ from speech_states.ask_question import AskQuestionSM
 from face_states.ask_name_learn_face import SaveFaceSM
 from face_states.searching_person import searching_person
 from gesture_states.gesture_recognition import GestureRecognition 
+from object_grasping_states.search_object import SearchObjectSM
 from util_states.math_utils import normalize_vector, vector_magnitude
 from geometry_msgs.msg import Pose
 
@@ -162,11 +163,11 @@ class CocktailPartySM(smach.StateMachine):
             # Must we wait for the spoken order? 
             
             # We wait for open door and go inside
-#             smach.StateMachine.add(
-#                 'wait_for_door',
-#                 EnterRoomSM("party_room"),
-#                 transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
-#                 'preempted': 'preempted'}) 
+            smach.StateMachine.add(
+                 'wait_for_door',
+                 EnterRoomSM("party_room"),
+                 transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
+                 'preempted': 'preempted'}) 
 
             # Gesture recognition -> Is anyone waving?
             smach.StateMachine.add(
@@ -216,21 +217,14 @@ class CocktailPartySM(smach.StateMachine):
                 process_order(),
                 transitions={'succeeded': 'go_to_storage', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
-            
-            # Go to the storage room
-            smach.StateMachine.add(
-                'go_to_storage',
-                nav_to_poi('storage_room'),
-                transitions={'succeeded': 'search_food_order', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
-
-            # Search for object
+        
+            # Search for object information
             smach.StateMachine.add(
                 'search_food_order',
-                DummyStateMachine(),
+                SearchObjectSM(),
                 transitions={'succeeded': 'grasp_food_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
-
+            
             # Grasp Object
             smach.StateMachine.add(
                 'grasp_food_order',

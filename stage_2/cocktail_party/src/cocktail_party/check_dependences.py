@@ -17,7 +17,8 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/scan_filtered",    
                     "/asr_event", 
                     "/pal_face/recognizer",
-                    "/gesture_detection/gesture"]
+                    "/gesture_detection/gesture",
+                    "/object_detect/recognize"]
 
 SERVICES_LIST_NAMES = []  # #################### Services #####################
                        
@@ -29,7 +30,8 @@ ACTION_LIST_NAMES = [  # #################### Actions #####################
 PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/party_room",
                      "/mmap/poi/submap_0/storage_room",
-                     "/mmap/poi/submap_0/leave_room"]
+                     "/mmap/poi/submap_0/leave_room",
+                     "/mmap/object/information/coke"]
                      
 
 class UserdataHacked():

@@ -1,5 +1,47 @@
 play_motion:
   motions:
+    Macarena:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint,
+        arm_left_1_joint, arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint, arm_left_7_joint,
+        arm_right_1_joint, arm_right_2_joint, arm_right_3_joint, arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 0.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 2.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 2.5
+      meta:
+        name: Macarena
+        usage: specific
+        description: Dance the Macarena
+    Robot_Dance:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint,
+        arm_left_1_joint, arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint, arm_left_7_joint,
+        arm_right_1_joint, arm_right_2_joint, arm_right_3_joint, arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 0.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 2.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
+            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+        time_from_start: 2.5
+      meta:
+        name: RobotDance
+        usage: specific
+        description: Dance the Robot
     give_object_left:
       joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
         arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
