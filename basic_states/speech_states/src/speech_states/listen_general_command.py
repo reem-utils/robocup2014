@@ -355,7 +355,7 @@ class askCategoryLoc(smach.StateMachine):
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
                 self.userdata.locList = []
-                self.userdata.location_name = ''
+                self.userdata.loc_name = ''
                 self.userdata.grammar_name = GRAMMAR_NAME
                 self.userdata.tts_wait_before_speaking = 0
                 self.userdata.tts_text = ''
@@ -397,7 +397,7 @@ class askCategoryLoc(smach.StateMachine):
 #                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
                          
                         smach.StateMachine.add('CONFIRM_OBJECT',
-                                               text_to_say("Okay! I'll go to " + self.userdata.location_name),
+                                               text_to_say("Okay! I'll go to " + self.userdata.loc_name),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR',
                                                             'aborted': 'DISABLE_GRAMMAR'})
 

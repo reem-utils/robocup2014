@@ -1,5 +1,5 @@
 object=coke
-location=fridge
+location=bar
 table=couch table
 yes=yes
 name=cris
