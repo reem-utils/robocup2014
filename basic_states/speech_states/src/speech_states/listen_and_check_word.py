@@ -22,9 +22,10 @@ class checkData(smach.State):
         
     def execute(self, userdata):
 
-        word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
+        #word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
         
-        if word and word[0].value == userdata.word_to_listen:
+        #if word and word[0].value == userdata.word_to_listen:
+        if userdata.asr_userSaid == userdata.word_to_listen:
             rospy.loginfo("Match!")
             return 'succeeded'
         else:
