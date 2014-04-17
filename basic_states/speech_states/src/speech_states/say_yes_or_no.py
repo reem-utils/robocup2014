@@ -27,24 +27,28 @@ class ProcessCommand(smach.State):
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
 
-        print questionTags 
-        
-        yes = [tag for tag in questionTags if tag.key == 'yes']
-        no = [tag for tag in questionTags if tag.key == 'no']
-        
-        print yes
-        print no
-        
-        if yes:
-            rospy.loginfo("YES")
+#         yes = [tag for tag in questionTags if tag.key == 'yes']
+#         no = [tag for tag in questionTags if tag.key == 'no']
+#         
+#         print yes
+#         print no
+#         
+#         if yes:
+#             rospy.loginfo("YES")
+#             return 'yes'
+#         if no: 
+#             rospy.loginfo("NO")
+#             return 'no'
+#         
+#         rospy.loginfo("Aborted")
+#         return 'aborted'
+    
+        if question == 'yes':
             return 'yes'
-        if no: 
-            rospy.loginfo("NO")
+        elif question == 'no':
             return 'no'
         
-        rospy.loginfo("Aborted")
         return 'aborted'
-
     
 class SayYesOrNoSM(smach.StateMachine):
     """
@@ -72,7 +76,7 @@ class SayYesOrNoSM(smach.StateMachine):
 
         with self:
             self.userdata.asr_userSaid = ''    
-            self.userdata.grammar_name = 'yes_no.gram'
+            self.userdata.grammar_name = 'confirming'
             self.userdata.tts_text = None
             self.userdata.tts_wait_before_speaking = None
             self.userdata.tts_lang = None
