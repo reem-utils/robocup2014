@@ -16,11 +16,8 @@ import math
 
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
-from navigation_states.get_current_robot_pose import get_current_robot_pose
 from sensor_msgs.msg import LaserScan
-from manipulation_states.play_motion_sm import play_motion_sm
 from speech_states.say import text_to_say
-from util_states.topic_reader import topic_reader
  
  
 class prepareData(smach.State):
@@ -45,19 +42,16 @@ class prepareData(smach.State):
 class check_door_status(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted', 'door_too_far'],
-         output_keys=['standard_error'])
+         output_keys=['standard_error','nav_to_coord_goal'])
         self.door_position = -1
 
     def execute(self, userdata):
-
-     #   rospy.sleep(10) 
 
         distance = 1.5
         
         WIDTH = 0.10  # Width in meters to look forward.
         READ_TIMEOUT = 15
         MAX_DIST_TO_DOOR = 3.0
-        #rospy.sleep(5)
 
         message = rospy.wait_for_message('/scan_filtered', LaserScan, 60)
         
@@ -72,10 +66,13 @@ class check_door_status(smach.State):
             if message.ranges[middle] <= MAX_DIST_TO_DOOR:
                 self.door_position = message.ranges[middle]
             else:
+                # We approach one meter to the door
+                userdata.nav_to_coord_goal = [1.0, 0.0, 0.0]    
                 return 'door_too_far'
 
         if (minimum >= distance+self.door_position):
             return 'succeeded'
+        
         rospy.loginfo("Distance in front of the robot is too small: " + str(distance+self.door_position) + ". Minimum distance: " + str(minimum))
         userdata.standard_error = "get_current_robot_pose : Time_out getting /scan_filtered"
         return 'aborted'
@@ -114,7 +111,6 @@ class EnterRoomSM(smach.StateMachine):
             self.userdata.manip_motion_to_play = None
             self.userdata.manip_time_to_play = None
         
-        
             smach.StateMachine.add('PrepareData',
                prepareData(poi_name),
                transitions={'succeeded':'check_can_pass', 'aborted':'aborted'})
@@ -122,7 +118,7 @@ class EnterRoomSM(smach.StateMachine):
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check_door_status(),
-                   transitions={'succeeded': 'home_position',
+                   transitions={'succeeded': 'enter_room',
                                 'aborted': 'say_open_door',
                                 'door_too_far': 'say_too_far_from_door'})
 
@@ -130,20 +126,20 @@ class EnterRoomSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_too_far_from_door',
                 text_to_say("I'm too far from the door."),
-                transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
+                transitions={'succeeded': 'approach_to_door', 'aborted': 'approach_to_door'})
                         
+            # Approach to the door
+            smach.StateMachine.add(
+                'approach_to_door',
+                nav_to_coord("/base_link"),
+                transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
+                         
             # Robot ask to open the door
             smach.StateMachine.add(
                 'say_open_door',
                 text_to_say("Can anyone open the door please?"),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
-
-            # Robot arms home position
-            smach.StateMachine.add(
-                'home_position',
-                play_motion_sm("home", 10),
-                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room', 'preempted': 'preempted'})
-          
+            
             # We don't need to prepare the state, it takes the input_key directly
 
             # Go to the poi in the other site of the door
