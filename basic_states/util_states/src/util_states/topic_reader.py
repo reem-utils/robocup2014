@@ -55,8 +55,6 @@ class topic_reader_state(smach.State):
                     return 'preempted'
 
             if self.msg :
-                rospy.logwarn("_______________________NEW_MSG___________________")
-                rospy.logwarn(str(self.msg_data))
    
                 userdata.topic_output_msg=self.msg_data
                 return 'succeeded'
