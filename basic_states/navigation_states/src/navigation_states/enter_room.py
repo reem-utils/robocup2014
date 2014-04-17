@@ -16,6 +16,7 @@ import math
 
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
+from manipulation_states.play_motion_sm import play_motion_sm
 from sensor_msgs.msg import LaserScan
 from speech_states.say import text_to_say
  
@@ -67,7 +68,7 @@ class check_door_status(smach.State):
                 self.door_position = message.ranges[middle]
             else:
                 # We approach one meter to the door
-                userdata.nav_to_coord_goal = [1.0, 0.0, 0.0]    
+                userdata.nav_to_coord_goal = [0.5, 0.0, 0.0]    
                 return 'door_too_far'
 
         if (minimum >= distance+self.door_position):
@@ -118,7 +119,7 @@ class EnterRoomSM(smach.StateMachine):
             # Check door state
             smach.StateMachine.add('check_can_pass',
                    check_door_status(),
-                   transitions={'succeeded': 'enter_room',
+                   transitions={'succeeded': 'home_position',
                                 'aborted': 'say_open_door',
                                 'door_too_far': 'say_too_far_from_door'})
 
@@ -140,12 +141,18 @@ class EnterRoomSM(smach.StateMachine):
                 text_to_say("Can anyone open the door please?"),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
             
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home', 10),
+                transitions={'succeeded': 'enter_room', 'aborted': 'aborted', 'preempted': 'succeeded'})
+            
             # We don't need to prepare the state, it takes the input_key directly
 
             # Go to the poi in the other site of the door
             smach.StateMachine.add(
                 'enter_room',
                 nav_to_poi(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+                transitions={'succeeded': 'succeeded', 'aborted': 'enter_room', 'preempted': 'preempted'})
 
 
