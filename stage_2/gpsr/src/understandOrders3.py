@@ -214,7 +214,6 @@ class orderList():
 
         # s = tokenize_sentence(sentence)
         # n = change_exceptions(s, deps)
-
         commands = parseSentence(sentence)
         print("----------------comands---------------")
         print commands
