@@ -9,7 +9,6 @@ Created on Tue Oct 22 12:00:00 2013
 import rospy
 import smach
 import smach_ros
-import actionlib
 #from smach_ros import SimpleActionState, ServiceState
 
 
@@ -17,7 +16,7 @@ from robot_inspection_sm import RobotInspectionSM
 from check_dependences import CheckDependencesState
 
 def main():
-    rospy.init_node('robot_inpection')
+    rospy.init_node('robot_inspection')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
