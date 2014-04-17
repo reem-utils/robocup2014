@@ -15,12 +15,14 @@ from follow_operator import FollowOperator
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.srv import NavigationGoBack, NavigationGoBackRequest, NavigationGoBackResponse
 from smach_ros import ServiceState
+from navigation_states.nav_to_coord_concurrent import nav_to_coord_concurrent
+from follow_me.srv import EnableCheckElevatorRequest, EnableCheckElevator, EnableCheckElevatorResponse
 
 SAY_COME_NEAR="CAN YOU APROACH A LITTLE BIT"
 SAY_LETS_GO="OK LETS GO AGAIN"
 SAY_GO_AGAIN="OK LETS GO AGAIN"
 
-METERSBACK=2
+METERSBACK=1
 
 
 
@@ -29,11 +31,12 @@ class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
+            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=['nav_to_coord_goal'])
 
     def execute(self, userdata):
         rospy.sleep(2)
         rospy.loginfo(OKGREEN+"i'm in the 3rd part of the robocup"+ENDC)
+        userdata.nav_to_coord_goal = [0,0,0]
         return 'succeeded'
 
 # i have to create a navigation state that go backford
@@ -136,15 +139,29 @@ class follow_me_3rd(smach.StateMachine):
                                    transitions={'succeeded': 'GO_BACK',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
+            def Cheack_Elevator_Stop(userdata, request):
+                start_request = EnableCheckElevatorRequest()
+                start_request.enable=False
+                return start_request
             
+            smach.StateMachine.add('STOP_CHECK_ELEVATOR',
+                                  ServiceState('/check_elevator/enable',
+                                  EnableCheckElevator,
+                                  request_cb = Cheack_Elevator_Stop),
+                                  transitions={'succeeded':'succeeded',
+                                               'preempted':'succeeded',
+                                                'aborted':'succeeded'})
             # it will go from the lift
             smach.StateMachine.add('GO_BACK',
                                     ServiceState('/reverse',
                                     NavigationGoBack,
                                     request_cb = go_back_request),
-                                    transitions={'succeeded':'WHERE_IS_IT','aborted' : 'aborted','preempted':'preempted'})
+                                    transitions={'succeeded':'SEND_GOAL','aborted' : 'SEND_GOAL','preempted':'preempted'})
             
 
+            smach.StateMachine.add('SEND_GOAL',
+                       nav_to_coord_concurrent('/base_link'),
+                       transitions={'succeeded':'WHERE_IS_IT', 'aborted':'WHERE_IS_IT','preempted':'preempted'})
             
                         # it will go out from the lift
             smach.StateMachine.add('WHERE_IS_IT',

@@ -17,7 +17,7 @@ OKGREEN = '\033[92m'
 
 MIN_SAMPLES_DOOR=3 # num of samples that the door have to be open, it have to be followed
 CHECK_DOOR_OPEN = 100 # distance for the door open
-
+FREQ_REVISION=0.1
 
 '''
 @ this state machine use check_elevator, it turns the enable on
@@ -42,9 +42,12 @@ class check_status(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['IM_IN','IM_NOT_IN', 'preempted'], input_keys=['check_elevator_msg'])
     def execute(self,userdata):
+        if self.preempt_requested():
+           return 'preempted'
         if userdata.check_elevator_msg.elevator :
             return 'IM_IN'
         else :
+            rospy.sleep(FREQ_REVISION)
             return 'IM_NOT_IN'
             
 
@@ -73,7 +76,7 @@ class read_topic(smach.State):
     def execute(self,userdata):
         userdata.check_elevator_msg = rospy.wait_for_message('/check_elevator/elevator_status',
                                                             check_elevator, 60)
-        rospy.loginfo ("I'm reading")
+        rospy.loginfo (OKGREEN+"I'm reading"+ENDC)
         if self.preempt_requested():
            return 'preempted'
         return 'succeeded'
@@ -204,16 +207,11 @@ class look_for_elevator_door(smach.StateMachine):
         with self:
             
 
-            def Cheack_Elevator_Stop(userdata, request):
-                start_request = EnableCheckElevatorRequest()
-                start_request.enable=False
-                return start_request
-        
-                            
+
             smach.StateMachine.add('INIT_VAR',
                                    init_var_2nd(),
                                   transitions={'succeeded': "READ_AUX", 'preempted':'preempted'})
-
+            
             smach.StateMachine.add('READ_AUX',
                                    read_topic(),
                                    transitions={'succeeded': 'CHECK_DOOR_STATUS', 'preempted':'preempted'})            
@@ -224,18 +222,12 @@ class look_for_elevator_door(smach.StateMachine):
 
             smach.StateMachine.add('COUNT_DOOR',
                                    count_door(),
-                                   transitions={'succeeded': 'STOP_CHECK_ELEVATOR','not_yet':'READ_AUX', 'preempted':'preempted'})
+                                   transitions={'succeeded': 'succeeded','not_yet':'READ_AUX', 'preempted':'preempted'})
             smach.StateMachine.add('RESET_COUNT',
                                    reset_count(),
                                    transitions={'succeeded': 'READ_AUX','preempted':'preempted'})
 
-            smach.StateMachine.add('STOP_CHECK_ELEVATOR',
-                                              ServiceState('/check_elevator/enable',
-                                              EnableCheckElevator,
-                                              request_cb = Cheack_Elevator_Stop),
-                                              transitions={'succeeded':'succeeded',
-                                                           'preempted':'succeeded',
-                                                            'aborted':'succeeded'})
+
 
 
 
