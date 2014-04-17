@@ -1,0 +1,191 @@
+Who/WP Is/VBZ Who/WP 
+sec:/NN 
+A/DT robot/NN should/MD be/VB able/JJ to/TO autonomously/RB recognize/VB persons/NNS in/IN an/DT unknown/JJ environment./NN Without/IN manual/JJ calibration,/VBG a/DT robot/NN will/MD have/VB to/TO introduce/VB itself/PRP to/TO a/DT group/NN of/IN people,/NN ask/VB for/IN their/PRP$ names,/NN memorize/VB them/PRP and/CC recognize/VB the/DT persons/NNS when/WRB meeting/NN them/PRP again./CD Before/IN the/DT test/NN a/DT list/NN with/IN 20/CD English/NNP names/NNS is/VBZ published/VBN which/WDT the/DT robot/NN should/MD be/VB able/JJ to/TO recognize./CD 
+Focus/NNP 
+This/DT test/NN focuses/VBZ on/IN human/JJ detection/recognition,/NN face/NN detection/recognition,/NN safe/JJ navigation/NN and/CC human-robot/NN interaction/NN with/IN unknown/JJ persons./CD 
+Task/NNP 
+Before/IN the/DT test/NN starts,/VBG the/DT arena/NN is/VBZ reconfigured./JJ 
+If/IN the/DT robot/NN attempts/NNS to/TO leave/VB the/DT arena/NN by/IN opening/VBG a/DT 
+door/NN autonomously,/VBG the/DT team/NN should/MD announce/VB this/DT to/TO referees/NNS beforehand./JJ 
+description/NN 
+[Entering/VBG the/DT scenario]/VBG The/DT robot/NN enters/VBZ the/DT arena/NN through/IN the/DT door/NN and/CC stops/VBZ next/JJ to/TO it./VB 
+[Introduction/NN of/IN guests]/NN Two/CD persons/NNS enter/VBP through/IN the/DT door/NN and/CC introduce/VB themselves/PRP to/TO the/DT robot,/NN one/CD by/IN one./CD They/PRP do/VBP this/DT while/NN standing/VBG in/IN front/NN of/IN the/DT robot./VBD The/DT robot/NN can/MD give/VB instructions/NNS to/TO the/DT persons/NNS on/IN what/WP to/TO do/VB during/IN this/DT learning/VBG phase./CD It/PRP must/MD not/RB involve/VB touching/VBG any/DT part/NN of/IN the/DT robot./VBD The/DT persons/NNS are/VBP assigned/VBN names/NNS from/IN the/DT list./NN After/IN the/DT person/NN has/VBZ told/VBN the/DT robot/NN its/PRP$ name,/NN it/PRP has/VBZ to/TO announce/VB which/WDT name/VBP it/PRP has/VBZ understood./VBD The/DT robot/NN may/MD ask/VB the/DT person/NN to/TO repeat/VB its/PRP$ name/NN if/IN it/PRP hasn't/VBP understood/VBN it/PRP correctly/RB without/IN losing/VBG points./JJ If/IN the/DT robot/NN misunderstands/VBZ the/DT name/NN during/IN this/DT phase,/NN it/PRP can/MD still/RB use/VB the/DT wrong/JJ name/NN to/TO identify/VB the/DT person/NN later./VBD This/DT is/VBZ the/DT understanding/NN names/NNS part./JJ 
+[Searching/VBG guests]/VBG The/DT two/CD persons/NNS go/VBP to/TO another/DT room,/NN one/CD sits/VBZ down/RB and/CC one/CD stands./JJ In/IN this/DT room,/NN there/EX are/VBP two/CD other/JJ persons/NNS which/WDT are/VBP known/VBN to/TO the/DT robot,/NN e.g./FW members/NNS of/IN its/PRP$ team,/NN of/IN which/WDT one/CD is/VBZ sitting/VBG and/CC one/CD standing./JJ There/EX is/VBZ also/RB one/CD person/NN standing/VBG in/IN the/DT room/NN which/WDT is/VBZ not/RB known/VBN to/TO the/DT robot./VBD All/DT persons/NNS do/VBP not/RB move/VB around./JJ They/PRP are/VBP either/DT looking/NN at/IN the/DT robot/NN or/CC looking/VBG straight./JJ When/WRB told/VBD to/TO do/VB so/RB by/IN an/DT operator,/VBG the/DT robot/NN goes/VBZ to/TO the/DT room/NN and/CC starts/VBZ looking/VBG for/IN guests./JJ 
+[Identifying/VBG persons]/NN When/WRB the/DT robot/NN finds/VBZ a/DT person,/NN it/PRP has/VBZ to/TO approach/VB it/PRP and/CC state/NN that/IN it/PRP has/VBZ found/VBN a/DT person/NN (identification/NN part)./JJ It/PRP then/RB has/VBZ to/TO recognize/VB the/DT person/NN by/IN stating/VBG its/PRP$ name/NN or/CC state/NN that/IN the/DT person/NN is/VBZ unknown/JJ (recognition/NN part)./VBD The/DT announcement/NN must/MD be/VB done/VBN by/IN facing/VBG the/DT person./CD The/DT distance/NN from/IN the/DT robot/NN to/TO the/DT person/NN must/MD not/RB exceed/VB one/CD meter./JJ 
+[Leaving/VBG the/DT arena]/NN When/WRB the/DT robot/NN has/VBZ found/VBN all/DT known/VBN persons/NNS or/CC decides/VBZ to/TO stop/VB searching,/NN it/PRP leaves/VBZ the/DT arena./CD 
+The/DT robot/NN may/MD leave/VB the/DT arena/NN by/IN opening/VBG the/DT closed/VBN door/NN autonomously./JJ 
+description/NN 
+The/DT duration/NN of/IN the/DT test/NN is/VBZ seven/CD minutes./JJ 
+Remarks/NNS 
+The/DT start/NN signal/NN in/IN this/DT test/NN is/VBZ the/DT opening/NN of/IN the/DT door/NN (see/NN sec./NN subsec:start_signal)./JJ 
+The/DT robot/NN may/MD ask/VB a/DT person/NN to/TO look/VB at/IN it/PRP for/IN identification/NN when/WRB standing/VBG next/JJ to/TO him/her./CD However,/NNP if/IN there/EX is/VBZ no/DT person,/NN it/PRP receives/VBZ the/DT penalty/NN for/IN incorrect/JJ human/JJ detection./JJ 
+Referee/JJ Instructions/NNS 
+The/DT referees/NNS need/VBP to/TO 
+itemize/VB 
+select/VB the/DT people/NNS and/CC their/PRP$ names/NNS before/IN the/DT test/NN starts/VBZ 
+select/VB the/DT location/NN for/IN each/DT person/NN to/TO stand/VB before/IN the/DT test/NN starts./JJ 
+always/RB stay/VB behind/IN the/DT robot/NN 
+write/VB down/RP the/DT names/NNS of/IN the/DT two/CD previously/RB known/VBN persons/NNS and/CC the/DT names/NNS the/DT robot/NN assigns/VBZ during/IN the/DT introduction/NN 
+close/VB the/DT door/NN after/IN the/DT robot/NN enters/VBZ the/DT arena/NN if/IN the/DT team/NN 
+announces/VBZ that/IN the/DT robot/NN attempts/NNS to/TO leave/VB the/DT arena/NN by/IN opening/VBG the/DT door/NN 
+itemize/VB 
+Score/VB Sheet/NNP 
+Follow/VB Me/PRP 
+sec:followme/NN 
+The/DT robot/NN has/VBZ to/TO safely/RB follow/VB an/DT unknown/JJ person/NN through/IN a/DT dynamical/JJ environment./JJ 
+Focus/NNP 
+This/DT test/NN focuses/VBZ on/IN tracking/VBG and/CC recognition/NN of/IN an/DT unknown/JJ person,/NN multi-modal/JJ interaction/NN 
+and/CC safe/JJ navigation/NN in/IN an/DT unknown/JJ environment./JJ 
+Task/NNP 
+The/DT test/NN takes/VBZ place/NN outside/IN the/DT arena,/NN for/IN example/NN in/IN a/DT supermarket./JJ 
+A/DT ``professional''/NN operator/NN is/VBZ selected/VBN by/IN the/DT TC/NNP to/TO test/VB the/DT robot./VBD This/DT test/NN is/VBZ probably/RB performed/VBN in/IN parallel,/NN implying/VBG that/IN there/EX are/VBP multiple/JJ "professional"/NN walkers./CD 
+Before/IN the/DT test,/VBG the/DT operator/NN stands/VBZ at/IN least/JJS 3/CD meters/NNS away/RB from/IN the/DT robot./JJ 
+When/WRB the/DT test/NN starts,/NN he/PRP goes/VBZ to/TO the/DT robot/NN and/CC tells/VBZ it/PRP to/TO 
+follow/VB him./NN The/DT robot/NN has/VBZ to/TO announce/VB when/WRB it/PRP has/VBZ finished/VBN 
+calibrating/VBG and/CC starts/VBZ following/VBG the/DT operator./JJ 
+It/PRP can/MD also/RB give/VB the/DT operator/NN instructions/NNS on/IN what/WP to/TO do/VB during/IN the/DT calibration./JJ 
+During/IN the/DT remaining/VBG time,/VBG the/DT robot/NN has/VBZ to/TO follow/VB the/DT operator/NN on/IN a/DT predefined/VBN 
+course/NN and/CC pass/VB several/JJ tests/NNS until/IN it/PRP surpasses/VBZ the/DT finish/NN line./CD 
+The/DT operator/NN walks/VBZ with/IN his/PRP$ back/RB towards/IN the/DT robot/NN at/IN a/DT regular/JJ slow/JJ walking/NN 
+speed/NN and/CC waits/VBZ for/IN the/DT robot/NN if/IN it/PRP is/VBZ too/RB slow,/VBP but/CC never/RB walks/VBZ back/RB 
+except/IN for/IN interacting/VBG with/IN it./VBD The/DT robot/NN has/VBZ to/TO keep/VB a/DT distance/NN of/IN at/IN 
+least/JJS one/CD meter/NN to/TO the/DT operator,/NN unless/IN the/DT operator/NN walks/VBZ towards/IN it./JJ 
+There/EX are/VBP 4/CD predefined/VBN checkpoints/NNS throughout/IN the/DT course./CD 
+At/IN each/DT checkpoint,/VBG a/DT specific/JJ action/NN has/VBZ to/TO be/VB performed./JJ If/IN the/DT robot/NN 
+fails/VBZ in/IN completing/VBG one/CD of/IN the/DT tasks,/VBG the/DT test/NN ends./JJ 
+description/NN 
+[Checkpoint/NN 1:/CD Temporary/JJ occlusion]/VBG The/DT operator/NN stops./JJ 
+Then,/NNP a/DT second/JJ person/NN passes/VBZ by/IN in/IN between/IN the/DT robot/NN and/CC the/DT operator,/NN walking/VBG slowly./CD 
+After/IN that,/VBG the/DT operator/NN resumes/VBZ walking/VBG and/CC the/DT robot/NN has/VBZ to/TO follow/VB him./NN 
+[Checkpoint/NN 2:/CD Tracking/NNP from/IN the/DT distance]/VBG The/DT operator/NN tells/VBZ 
+the/DT robot/NN to/TO stop/VB and/CC wait./VBD The/DT robot/NN then/RB has/VBZ to/TO 
+stay/VB at/IN its/PRP$ position/NN without/IN moving/VBG for/IN 10/CD seconds./JJ 
+It/PRP has/VBZ to/TO announce/VB when/WRB the/DT 10/CD second/JJ period/NN starts./JJ 
+The/DT operator/NN then/RB walks/VBZ 3/CD meters/NNS away/RB from/IN the/DT robot/NN in/IN a/DT way/NN that/DT there/EX are/VBP 
+no/DT objects/NNS in/IN between/IN the/DT robot/NN and/CC him./NN When/WRB the/DT 10/CD seconds/NNS have/VBP passed,/VBG 
+the/DT robot/NN has/VBZ to/TO approach/VB the/DT operator/NN again/RB and/CC continue/VB to/TO follow/VB him./NN 
+[Checkpoint/NN 3:/CD Recognize/VB owner]/VBG The/DT operator/NN tells/VBZ the/DT robot/NN to/TO stop./VB 
+He/PRP then/RB goes/VBZ to/TO some/DT location/NN where/WRB he/PRP is/VBZ completely/RB hidden/VBN from/IN the/DT robot./JJ 
+Then/RB the/DT operator/NN and/CC another/DT person/NN which/WDT did/VBD not/RB appear/VB before/IN to/TO the/DT robot/NN walk/NN towards/IN the/DT robot./JJ 
+They/PRP stand/VBP 1/CD meter/NN apart/RB from/IN each/DT other/JJ and/CC 1.5/CD meters/NNS in/IN front/NN of/IN the/DT robot./JJ 
+The/DT robot/NN has/VBZ to/TO recognize/VB which/WDT of/IN the/DT two/CD is/VBZ the/DT operator/NN and/CC 
+follow/VB that/DT person./CD 
+[Checkpoint/NN 4:/CD Finish/VB line]/VBG All/DT parts/NNS of/IN the/DT robot/NN which/WDT are/VBP touching/VBG the/DT ground/NN 
+must/MD completely/RB surpass/VB the/DT finish/NN line./CD 
+description/NN 
+The/DT duration/NN of/IN the/DT test/NN is/VBZ 8/CD minutes,/NN including/VBG calibrating/VBG 
+on/IN the/DT operator./JJ 
+Remarks/NNS 
+The/DT start/NN signal/NN in/IN this/DT test/NN is/VBZ pushing/VBG the/DT start/NN button/NN (see/NN sec./NN subsec:start_button)./JJ 
+The/DT team/NN may/MD tell/VB the/DT operator/NN how/WRB to/TO operate/VB the/DT robot/NN and/CC can/MD hand/VB him/PRP a/DT note/NN or/CC something/NN similar/JJ on/IN this/DT topic./VBD This/DT includes/VBZ for/IN example/NN speech/NN and/CC gesture/NN commands/NNS and/CC information/NN about/IN the/DT calibration/NN procedure./JJ They/PRP have/VBP 2/CD minutes/NNS to/TO do/VB that/IN before/IN the/DT test/NN starts./JJ 
+The/DT gesture/NN commands/NNS must/MD also/RB be/VB specified/VBN by/IN the/DT team/NN to/TO the/DT referees/NNS before/IN the/DT test/NN starts./JJ They/PRP must/MD confine/VB with/IN the/DT rules/NNS in/IN sec./NN subsec:gestures./JJ If/IN they/PRP do/VBP not/RB confine/VB with/IN the/DT rules,/NN only/JJ speech/NN commands/NNS may/MD be/VB used./JJ 
+Referee/JJ Instructions/NNS 
+The/DT referees/NNS need/VBP to/TO 
+itemize/VB 
+select/VB walkers/NNS and/CC show/NN them/PRP the/DT path/NN to/TO walk/VB on./CD 
+define/VB where/WRB the/DT check/NN points/NNS are/VBP located./JJ 
+ask/VB the/DT team/NN if/IN it/PRP will/MD be/VB using/VBG gestures/NNS 
+if/IN the/DT team/NN uses/VBZ gestures,/NN check/NN if/IN they/PRP comply/VBP with/IN the/DT rules/NNS (see/VBP sec./NN subsec:gestures)/NN 
+detect/VB whether/IN a/DT robot/NN touches/NNS something./JJ 
+detect/VB if/IN the/DT robot/NN is/VBZ coming/VBG too/RB close/RB to/TO the/DT operator./JJ 
+check/NN if/IN the/DT team/NN successfully/RB fulfils/VBZ the/DT task/NN at/IN each/DT checkpoint/NN 
+take/VB special/JJ care/NN of/IN not/RB interfering/VBG with/IN the/DT robots./JJ 
+itemize/VB 
+Score/VB Sheet/NNP 
+Go/VB Get/VB It!/NNP 
+sec:gogetit/NN 
+Two/CD robots/NNS (from/VBP different/JJ teams)/NN simultaneously/RB have/VBP to/TO find/VB and/CC retrieve/VB objects./JJ 
+Focus/NNP 
+This/DT test/NN focuses/VBZ on/IN object/NN detection,/NN recognition/NN and/CC manipulation/NN 
+as/RB well/RB as/IN navigation/NN and/CC systematic/JJ searching/NN in/IN a/DT dynamic/JJ environment./JJ 
+Task/NNP 
+Two/CD teams/NNS are/VBP competing/VBG simultaneously./JJ Their/PRP$ robots/NNS start/VBP at/IN different/JJ entrances/NNS to/TO the/DT scenario./CD Two/CD rooms/NNS of/IN the/DT scenario/NN are/VBP used/VBN for/IN this/DT test./NN In/IN each/DT one,/NN there/EX are/VBP four/CD objects/NNS randomly/RB spread/VBP around./VBD The/DT objects/NNS are/VBP selected/VBN from/IN the/DT list/NN of/IN predefined/VBN objects/NNS (see/VBP sec./NN subsec:objects)./JJ Of/IN those/DT four/CD objects,/NN two/CD are/VBP placed/VBN on/IN the/DT floor/NN and/CC two/CD on/IN a/DT table/NN or/CC something/NN with/IN a/DT similar/JJ height/NN in/IN an/DT upright/RB position./JJ 
+There/EX will/MD also/RB be/VB four/CD other/JJ objects/NNS of/IN similar/JJ size/NN in/IN each/DT room,/NN which/WDT are/VBP not/RB on/IN the/DT list./NNP Thus,/NNP these/DT may/MD not/RB be/VB retrieved/VBN by/IN the/DT robot./JJ Two/CD will/MD be/VB placed/VBN on/IN the/DT floor,/VBG the/DT other/JJ two/CD at/IN table-height./JJ 
+Each/DT team/NN is/VBZ randomly/RB assigned/VBN a/DT different/JJ room/NN (e.g./CD by/IN throwing/VBG a/DT coin)./CD 
+The/DT procedure/NN is/VBZ as/IN follows:/NN 
+description/NN 
+[Entering]/NN After/IN the/DT test/NN has/VBZ started,/VBG the/DT robots/NNS enter/VBP the/DT scenario/NN and/CC stop/VB one/CD meter/NN from/IN the/DT door./JJ 
+[Specifying/VBG rooms]/NN Two/CD referees/NNS simultaneously/RB tell/VBP the/DT robots/NNS to/TO which/WDT room/NN they/PRP should/MD go./CD No/DT additional/JJ information/NN will/MD be/VB given/VBN to/TO the/DT robot./JJ 
+[Retrieve/NN object]/VBG The/DT robots/NNS go/VBP to/TO their/PRP$ rooms/NNS and/CC have/VBP to/TO retrieve/VB one/CD of/IN the/DT objects/NNS on/IN the/DT list./JJ 
+Before/IN grasping/VBG it,/NN it/PRP has/VBZ to/TO identify/VB the/DT object./VBD This/DT can/MD be/VB done/VBN by/IN either/DT speech,/NN display/NN 
+or/CC any/DT way/NN that/IN the/DT referees/NNS can/MD check/VB what/WP the/DT robot/NN has/VBZ recognized./JJ 
+[Leave]/VBG The/DT robots/NNS have/VBP to/TO leave/VB the/DT arena/NN through/IN the/DT door/NN which/WDT they/PRP used/VBD to/TO enter/VB the/DT scenario./CD 
+description/NN 
+Points/NNPS can/MD be/VB scored/VBN for/IN finding/VBG the/DT object,/NN for/IN carrying/VBG it/PRP back/RB to/TO the/DT start/NN location/NN and/CC handing/VBG it/PRP to/TO the/DT operator./JJ 
+There/EX is/VBZ a/DT maximum/NN of/IN five/CD minutes/NNS for/IN this/DT test./JJ 
+Remarks/NNS 
+The/DT start/NN signal/NN in/IN this/DT test/NN is/VBZ the/DT opening/NN of/IN the/DT door/NN (see/NN sec./NN subsec:start_signal)./JJ 
+The/DT two/CD rooms/NNS to/TO be/VB used/VBN in/IN this/DT test/NN will/MD be/VB specified/VBN 
+by/IN the/DT TC/NNP before/IN the/DT competition/NN (see/NN subsec:rooms)./CD 
+To/TO all/DT locations/NNS in/IN the/DT scenario,/NN there/EX will/MD always/RB be/VB some/DT path/NN for/IN reaching/VBG it,/NN without/IN any/DT object/NN blocking/VBG it./JJ 
+The/DT TC/NNP selects/VBZ 4/CD of/IN the/DT 10/CD predefined/VBN objects/NNS chosen/VBN by/IN the/DT team/NN (see/NN section/NN subsec:objects)./JJ 
+For/IN each/DT test/NN run,/NN 4/CD other/JJ objects/NNS from/IN the/DT list/NN of/IN predefined/VBN objects/NNS are/VBP selected/VBN 
+to/TO be/VB used/VBN as/IN ``unknown/NN objects''/NN in/IN both/DT rooms./CD 
+The/DT object/NN identified/VBN does/VBZ not/RB have/VB to/TO be/VB the/DT same/JJ as/IN the/DT one/CD grasped./JJ If/IN the/DT robot/NN tries/VBZ to/TO grasp/VB one/CD of/IN the/DT unkown/NN objects,/VBG the/DT team/NN can/MD not/RB receive/VB points/NNS for/IN grasping/VBG and/CC bringing/VBG a/DT correct/JJ one/CD afterwards./NNP Multiple/NNP tries/VBZ to/TO grasp/VB objects/NNS are/VBP allowed,/VBG as/IN long/RB if/IN all/DT of/IN them/PRP are/VBP from/IN the/DT list/NN of/IN known/VBN objects./JJ 
+Driving/VBG over/IN the/DT objects/NNS on/IN the/DT floor/NN is/VBZ not/RB allowed,/VB except/IN for/IN minor/JJ collisions./CD 
+There/EX are/VBP two/CD robots/NNS navigating/VBG in/IN the/DT environment/NN at/IN the/DT same/JJ time./JJ 
+Thus,/NNP the/DT rules/NNS described/VBN in/IN sec./NN subsec:traffic_rules/NNS apply./CD 
+If/IN one/CD of/IN the/DT robots/NNS enters/VBZ the/DT room/NN of/IN the/DT other/JJ robot/NN for/IN more/JJR than/IN 30/CD seconds,/NN 
+or/CC is/VBZ interfering/VBG with/IN the/DT other/JJ robot,/VBG the/DT robot/NN must/MD be/VB removed/VBN from/IN the/DT scenario/NN 
+and/CC cannot/MD continue/VB with/IN this/DT test./JJ 
+In/IN this/DT test,/VBG a/DT restart/VB is/VBZ not/RB allowed./JJ 
+Referee/JJ Instructions/NNS 
+The/DT referees/NNS need/VBP to/TO 
+itemize/VB 
+place/NN the/DT eight/CD objects/NNS in/IN each/DT room,/NN including/VBG the/DT ones/NNS that/WDT may/MD not/RB be/VB retrieved,/VBN 
+on/IN a/DT flat/JJ surface/NN and/CC less/JJR than/IN 15cm/CD away/RB from/IN its/PRP$ border./JJ 
+They/PRP have/VBP to/TO be/VB placed/VBN in/IN a/DT way/NN that/IN they/PRP are/VBP visible/JJ 
+and/CC can/MD be/VB manipulated/VBN from/IN some/DT point/NN in/IN the/DT environment./JJ 
+pay/VB special/JJ attention/NN that/IN the/DT robots/NNS obey/VBP the/DT traffic/NN rules/NNS (see/VBP sec./NN subsec:traffic_rules)/NN 
+detect/VB if/IN a/DT robot/NN enters/VBZ the/DT wrong/JJ room./CD 
+itemize/VB 
+Score/VB Sheet/NNP 
+Robot/NN Inspection/NNP and/CC Poster/NNP Session/NN 
+sec:2010RIPS/CD 
+The/DT robot/NN has/VBZ to/TO register/VB itself/PRP and/CC get/VB approval/NN to/TO participate/VB in/IN @Home,/VBG the/DT team/NN has/VBZ some/DT time/NN for/IN a/DT poster/NN presentation/NN and/CC answering/VBG questions./JJ 
+Focus/NNP 
+The/DT purpose/NN of/IN this/DT test/NN is/VBZ for/IN the/DT teams/NNS to/TO get/VB to/TO know/VB each/DT other./NN 
+The/DT test/NN focuses/VBZ is/VBZ on/IN speech/NN synthesis,/NN articulation,/NN presentation/NN and/CC 
+appearance./CD 
+Task/NNP 
+In/IN the/DT scenario,/NN at/IN a/DT table,/NN there/EX is/VBZ a/DT delegation/NN of/IN the/DT Technical/NNP Committee./NNP The/DT robot/NN has/VBZ to/TO go/VB to/TO the/DT committee/NN and/CC introduce/VB itself/PRP at/IN the/DT table/desk/NN for/IN registration/NN purposes/NNS (state/VBP the/DT name/NN of/IN the/DT team,/VBG the/DT name/NN of/IN the/DT robot,/NN furthermore/RB it/PRP could/MD say/VB where/WRB it/PRP is/VBZ from/IN etc.)./JJ 
+Each/DT team/NN must/MD fill/VB a/DT 'robot/NN registration/NN form'/NN that/WDT will/MD be/VB distributed/VBN before/IN the/DT competition/NN (for/NN example,/NN through/IN the/DT mailing/NN list)./VBD The/DT robot/NN should/MD preferably/RB hand/VB it/PRP over/IN during/IN this/DT test,/NN otherwise/RB it/PRP can/MD be/VB handed/VBN in/IN manually./CD 
+If/IN 2/CD robots/NNS participate/VBP from/IN a/DT team/NN in/IN the/DT @Home/NN competition/NN 2/CD robots/NNS have/VBP to/TO register/VB themselves./VBD This/DT should/MD not/RB take/VB more/JJR than/IN 2/CD minutes/NNS (per/VBP robot)./JJ 
+After/IN registration/NN the/DT robot(s)/NN demonstrate/VB that/IN they/PRP fulfill/VBP the/DT requirements/NNS of/IN the/DT competitions,/NN such/JJ as/IN showing/VBG the/DT required/VBN emergency/NN button./JJ During/IN the/DT inspection/NN of/IN the/DT robot/NN (so/NN after/IN the/DT registration),/VBG the/DT team/NN leader/NN then/RB gets/VBZ a/DT maximum/NN of/IN five/CD minutes/NNS for/IN a/DT poster/NN presentation/NN and/CC questioning,/NN where/WRB the/DT team/NN leaders/NNS from/IN the/DT other/JJ teams/NNS can/MD ask/VB questions./VBD The/DT whole/JJ procedure/NN should/MD not/RB last/RB more/JJR than/IN 7/CD minutes/NNS per/IN team./VBD This/DT means/VBZ that/IN if/IN the/DT registration/NN of/IN the/DT robots,/NN including/VBG going/VBG to/TO the/DT registration/NN desk,/NN takes/VBZ longer/RB than/IN two/CD minutes,/NN that/IN the/DT time/NN for/IN the/DT poster/NN session/NN is/VBZ reduced./VBD The/DT robot/NN can/MD leave/VB autonomously/RB during/IN the/DT poster/NN presentation./JJ 
+The/DT procedure/NN is/VBZ as/IN follows:/NN 
+1)/CD registration/NN 
+2)/CD inspection/NN 
+3)/CD poster/NN presentation/NN 
+4)/CD QA/NNP 
+5)/NN robot/NN leaves/VBZ autonomously/RB (if/VBP that/WDT is/VBZ still/RB possible/JJ after/IN testing/VBG the/DT emergency/NN button)/NN 
+Event/NN 2)/CD and/CC 3)/CD happen/VB simultaneously,/NN and/CC event/NN 4)/CD and/CC 5)/NN also/RB happen/VB at/IN the/DT same/JJ time./JJ 
+Remarks/NNS 
+There/EX is/VBZ no/DT fixed/VBN start/NN signal/NN in/IN this/DT test./JJ 
+The/DT setup/NN of/IN the/DT scenario/NN will/MD be/VB ready/JJ 1/CD day/NN before/IN the/DT test./VBD No/DT major/JJ changes/NNS will/MD be/VB made/VBN to/TO it/PRP during/IN that/DT period./JJ 
+A/DT team/NN has/VBZ to/TO be/VB ready/JJ to/TO start/VB immediately/RB after/IN the/DT previous/JJ team/NN finishes./CD After/IN the/DT 
+previous/JJ team/NN has/VBZ finished,/VBG the/DT next/JJ robot/NN starts/VBZ moving/VBG to/TO the/DT registration/NN desk./JJ 
+If/IN the/DT total/JJ time/NN is/VBZ exceeded/VBN with/IN more/JJR than/IN 1/CD minute,/NN less/JJR score/NN is/VBZ rewarded./JJ 
+The/DT robot/NN has/VBZ to/TO register/VB itself/PRP to/TO be/VB able/JJ to/TO participate/VB in/IN the/DT competition!/NN 
+The/DT poster/NN session/NN takes/VBZ place/NN in/IN the/DT scenario./CD The/DT evaluation/NN of/IN posters/NNS will/MD be/VB done/VBN by/IN the/DT other/JJ team/NN leaders./VBD Every/DT team/NN leader/NN has/VBZ to/TO fill/VB out/RP a/DT score/NN sheet,/NN giving/VBG from/IN 0-10/JJ points/NNS for/IN the/DT overall/JJ quality/NN of/IN the/DT poster/NN of/IN each/DT team./JJ 
+Evaluation/NN criteria/NNS are:/VBP 
+itemize/VB 
+Quality/NN of/IN appearance/NN of/IN the/DT poster/NN 
+Quality/NN of/IN the/DT poster/NN content/NN 
+Scientific/JJ value/NN 
+Poster/NNP presentation/NN and/CC Questions/NNS 
+itemize/VB 
+TC/NNP will/MD inspect/VB the/DT participating/VBG robots/NNS to/TO see/VB whether/IN they/PRP comply/VBP 
+with/IN the/DT rules/NNS in/IN sec./NN sec:equipment,/NN checking/VBG in/IN particular:/NN 
+itemize/VB 
+robots/NNS size/VBP and/CC weight/NN 
+presence/NN and/CC easy/JJ accessibility/NN of/IN the/DT "emergency/NN stop"/NN button/NN 
+presence/NN of/IN the/DT "start/NN button"/NN 
+robot/NN speaker/NN system/NN (plug/NN for/IN RF/NNP Transmission)/NNP 
+use/NN of/IN external/JJ devices/NNS (including/VBG wireless/JJ network)/NN 
+manipulation/NN constraints/NNS 
+most/RBS of/IN the/DT robots/NNS internal/JJ hardware/NN should/MD be/VB covered/VBN in/IN an/DT appealing/JJ way/NN 
+itemize/VB 
+During/IN the/DT robot/NN inspection,/VBG the/DT TC/NNP will/MD ask/VB the/DT robot/NN to/TO move./CD The/DT robot/NN should/MD then/RB start/VB moving,/NN for/IN example/NN heading/VBG for/IN the/DT exit./NN While/IN the/DT robot/NN is/VBZ moving,/VBG the/DT tc/NN will/MD push/VB the/DT emergency/NN stop./JJ If/IN the/DT robot/NN does/VBZ not/RB stop/VB immediately,/NN it/PRP does/VBZ not/RB meet/VB the/DT minimum/JJ requirements/NNS and/CC thus/RB is/VBZ not/RB qualified/VBN for/IN the/DT competition./JJ 
+Referee/JJ Instructions/NNS 
+The/DT referee/NN has/VBZ to/TO make/VB sure/JJ the/DT time/NN limit/NN is/VBZ not/RB exceeded./JJ 
+Score/VB Sheet/NNP 
