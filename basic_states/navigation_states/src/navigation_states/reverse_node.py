@@ -143,7 +143,7 @@ class navigation_back():
     def callback_Sonar(self,data):
        
         timestamp = rospy.Time.now()
-        if (data.header.frame_id==('/base_sonar_07_link')):
+        if (data.header.frame_id==('/base_sonar_07_link') or data.header.frame_id==('base_sonar_07_link')):
                 self.sonar[0][self.num_sonar[0]]=data.range
                 self.num_sonar[0]=self.num_sonar[0]+1
                 aux=sum(self.sonar[0])
@@ -151,7 +151,7 @@ class navigation_back():
                 if self.num_sonar[0]>=NUM_MOSTRES :
                     self.num_sonar[0]=0
                 
-        elif (data.header.frame_id==('/base_sonar_08_link' )):
+        elif (data.header.frame_id==('/base_sonar_08_link' ) or data.header.frame_id==('base_sonar_08_link' )):
                 self.sonar[1][self.num_sonar[1]]=data.range
                 self.num_sonar[1]=self.num_sonar[1]+1
                 aux=sum(self.sonar[1])
@@ -159,7 +159,7 @@ class navigation_back():
                 if self.num_sonar[1]>=NUM_MOSTRES :
                     self.num_sonar[1]=0
 
-        elif (data.header.frame_id==('/base_sonar_09_link' )):
+        elif (data.header.frame_id==('/base_sonar_09_link' ) or data.header.frame_id==('base_sonar_09_link' )):
                 self.sonar[2][self.num_sonar[2]]=data.range
                 self.num_sonar[2]=self.num_sonar[2]+1
                 aux=sum(self.sonar[2])

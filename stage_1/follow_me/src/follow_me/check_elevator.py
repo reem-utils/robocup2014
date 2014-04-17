@@ -101,21 +101,21 @@ class checkElevator():
         
     def callback_Sonar(self,data):
         
-        if (data.header.frame_id=='/base_sonar_02_link'):
+        if (data.header.frame_id=='/base_sonar_02_link' or data.header.frame_id=='base_sonar_02_link'):
                             self.ultraSound[0]=data
                             self.ultra[0]=True
 
         
-        if (data.header.frame_id=='/base_sonar_05_link'):
+        if (data.header.frame_id=='/base_sonar_05_link' or data.header.frame_id=='base_sonar_05_link'):
                             self.ultraSound[1]=data
                             self.ultra[1]=True
  
          
-        if (data.header.frame_id=='/base_sonar_08_link'):
+        if (data.header.frame_id=='/base_sonar_08_link' or data.header.frame_id=='base_sonar_08_link'):
                             self.ultraSound[2]=data
                             self.ultra[2]=True
         
-        if (data.header.frame_id=='/base_sonar_11_link'):
+        if (data.header.frame_id=='/base_sonar_11_link' or data.header.frame_id=='base_sonar_11_link'):
                             self.ultraSound[3]=data
                             self.ultra[3]=True 
         

@@ -46,13 +46,13 @@ class Follow_me_Service():
 		pers=person()
 		pers.x=0
 		pers.y=1
-		pers.targetId=2
+		pers.targetId=1
 		pers.status=2
 		PersonArray.peopleSet.append(pers)
 		pers=person()
 		pers.x=1
 		pers.y=0
-		pers.targetId=1
+		pers.targetId=2
 		pers.status=4
 		PersonArray.peopleSet.append(pers)
 		while not rospy.is_shutdown(): 
