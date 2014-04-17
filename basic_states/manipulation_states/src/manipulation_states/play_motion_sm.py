@@ -30,7 +30,7 @@ class createPlayMotionGoal(smach.State):
         play_goal = PlayMotionGoal()
         play_goal.motion_name = userdata.manip_motion_to_play
         #play_goal.reach_time.secs = userdata.manip_time_to_play
-        play_goal.skip_planning = False
+        play_goal.skip_planning = True
 	userdata.play_motion_sm_goal = play_goal
         
         return 'succeeded'   
