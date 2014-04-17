@@ -37,14 +37,14 @@ Carry some food to a table.
 Carry some food to a shelf.
 Carry some food to a door.
 Carry some food to an appliance.
-Get me a drink.
-Get me a snack.
+Get me a drink. -
+Get me a snack. -
 Get me the kitchenary.
-Get me some food.
-Give me a drink.
-Give me a snack.
+Get me some food. -
+Give me a drink. -
+Give me a snack. -
 Give me the kitchenary.
-Give me some food.
+Give me some food. -
 Point at a seat.
 Point at a table.
 Point at a shelf.
@@ -53,12 +53,12 @@ Point at an appliance.
 Go to an exit.
 Move to an exit.
 Navigate to an exit.
-Detect a drink.
-Detect a snack.
+Detect a drink. -
+Detect a snack. -
 Detect the kitchenary.
-Detect some food.
-Find a drink.
-Find a snack.
+Detect some food. -
+Find a drink. -
+Find a snack. -
 Find the kitchenary.
-Find some food.
+Find some food. -
 Bring a drink to a seat.

@@ -266,8 +266,20 @@ class config_question(smach.State):
         def execute(self, userdata):
           from translator import get_category_list
           userdata.objectList = get_category_list(Category=userdata.cat)
-          print "ready-------------------------------------------------"
-          #print (", ".join(userdata.objectList))
+          print get_category_list(Category=userdata.cat)
+          return 'succeeded'
+
+class prepare_ask_info(smach.State):
+         
+        def __init__(self):
+          smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
+                               input_keys=['cat', 'objectList'], output_keys=['objectList', 'tosay'])
+ 
+        def execute(self, userdata):
+          print userdata.objectList
+          userdata.tosay = ('You asked me for a ' + userdata.cat + '. I could bring you ' + 
+                            str(userdata.objectList) + '. which ' + userdata.cat + ' do you prefer?')
+          print userdata.tosay
           return 'succeeded'
 
 class askCategory(smach.StateMachine):
@@ -296,7 +308,8 @@ class askCategory(smach.StateMachine):
                                                transitions={'succeeded': 'ASK_INFO'})
                         
                         smach.StateMachine.add('ASK_INFO',
-                                               text_to_say('You asked me for a ' + self.userdata.cat + '. I could bring you ' + str(self.userdata.objectList) + '. which ' + self.userdata.cat + ' do you prefer?'),
+                                               text_to_say(('You asked me for a ' + self.userdata.cat + '. I could bring you ' + 
+                                                            str(self.userdata.objectList) + '. which ' + self.userdata.cat + ' do you prefer?')),
                                                transitions={'succeeded': 'HEAR_COMMAND_OBJECT',
                                                             'aborted': 'aborted'})
                      
@@ -313,7 +326,8 @@ class askCategory(smach.StateMachine):
 #                                                PrintUserData(),
 #                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
                         
-                        smach.StateMachine.add('CONFIRM_OBJECT', text_to_say("Okay! I'll go to " + self.userdata.location_name),
+                        smach.StateMachine.add('CONFIRM_OBJECT', 
+                                               text_to_say("Okay! I'll go to " + self.userdata.location_name),
                                                transitions={'succeeded': 'DISABLE_GRAMMAR', 'aborted': 'DISABLE_GRAMMAR'})
 
 
