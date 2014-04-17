@@ -1,0 +1,41 @@
+#
+# Template for making a sequence of verb phrases(VPs)
+#
+
+# Verb phrases(VPs) are separated by '|' (OR)
+# The index of a VP starts from '$'
+$goto = go to the LOCATION | move to the LOCATION | navigate to the LOCATION
+$fetch = retrieve the ITEM from the LOCATION | bring the ITEM from the LOCATION
+$bring_it = bring it to the LOCATION | carry it to the LOCATION
+$ask_name = memorize the person | ask the person's name
+$find_person = find a person
+$follow_person = follow the person in front of you
+$find_item = detect the ITEM | find the ITEM | identify the ITEM
+$grasp_item = get the ITEM | take the ITEM | grasp the ITEM
+$grasp_it = get it | take it | grasp it 
+
+$give_item = give the ITEM to the person | hand the ITEM to the person
+$introduce = introduce yourself | tell something about yourself
+
+$recognize = recognize him
+$stay = stay there for 10 seconds | stop there | wait there
+
+$exit = leave the apartment | exit the apartment
+
+
+# To define a sentence template, use '[]'.
+# The script rewrites defined VPs 
+[$goto, $find_person, and $fetch]
+[$ask_name, $follow_person, and $exit]
+[$goto, $find_person, and $introduce]
+[$grasp_item, $bring_it, and $introduce]
+[$goto, $grasp_item, and $bring_it]
+[$goto, $find_item, and $grasp_it]
+[$goto, then $goto and $exit]
+[$goto, $grasp_item, and $exit]
+[$goto, $introduce, and $exit]
+[$goto, $ask_name, and $recognize]
+[$goto, $introduce, and $follow_person]
+
+[$ask_name, $follow_person, and $exit]
+[$find_person, $fetch, and $exit]

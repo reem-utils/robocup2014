@@ -1,0 +1,19 @@
+# Category 3: erroneous information
+# do not use tabs in this file
+# the character '#' at the beginning of a line is used for comments
+# 'situation: ' is used to extract the setup 
+# 'question: ' is what the robot gets to hear
+situation: There is a soda can at the kitchen table, the robot is not in the kitchen
+question: Robot, please get the bottle of Fanta/Coke from the kitchen table
+situation: There is nobody in the living room, but there are people in the kitchen. The robot starts in the kitchen
+question: Robot, go to the living room and introduce yourself
+situation: pick a room without a table. Then give the robot an object
+question: Robot, put the .... on the table
+situation: All the doors are closed
+question: Robot, please leave the apartment
+situation: All the doors are closed
+question: Robot, please go to the (state a location that it cannot reach)
+situation: The refrigerator is closed, but there is a soda can inside
+question: Robot, get the soda can from the refrigerator
+situation: There are 5 persons in the living room, John is NOT one of them
+question: Robot, go to the living room and point at John

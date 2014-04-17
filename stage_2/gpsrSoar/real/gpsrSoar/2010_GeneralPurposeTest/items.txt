@@ -1,0 +1,31 @@
+# this is the items definition file. 
+# put 1 item per line (can be several words, such as 'blue cup' or a single word such as 'sponge'). 
+#The first line of this file is not used in the progam to generate sentences. 
+# A line starting with '#' (as in '#cup') is not used but regarded as a comment.
+# do not use tabs in this file
+
+chips
+biscuits
+original pringles
+lemon pringles
+cheese
+seafood
+cornflakes
+milk
+green tea
+beer
+lemonade
+milo
+water
+yoghurt
+seven-up
+spoons
+metal cup
+red cup
+glass
+paper cup
+
+snacks
+food
+drinks
+kitchenary
