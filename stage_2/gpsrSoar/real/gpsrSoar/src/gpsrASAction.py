@@ -133,7 +133,7 @@ def ask_category(category):
  return obj   #--------------'''
  #return 'milk'
 
-def ask_category_loc(category): #sa de mirar aki
+def ask_category_loc(category): #-------------------------------------------sa de mirar aki
  ad = askCategoryLocSM(GRAMMAR_NAME = category) 
  out = ad.execute()
  print str(type(ad.userdata))
