@@ -242,7 +242,8 @@ class gpsrASAction(object):
     # checks that the item is or not a category
     # print 'blablabal'
     if command.item in categories:
-      print ("_------------command.item val : " + command.item + "\n_------------I les categories son: " + str(categories))
+      print ("_------------command.item val : " + command.item)
+      print ("_------------I les categories son: " + str(categories))
       objct = ask_category(command.item)#----------------------------------
       print objct
       print ('a dintre de objct hi ha ' + objct)
