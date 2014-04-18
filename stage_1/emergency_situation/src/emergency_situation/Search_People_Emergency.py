@@ -121,24 +121,34 @@ class Search_People_Emergency(smach.StateMachine):
             # Output_keys: gesture_detected: type Gesture
             self.userdata.gesture_name = 'wave'
             self.userdata.nav_to_coord = [0, 0, 0]
+
             smach.StateMachine.add(
                 'Gesture_Recognition',
                 GestureRecognition('wave'),
                 transitions={'succeeded':'Prepare_Go_To_Wave','aborted':'Gesture_Recognition', 'preempted':'preempted'})
+            
             smach.StateMachine.add(
                 'Prepare_Go_To_Wave',
                 prepare_go_to_wave(),
                 transitions={'succeeded':'Say_Go_to_Wave', 'aborted':'Say_Go_to_Wave', 'preempted':'Say_Go_to_Wave'})
+            
             smach.StateMachine.add(
-                                   'Say_Go_to_Wave',
-                                   text_to_say('I am going to the wave position'),
-                                   transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
+                'Say_Go_to_Wave',
+                text_to_say('I am going to the wave position'),
+                transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
+            
             smach.StateMachine.add(
                 'Go_to_Wave',
                 #DummyStateMachine(),
                 nav_to_coord('/base_link'),
-                transitions={'succeeded':'succeeded', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
-           
+                transitions={'succeeded':'Register_Position', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+          
+           smach.StateMachine.add(
+                'Register_Position',
+                #DummyStateMachine(),
+                get_current_robot_pose(),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'Register_Position'},
+                remapping={'current_robot_pose':'person_location'})
             
             # smach.StateMachine.add(
             #     'Detect_Wave',
