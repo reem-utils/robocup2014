@@ -20,6 +20,7 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from gesture_states.gesture_detection_sm import gesture_detection_sm
 from gesture_states.gesture_recognition import GestureRecognition 
 from gesture_detection_mock.msg import Gesture
+from navigation_states.get_current_robot_pose import get_current_robot_pose
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -142,8 +143,8 @@ class Search_People_Emergency(smach.StateMachine):
                 #DummyStateMachine(),
                 nav_to_coord('/base_link'),
                 transitions={'succeeded':'Register_Position', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
-          
-           smach.StateMachine.add(
+            
+            smach.StateMachine.add(
                 'Register_Position',
                 #DummyStateMachine(),
                 get_current_robot_pose(),

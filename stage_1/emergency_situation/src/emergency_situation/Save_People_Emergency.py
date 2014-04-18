@@ -129,7 +129,7 @@ class Save_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Ask_Status',
                 text_to_say(),
-                transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
+                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
             #TODO: Do we have to add an SayYesOrNoSM?
             # smach.StateMachine.add(
             #     'Yes_No',
