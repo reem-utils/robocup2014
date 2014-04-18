@@ -53,7 +53,7 @@ class learn_face(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self, learning_time=5):
+    def __init__(self, learning_time=20):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
                                  output_keys=['standard_error'])
