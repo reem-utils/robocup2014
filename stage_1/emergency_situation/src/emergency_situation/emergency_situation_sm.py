@@ -107,8 +107,8 @@ class emergency_situation_sm(smach.StateMachine):
             self.userdata.manip_time_to_play = 4.0
             smach.StateMachine.add(
                 'Arms_Home',
-                #play_motion_sm(),
-                DummyStateMachine(),
+                play_motion_sm(),
+                #DummyStateMachine(),
                 transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
             
             #Prepare the data for the speech: language and time to wait
