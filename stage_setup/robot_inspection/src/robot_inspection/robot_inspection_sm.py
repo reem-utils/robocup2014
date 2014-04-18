@@ -31,7 +31,7 @@ import random
 class save_robot_position(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['current_pose'],
+                                input_keys=['pose_current'],
                                 output_keys=['nav_to_coord_goal'])
 
 
@@ -42,13 +42,13 @@ class save_robot_position(smach.State):
 class set_robot_position(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['current_pose'],
+                                input_keys=['pose_current'],
                                 output_keys=['nav_to_coord_goal'])
 
 
     def execute(self, userdata):
         self.initialpose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
-        self.initialpose_pub.publish(userdata.current_pose)
+        self.initialpose_pub.publish(userdata.pose_current)
         return 'succeeded'
     
 class RobotInspectionSM(smach.StateMachine):
@@ -100,7 +100,13 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 "robot_presentation",
                 ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': "aborted"})
+                transitions={'succeeded': 'home_position', 'aborted': "aborted"})
+            
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home', 10),
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 'preempted': 'succeeded'})
            
             # Calculate the actual position
             smach.StateMachine.add(
@@ -117,9 +123,15 @@ class RobotInspectionSM(smach.StateMachine):
             # Test of robot 
             smach.StateMachine.add(
                  'wait_time',
-                 Sleeper(3),
-                 transitions={'succeeded': 'set_robot_position', 'aborted': 'aborted'})
+                 Sleeper(20),
+                 transitions={'succeeded': 'end_time_inspection', 'aborted': 'aborted'})
 
+            # Indicate that we are ready
+            smach.StateMachine.add(
+                'end_time_inspection',
+                text_to_say("Time finished"),
+                transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
+            
             # Set position
             smach.StateMachine.add(
                 'set_robot_position',
@@ -131,8 +143,8 @@ class RobotInspectionSM(smach.StateMachine):
             # If the door is open change EnterRoom for nav_to_poi
             smach.StateMachine.add(
                 'cross_door_out',
-                EnterRoomSM('exit_door'),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                nav_to_poi('exit_door'),
+                transitions={'succeeded': 'succeeded', 'aborted': 'cross_door_out', 
                 'preempted': 'preempted'})  
 
 

@@ -151,7 +151,7 @@ class freq_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'],input_keys=['nav_goal_msg'],
                              output_keys=['nav_goal_msg'])
-        self.pub = rospy.Publisher(MOVE_BASE_TOPIC_GOAL, MoveBaseGoal)
+    
     def execute(self, userdata):
             
             if self.preempt_requested():

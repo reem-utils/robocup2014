@@ -12,7 +12,7 @@ OKGREEN = '\033[92m'
 from check_elevator_sm import look_for_elevator_door
 from speech_states.say import text_to_say
 from speech_states.say_yes_or_no import SayYesOrNoSM
-from speech_states.listen_and_check_word import ListenWordSM
+from speech_states.listen_and_check_word import ListenWordSM, ListenWordSM_Concurrent
             
 SAY_OUT_FRASE= "OK IM GOING OUT"
 COMPROVATE_GO_OUT="DO YOU WANT TO GO OUT?"
@@ -29,7 +29,6 @@ class init_var(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"I'M in the second part of the follow_me"+ENDC)
-        rospy.sleep(2)
         userdata.standard_error="Dummy"
         return 'succeeded'
      
@@ -82,10 +81,9 @@ def child_term_cb(outcome_map):
 
 def out_cb(outcome_map):
     if outcome_map['LISTEN_OPERATOR_FOR_EXIT'] == 'succeeded':
-        return 'DOOR_OPEN'    
-    elif outcome_map['CHECK_DOOR'] == 'succeeded':
         return 'OPERATOR'    
-
+    elif outcome_map['CHECK_DOOR'] == 'succeeded':
+        return 'DOOR_OPEN'    
     return 'aborted'
 
 
@@ -104,20 +102,17 @@ class follow_me_2nd(smach.StateMachine):
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
+            
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
                                    transitions={'succeeded': 'CONCURRENCE',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
-            
-            
-            sm=smach.Concurrence(outcomes=['DOOR_OPEN', 'OPERATOR'],
+            sm=smach.Concurrence(outcomes=['DOOR_OPEN', 'OPERATOR','aborted'],
                                    default_outcome='DOOR_OPEN',
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
     
-            
-            
-            
+
             with sm:
                 
                 # it will finisheed with succeeded if it check a door
@@ -126,11 +121,11 @@ class follow_me_2nd(smach.StateMachine):
                                 look_for_elevator_door())
                 # here i have to listen if they say me to get out of the lift
                 sm.add('LISTEN_OPERATOR_FOR_EXIT',
-                                ListenWordSM("go out"))
+                                ListenWordSM_Concurrent("go out"))
                 
             smach.StateMachine.add('CONCURRENCE', sm, transitions={'OPERATOR': 'SAY_OUT',
-                                                                   'DOOR_OPEN':'SAY_DO_YOU_WANT'})
-            
+                                                                   'DOOR_OPEN':'SAY_DO_YOU_WANT',
+                                                                   'aborted':'CONCURRENCE'})
             
             # it says i'm going out
             smach.StateMachine.add('SAY_OUT',
@@ -153,6 +148,6 @@ class follow_me_2nd(smach.StateMachine):
             
             
             
-            
+            #TODO: i Have a book!!
             
             
