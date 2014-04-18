@@ -23,7 +23,7 @@ grammarNames['categories'] = 'category'
 try:
   per = GFR(wordset=grammarNames)
 except IOError:
-  PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/gentest.gram"
+  PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
   print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 27"
   per = GFR(path=PATH, wordset=grammarNames)
 print per
@@ -133,7 +133,7 @@ def ask_category(category):
  return obj   #--------------'''
  #return 'milk'
 
-def ask_category_loc(category): #sa de mirar aki
+def ask_category_loc(category): #-------------------------------------------sa de mirar aki
  ad = askCategoryLocSM(GRAMMAR_NAME = category) 
  out = ad.execute()
  print str(type(ad.userdata))
@@ -242,7 +242,8 @@ class gpsrASAction(object):
     # checks that the item is or not a category
     # print 'blablabal'
     if command.item in categories:
-      print ("_------------command.item val : " + command.item + "\n_------------I les categories son: " + str(categories))
+      print ("_------------command.item val : " + command.item)
+      print ("_------------I les categories son: " + str(categories))
       objct = ask_category(command.item)#----------------------------------
       print objct
       print ('a dintre de objct hi ha ' + objct)

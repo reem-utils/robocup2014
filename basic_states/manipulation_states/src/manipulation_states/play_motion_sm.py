@@ -15,7 +15,7 @@ import sys          #required for arguments
 from smach_ros import SimpleActionState
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion
-from play_motion.msg import PlayMotionGoal, PlayMotionAction
+from play_motion_msgs.msg import PlayMotionGoal, PlayMotionAction
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from math import radians, degrees
 
@@ -29,15 +29,16 @@ class createPlayMotionGoal(smach.State):
     def execute(self, userdata):
         play_goal = PlayMotionGoal()
         play_goal.motion_name = userdata.manip_motion_to_play
-        play_goal.reach_time.secs = userdata.manip_time_to_play
-        userdata.play_motion_sm_goal = play_goal
+        #play_goal.reach_time.secs = userdata.manip_time_to_play
+        play_goal.skip_planning = True
+	userdata.play_motion_sm_goal = play_goal
         
         return 'succeeded'   
     
 
 class prepareData(smach.State):
     
-    def __init__(self, motion, time):
+    def __init__(self, motion, time=4.0):
         
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                             input_keys=['manip_motion_to_play','manip_time_to_play'], output_keys=['manip_motion_to_play','manip_time_to_play'])

@@ -1,9 +1,10 @@
 ASR_LOOP: True
 ASR_ON: "False"
-sentence: "Bring a drink to a shelf"
-sentence0: "bring me a coke then bring me a coke then bring me a coke"
+sentence: "Go to the sofa, introduce yourself, and leave the apartment"
+sentence0: "bring me a coke"
 sentence1: "find a person then memorize the person and recognize him" #ko
 sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #ko
 sentence3: "bring the coke to a sofa" #ko (keixarnos que sofa no es una persona)
 sentence4: "bring a coke to the bookshelf bring a coke to the bookshelf bring a coke to the bookshelf " #ko
 sentence5: "grasp the coke bring the coke to bookshelf and tell something about yourself" #ko  
+sentence6: "Bring the kitchenary to a table" #ko soar don't like kitchenary

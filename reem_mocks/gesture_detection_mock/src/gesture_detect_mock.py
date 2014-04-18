@@ -14,9 +14,9 @@ from gesture_detection_mock.msg import Gesture
 #from grasping_mock.msg import ObjectDetection
 
 
-fakepositionx=1
-fakepositiony=2
-fakeorientation=1.6
+fakepositionx=0.5
+fakepositiony=0.5
+fakeorientation=0.5
 information = True
 
 class Gesture_Service():

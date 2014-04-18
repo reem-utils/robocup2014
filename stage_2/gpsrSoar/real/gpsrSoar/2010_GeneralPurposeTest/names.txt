@@ -1,0 +1,24 @@
+# this is the english names definition file. 
+#put 1 item per line (can be several words, such as 'kitchen table' or a single word such as 'couch').  
+# A line starting with '#' (as in '#kithen') is not used but regarded as a comment.
+# do not use tabs in this file
+Michael
+Christopher
+Matthew
+Joshua
+David
+James
+Daniel
+Robert
+John
+Joseph
+Jessica
+Jennifer
+Amanda
+Ashley
+Sarah
+Stephanie
+Melissa
+Nicole
+Elizabeth
+Heather

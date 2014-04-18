@@ -47,6 +47,8 @@ message_generation)
  add_message_files(
    FILES
    tracker_people.msg
+   personArray.msg
+   person.msg
    check_elevator.msg  
  #Message2.msg
  )

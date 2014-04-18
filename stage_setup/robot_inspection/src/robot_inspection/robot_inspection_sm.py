@@ -10,10 +10,16 @@ Created on Tue Oct 22 12:00:00 2013
 
 import rospy
 import smach
-from navigation_states.nav_to_coord import nav_to_coord
+
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
+from navigation_states.get_current_robot_pose import get_current_robot_pose
+from speech_states.say import text_to_say
 from util_states.sleeper import Sleeper
+from util_states.state_concurrence import ConcurrenceRobocup
+from manipulation_states.play_motion_sm import play_motion_sm
+from geometry_msgs.msg import PoseWithCovarianceStamped 
+
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -22,7 +28,29 @@ OKGREEN = '\033[92m'
 
 import random
 
+class save_robot_position(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['pose_current'],
+                                output_keys=['nav_to_coord_goal'])
 
+
+    def execute(self, userdata):
+        
+        return 'succeeded'
+    
+class set_robot_position(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['pose_current'],
+                                output_keys=['nav_to_coord_goal'])
+
+
+    def execute(self, userdata):
+        self.initialpose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
+        self.initialpose_pub.publish(userdata.pose_current)
+        return 'succeeded'
+    
 class RobotInspectionSM(smach.StateMachine):
     """
     Executes a SM that does the robot inspection.
@@ -40,7 +68,7 @@ class RobotInspectionSM(smach.StateMachine):
 
     No input keys.
     No output keys.
-    No io_keys.
+    No io_keys. userdata.word
 
     Nothing must be taken into account to use this SM.
     """
@@ -51,45 +79,72 @@ class RobotInspectionSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
-            # Go to the init door
+            # Indicate that we are ready
             smach.StateMachine.add(
-                'go_door_in',
-                nav_to_poi('door_init'),
-                transitions={'succeeded': 'enter_door_init', 'aborted': 'aborted', 
-                'preempted': 'preempted'})    
-
-            # Cross init door 
+                'say_ready_inspection',
+                text_to_say("I'm ready for Robot Inspection test"),
+                transitions= {'succeeded':'enter_start_door', 'aborted':'aborted', 'preempted':'preempted'})
+            
+            # Cross start door and go to intermediate point 
             smach.StateMachine.add(
-                'enter_door_init',
-                EnterRoomSM('door_exit'),
-                transitions={'succeeded': 'go_to_intermediate_state', 'aborted': 'aborted', 
+                'enter_start_door',
+                EnterRoomSM('intermediate'),
+                transitions={'succeeded': 'robot_presentation', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
           
-            # Go to center point
+            # Robot presentation: Little talk + wave gesture
+            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave", 10)]
+            STATE_NAMES = ["say_presentation", "salute_wave"]
+            outcome_map = {'succeeded': {"say_presentation": 'succeeded', "salute_wave": 'succeeded'}}
+        
             smach.StateMachine.add(
-                'go_to_intermediate_state',
-                nav_to_poi('intermediate'),
-                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted': 'preempted'}) 
+                "robot_presentation",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'home_position', 'aborted': "aborted"})
             
-            # Test of robots, here we didnt know what will we have to do
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home', 10),
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 'preempted': 'succeeded'})
+           
+            # Calculate the actual position
+            smach.StateMachine.add(
+                'get_actual_pos',
+                get_current_robot_pose(),
+                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted': 'succeeded'})
+
+            # Save position
+            smach.StateMachine.add(
+                'save_robot_position',
+                save_robot_position(),
+                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted':'preempted'})
+            
+            # Test of robot 
             smach.StateMachine.add(
                  'wait_time',
-                 Sleeper(3),
-                 transitions={'succeeded': 'go_out', 
-                 'aborted': 'aborted'})
+                 Sleeper(20),
+                 transitions={'succeeded': 'end_time_inspection', 'aborted': 'aborted'})
 
-            # Go to the exit door
+            # Indicate that we are ready
             smach.StateMachine.add(
-                'go_out',
-                nav_to_poi('exit_init'),
-                transitions={'succeeded': 'enter_door_out', 'aborted': 'aborted', 
-                'preempted': 'preempted'})
+                'end_time_inspection',
+                text_to_say("Time finished"),
+                transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
             
-            # Cross exit door
+            # Set position
             smach.StateMachine.add(
-                'enter_door_out',
-                EnterRoomSM('exit_exit'),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                'set_robot_position',
+                set_robot_position(),
+                transitions={'succeeded': 'cross_door_out', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
+                        
+            # Go to the exit door and cross exit door 
+            # If the door is open change EnterRoom for nav_to_poi
+            smach.StateMachine.add(
+                'cross_door_out',
+                nav_to_poi('exit_door'),
+                transitions={'succeeded': 'succeeded', 'aborted': 'cross_door_out', 
                 'preempted': 'preempted'})  
 
 

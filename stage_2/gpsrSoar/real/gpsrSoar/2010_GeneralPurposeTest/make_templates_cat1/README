@@ -1,0 +1,17 @@
+
+README
+
+
+0. files
+
+ rulebook_chap4parsed.txt: Chapter 4(stage I tests) text parsed by Brill POS tagger
+ all_verbs_in_chap4.txt: all possible verbs extracted from Chapter 4
+ robot_related_verbs_in_chap4.txt: robot-related-verbs extracted from all_verbs_in_chap4.txt
+
+ cat1Sentences.txt: generated sentences by make_sentence.pl 
+ make_sentences.pl: sentence generator for category I sentences
+ GPSR1.gram : defines sentence templates 
+
+1. how to generate category I sentences
+$ ./make_sentences.pl
+

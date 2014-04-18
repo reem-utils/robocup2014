@@ -23,7 +23,7 @@ class GetPoseSubscribe(smach.State):
 	def __init__(self):
 		smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
 			input_keys=['current_robot_pose', 'current_robot_yaw'],
-			output_keys=['current_robot_pose', 'current_robot_yaw', 'standard_error'])
+			output_keys=['current_robot_pose', 'current_robot_yaw', 'pose_current', 'standard_error'])
 
 	def execute(self, userdata):
 		try:
@@ -35,6 +35,7 @@ class GetPoseSubscribe(smach.State):
 								pose_current.pose.pose.orientation.z,
 								pose_current.pose.pose.orientation.w])
 			userdata.standard_error = "OK"
+			userdata.pose_current = pose_current
 			
 			return 'succeeded'
 		except rospy.ROSException:
@@ -63,7 +64,7 @@ class get_current_robot_pose(smach.StateMachine):
     """
 	def __init__(self):
 		smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
-			output_keys=['current_robot_pose', 'current_robot_yaw', 'standard_error'])
+			output_keys=['current_robot_pose', 'current_robot_yaw', 'standard_error', 'pose_current'])
 		rospy.loginfo('GetCurrentPose')
 		with self:
 			#self.userdata.current_robot_pose = [0.0,0.0,0.0]

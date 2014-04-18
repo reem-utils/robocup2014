@@ -1,5 +1,11 @@
 object=coke
-location=fridge
+location=bar
 table=couch table
 yes=yes
 name=cris
+objectA=coke
+objectB=fanta
+objectC=cookies
+location1=table one
+location2=table two
+action=goto

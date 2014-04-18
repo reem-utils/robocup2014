@@ -22,9 +22,12 @@ class checkData(smach.State):
         
     def execute(self, userdata):
 
-        word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
+        #word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
         
-        if word and word[0].value == userdata.word_to_listen:
+        #if word and word[0].value == userdata.word_to_listen:
+        if self.preempt_requested():
+           return 'preempted'
+        if userdata.asr_userSaid == userdata.word_to_listen:
             rospy.loginfo("Match!")
             return 'succeeded'
         else:
@@ -83,3 +86,38 @@ class ListenWordSM(smach.StateMachine):
                     checkData(),
                     transitions={'succeeded':'succeeded', 'aborted':'aborted'})
             
+            
+            
+class ListenWordSM_Concurrent(smach.StateMachine):
+
+    """      
+        This StateMachine listen a word and compare if it is the desired word.
+        It returns succeeded if the word matches. Otherwise it will be waiting for
+        the correct word
+        @input string word or word_to_listen
+
+    """
+    
+    def __init__(self, word=None):
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+                    input_keys=['word_to_listen'],
+                    output_keys=[])
+        
+        with self:
+            self.userdata.listen_word = None
+            self.userdata.grammar_name = "listenword.gram"
+    
+            smach.StateMachine.add('PrepareData',
+                    prepareData(word),
+                    transitions={'succeeded':'listen_word', 'aborted':'aborted'})
+             
+            # Listen the word
+            smach.StateMachine.add(
+                    'listen_word',
+                    ListenToSM(),
+                    transitions={'succeeded': 'checkData', 'aborted': 'aborted', 'preempted': 'preempted'})
+
+            # Check information
+            smach.StateMachine.add('checkData',
+                    checkData(),
+                    transitions={'succeeded':'succeeded', 'aborted':'listen_word'})

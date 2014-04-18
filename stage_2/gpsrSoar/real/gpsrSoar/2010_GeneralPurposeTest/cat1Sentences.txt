@@ -1,0 +1,141 @@
+Move to the LOCATION, then go to the LOCATION and exit the apartment.
+Move to the LOCATION, then move to the LOCATION and leave the apartment.
+Move to the LOCATION, then move to the LOCATION and exit the apartment.
+Move to the LOCATION, then navigate to the LOCATION and leave the apartment.
+Move to the LOCATION, then navigate to the LOCATION and exit the apartment.
+Navigate to the LOCATION, then go to the LOCATION and leave the apartment.
+Navigate to the LOCATION, then go to the LOCATION and exit the apartment.
+Navigate to the LOCATION, then move to the LOCATION and leave the apartment.
+Navigate to the LOCATION, then move to the LOCATION and exit the apartment.
+Navigate to the LOCATION, then navigate to the LOCATION and leave the apartment.
+Navigate to the LOCATION, then navigate to the LOCATION and exit the apartment.
+Go to the LOCATION, get the ITEM, and leave the apartment.
+Go to the LOCATION, get the ITEM, and exit the apartment.
+Go to the LOCATION, take the ITEM, and leave the apartment.
+Go to the LOCATION, take the ITEM, and exit the apartment.
+Go to the LOCATION, grasp the ITEM, and leave the apartment.
+Go to the LOCATION, grasp the ITEM, and exit the apartment.
+Move to the LOCATION, get the ITEM, and leave the apartment.
+Move to the LOCATION, get the ITEM, and exit the apartment.
+Move to the LOCATION, take the ITEM, and leave the apartment.
+Move to the LOCATION, take the ITEM, and exit the apartment.
+Move to the LOCATION, grasp the ITEM, and leave the apartment.
+Move to the LOCATION, grasp the ITEM, and exit the apartment.
+Navigate to the LOCATION, get the ITEM, and leave the apartment.
+Navigate to the LOCATION, get the ITEM, and exit the apartment.
+Navigate to the LOCATION, take the ITEM, and leave the apartment.
+Navigate to the LOCATION, take the ITEM, and exit the apartment.
+Navigate to the LOCATION, grasp the ITEM, and leave the apartment.
+Navigate to the LOCATION, grasp the ITEM, and exit the apartment.
+Go to the LOCATION, introduce yourself, and leave the apartment.
+Go to the LOCATION, introduce yourself, and exit the apartment.
+Go to the LOCATION, tell something about yourself, and leave the apartment.
+Go to the LOCATION, tell something about yourself, and exit the apartment.
+Move to the LOCATION, introduce yourself, and leave the apartment.
+Move to the LOCATION, introduce yourself, and exit the apartment.
+Move to the LOCATION, tell something about yourself, and leave the apartment.
+Move to the LOCATION, tell something about yourself, and exit the apartment.
+Navigate to the LOCATION, introduce yourself, and leave the apartment.
+Navigate to the LOCATION, introduce yourself, and exit the apartment.
+Navigate to the LOCATION, tell something about yourself, and leave the apartment.
+Navigate to the LOCATION, tell something about yourself, and exit the apartment.
+Go to the LOCATION, memorize the person, and recognize him.
+Go to the LOCATION, ask the person's name, and recognize him.
+Move to the LOCATION, memorize the person, and recognize him.
+Move to the LOCATION, ask the person's name, and recognize him.
+Navigate to the LOCATION, memorize the person, and recognize him.
+Navigate to the LOCATION, ask the person's name, and recognize him.
+Go to the LOCATION, introduce yourself, and follow the person in front of you.
+Go to the LOCATION, tell something about yourself, and follow the person in front of you.
+Move to the LOCATION, introduce yourself, and follow the person in front of you.
+Move to the LOCATION, tell something about yourself, and follow the person in front of you.
+Navigate to the LOCATION, introduce yourself, and follow the person in front of you.
+Navigate to the LOCATION, tell something about yourself, and follow the person in front of you.
+Memorize the person, follow the person in front of you, and leave the apartment.
+Memorize the person, follow the person in front of you, and exit the apartment.
+Ask the person's name, follow the person in front of you, and leave the apartment.
+Ask the person's name, follow the person in front of you, and exit the apartment.
+Find a person, retrieve the ITEM from the LOCATION, and leave the apartment.
+Find a person, retrieve the ITEM from the LOCATION, and exit the apartment.
+Find a person, bring the ITEM from the LOCATION, and leave the apartment.
+Find a person, bring the ITEM from the LOCATION, and exit the apartment.
+Go to the LOCATION, find a person, and retrieve the ITEM from the LOCATION.
+Go to the LOCATION, find a person, and bring the ITEM from the LOCATION.
+Move to the LOCATION, find a person, and retrieve the ITEM from the LOCATION.
+Move to the LOCATION, find a person, and bring the ITEM from the LOCATION.
+Navigate to the LOCATION, find a person, and retrieve the ITEM from the LOCATION.
+Navigate to the LOCATION, find a person, and bring the ITEM from the LOCATION.
+Memorize the person, follow the person in front of you, and leave the apartment.
+Memorize the person, follow the person in front of you, and exit the apartment.
+Ask the person's name, follow the person in front of you, and leave the apartment.
+Ask the person's name, follow the person in front of you, and exit the apartment.
+Go to the LOCATION, find a person, and introduce yourself.
+Go to the LOCATION, find a person, and tell something about yourself.
+Move to the LOCATION, find a person, and introduce yourself.
+Move to the LOCATION, find a person, and tell something about yourself.
+Navigate to the LOCATION, find a person, and introduce yourself.
+Navigate to the LOCATION, find a person, and tell something about yourself.
+Get the ITEM, bring it to the LOCATION, and introduce yourself.
+Get the ITEM, bring it to the LOCATION, and tell something about yourself.
+Get the ITEM, carry it to the LOCATION, and introduce yourself.
+Get the ITEM, carry it to the LOCATION, and tell something about yourself.
+Take the ITEM, bring it to the LOCATION, and introduce yourself.
+Take the ITEM, bring it to the LOCATION, and tell something about yourself.
+Take the ITEM, carry it to the LOCATION, and introduce yourself.
+Take the ITEM, carry it to the LOCATION, and tell something about yourself.
+Grasp the ITEM, bring it to the LOCATION, and introduce yourself.
+Grasp the ITEM, bring it to the LOCATION, and tell something about yourself.
+Grasp the ITEM, carry it to the LOCATION, and introduce yourself.
+Grasp the ITEM, carry it to the LOCATION, and tell something about yourself.
+Go to the LOCATION, get the ITEM, and bring it to the LOCATION.
+Go to the LOCATION, get the ITEM, and carry it to the LOCATION.
+Go to the LOCATION, take the ITEM, and bring it to the LOCATION.
+Go to the LOCATION, take the ITEM, and carry it to the LOCATION.
+Go to the LOCATION, grasp the ITEM, and bring it to the LOCATION.
+Go to the LOCATION, grasp the ITEM, and carry it to the LOCATION.
+Move to the LOCATION, get the ITEM, and bring it to the LOCATION.
+Move to the LOCATION, get the ITEM, and carry it to the LOCATION.
+Move to the LOCATION, take the ITEM, and bring it to the LOCATION.
+Move to the LOCATION, take the ITEM, and carry it to the LOCATION.
+Move to the LOCATION, grasp the ITEM, and bring it to the LOCATION.
+Move to the LOCATION, grasp the ITEM, and carry it to the LOCATION.
+Navigate to the LOCATION, get the ITEM, and bring it to the LOCATION.
+Navigate to the LOCATION, get the ITEM, and carry it to the LOCATION.
+Navigate to the LOCATION, take the ITEM, and bring it to the LOCATION.
+Navigate to the LOCATION, take the ITEM, and carry it to the LOCATION.
+Navigate to the LOCATION, grasp the ITEM, and bring it to the LOCATION.
+Navigate to the LOCATION, grasp the ITEM, and carry it to the LOCATION.
+Go to the LOCATION, detect the ITEM, and get it.
+Go to the LOCATION, detect the ITEM, and take it.
+Go to the LOCATION, detect the ITEM, and grasp it.
+Go to the LOCATION, find the ITEM, and get it.
+Go to the LOCATION, find the ITEM, and take it.
+Go to the LOCATION, find the ITEM, and grasp it.
+Go to the LOCATION, identify the ITEM, and get it.
+Go to the LOCATION, identify the ITEM, and take it.
+Go to the LOCATION, identify the ITEM, and grasp it.
+Move to the LOCATION, detect the ITEM, and get it.
+Move to the LOCATION, detect the ITEM, and take it.
+Move to the LOCATION, detect the ITEM, and grasp it.
+Move to the LOCATION, find the ITEM, and get it.
+Move to the LOCATION, find the ITEM, and take it.
+Move to the LOCATION, find the ITEM, and grasp it.
+Move to the LOCATION, identify the ITEM, and get it.
+Move to the LOCATION, identify the ITEM, and take it.
+Move to the LOCATION, identify the ITEM, and grasp it.
+Navigate to the LOCATION, detect the ITEM, and get it.
+Navigate to the LOCATION, detect the ITEM, and take it.
+Navigate to the LOCATION, detect the ITEM, and grasp it.
+Navigate to the LOCATION, find the ITEM, and get it.
+Navigate to the LOCATION, find the ITEM, and take it.
+Navigate to the LOCATION, find the ITEM, and grasp it.
+Navigate to the LOCATION, identify the ITEM, and get it.
+Navigate to the LOCATION, identify the ITEM, and take it.
+Navigate to the LOCATION, identify the ITEM, and grasp it.
+Go to the LOCATION, then go to the LOCATION and leave the apartment.
+Go to the LOCATION, then go to the LOCATION and exit the apartment.
+Go to the LOCATION, then move to the LOCATION and leave the apartment.
+Go to the LOCATION, then move to the LOCATION and exit the apartment.
+Go to the LOCATION, then navigate to the LOCATION and leave the apartment.
+Go to the LOCATION, then navigate to the LOCATION and exit the apartment.
+Move to the LOCATION, then go to the LOCATION and leave the apartment.
