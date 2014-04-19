@@ -1,14 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(follow_me)
+project(restaurant_test)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS 
-rospy 
-std_msgs 
-geometry_msgs 
-message_generation)
+find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -17,7 +13,7 @@ message_generation)
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -44,23 +40,18 @@ catkin_python_setup()
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   tracker_people.msg
-   personArray.msg
-   person.msg
-   check_elevator.msg  
- #Message2.msg
- )
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
- add_service_files(
-	FILES
-	EnableCheckElevator.srv
+# add_service_files(
 #   FILES
 #   Service1.srv
 #   Service2.srv
- )
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -70,11 +61,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs  # Or other packages containing msgs
-   geometry_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -87,9 +77,8 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES follow_me
-  CATKIN_DEPENDS message_runtime
-
+#  LIBRARIES restaurant_test
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -102,19 +91,19 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a cpp library
-# add_library(follow_me
-#   src/${PROJECT_NAME}/follow_me.cpp
+# add_library(restaurant_test
+#   src/${PROJECT_NAME}/restaurant_test.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(follow_me_node src/follow_me_node.cpp)
+# add_executable(restaurant_test_node src/restaurant_test_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(follow_me_node follow_me_generate_messages_cpp)
+# add_dependencies(restaurant_test_node restaurant_test_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(follow_me_node
+# target_link_libraries(restaurant_test_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -133,7 +122,7 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS follow_me follow_me_node
+# install(TARGETS restaurant_test restaurant_test_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -158,7 +147,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_follow_me.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_restaurant_test.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
