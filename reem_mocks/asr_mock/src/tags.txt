@@ -9,3 +9,4 @@ objectC=cookies
 location1=table one
 location2=table two
 action=goto
+word=follow me
