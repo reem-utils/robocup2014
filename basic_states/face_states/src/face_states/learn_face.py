@@ -123,5 +123,5 @@ class learn_face(smach.StateMachine):
                                             Recognizer,
                                             request_cb = face_start_detect_request_cb,
                                             input_keys = []),
-                               transitions={'succeeded':'Read_Topic',
+                               transitions={'succeeded':'succeeded',
                                             'aborted' : 'aborted','preempted':'preempted'})            
