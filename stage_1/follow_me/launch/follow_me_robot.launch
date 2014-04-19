@@ -14,6 +14,12 @@
 	      type="reverse_node.py"
 	      name="NavigationBack_node">
 	</node>
+	
+	<node pkg="person_detection"
+	      type="follow_me_mock_faces.py"
+	      name="Follow_me_Service_node">
+  	      
+	</node>
  
 
 </launch>

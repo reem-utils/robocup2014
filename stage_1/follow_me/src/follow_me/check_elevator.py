@@ -59,7 +59,7 @@ class checkElevator():
 
         self.init_var()
     def elevator_srv(self,req):
-        respone = EnableCheckElevatorResponse()
+        response = EnableCheckElevatorResponse()
         if (req.enable) :
             self.enable=True
             self.sonar_sub=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)

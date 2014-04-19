@@ -71,7 +71,8 @@ class sleep_until(smach.State):
         return 'succeeded'
 class read_topic(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'preempted'],output_keys=['check_elevator_msg'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
+                             output_keys=['check_elevator_msg'])
         
     def execute(self,userdata):
         userdata.check_elevator_msg = rospy.wait_for_message('/check_elevator/elevator_status',
@@ -121,7 +122,9 @@ class look_for_elevator(smach.StateMachine):
 
             smach.StateMachine.add('READ_TOPIC',
                                    read_topic(),
-                                   transitions={'succeeded': 'CHECK_STATUS', 'preempted':'preempted'})            
+                                   transitions={'succeeded': 'CHECK_STATUS',
+                                                'aborted':'READ_TOPIC',
+                                                'preempted':'preempted'})            
             smach.StateMachine.add('CHECK_STATUS',
                                    check_status(),
                                    transitions={'IM_IN': 'succeeded',

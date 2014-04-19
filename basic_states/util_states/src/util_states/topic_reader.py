@@ -57,8 +57,6 @@ class topic_reader_state(smach.State):
                 return 'aborted'
             
     def callback_topic(self,data):
-        rospy.loginfo("-------\n we got this data:")
-        rospy.loginfo(data)
         self.msg_data = data
         self.received_msg = True
         self.subs.unregister()
