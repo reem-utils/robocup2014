@@ -11,29 +11,41 @@ import smach
 from face_states.learn_face import learn_face
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
+from speech_states.parser_grammar import parserGrammar
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
+GRAMMAR_NAME = "iam"
 
 class prepare_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['asr_answer', 'asr_answer_tags'],
                                 output_keys=['name'])
+        self.tags = parserGrammar(GRAMMAR_NAME)
 
     def execute(self, userdata):
 
-        # Tags
-        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'name']
-        if tags:
-            name = tags[0].value
-            userdata.name = name
-            return 'succeeded'
-        else: 
-            return 'aborted'
+
+        for element in self.tags:
+            if element[0] == 'nameshort' or element[0] == 'nameall':
+                for value in element[1]:
+                    if value in userdata.asr_answer:
+                        userdata.name = value
+                        return 'succeeded'
+        return 'aborted'
     
+        # Tags
+#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'name']
+#         if tags:
+#             name = tags[0].value
+#             userdata.name = name
+#             return 'succeeded'
+#         else: 
+#             return 'aborted'
+#     
 class prepare_say_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -78,8 +90,8 @@ class SaveFaceSM(smach.StateMachine):
             # Ask for name
             smach.StateMachine.add(
                 'listen_name',
-                AskQuestionSM("Hi, what's your name?", "iam.gram"),
-                transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
+                AskQuestionSM("Hi, what's your name?", GRAMMAR_NAME),
+                transitions={'succeeded': 'prepare_name', 'aborted': 'ask_name_again', 
                 'preempted': 'preempted'}) 
             
             # We prepare the name for face_detection 
