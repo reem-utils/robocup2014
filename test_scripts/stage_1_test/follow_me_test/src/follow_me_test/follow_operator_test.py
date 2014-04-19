@@ -12,7 +12,7 @@ import smach_ros
 #from smach_ros import SimpleActionState, ServiceState
 
 from speech_states.say import text_to_say
-from follow_operator import FollowOperator
+from follow_me.follow_operator import FollowOperator
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
