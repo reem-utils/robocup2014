@@ -45,9 +45,9 @@ class prepare_poi_person_emergency(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['person_location_coord'], 
-            output_keys=['nav_to_poi_name']) 
+            output_keys=['nav_to_coord_goal']) 
     def execute(self,userdata):
-        rospy.loginfo('PersonLOcationCooordddddd :::::::: ' + userdata.person_location_coord)
+        rospy.loginfo('PersonLOcationCooordddddd :::::::: ' + str(userdata.person_location_coord))
         userdata.nav_to_coord_goal = userdata.person_location_coord 
 
         return 'succeeded'
@@ -171,8 +171,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 #DummyStateMachine(),
                 #nav_to_poi(),
                 nav_to_coord('/map'),
-                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'},
-                remapping={'nav_to_coord_goal':'person_location'})
+                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
                 'Say_Give_Object',
                 text_to_say('I am going to give you the Object you want.'),
