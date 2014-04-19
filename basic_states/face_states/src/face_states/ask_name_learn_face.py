@@ -111,7 +111,7 @@ class SaveFaceSM(smach.StateMachine):
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
-                learn_face(1),
+                learn_face(5),
                 transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
