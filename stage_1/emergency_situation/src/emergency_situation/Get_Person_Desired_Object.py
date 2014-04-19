@@ -15,6 +15,7 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
+from speech_states.listen_to import ListenToSM
 from manipulation_states.play_motion_sm import play_motion_sm
 from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
@@ -66,14 +67,15 @@ class prepare_tts(smach.State):
 class Process_Tags(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=["asr_answer","asr_answer_tags"],
+                                input_keys=["asr_userSaid","asr_userSaid_tags"],
                                 output_keys=['object_to_grasp'])
 
     def execute(self, userdata):
-        if(userdata.asr_answer.find("coke") 
-           or userdata.asr_answer.find("water") 
-           or userdata.asr_answer.find("juice")):
-            userdata.object_to_grasp = userdata.asr_answer
+        if(userdata.asr_userSaid.find("coke") 
+           or userdata.asr_userSaid.find("water") 
+           or userdata.asr_userSaid.find("juice")):
+            userdata.object_to_grasp = userdata.asr_userSaid
+            rospy.loginfo(userdata.asr_userSaid)
 #         
 #         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
 #         if tags:
@@ -122,14 +124,18 @@ class Get_Person_Desired_Object(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
+            smach.StateMachine.add(
+                                   'Ask_Question',
+                                   text_to_say(text='What would you like me to bring?'),
+                                   transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
             # Ask for the object to bring to the person
             # Output: 
             #   - string 'userSaid'
             #   - actiontag[] 'asr_userSaid_tags'
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
-                'Ask_Question',
-                AskQuestionSM(text='What would you like me to bring?', grammar='robocup/drinks'),
+                'Listen_Question',
+                ListenToSM(grammar='robocup/drinks'),
                 transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
 
             # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
