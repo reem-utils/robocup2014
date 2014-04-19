@@ -45,7 +45,7 @@ class Topic_Checker(smach.State):
         #rospy.loginfo("------------------------------------------------------------------extracting message from topic")
         if self.preempt_requested():
             return 'preempted'
-        if userdata.topic_output_msg.event_id == 2:    
+        if userdata.topic_output_msg.event_id == 2:    # USAR ENUM DE EL TIPO DE EVENT_ID, NO EL NUMERO
             return 'succeeded'  
         return 'aborted'
 
