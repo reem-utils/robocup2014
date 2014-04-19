@@ -17,7 +17,7 @@ from speech_states.parser_grammar import parserGrammar
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-GRAMMAR_NAME = "iam"
+GRAMMAR_NAME = "robocup/iam"
 
 class prepare_name(smach.State):
     def __init__(self):
@@ -100,7 +100,7 @@ class SaveFaceSM(smach.StateMachine):
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
-                learn_face(5),
+                learn_face(10),
                 transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
