@@ -14,8 +14,8 @@ from speech_states.say import text_to_say
 from speech_states.say_yes_or_no import SayYesOrNoSM
 from speech_states.listen_and_check_word import ListenWordSM, ListenWordSM_Concurrent
             
-SAY_OUT_FRASE= "OK IM GOING OUT"
-COMPROVATE_GO_OUT="DO YOU WANT TO GO OUT?"
+SAY_OUT_FRASE= "THE DOOR ITS OPEN,  IM GOING OUT"
+
 
 
 
@@ -25,44 +25,14 @@ class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
+            outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],
+            output_keys=['standard_error'])
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"I'M in the second part of the follow_me"+ENDC)
         userdata.standard_error="Dummy"
         return 'succeeded'
-     
 
-class dummy_listen(smach.State):
-    def __init__(self):
-        smach.State.__init__(
-                            self,
-                            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
-
-    def execute(self, userdata):
-        while (1):
-            if self.preempt_requested():
-                return 'preempted'
-            
-        return 'succeeded'
-    
-class say_out (smach.State):
-    
-    def __init__ (self):
-        smach.State.__init__(
-           self,
-           outcomes=['succeeded', 'aborted','preempted'],input_keys=['standard_error'],output_keys=['standard_error'])
-    def execute (self,userdata):
-        
-        return'succeeded'
-
-
-class listen_yes_or_not_dummy (smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
-    def execute(self):
-        rospy.loginfo("im in the dummy state listen if its yeas or not")
-        return 'succeeded'
         
     # gets called when ANY child state terminates
 def child_term_cb(outcome_map):
@@ -102,6 +72,7 @@ class follow_me_2nd(smach.StateMachine):
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
+            self.userdata.word_to_listen=None
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
@@ -109,7 +80,7 @@ class follow_me_2nd(smach.StateMachine):
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             sm=smach.Concurrence(outcomes=['DOOR_OPEN', 'OPERATOR','aborted'],
-                                   default_outcome='DOOR_OPEN',
+                                   default_outcome='DOOR_OPEN',input_keys=['word_to_listen'],
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
     
 
@@ -132,17 +103,7 @@ class follow_me_2nd(smach.StateMachine):
                                    text_to_say(SAY_OUT_FRASE),
                                    transitions={'succeeded': 'succeeded',
                                     'aborted': 'aborted','preempted':'preempted'})
-            # i detect that the door it's open, and i will asck to the operator if it want to go out
-            smach.StateMachine.add('SAY_DO_YOU_WANT',
-                                   text_to_say(COMPROVATE_GO_OUT),
-                                   transitions={'succeeded': 'YES_OR_NOT',
-                                    'aborted': 'aborted','preempted':'preempted'})
-         
-         
-            smach.StateMachine.add('YES_OR_NOT',
-                                   SayYesOrNoSM(),
-                                   transitions={'succeeded': 'SAY_OUT',
-                                    'aborted': 'INIT_VAR','preempted':'preempted'})
+
 
             
             

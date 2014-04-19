@@ -27,8 +27,6 @@ class prepare_name(smach.State):
         self.tags = parserGrammar(GRAMMAR_NAME)
 
     def execute(self, userdata):
-
-
         for element in self.tags:
             if element[0] == 'nameshort' or element[0] == 'nameall':
                 for value in element[1]:
@@ -37,15 +35,6 @@ class prepare_name(smach.State):
                         return 'succeeded'
         return 'aborted'
     
-        # Tags
-#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'name']
-#         if tags:
-#             name = tags[0].value
-#             userdata.name = name
-#             return 'succeeded'
-#         else: 
-#             return 'aborted'
-#     
 class prepare_say_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -104,14 +93,14 @@ class SaveFaceSM(smach.StateMachine):
             # Ask for name again
             smach.StateMachine.add(
                 'ask_name_again',
-                text_to_say("Sorry, I don't understand you. Can you repeat your name, please?"),
-                transitions={'succeeded': 'listen_name', 'aborted': 'aborted', 
+                AskQuestionSM("Sorry, I don't understand you. Can you repeat your name, please?", GRAMMAR_NAME),
+                transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
            
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
-                learn_face(1),
+                learn_face(5),
                 transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
