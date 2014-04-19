@@ -15,7 +15,7 @@ from pal_detection_msgs.msg import FaceDetection, FaceDetections
 from pal_detection_msgs.srv import StartEnrollmentResponse, StartEnrollmentRequest, StartEnrollment
 from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEnrollmentResponse
 from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseResponse
-from follow_me.msg import tracker_people
+from follow_me.msg import tracker_people,person,personArray
 from pal_detection_msgs.msg import FaceDetections,Detections2d,FaceDetection,Detection2d
 
 
@@ -44,7 +44,6 @@ OKGREEN = '\033[92m'
 
 
 
-
 '''
 @It publish a message similar from the face detection, this one have de doble heigh
 it will publish a Detections2d msg
@@ -62,26 +61,29 @@ class Follow_me_Service():
     Follow me Mock 
 
     Run the topic of face recognition:
-        /people_tracker/person
+        /people_tracker/follow_person
 
     """
     def face_cb(self,data):
         faces=data
         Face=FaceDetection()
-        for Face in faces.faces :
-            if(Face.name==self.name):
-                person=tracker_people()
-                person.confidence=Face.confidence
-                person.pose.position=Face.position
-                
-        self.person_pub.publish(person)
+        per=person()
+        
+        if faces.faces :
+            for Face in faces.faces :
+                per.targetId=1
+                per.x=Face.position.z
+                per.y=-Face.position.x
+                per.status=4
+                self.persons.peopleSet.append(per)
+            self.follow_person_pub.publish(self.persons)
                 
     def __init__(self):
         self.name=str(raw_input('Name of the face :'))  
         rospy.loginfo("Initializing tracker_people_service")
-        self.person_pub=rospy.Publisher('/people_tracker/person',tracker_people)
-        self.face_subs=rospy.Subscriber("/pal_face/recognizer", FaceDetections, self.face_cb)
-     
+        self.follow_person_pub=rospy.Publisher('/people_tracker/follow_person',personArray)
+        self.face_subs=rospy.Subscriber("/pal_face/faces", FaceDetections, self.face_cb)
+        self.persons=personArray()
     def run(self):
         """Publishing usersaid when face recognitionL is enabled """
         # TODO: add tags, add other fields, take into account loaded grammar to put other text in the recognized sentence
@@ -92,9 +94,9 @@ class Follow_me_Service():
 if __name__ == '__main__':
     rospy.init_node('follow_me_srv')
     rospy.loginfo("Initializing follow_me_srv")
-    person=Follow_me_Service()
+    follow_persn=Follow_me_Service()
     
-    person.run()
+    follow_persn.run()
     
     
   

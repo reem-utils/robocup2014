@@ -90,7 +90,7 @@ class follow_me_1st(smach.StateMachine):
                                 look_for_elevator())
                                 # here i have to listen if they say me to get out of the lift
                 sm.add('LISTEN_OPERATOR_FOR_EXIT_SENTENCE',
-                                ListenWordSM_Concurrent("go out"))
+                                ListenWordSM_Concurrent("exit"))
                 
             
             smach.StateMachine.add('FOLLOW_AND_CHECKING', sm,

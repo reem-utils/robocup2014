@@ -32,7 +32,7 @@ class init_var(smach.State):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted'],output_keys=['time_last_found'])
     def execute(self, userdata):
             userdata.time_last_found=rospy.Time.now()
-            rospy.sleep(1)
+
             rospy.loginfo("i'm in dummy init var")
             return 'succeeded'
 # its the tracker learn person...

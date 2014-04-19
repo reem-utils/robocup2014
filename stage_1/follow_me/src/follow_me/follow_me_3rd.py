@@ -22,7 +22,7 @@ SAY_COME_NEAR="CAN YOU APROACH A LITTLE BIT"
 SAY_LETS_GO="OK LETS GO AGAIN"
 SAY_GO_AGAIN="OK LETS GO AGAIN"
 
-METERSBACK=1
+METERSBACK=3
 
 
 
@@ -34,7 +34,6 @@ class init_var(smach.State):
             outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=['nav_to_coord_goal'])
 
     def execute(self, userdata):
-        rospy.sleep(2)
         rospy.loginfo(OKGREEN+"i'm in the 3rd part of the robocup"+ENDC)
         userdata.nav_to_coord_goal = [0,0,0]
         return 'succeeded'
@@ -46,7 +45,6 @@ class go_back(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute (self,userdata):
-        rospy.sleep(2)
         rospy.loginfo("i'm in the dummy state of go back")
         return 'succeeded'
 
@@ -56,7 +54,6 @@ class where_is_it(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['i_dont_know','ok_lets_go','preempted'], input_keys=['in_learn_person'])
     def execute(self,userdata):
-        rospy.sleep(2)
         rospy.loginfo("i'm in a dumy state where i'm  looking if i know the person")
         return 'ok_lets_go'
     
@@ -67,7 +64,6 @@ class learn_again(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
                               output_keys=['in_learn_person'])
     def execute(self,userdata):
-        rospy.sleep(2)
         rospy.loginfo("i'm in the learning dummy state, it's learn again")
         return 'succeeded'
 
