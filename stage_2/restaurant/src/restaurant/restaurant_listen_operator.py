@@ -136,16 +136,11 @@ class ListenOperator(smach.StateMachine):
             
             smach.StateMachine.add('LISTEN_TO',
                                    ListenToSM(),
-                                   transitions={'succeeded': 'DID_YOU_SAY',
+                                   transitions={'succeeded': 'PROCES_TAGS',
                                                 'aborted': 'LISTEN_TO','preempted':'preempted'})
             
             
         
-            smach.StateMachine.add('DID_YOU_SAY',
-                                   did_you_say(),
-                                   transitions={'succeeded': 'PROCES_TAGS',
-                                                'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
-            
             smach.StateMachine.add('CAN_YOU_REPEAT',
                        text_to_say(SAY_REPEAT),
                        transitions={'succeeded': 'LISTEN_TO',
@@ -154,7 +149,7 @@ class ListenOperator(smach.StateMachine):
             smach.StateMachine.add('PROCES_TAGS',
                        proces_Tags(),
                        transitions={'new_position': 'GET_POSE','finish':'succeeded',
-                                    'aborted': 'LISTEN_TO','preempted':'preempted'})
+                                    'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
 
             
             smach.StateMachine.add('GET_POSE',
