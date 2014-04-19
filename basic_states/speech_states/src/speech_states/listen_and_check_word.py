@@ -31,6 +31,7 @@ class checkData(smach.State):
             rospy.loginfo("Match!")
             return 'succeeded'
         else:
+            rospy.sleep(0.2)
             return 'aborted'
            
 class prepareData(smach.State):
@@ -69,7 +70,7 @@ class ListenWordSM(smach.StateMachine):
         
         with self:
             self.userdata.listen_word = None
-            self.userdata.grammar_name = "listenword.gram"
+            self.userdata.grammar_name = "robocup/listenword"
     
             smach.StateMachine.add('PrepareData',
                     prepareData(word),
@@ -105,7 +106,7 @@ class ListenWordSM_Concurrent(smach.StateMachine):
         
         with self:
             self.userdata.listen_word = None
-            self.userdata.grammar_name = "listenword.gram"
+            self.userdata.grammar_name = "robocup/listenword"
     
             smach.StateMachine.add('PrepareData',
                     prepareData(word),

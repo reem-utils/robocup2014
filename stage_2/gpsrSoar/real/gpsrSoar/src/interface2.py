@@ -409,7 +409,7 @@ def main():
 	kernel.CheckForIncomingCommands()
 	p_cmd = 'watch --learning 2'
 	res = agent.ExecuteCommandLine(p_cmd)
-	print res
+	print str(res)
 	
 
 	goal_achieved = False

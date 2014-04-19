@@ -124,7 +124,7 @@ class follow_me_2nd(smach.StateMachine):
                                 ListenWordSM_Concurrent("go out"))
                 
             smach.StateMachine.add('CONCURRENCE', sm, transitions={'OPERATOR': 'SAY_OUT',
-                                                                   'DOOR_OPEN':'SAY_DO_YOU_WANT',
+                                                                   'DOOR_OPEN':'SAY_OUT',
                                                                    'aborted':'CONCURRENCE'})
             
             # it says i'm going out

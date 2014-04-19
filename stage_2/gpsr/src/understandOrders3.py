@@ -257,7 +257,7 @@ class orderList():
                     action == 'find_object'
                 else:
                     action == 'find_person'
-            if action == 'exit':
+            if action == 'exit' or action == 'leave':
                 action = 'go_to'
                 location = 'exit'
             if action == 'bring':

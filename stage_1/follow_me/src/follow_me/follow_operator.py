@@ -26,7 +26,7 @@ FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
 
-FREQ_FIND=2 # publish a 2 HZ only if i send a goal
+FREQ_FIND=4 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 
@@ -34,9 +34,10 @@ MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 
 class init_var(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted'],output_keys=['in_learn_person'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],
+                             output_keys=['in_learn_person'])
     def execute(self, userdata):
-            userdata.in_learn_person=1
+            userdata.in_learn_person=1 # now is hartcoded
             if self.preempt_requested():
                 return 'preempted'
             return 'succeeded'
@@ -93,13 +94,13 @@ class occluded_person(smach.State):
        
        
 class calculate_goal(smach.State):
-    def __init__(self, distanceToHuman=0.9):
+    def __init__(self, distanceToHuman=0.4):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
                              input_keys=['tracking_msg_filtered','nav_to_coord_goal'],
                              output_keys=['nav_to_coord_goal'])
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-
+        self.distanceToHuman=0.2
         #Calculating vectors for the position indicated
         new_pose = Pose()
         
@@ -119,7 +120,7 @@ We want that if the person comes closer, the robot stays in the place.
 Thats why we make desired distance zero if person too close.
 """
 
-        distance_des = 0.0
+        distance_des = 0.3
         if position_distance >= self.distanceToHuman: 
             distance_des = position_distance - self.distanceToHuman
             alfa = math.atan2(userdata.tracking_msg_filtered.y,userdata.tracking_msg_filtered.x)
@@ -212,7 +213,7 @@ class FollowOperator(smach.StateMachine):
                                                'preempted':'preempted'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
-                                   topic_reader(topic_name='/people_tracker_node/peopleSet',
+                                   topic_reader(topic_name='/people_tracker/follow_person',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
                                                 'aborted':'READ_TRACKER_TOPIC',

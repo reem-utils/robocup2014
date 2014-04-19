@@ -32,7 +32,7 @@ class topic_reader_state(smach.State):
     def execute(self, userdata):
         if (self.blocked):
             try:
-                rospy.loginfo('[TopicReader] In Execute')
+               
                 _topic_info = rospy.wait_for_message(self.topic_name, self.topic_type, self.topic_time_out)
                 userdata.topic_output_msg = _topic_info
                 userdata.standard_error = "Topic Reader : No Error "
@@ -50,7 +50,7 @@ class topic_reader_state(smach.State):
             
             while not self.msg and not self.time_exit :
                 self.calul_time()
-                rospy.sleep(0.02)
+                rospy.sleep(0.5)
                 if self.preempt_requested():
                     return 'preempted'
 

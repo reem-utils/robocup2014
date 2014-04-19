@@ -11,9 +11,9 @@
 	
 	</node>
 	<node pkg="navigation_states"
-	      type="nav_back.py"
+	      type="reverse_node.py"
 	      name="NavigationBack_node">
-	
 	</node>
+ 
 
 </launch>
