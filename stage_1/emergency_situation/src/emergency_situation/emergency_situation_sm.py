@@ -218,7 +218,7 @@ class emergency_situation_sm(smach.StateMachine):
             #If Aborted (not supposed to), retry?
             smach.StateMachine.add(
                 'Go_to_emergency_room_2',
-                DummyStateMachine(),
+                #DummyStateMachine(),
                 nav_to_poi('emergency_room'),
                 transitions={'succeeded':'Dummy_Wait', 'aborted':'Dummy_Wait', 'preempted':'Dummy_Wait'})
 
