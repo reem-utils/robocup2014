@@ -10,7 +10,7 @@ import rospy
 import smach
 import smach_ros
 
-from restaurant_navigation import RestaurantNavigation
+from restaurant.restaurant_navigation import RestaurantNavigation
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'

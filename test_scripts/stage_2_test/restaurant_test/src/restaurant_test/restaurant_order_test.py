@@ -10,7 +10,7 @@ import rospy
 import smach
 import smach_ros
 
-from restaurant_order_phase import RestaurantOrder
+from restaurant.restaurant_order_phase import RestaurantOrder
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'

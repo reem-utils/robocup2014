@@ -13,24 +13,19 @@ OKGREEN = '\033[92m'
 
 
 from speech_states.say import text_to_say
-from speech_states.listen_and_check_word import ListenWordSM
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
 
-FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
-START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
-LEARNED_PERSON_FRASE = "OK,  i  am ready to  follow you!"
-START_FRASE="Hello, my name is REEM! What do you want me to do today?"
+START_FRASE="Hello, my name is REEM! I am here to learn about this restaurant  , i need few seconds to prepare,  please stay near of my eyes"
+LETS_GO="OK, i am ready to start learning"
 
 
-
-# It's only becouse i can't import the file... i can't understand
 class LearnPerson(smach.State):
 
     def __init__(self): 
-        smach.State.__init__(self, input_keys=['asr_userSaid','in_learn_person'],
+        smach.State.__init__(self, input_keys=[],
                              output_keys=['in_learn_person'],
                              outcomes=['succeeded','aborted', 'preempted'])
 
@@ -40,7 +35,7 @@ class LearnPerson(smach.State):
         return 'succeeded'
 
 
-class FollowMeInit(smach.StateMachine):
+class restaurantInit(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
@@ -53,23 +48,14 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.in_learn_person=1
             smach.StateMachine.add('INTRO',
                                    text_to_say(START_FRASE),
-                                   transitions={'succeeded': 'Listen','aborted':'aborted'})
-
-            smach.StateMachine.add('Listen',
-                                   ListenWordSM("follow me"),
-                                   transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
-                                                'aborted': 'Listen'})
-          
-            smach.StateMachine.add('START_FOLLOWING_COME_CLOSER',
-                                   text_to_say(START_FOLLOW_FRASE),
-                                   transitions={'succeeded': 'SM_LEARN_PERSON','aborted':'aborted'})
+                                   transitions={'succeeded': 'Learn','aborted':'aborted'})
 
             # it learns the person that we have to follow
-            smach.StateMachine.add('SM_LEARN_PERSON',
+            smach.StateMachine.add('Learn',
                                    LearnPerson(),
                                    transitions={'succeeded': 'SM_STOP_LEARNING',
                                                 'aborted': 'aborted'})
 
             smach.StateMachine.add('SM_STOP_LEARNING',
-                                   text_to_say(LEARNED_PERSON_FRASE),
+                                   text_to_say(LETS_GO),
                                    transitions={'succeeded': 'succeeded','aborted':'aborted'})
