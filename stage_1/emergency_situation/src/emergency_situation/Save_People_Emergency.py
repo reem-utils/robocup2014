@@ -143,10 +143,10 @@ class Save_People_Emergency(smach.StateMachine):
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
-                transitions={'succeeded':'Say_Save', 'aborted':'Say_Save', 'preempted':'preempted'})
-
-            smach.StateMachine.add(
-                'Say_Save',
-                text_to_say('Information Saved'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+#             
+#             smach.StateMachine.add(
+#                 'Say_Save',
+#                 text_to_say('Information Saved'),
+#                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

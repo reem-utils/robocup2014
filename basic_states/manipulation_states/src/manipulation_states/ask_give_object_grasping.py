@@ -43,7 +43,7 @@ class create_move_group_joints_goal(smach.State):
         return 'succeeded'
 
 class wait_state(smach.State):
-    def __init__(self, time=3):
+    def __init__(self, time=1):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
         self.wait_time = time
     def execute(self, userdata):
@@ -78,7 +78,7 @@ class ask_give_object_grasping(smach.StateMachine):
             # Preparation of the Ask Process
             # Input Data: 'object_to_grasp'
             self.userdata.tts_wait_before_speaking = 0
-            self.userdata.tts_lang = 'en_us'
+            self.userdata.tts_lang = 'en_US'
             smach.StateMachine.add('Prepare_Ask_Person_Object',
                                     prepare_ask_person_object(),
                                     transitions={'succeeded':'Ask_Person_Object', 'preempted':'Ask_Person_Object', 'aborted':'Ask_Person_Object'})
@@ -89,7 +89,7 @@ class ask_give_object_grasping(smach.StateMachine):
             
             # Reach the arm
             self.userdata.manip_motion_to_play = 'give_object_right'
-            self.userdata.manip_time_to_play = 8.0
+            self.userdata.manip_time_to_play = 2.0
             smach.StateMachine.add('Reach_Arm',
                                     play_motion_sm(),
                                     transitions={'succeeded':'Open_hand', 'preempted':'Open_hand', 'aborted':'Open_hand'})
@@ -101,7 +101,7 @@ class ask_give_object_grasping(smach.StateMachine):
 
             # Wait 5 seconds
             smach.StateMachine.add('Wait_for_object',
-                                    wait_state(4),
+                                    wait_state(1),
                                     transitions={'succeeded':'Pre_Grasp', 'preempted':'Pre_Grasp', 'aborted':'Pre_Grasp'})
 
             smach.StateMachine.add('Pre_Grasp',

@@ -64,7 +64,15 @@ class prepare_tts(smach.State):
 
         return 'succeeded'
 
-
+class set_home_position(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, 
+            outcomes=['succeeded','aborted', 'preempted'], 
+            output_keys=['manip_motion_to_play','manip_time_to_play']) 
+    def execute(self, userdata):
+        userdata.manip_motion_to_play = 'home'
+        userdata.manip_time_to_play = 4.0
+        return 'succeeded'
 class emergency_situation_sm(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation.
@@ -188,11 +196,18 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Get_Person_Desired_Object',
                 Get_Person_Desired_Object(),
-                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+                transitions={'succeeded':'Prepare_home', 'aborted':'Prepare_home', 'preempted':'Prepare_home'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
-
+            smach.StateMachine.add(
+                                   'Prepare_home',
+                                   set_home_position(),
+                                   transitions={'succeeded':'SetHome', 'aborted':'SetHome', 'preempted':'SetHome'})
+            smach.StateMachine.add(
+                                   'SetHome',
+                                   play_motion_sm(),
+                                   transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'SetHome', 'preempted':'SetHome'})
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
                 #DummyStateMachine(),
@@ -225,4 +240,9 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Dummy_Wait',
                 DummyStateMachine(),
+                transitions={'succeeded':'Say_Finish', 'aborted':'Say_Finish', 'preempted':'Say_Finish'})
+
+            smach.StateMachine.add(
+                'Say_Finish',
+                text_to_say('Here is the Emergency. I helped to save a life.'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
