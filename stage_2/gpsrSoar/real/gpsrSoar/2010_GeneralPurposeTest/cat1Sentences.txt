@@ -1,5 +1,5 @@
-Move to the LOCATION, then go to the LOCATION and exit the apartment.
-Move to the LOCATION, then move to the LOCATION and leave the apartment.
+Move to the LOCATION, then go to the LOCATION and exit the apartment. -
+Move to the LOCATION, then move to the LOCATION and leave the apartment. -
 Move to the LOCATION, then move to the LOCATION and exit the apartment.
 Move to the LOCATION, then navigate to the LOCATION and leave the apartment.
 Move to the LOCATION, then navigate to the LOCATION and exit the apartment.
@@ -9,7 +9,7 @@ Navigate to the LOCATION, then move to the LOCATION and leave the apartment.
 Navigate to the LOCATION, then move to the LOCATION and exit the apartment.
 Navigate to the LOCATION, then navigate to the LOCATION and leave the apartment.
 Navigate to the LOCATION, then navigate to the LOCATION and exit the apartment.
-Go to the LOCATION, get the ITEM, and leave the apartment.
+Go to the LOCATION, get the ITEM, and leave the apartment. -
 Go to the LOCATION, get the ITEM, and exit the apartment.
 Go to the LOCATION, take the ITEM, and leave the apartment.
 Go to the LOCATION, take the ITEM, and exit the apartment.

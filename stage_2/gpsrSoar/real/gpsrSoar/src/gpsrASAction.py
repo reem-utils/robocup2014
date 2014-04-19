@@ -173,7 +173,8 @@ class gpsrASAction(object):
     self._world = new_world(range(len(get_list('LOCATIONS'))))  #generates a new world
     print self._world.robot.locId
     self.print_goal()
-    
+        
+    rospy.logwarn (str(self._goal.orderList))
     while not success:
       soarResult = interface.main()
       if soarResult == 'aborted':
@@ -242,27 +243,15 @@ class gpsrASAction(object):
     # checks that the item is or not a category
     # print 'blablabal'
     if command.item in categories:
-      print ("_------------command.item val : " + command.item)
-      print ("_------------I les categories son: " + str(categories))
-      objct = ask_category(command.item)#----------------------------------
-      print objct
-      print ('a dintre de objct hi ha ' + objct)
+      objct = ask_category(command.item)
       self._world.item.id = obj2idx(objct, 'ITEMS')
       command.item = objct
-      print idx2obj(self._world.item.id, 'ITEMS')
 
-    # print command.location
-    # print 'here'
+
     if command.location in loc_categories:
-      # print 'ther should be a print here'
       loca = ask_category_loc(command.location)
-      # print locaask_category
-      # print loca
-      # print self._world.location
-      # print len(self._world.location)
       # self._world.location.id = obj2idx(loca, 'LOCATIONS')
       command.location = loca
-      # print loca
 
     # checks if the location of objects or persons are known
     if self._world.person.locId == '-1' : # and command.person == self._world.person.id:
@@ -271,7 +260,6 @@ class gpsrASAction(object):
       #   ploc = obj2idx(ploc,'LOCATIONS')
       self._world.person.locId = ploc
     
-    # print command.item
     try:
       i = obj2idx(command.item, 'ITEMS')
       self._world.item.id = str(i)
@@ -286,16 +274,10 @@ class gpsrASAction(object):
       p = ''
     try:
       l = obj2idx(command.location, 'LOCATIONS')
-      # print l
-      # print l
     except ValueError:
       l = ''
     print self._world.robot.locId
-    # print command.location
-    # print idx2obj(l, 'LOCATIONS')
-    # print 'blabla'
-
-    # print 'here here ' + str(p)
+    
 
     if self._world.item.locId == '-1' and self._world.item.id != '-1': # and command.item == self._world.item.id:
       iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
@@ -309,14 +291,28 @@ class gpsrASAction(object):
     if (command.action == 'memorize' or command.action == 'recognize'):
       command.person = self._world.person.id
 
-    # print self._world.item.id
-    # print self._world.item.locId
 
-    self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, oitem=i, operson=p, olocation=l, current_world=self._world)
-    # compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, oitem=items[command.item], operson=persons[command.person], olocation=locations[command.location])
-
+    print "locc: "
+    print locc
+    print "perss: "
+    print perss
+    print "itt: "
+    print itt
+    print "command.action: "
+    print command.action
+    print "i: "
+    print i
+    print "p: "
+    print p
+    print "l: "
+    print l
+    print "self._world: "
+    print self._world
     
-    # printNewGoal(action, it, pers, loc, self._goalDonei)
+    self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, 
+                                  oitem=i, operson=p, olocation=l, current_world=self._world)
+
+
     self._goalDonei += 1 
 
   def has_succeeded(self):
