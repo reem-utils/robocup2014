@@ -87,7 +87,7 @@ class SaveFaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 "prepare_name",
                 prepare_name(),
-                transitions={'succeeded': 'learn_face', 'aborted': 'ask_name_again', 
+                transitions={'succeeded': 'say_start', 'aborted': 'ask_name_again', 
                 'preempted': 'preempted'})  
             
             # Ask for name again
@@ -97,6 +97,13 @@ class SaveFaceSM(smach.StateMachine):
                 transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
            
+            smach.StateMachine.add(
+                'say_start',
+                text_to_say("OK,  now i am going to enroll your  face, don't  move"),
+                transitions={'succeeded': 'learn_face', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
+
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
