@@ -21,13 +21,12 @@ class topic_reader_state(smach.State):
         self.topic_time_out = topic_time_out
 
     def execute(self, userdata):
-        self.received_msg=False
         self.time_init=rospy.get_rostime()
         self.msg_data=ASREvent()
         self.subs=rospy.Subscriber(topic_name, ASREvent,self.callback_topic)
         
         
-        
+         # USAR ENUM DE EL TIPO DE EVENT_ID, NO EL NUMERO
         while not self.msg_data.event_id == 2 and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
             rospy.sleep(0.3)
             if self.preempt_requested():
