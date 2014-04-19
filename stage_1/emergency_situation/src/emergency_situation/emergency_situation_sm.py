@@ -188,18 +188,15 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Get_Person_Desired_Object',
                 Get_Person_Desired_Object(),
-                transitions={'succeeded':'Prepare_Door_Out_Arena_2', 'aborted':'Prepare_Door_Out_Arena_2', 'preempted':'Prepare_Door_Out_Arena_2'})
+                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
-            smach.StateMachine.add(
-                'Prepare_Door_Out_Arena_2',
-                prepare_poi_emergency('entry_door_exit'),
-                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
-                DummyStateMachine(),
-                #nav_to_poi(),
+                #DummyStateMachine(),
+                nav_to_poi('entry_door_init'),
                 transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
 
             #What is Wait for Ambulance or People Mean? Person detection?
@@ -216,17 +213,13 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Ambulance',
                 text_to_say(),
-                transitions={'succeeded':'Prepare_Poi_Emergency_2', 'aborted':'Prepare_Poi_Emergency_2', 'preempted':'Prepare_Poi_Emergency_2'})
+                transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
             #TODO: Define the name of the room to enter (defined by the OC)
             #If Aborted (not supposed to), retry?
             smach.StateMachine.add(
-                'Prepare_Poi_Emergency_2',
-                prepare_poi_emergency('emergency_room'),
-                transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
-            smach.StateMachine.add(
                 'Go_to_emergency_room_2',
                 DummyStateMachine(),
-                #nav_to_poi(),
+                nav_to_poi('emergency_room'),
                 transitions={'succeeded':'Dummy_Wait', 'aborted':'Dummy_Wait', 'preempted':'Dummy_Wait'})
 
             smach.StateMachine.add(
