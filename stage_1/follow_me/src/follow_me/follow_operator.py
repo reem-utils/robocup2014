@@ -35,9 +35,9 @@ MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
 class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'],
-                             output_keys=['in_learn_person'])
+                             output_keys=[])
     def execute(self, userdata):
-            userdata.in_learn_person=1 # now is hartcoded
+            #userdata.in_learn_person=1 # now is hartcoded
             if self.preempt_requested():
                 return 'preempted'
             return 'succeeded'
@@ -47,7 +47,7 @@ class filter_and_process(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['find_it','not_find','occluded','preempted'],
                              input_keys=['tracking_msg','in_learn_person'],
-                             output_keys=['tracking_msg_filtered'])
+                             output_keys=['tracking_msg_filtered','in_learn_person'])
     def execute(self, userdata):
         find=False
 
@@ -184,7 +184,7 @@ class FollowOperator(smach.StateMachine):
     @input= userdata.in_learn_person
     @Optional input = distToHuman
     @Optional input = time_occluded
-    the optional parameters have to be passet in ()
+    the optional parameters have to be pas in ()
     @Output= I't not have a output
     
     @Outcomes= 'succeeded' : never will be succed because it's infinit
@@ -199,12 +199,14 @@ class FollowOperator(smach.StateMachine):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
-            input_keys=["in_learn_person"])
+            input_keys=[])
 
         
 
         with self:
             self.userdata.standard_error='OK'
+            self.userdata.in_learn_person=1
+            self.userdata.word_to_listen=None
 
             
             smach.StateMachine.add('INIT_VAR',
@@ -213,7 +215,7 @@ class FollowOperator(smach.StateMachine):
                                                'preempted':'preempted'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
-                                   topic_reader(topic_name='/people_tracker/follow_person',
+                                   topic_reader(topic_name='/people_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
                                                 'aborted':'READ_TRACKER_TOPIC',
@@ -249,7 +251,8 @@ class FollowOperator(smach.StateMachine):
             
             smach.StateMachine.add('SEND_GOAL',
                        nav_to_coord_concurrent('/base_link'),
-                       transitions={'succeeded':'FREQ_SENDING', 'aborted':'DEBUG','preempted':'preempted'})
+                       transitions={'succeeded':'FREQ_SENDING', 
+                                    'aborted':'DEBUG','preempted':'preempted'})
             
             smach.StateMachine.add('FREQ_SENDING',
                        freq_goal(),

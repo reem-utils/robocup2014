@@ -61,7 +61,7 @@ class Follow_me_Service():
     Follow me Mock 
 
     Run the topic of face recognition:
-        /people_tracker/follow_person
+        /people_tracker_node/peopleSet
 
     """
     def face_cb(self,data):
@@ -81,7 +81,7 @@ class Follow_me_Service():
     def __init__(self):
         self.name=str(raw_input('Name of the face :'))  
         rospy.loginfo("Initializing tracker_people_service")
-        self.follow_person_pub=rospy.Publisher('/people_tracker/follow_person',personArray)
+        self.follow_person_pub=rospy.Publisher('/people_tracker_node/peopleSet',personArray)
         self.face_subs=rospy.Subscriber("/pal_face/faces", FaceDetections, self.face_cb)
         self.persons=personArray()
     def run(self):
