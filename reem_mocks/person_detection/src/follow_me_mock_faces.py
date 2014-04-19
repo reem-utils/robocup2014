@@ -3,7 +3,7 @@
 @author: Roger Boldu
 '''
 
-
+import smach
 import rospy
 import actionlib
 import sys
@@ -17,7 +17,7 @@ from pal_detection_msgs.srv import StopEnrollment, StopEnrollmentRequest, StopEn
 from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseResponse
 from follow_me.msg import tracker_people,person,personArray
 from pal_detection_msgs.msg import FaceDetections,Detections2d,FaceDetection,Detection2d
-
+from smach_ros import ServiceState
 
 fakepositionx=0
 fakepositiony=2
@@ -26,22 +26,6 @@ information=True
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-
-#! /usr/bin/env python
-# vim: expandtab ts=4 sw=4
-### FOLOW_OPERATOR.PY ###
-"""
-
-@author: Roger Boldu
-"""
-import rospy
-import smach
-from smach_ros import ServiceState
-
-ENDC = '\033[0m'
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
-
 
 
 '''
