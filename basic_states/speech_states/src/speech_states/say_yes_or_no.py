@@ -25,7 +25,7 @@ class ProcessCommand(smach.State):
         smach.State.__init__(self, outcomes=['yes', 'no', 'aborted'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error'])
-        self.tags = parserGrammar(GRAMMAR_NAME + '.gram')
+        self.tags = parserGrammar(GRAMMAR_NAME)
         
     def execute(self, userdata):        
         question = userdata.asr_userSaid
