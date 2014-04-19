@@ -121,7 +121,7 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say(),
-                transitions={'succeeded':'Prepare_Door_Out_Arena', 'aborted':'Prepare_Door_Out_Arena', 'preempted':'Prepare_Door_Out_Arena'})
+                transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
             # Pass the entry room
             # TODO: Define the poi for the output of the room 
@@ -132,7 +132,7 @@ class emergency_situation_sm(smach.StateMachine):
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
             smach.StateMachine.add(
                 'Enter_Room_Arena',
-                EnterRoomSM(),
+                EnterRoomSM('entry_door_exit'),
                 #DummyStateMachine(),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 

@@ -16,7 +16,7 @@ from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
 from manipulation_states.play_motion_sm import play_motion_sm
-from manipulation_states.move_hands_form import move_hands_form 
+from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
@@ -44,10 +44,11 @@ class DummyStateMachine(smach.State):
 class prepare_poi_person_emergency(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['person_location'], 
+            input_keys=['person_location_coord'], 
             output_keys=['nav_to_poi_name']) 
     def execute(self,userdata):
-        userdata.nav_to_poi_name = userdata.person_location
+        rospy.loginfo('PersonLOcationCooordddddd :::::::: ' + userdata.person_location_coord)
+        userdata.nav_to_coord_goal = userdata.person_location_coord 
 
         return 'succeeded'
 
@@ -69,10 +70,15 @@ class Process_Tags(smach.State):
                                 output_keys=['object_to_grasp'])
 
     def execute(self, userdata):
-        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
-        if tags:
-            name = tags[0].value
-            userdata.object_to_grasp = name
+        if(userdata.asr_answer.find("coke") 
+           or userdata.asr_answer.find("water") 
+           or userdata.asr_answer.find("juice")):
+            userdata.object_to_grasp = userdata.asr_answer
+#         
+#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
+#         if tags:
+#             name = tags[0].value
+#             userdata.object_to_grasp = name
             return 'succeeded'
         
         return 'aborted'
@@ -110,7 +116,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['person_location'])
+                                    input_keys=['person_location', 'person_location_coord'])
 
         with self:           
             self.userdata.emergency_location = []
@@ -123,25 +129,8 @@ class Get_Person_Desired_Object(smach.StateMachine):
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
                 'Ask_Question',
-                AskQuestionSM(text='What would you like me to bring?', grammar='emergency_drinks'),
+                AskQuestionSM(text='What would you like me to bring?', grammar='/robocup/drinks.gram'),
                 transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
-#            smach.StateMachine.add(
-#                'Prepare_Ask_Object',
-#                prepare_tts('What would you like me to bring?'),
-#                transitions={'succeeded':'Say_Ask_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
-
-#            smach.StateMachine.add(
-#                'Say_Ask_Object',
-#                text_to_say(),
-#                transitions={'succeeded':'Listen_to_Desire', 'aborted':'Listen_to_Desire', 'preempted':'Listen_to_Desire'})
-
-            # TODO: ASR : Automatic Speech Recognition: Whay_say/Listen_to
-            # TODO: Activate_ASR + Read_ASR + DeActivate_ASR
-#            smach.StateMachine.add(
-#                'Listen_to_Desire',
-#                DummyStateMachine(),
-#                #Listen_to(),
-#                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
 
             # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
             # Input keys: actiontag[] 'asr_userSaid_tags'
@@ -150,7 +139,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Process_Tags',
                 #DummyStateMachine(),
                 Process_Tags(),
-                transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Say_go_Kitchen', 'aborted':'Say_go_Kitchen'})
+                transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             smach.StateMachine.add(
                 'Say_go_Kitchen',
                 text_to_say('I am Going to the Kitchen for an object'),
@@ -165,17 +154,17 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Find_and_grab_object',
                 #Find_and_grab_object(),
                 DummyStateMachine(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
-                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
             
             #Go to person
-            # smach.StateMachine.add(
-            #     'Prepare_Go_To_Person',
-            #     prepare_poi_person_emergency(),
-            #     transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+            smach.StateMachine.add(
+                'Prepare_Go_To_Person',
+                prepare_poi_person_emergency(),
+                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
@@ -194,8 +183,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 #DummyStateMachine(),
                 move_hands_form(hand_pose_name='full_open', hand_side='right'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-
-
 
 
 
