@@ -17,39 +17,51 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.nav_to_coord import nav_to_coord
 from speech_states.say import text_to_say
 from search_faces import SearchFacesSM
-
 from navigation_states.get_current_robot_pose import get_current_robot_pose
 from util_states.math_utils import add_vectors, substract_vector
 from util_states.pose_at_distance import pose_at_distance, pose_at_distance2
 from geometry_msgs.msg import Pose
-
-
+from speech_states.parser_grammar import parserGrammar
+from util_states.math_utils import *
 
 # Constants
 NUMBER_OF_QUESTIONS = 3
-GRAMMAR_NAME = 'what_did_you_say.gram'
+GRAMMAR_NAME = 'what_did_you_say'
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-
 class prepare_coord_person(smach.State):
-    def __init__(self):
+    def __init__(self, distanceToHuman=0.3):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['face', 'current_robot_yaw','current_robot_pose'], 
-            output_keys=['nav_to_coord_goal', 'standard_error'])
-
-    def execute(self,userdata):
-        person_pose = Pose()
-        person_pose.position = userdata.face.position
-        person_pose.orientation = userdata.current_robot_pose.pose.orientation
+                                input_keys=['face', 'nav_to_coord_goal'],
+                                output_keys=['standard_error', 'nav_to_coord_goal'])
+        self.distanceToHuman = distanceToHuman
         
-        person_pose = pose_at_distance2(userdata.current_robot_pose.pose,person_pose,1.41)
-        userdata.nav_to_coord_goal=[person_pose.position.x, person_pose.position.y, userdata.current_robot_yaw]
-    
+    def execute(self, userdata):
+        
+        new_pose = Pose()
+        # TODO: We adapt the coordinates respect kinect 
+        new_pose.position.x = userdata.face.position.z
+        new_pose.position.y = -userdata.face.position.x
+
+        unit_vector = normalize_vector(new_pose.position)
+        position_distance = vector_magnitude(new_pose.position)
+
+        distance_des = 0.0
+        if position_distance >= self.distanceToHuman: 
+            distance_des = position_distance - self.distanceToHuman
+        else:
+            rospy.loginfo(" Person too close => not moving, just rotate")
+ 
+        alfa = math.atan2(new_pose.position.y, new_pose.position.x)
+        
+        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        
         return 'succeeded'
+
 
 class SelectAnswer(smach.State):
     def __init__(self):
@@ -57,10 +69,17 @@ class SelectAnswer(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error', 'tts_text', 'tts_wait_before_speaking'])
-
+        self.tags = parserGrammar(GRAMMAR_NAME)
+        
     def execute(self, userdata):        
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
+        
+#         for element in self.tags:
+#             for value in element[1]:
+#                 if userdata.asr_userSaid == value:
+#                     return element[0]
+
         foundAnswer = False
         #important to do add the .yalm before
         question_params = rospy.get_param("/question_list/questions/what_say")
@@ -178,14 +197,8 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_face',
                 SearchFacesSM(),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': 'ask_for_tc', 
+                transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc', 
                 'preempted': 'preempted'})
-            
-            # Where are we?
-            smach.StateMachine.add(
-                'get_actual_pos',
-                get_current_robot_pose(),
-                transitions={'succeeded': 'prepare_coord_person', 'aborted': 'aborted', 'preempted': 'succeeded'})
             
             # Go to the person - We assume that find person will return the position for the person
             smach.StateMachine.add(
@@ -196,7 +209,7 @@ class WhatSaySM(smach.StateMachine):
             
             smach.StateMachine.add(
                 'go_to_person',
-                nav_to_coord(),
+                nav_to_coord('/base_link'),
                 transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
                 'preempted': 'preempted'})   
             

@@ -104,8 +104,8 @@ class SaveFaceSM(smach.StateMachine):
             # Ask for name again
             smach.StateMachine.add(
                 'ask_name_again',
-                text_to_say("Sorry, I don't understand you. Can you repeat your name, please?"),
-                transitions={'succeeded': 'listen_name', 'aborted': 'aborted', 
+                AskQuestionSM("Sorry, I don't understand you. Can you repeat your name, please?", GRAMMAR_NAME),
+                transitions={'succeeded': 'prepare_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
            
             # Start learning
