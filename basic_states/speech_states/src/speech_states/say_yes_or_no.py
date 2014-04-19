@@ -17,7 +17,7 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
     
-GRAMMAR_NAME = 'yes_no'
+GRAMMAR_NAME = 'robocup/yes_no'
 
 class ProcessCommand(smach.State):
     def __init__(self):
