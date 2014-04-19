@@ -5,9 +5,7 @@
 import rospy
 import smach
 
-
-
-from restaurant_follow_operator import FollowOperator #  this don't have to be heare
+from follow_me.follow_operator import FollowOperator
 from speech_states.say import text_to_say
 from speech_states.say_yes_or_no import SayYesOrNoSM
 from speech_states.listen_and_check_word import ListenWordSM
