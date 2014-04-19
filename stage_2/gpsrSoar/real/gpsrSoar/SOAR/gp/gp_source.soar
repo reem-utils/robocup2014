@@ -8,6 +8,7 @@ popd
 source ask-name.soar
 source deliver.soar
 source exit-apartment.soar
+source goal-achived.soar
 source grasp.soar
 source initialize-gp.soar
 source introduce-me.soar
