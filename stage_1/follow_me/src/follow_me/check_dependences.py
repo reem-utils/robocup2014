@@ -10,6 +10,8 @@ import rospy
 import rosservice
 import rosgraph.masterapi
 from util_states.colors import Colors
+import smach_ros
+
 
 TOPIC_LIST_NAMES = [  # Topics and Actions
                     ##################### Topics #####################
@@ -19,10 +21,11 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/check_elevator/elevator_status",
                     "/sonar_base",
                     "/move_base/goal",
-                    "/people_tracker/person",
+                    "/people_tracker_node/peopleSet",
+                    "/sonar_base","/scan_filtered","/amcl_pose",
                     ]
                     
-SERVICES_LIST_NAMES = ["/check_elevator/enable","/move_back"]  # #################### Services #####################
+SERVICES_LIST_NAMES = ["/check_elevator","/reverse"]  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",
@@ -58,7 +61,10 @@ class CheckDependencesState(smach.State):
     This State Machine check if the topics, actions, services are running and if is possible translate locations in the map.
     """
 
-    def __init__(self, topic_names=TOPIC_LIST_NAMES, service_names=SERVICES_LIST_NAMES, action_names=ACTION_LIST_NAMES, params_names=PARAMS_LIST_NAMES, input_keys=[], output_keys=[]):
+    def __init__(self, topic_names=TOPIC_LIST_NAMES,
+                  service_names=SERVICES_LIST_NAMES, 
+                  action_names=ACTION_LIST_NAMES, params_names=PARAMS_LIST_NAMES,
+                   input_keys=[], output_keys=[]):
         """Constructor for CheckDependencesState
 
         @type topic_names: list of strings
@@ -193,3 +199,42 @@ class CheckDependencesState(smach.State):
         self.check_specific_params()
 
         return 'succeeded' if self.ALL_OK else 'aborted'
+    
+   
+
+
+
+#from smach_ros import SimpleActionState, ServiceState
+from follow_me.follow_me_sm import FollowMe 
+ENDC = '\033[0m'
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
+
+
+
+def main():
+    rospy.loginfo('check DEPENDENCS')
+    rospy.init_node('CHECK_DEPENDENCE')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
+    with sm:
+        sm.userdata.standard_error='OK'
+        # it prepare the name and the function for drope
+        smach.StateMachine.add(
+            'CHECK',
+            CheckDependencesState(),
+            transitions={'succeeded':'succeeded','aborted' : 'aborted'})
+
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+    sis = smach_ros.IntrospectionServer(
+        'check_dependence', sm, '/CHECK')
+    sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+    sis.stop()
+
+
+if __name__ == '__main__':
+    main()

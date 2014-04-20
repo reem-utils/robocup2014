@@ -5,15 +5,12 @@
 import rospy
 import smach
 
-
-
-from restaurant_follow_operator import FollowOperator #  this don't have to be heare
+from follow_me.follow_operator import FollowOperator
 from speech_states.say import text_to_say
 from speech_states.say_yes_or_no import SayYesOrNoSM
 from speech_states.listen_and_check_word import ListenWordSM
+from restaurant_init_phase import restaurantInit
 from restaurant_listen_operator import ListenOperator
-            
-
 """
 RESTAURANT_guide.PY
 
@@ -110,28 +107,23 @@ class restaurantGuide(smach.StateMachine):
             self.userdata.tts_lang=None
             self.userdata.nav_to_poi_name=None
             self.userdata.standard_error='OK'
-            self.userdata.grammar_name="restaurant.gram"
-            self.userdata.in_learn_person=None
+            self.userdata.grammar_name="robocup/restaurant"
+            self.userdata.in_learn_person=1 # todo is only for try
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'Start',
+                                   transitions={'succeeded': 'LEARN_INIT',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
-            smach.StateMachine.add('LEARN_PERSON',
-                       learn_person(),
-                       transitions={'succeeded': 'Start',
-                                    'aborted': 'LEARN_PERSON','preempted':'preempted'})
+            smach.StateMachine.add('LEARN_INIT',
+                                   restaurantInit(),
+                                   transitions={'succeeded': 'CONCURRENCE',
+                                                'aborted': 'LEARN_INIT','preempted':'preempted'})
             
         
-            smach.StateMachine.add('Start',
-                                   text_to_say(SAY_LETS_GO),
-                                   transitions={'succeeded': 'CONCURRENCE',
-                                    'aborted': 'aborted','preempted':'preempted'})
-            
             
             sm=smach.Concurrence(outcomes=['succeeded', 'lost'],
-                                   default_outcome='succeeded',input_keys=["in_learn_person"],
+                                   default_outcome='succeeded',input_keys=["in_learn_person",],
                                    child_termination_cb = child_term_cb, outcome_cb=out_cb)
                 
              

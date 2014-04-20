@@ -15,8 +15,9 @@ from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
+from speech_states.listen_to import ListenToSM
 from manipulation_states.play_motion_sm import play_motion_sm
-from manipulation_states.move_hands_form import move_hands_form 
+from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
@@ -44,10 +45,11 @@ class DummyStateMachine(smach.State):
 class prepare_poi_person_emergency(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['person_location'], 
-            output_keys=['nav_to_poi_name']) 
+            input_keys=['person_location_coord'], 
+            output_keys=['nav_to_coord_goal']) 
     def execute(self,userdata):
-        userdata.nav_to_poi_name = userdata.person_location
+        rospy.loginfo('PersonLOcationCooordddddd :::::::: ' + str(userdata.person_location_coord))
+        userdata.nav_to_coord_goal = userdata.person_location_coord 
 
         return 'succeeded'
 
@@ -65,14 +67,20 @@ class prepare_tts(smach.State):
 class Process_Tags(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=["asr_answer","asr_answer_tags"],
+                                input_keys=["asr_userSaid","asr_userSaid_tags"],
                                 output_keys=['object_to_grasp'])
 
     def execute(self, userdata):
-        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
-        if tags:
-            name = tags[0].value
-            userdata.object_to_grasp = name
+        if(userdata.asr_userSaid.find("coke") 
+           or userdata.asr_userSaid.find("water") 
+           or userdata.asr_userSaid.find("juice")):
+            userdata.object_to_grasp = userdata.asr_userSaid
+            rospy.loginfo(userdata.asr_userSaid)
+#         
+#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
+#         if tags:
+#             name = tags[0].value
+#             userdata.object_to_grasp = name
             return 'succeeded'
         
         return 'aborted'
@@ -110,38 +118,25 @@ class Get_Person_Desired_Object(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['person_location'])
+                                    input_keys=['person_location', 'person_location_coord'])
 
         with self:           
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
+            smach.StateMachine.add(
+                                   'Ask_Question',
+                                   text_to_say(text='What would you like me to bring?'),
+                                   transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
             # Ask for the object to bring to the person
             # Output: 
             #   - string 'userSaid'
             #   - actiontag[] 'asr_userSaid_tags'
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
-                'Ask_Question',
-                AskQuestionSM(text='What would you like me to bring?', grammar='emergency_drinks'),
+                'Listen_Question',
+                ListenToSM(grammar='robocup/drinks'),
                 transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
-#            smach.StateMachine.add(
-#                'Prepare_Ask_Object',
-#                prepare_tts('What would you like me to bring?'),
-#                transitions={'succeeded':'Say_Ask_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
-
-#            smach.StateMachine.add(
-#                'Say_Ask_Object',
-#                text_to_say(),
-#                transitions={'succeeded':'Listen_to_Desire', 'aborted':'Listen_to_Desire', 'preempted':'Listen_to_Desire'})
-
-            # TODO: ASR : Automatic Speech Recognition: Whay_say/Listen_to
-            # TODO: Activate_ASR + Read_ASR + DeActivate_ASR
-#            smach.StateMachine.add(
-#                'Listen_to_Desire',
-#                DummyStateMachine(),
-#                #Listen_to(),
-#                transitions={'succeeded':'Go_Grab_Object', 'aborted':'Say_Ask_Object', 'preempted':'Say_Ask_Object'})
 
             # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
             # Input keys: actiontag[] 'asr_userSaid_tags'
@@ -150,10 +145,10 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Process_Tags',
                 #DummyStateMachine(),
                 Process_Tags(),
-                transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Say_go_Kitchen', 'aborted':'Say_go_Kitchen'})
+                transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             smach.StateMachine.add(
                 'Say_go_Kitchen',
-                text_to_say('I am Going to the Kitchen for an object'),
+                text_to_say('I am Going to the Kitchen for an object, Stay Here until I give you the object'),
                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
             smach.StateMachine.add(
                 'Go_To_Object_Place',
@@ -165,38 +160,52 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Find_and_grab_object',
                 #Find_and_grab_object(),
                 DummyStateMachine(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
+                transitions={'succeeded':'Rest_arm', 'aborted':'Rest_arm', 'preempted':'Rest_arm'})
+            self.userdata.manip_time_to_play = 4.0
+            smach.StateMachine.add(
+                                   'Rest_arm',
+                                   play_motion_sm('rest_object_right'),
+                                   transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+            #Go to person
+            smach.StateMachine.add(
+                'Prepare_Go_To_Person',
+                prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             
-            #Go to person
-            # smach.StateMachine.add(
-            #     'Prepare_Go_To_Person',
-            #     prepare_poi_person_emergency(),
-            #     transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
                 #DummyStateMachine(),
                 #nav_to_poi(),
                 nav_to_coord('/map'),
-                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'},
-                remapping={'nav_to_coord_goal':'person_location'})
+                transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
                 'Say_Give_Object',
                 text_to_say('I am going to give you the Object you want.'),
-                transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+                transitions={'succeeded':'Give_object_arm', 'aborted':'Give_object_arm', 'preempted':'Give_object_arm'})
+            smach.StateMachine.add(
+                                   'Give_object_arm',
+                                   play_motion_sm('give_object_right'),
+                                   transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
                 #DummyStateMachine(),
+                move_hands_form(hand_pose_name='pre_grasp', hand_side='right'),
+                transitions={'succeeded':'Give_Object_2', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+            smach.StateMachine.add(
+                'Give_Object_2',
+                #DummyStateMachine(),
                 move_hands_form(hand_pose_name='full_open', hand_side='right'),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-
-
-
+                transitions={'succeeded':'Say_Rescue_stay', 'aborted':'Give_Object_2', 'preempted':'Give_Object_2'})
+            smach.StateMachine.add(
+                'Say_Rescue_stay',
+                text_to_say('Please Stay here I am going to call for the Ambulance'),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'aborted':'preempted'})
 
 
 

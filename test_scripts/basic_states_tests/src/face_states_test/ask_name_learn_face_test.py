@@ -11,7 +11,8 @@ import smach
 import smach_ros
 import actionlib
 
-from face_states.ask_name_learn_face import SaveFaceSM 
+from face_states.ask_name_learn_face import SaveFaceSM
+from face_states.drop_faces import drop_faces
 
 def main():
     rospy.init_node('ask_name_test')
@@ -19,6 +20,15 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
+
+        sm.userdata.name = "robocup"
+        sm.userdata.purgeAll = True
+
+        smach.StateMachine.add(
+            'dropfaces',
+            drop_faces(),
+            transitions={'succeeded': 'SaveFaceSM', 'aborted': 'aborted'})
+
 
         smach.StateMachine.add(
             'SaveFaceSM',

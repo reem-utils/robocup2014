@@ -31,11 +31,12 @@ class init_var(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=['nav_to_coord_goal'])
+            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],
+            output_keys=['nav_to_coord_goal'])
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"i'm in the 3rd part of the robocup"+ENDC)
-        userdata.nav_to_coord_goal = [0,0,0]
+        userdata.nav_to_coord_goal = [0,0,0] # after go out we send this goal to finish the problem
         return 'succeeded'
 
 # i have to create a navigation state that go backford
@@ -52,7 +53,8 @@ class go_back(smach.State):
 class where_is_it(smach.State):
     
     def __init__(self):
-        smach.State.__init__(self, outcomes=['i_dont_know','ok_lets_go','preempted'], input_keys=['in_learn_person'])
+        smach.State.__init__(self, outcomes=['i_dont_know','ok_lets_go','preempted'],
+                              input_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.loginfo("i'm in a dumy state where i'm  looking if i know the person")
         return 'ok_lets_go'
@@ -65,6 +67,7 @@ class learn_again(smach.State):
                               output_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.loginfo("i'm in the learning dummy state, it's learn again")
+        userdata.in_learn_person=1#TODO: change fo the real one
         return 'succeeded'
 
 # hear i will send a goal whit my orientation and realy far
@@ -115,13 +118,16 @@ class follow_me_3rd(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,
                                     ['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['standard_error'],input_keys=['in_learn_person'])
+                                    output_keys=['standard_error'],
+                                    input_keys=['in_learn_person'])
         
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
+            self.userdata.word_to_listen=None
+            self.userdata.in_learn_person=1
             
             def go_back_request(userdata,request):
                 start_request = NavigationGoBackRequest()

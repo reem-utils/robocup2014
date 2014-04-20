@@ -65,7 +65,9 @@ class prepare_go_to_wave(smach.State):
 
 class Analyze_Wave(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], input_keys=['gesture_detected'], output_keys=['person_location'])
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                             input_keys=['gesture_detected'], 
+                             output_keys=['person_location'])
     def execute(self, userdata):
         if (userdata.gesture_detected.Gesture_name.data == "Wave"):
             userdata.person_location = userdata.gesture_detected.gesture_position #Type: geometry_msgs/Pose
@@ -73,6 +75,16 @@ class Analyze_Wave(smach.State):
         else:
             userdata.person_location = None
             return 'aborted'
+class PoseToArray(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                             input_keys=['person_location', 'current_robot_yaw'],
+                             output_keys=['person_location_coord'])
+    def execute(self, userdata):
+        userdata.person_location_coord = [userdata.person_location.pose.position.x, 
+                                          userdata.person_location.pose.position.y,
+                                          userdata.current_robot_yaw]
+        return 'succeeded'
 
 class Search_People_Emergency(smach.StateMachine):
     """
@@ -101,7 +113,7 @@ class Search_People_Emergency(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['person_location'])
+                                    output_keys=['person_location', 'person_location_coord'])
 
         with self:           
             self.userdata.emergency_location = []
@@ -148,8 +160,12 @@ class Search_People_Emergency(smach.StateMachine):
                 'Register_Position',
                 #DummyStateMachine(),
                 get_current_robot_pose(),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'Register_Position'},
+                transitions={'succeeded':'TreatPoseForCoord', 'aborted':'Register_Position', 'preempted':'Register_Position'},
                 remapping={'current_robot_pose':'person_location'})
+            smach.StateMachine.add(
+                'TreatPoseForCoord',
+                PoseToArray(),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'Register_Position'})
             
             # smach.StateMachine.add(
             #     'Detect_Wave',
