@@ -14,6 +14,7 @@ from navigation_states.nav_to_poi import nav_to_poi#from pal_smach_utils.navigat
 #from yes or no que no se on a guardat la cris#from pal_smach_utils.speech.did_you_say_yes_or_no_sm import HearingConfirmationSM
 # from gpsr.msg import order_list
 from gpsrSoar.msg import gpsrActionAction
+from speech_states.ask_question import AskQuestionSM
 # from pal_smach_utils.grasping.initialise_and_close_grasp import InitGraspPipelineSM, CloseGraspPipelineSM
 
 # from GenerateGoalScript import printNewGoal
@@ -22,7 +23,7 @@ from gpsrSoar.msg import gpsrActionAction
 SENTENCE_SAID = '/parsing/sentence'
 NUM_LOOPS_TODO = 3
 NUM_LOOPS_I = 0
-GRAMATICA = 'robocup/gentest'
+GRAMATICA = 'robocup/general'
 
 class sent():
     def __init__(self, text):
@@ -173,6 +174,7 @@ class gpsrOrders(smach.StateMachine):
             self.userdata.tts_lang=''
             self.userdata.tts_wait_before_speaking=0            
             self.userdata.referee = 'referee'
+            self.userdata.grammar_name=''
             
             '''
             smach.StateMachine.add("START_GRASP_PROTOCOL",
@@ -204,11 +206,13 @@ class gpsrOrders(smach.StateMachine):
 
                 return move_base_goal
 
+
             smach.StateMachine.add( 
                     'init_SM',
                     init_parameters(),
                     transitions={'succeeded': 'Check_ASR'},
                     remapping={'o_sentence': 'sentence', 'o_asrOn': 'asrOn', 'o_asrLoop': 'asrLoop'})
+
 
             # smach.StateMachine.add(
             #         'MOVE_TO_REFEREE',
@@ -220,34 +224,40 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                     'Check_ASR',
                     check_AsrOn(),
-                    transitions={'ASR_ON': 'LISTEN_ORDER', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
+                    transitions={'ASR_ON': 'ASK_QUESTION', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
                     remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
 
-            smach.StateMachine.add('GO_TO_REFEREE',
-                   nav_to_poi(),#MoveToRoomStateMachine(),
-                   transitions={'succeeded': 'LISTEN_ORDER', 'aborted': 'TELL_ABORTED_GO_TO'},
-                   remapping={'nav_to_poi_name': 'room_location'})#'room_name':'room_name'})
+#             smach.StateMachine.add('GO_TO_REFEREE',
+#                    nav_to_poi(),#MoveToRoomStateMachine(),
+#                    transitions={'succeeded': 'LISTEN_ORDER', 'aborted': 'TELL_ABORTED_GO_TO'},
+#                    remapping={'nav_to_poi_name': 'room_location'})#'room_name':'room_name'})
 
             smach.StateMachine.add(
                 'TELL_ABORTED_GO_TO',
                 text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?",wait_before_speaking=0),
-                transitions={'succeeded': 'LISTEN_ORDER'})
+                transitions={'succeeded': 'ASK_QUESTION'})
 
             smach.StateMachine.add(
-                    'LISTEN_ORDER',
-                    ListenToSM(grammar=GRAMATICA),
-                    transitions={'succeeded': 'ORDER_CONFIRMATION', 'aborted': 'LISTEN_ORDER'},
-                    remapping={'o_userSaidData_text': 'o_userSaidData'})
-
-
-            smach.StateMachine.add(
-                    'ORDER_CONFIRMATION',
-                    #TODO : when Criss uploads the yesorno function
-                    DummyState(),#HearingConfirmationSM(grammar_to_reset_when_finished=GRAMATICA),
-                    transitions={'correct_word_heard': 'PARSE_ORDER',
-                                 'wrong_word_heard': 'LISTEN_ORDER',
-                                 'preempted': 'preempted',
-                                 'aborted': 'LISTEN_ORDER'})
+                    'ASK_QUESTION',
+                    AskQuestionSM(text="Give me the next order",grammar=GRAMATICA),
+                    transitions={'succeeded': 'PARSE_ORDER', 'aborted': 'ASK_QUESTION'},
+                    remapping={'asr_answer': 'o_userSaidData'})
+ 
+#             smach.StateMachine.add(
+#                     'LISTEN_ORDER',
+#                     ListenToSM(grammar=GRAMATICA),
+#                     transitions={'succeeded': 'ORDER_CONFIRMATION', 'aborted': 'LISTEN_ORDER'},
+#                     remapping={'o_userSaidData_text': 'o_userSaidData'})
+# 
+# 
+#             smach.StateMachine.add(
+#                     'ORDER_CONFIRMATION',
+#                     #TODO : when Criss uploads the yesorno function
+#                     DummyState(),#HearingConfirmationSM(grammar_to_reset_when_finished=GRAMATICA),
+#                     transitions={'correct_word_heard': 'PARSE_ORDER',
+#                                  'wrong_word_heard': 'LISTEN_ORDER',
+#                                  'preempted': 'preempted',
+#                                  'aborted': 'LISTEN_ORDER'})
 
             smach.StateMachine.add(
                     'WRONG_WORD',
@@ -323,6 +333,7 @@ class testParsing(smach.StateMachine):
         with self:
             self.userdata.tts_text=''
             self.userdata.tts_lang=''
+            self.userdata.grammar_name=''
             self.userdata.tts_wait_before_speaking=0
             
             smach.StateMachine.add(
