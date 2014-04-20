@@ -71,18 +71,23 @@ class Process_Tags(smach.State):
                                 output_keys=['object_to_grasp'])
 
     def execute(self, userdata):
-        if(userdata.asr_userSaid.find("coke") 
-           or userdata.asr_userSaid.find("water") 
-           or userdata.asr_userSaid.find("juice")):
-            userdata.object_to_grasp = userdata.asr_userSaid
+        if(userdata.asr_userSaid.find("water")):
+            userdata.object_to_grasp = 'water'
             rospy.loginfo(userdata.asr_userSaid)
-#         
+            return 'succeeded'
+        elif(userdata.asr_userSaid.find("kit")):
+            userdata.object_to_grasp = 'First Aid Kit'
+            rospy.loginfo(userdata.asr_userSaid)
+            return 'succeeded'
+        elif(userdata.asr_userSaid.find("phone")):
+            userdata.object_to_grasp = 'Cell phone'
+            rospy.loginfo(userdata.asr_userSaid)
+            return 'succeeded'
+        
 #         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
 #         if tags:
 #             name = tags[0].value
 #             userdata.object_to_grasp = name
-            return 'succeeded'
-        
         return 'aborted'
         
 class Get_Person_Desired_Object(smach.StateMachine):
