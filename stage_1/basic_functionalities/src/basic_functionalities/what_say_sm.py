@@ -23,6 +23,10 @@ from util_states.pose_at_distance import pose_at_distance, pose_at_distance2
 from geometry_msgs.msg import Pose
 from speech_states.parser_grammar import parserGrammar
 from util_states.math_utils import *
+from face_states.detect_faces import detect_face
+from speech_states.activate_asr import ActivateASR
+from speech_states.deactivate_asr import DeactivateASR
+from speech_states.read_asr import ReadASR
 
 # Constants
 NUMBER_OF_QUESTIONS = 3
@@ -70,7 +74,7 @@ class prepear_repeat(smach.State):
                             input_keys=['asr_userSaid'], output_keys=['tts_text'])
     def execute(self, userdata):
 
-        userdata.tts_text = userdata.asr_userSaid 
+        userdata.tts_text = "You said " + userdata.asr_userSaid 
          
         return 'succeeded'
 
@@ -175,6 +179,8 @@ class WhatSaySM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
+            self.userdata.nav_to_poi_name = ""
+            self.userdata.faces = ""
             self.userdata.name=''
             self.userdata.tts_text = None
             self.userdata.tts_wait_before_speaking = 0
@@ -186,14 +192,23 @@ class WhatSaySM(smach.StateMachine):
             # Find me Part 
             
             # Enter room
-
+            smach.StateMachine.add(
+                 'say_what_did_you_say',
+                 text_to_say("What did you say test"),
+                 transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
+            
             # Go to the location
             smach.StateMachine.add(
                  'go_location',
                  nav_to_poi("find_me"),
-                 transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
+                 transitions={'succeeded': 'say_faces', 'aborted': 'aborted', 
                  'preempted': 'preempted'})    
              
+            smach.StateMachine.add(
+                 'say_faces',
+                 text_to_say("Searching faces"),
+                 transitions={'succeeded': 'search_face', 'aborted': 'aborted'})
+            
             # Look for a face
             smach.StateMachine.add(
                  'search_face',
@@ -218,22 +233,39 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_found',
                  text_to_say("I found you!"),
-                 transitions={'succeeded': 'loop_test', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'DeactivateASR_start', 'aborted': 'aborted'})
              
             # Ask for TC if we dont find him
             smach.StateMachine.add(
                  'ask_for_tc',
                  text_to_say("I can't find you. Can you come to me?"),
-                 transitions={'succeeded': 'check_loop', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'wait_for_tc', 'aborted': 'aborted'})
               
+            # Wait for TC
+            smach.StateMachine.add(
+                 'wait_for_tc',
+                 detect_face(),
+                 transitions={'succeeded': 'say_found', 'aborted': 'aborted'})
+            
             # Question Part ---------------------------------------------------------------------------------------------
+            
+            # Init the asr service
+            # Deactivate the server
+            smach.StateMachine.add('DeactivateASR_start',
+                    DeactivateASR(),
+                    transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
+            
+            # Activate the server
+            smach.StateMachine.add('ActivateASR',
+                    ActivateASR(),
+                    transitions={'succeeded': 'check_loop', 'aborted': 'aborted', 'preempted': 'preempted'})
             
             # loop test - It checks the number of iterations
             smach.StateMachine.add(
                 'check_loop',
                 checkLoop(),
                 transitions={'succeeded': 'ask_next_question', 'aborted': 'aborted', 
-                'preempted': 'preempted', 'end':'succeeded'})
+                'preempted': 'preempted', 'end':'DeactivateASR'})
             
             # Ask for next question
             smach.StateMachine.add(
@@ -244,8 +276,8 @@ class WhatSaySM(smach.StateMachine):
             
             smach.StateMachine.add(
                 'listen_question',
-                ListenToSM(),
-                transitions={'succeeded': 'repeat_question', 'aborted': 'aborted', 
+                ReadASR(),
+                transitions={'succeeded': 'prepear_repeat', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
             
             smach.StateMachine.add(
@@ -265,7 +297,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'search_answer',
                 SelectAnswer(),
-                transitions={'succeeded': 'say_answer', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_answer', 'aborted': 'say_answer', 
                 'preempted': 'preempted', 'None': 'aborted'})    
 
             # Say the answer
@@ -275,4 +307,12 @@ class WhatSaySM(smach.StateMachine):
                 transitions={'succeeded': 'check_loop', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
             
+            # Deactivate ASR
+            smach.StateMachine.add('DeactivateASR',
+                    DeactivateASR(),
+                    transitions={'succeeded': 'say_end', 'aborted': 'aborted', 'preempted': 'preempted'})
             
+            smach.StateMachine.add(
+                 'say_end',
+                 text_to_say("What did you say test finished"),
+                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
