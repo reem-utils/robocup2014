@@ -115,43 +115,44 @@ def new_world(loc_list):  #generates a new world
   return w  #return this world
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
- ad = askMissingInfoSM(Type=Type, objectName=objectName)
- #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
- #ad.userdata.dataType = Type
- #ad.userdata.object_name = objectName
- out = ad.execute()
- loc = ad.userdata._data['location_name']
- return loc  #-------------------'''
- #return 'fridge'
+    ad = askMissingInfoSM(Type=Type, objectName=objectName)
+    #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+    #ad.userdata.dataType = Type
+    #ad.userdata.object_name = objectName
+    out = ad.execute()
+    loc = ad.userdata._data['location_name']
+    print "EL loc ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+loc
+    return loc  #-------------------'''
+     #return 'fridge'
   
 def ask_category(category):
- ad = askCategorySM(GRAMMAR_NAME = category)
- out = ad.execute()
- obj = ad.userdata._data['object_name']
- #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- print obj
- return obj   #--------------'''
- #return 'milk'
+    ad = askCategorySM(GRAMMAR_NAME = category)
+    out = ad.execute()
+    obj = ad.userdata._data['object_name']
+    #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+    print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
+    return obj   #--------------'''
+    #return 'milk'
 
 def ask_category_loc(category): #-------------------------------------------si torna a petar es per el tag de on llegim la location
- ad = askCategoryLocSM(GRAMMAR_NAME = category) 
- out = ad.execute()
- print "ESTIC PINTANT AD!!!!!!!!!!!!!!!!!!!!!!!!!: " + str(ad.userdata._data)
- obj = ad.userdata._data['location_name']
- print "ESTIC PINTANT L'OBJ!!!!!!!!!!!!!!!!!!!!!!!!!: " + obj
- #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- return obj    #---------------------'''
- #return 'coke'
+    ad = askCategoryLocSM(GRAMMAR_NAME = category) 
+    out = ad.execute()
+    obj = ad.userdata._data['location_name']
+    #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+    print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category_loc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
+    return obj    #---------------------'''
+    #return 'fridge'
 
 def check_object_location(obj):
-  if obj != '':
-      # result = get_obj_location(obj)
-      # if result == 'NULL':
-      result = ask_data(Type='LOCATIONS', objectName=obj)
-
-      return obj2idx(result, 'LOCATIONS')
-  else:
-      return '-1'
+    if obj != '':
+        # result = get_obj_location(obj)
+        # if result == 'NULL':
+        result = ask_data(Type='LOCATIONS', objectName=obj)
+     
+        return obj2idx(result, 'LOCATIONS')
+    else:
+        return '-1'
+    #return 'sofa'
 
 class gpsrASAction(object):
   _result   = gpsrSoar.msg.gpsrActionResult()
