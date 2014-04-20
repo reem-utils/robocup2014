@@ -52,7 +52,7 @@ class ReadASR(smach.StateMachine):
            
             # topic reader state
             smach.StateMachine.add('topicReader',
-                    topic_reader_state( 30),
+                    topic_reader_state(30),
                     transitions={'succeeded': 'Process', 'aborted': 'topicReader', 'preempted': 'preempted'})
             
             # Process asr_event -> asr_userSaid state       

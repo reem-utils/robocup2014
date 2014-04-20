@@ -63,7 +63,7 @@ class DeactivateASR(smach.StateMachine):
                 rospy.loginfo("Deactivating Asr service")
                 requ = ASRSrvRequest()
                 requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
-                requ.activation.action = ASRActivation.PAUSE                
+                requ.activation.action = ASRActivation.DEACTIVATE                
                 requ.model.action = ASRLangModelMngmt.ENABLE
                 requ.model.modelName = userdata.grammar_name       
                 requ.lang.language = 'en_US'

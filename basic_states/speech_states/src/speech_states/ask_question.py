@@ -61,8 +61,8 @@ class AskQuestionSM(smach.StateMachine):
         If return succeeded, the confirm answer was yes. Otherwise, it return aborted
         
         @input string text or tts_text
-        @output string asr_userSaid
-        @output actiontag[] asr_userSaid_tags
+        @output string asr_answer
+        @output actiontag[] asr_answer_tags
     """
     
     def __init__(self, text=None, grammar = None):
