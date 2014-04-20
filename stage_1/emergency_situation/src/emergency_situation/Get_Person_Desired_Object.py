@@ -148,7 +148,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             smach.StateMachine.add(
                 'Say_go_Kitchen',
-                text_to_say('I am Going to the Kitchen for an object'),
+                text_to_say('I am Going to the Kitchen for an object, Stay Here until I give you the object'),
                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
             smach.StateMachine.add(
                 'Go_To_Object_Place',
@@ -164,13 +164,18 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
-                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
-            
+                transitions={'succeeded':'Rest_arm', 'aborted':'Rest_arm', 'preempted':'Rest_arm'})
+            self.userdata.manip_time_to_play = 4.0
+            smach.StateMachine.add(
+                                   'Rest_arm',
+                                   play_motion_sm('rest_object_right'),
+                                   transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
             #Go to person
             smach.StateMachine.add(
                 'Prepare_Go_To_Person',
                 prepare_poi_person_emergency(),
                 transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
+            
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
@@ -181,14 +186,26 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Give_Object',
                 text_to_say('I am going to give you the Object you want.'),
-                transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+                transitions={'succeeded':'Give_object_arm', 'aborted':'Give_object_arm', 'preempted':'Give_object_arm'})
+            smach.StateMachine.add(
+                                   'Give_object_arm',
+                                   play_motion_sm('give_object_right'),
+                                   transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
                 #DummyStateMachine(),
+                move_hands_form(hand_pose_name='pre_grasp', hand_side='right'),
+                transitions={'succeeded':'Give_Object_2', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+            smach.StateMachine.add(
+                'Give_Object_2',
+                #DummyStateMachine(),
                 move_hands_form(hand_pose_name='full_open', hand_side='right'),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-
+                transitions={'succeeded':'Say_Rescue_stay', 'aborted':'Give_Object_2', 'preempted':'Give_Object_2'})
+            smach.StateMachine.add(
+                'Say_Rescue_stay',
+                text_to_say('Please Stay here I am going to call for the Ambulance'),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'aborted':'preempted'})
 
 
 
