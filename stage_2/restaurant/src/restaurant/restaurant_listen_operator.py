@@ -17,6 +17,7 @@ from speech_states.listen_to import ListenToSM
 import roslib
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from roslaunch.loader import rosparam
+from speech_states.parser_grammar import parserGrammar
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -33,7 +34,7 @@ and creating new pois of the places that are needed for
 process the order
 '''
 
-
+GRAMMAR_NAME="robocup/restaurantGuide"
 
 
 
@@ -59,7 +60,7 @@ class save_point(smach.State):
         smach.State.__init__(
             self,
             outcomes=['succeeded', 'aborted','preempted'],
-            input_keys=['current_robot_pose','object','current_robot_yaw'],output_keys=[])
+            input_keys=['current_robot_pose','objectName','objectOrientation','current_robot_yaw'],output_keys=[])
 
     def execute(self, userdata):
         aux=userdata.current_robot_pose
@@ -67,11 +68,11 @@ class save_point(smach.State):
         aux.pose.position.y
         rospy.loginfo(OKGREEN+"I Have a new point"+ENDC)
         
-        value=["submap_0",userdata.object,aux.pose.position.x,
+        value=["submap_0",userdata.objectName,aux.pose.position.x,
                aux.pose.position.y,userdata.current_robot_yaw]
         
         rospy.loginfo(OKGREEN+str(value)+ENDC)
-        rospy.set_param("/restaurant/submap_0/"+str(userdata.object),value)
+        rospy.set_param("/restaurant/submap_0/"+str(userdata.objectName),value)
         return 'succeeded'
     
     
@@ -90,25 +91,64 @@ class did_you_say(smach.State):
 class proces_Tags(smach.State):
 
     def __init__(self):
-        smach.State.__init__(
-            self,
-            outcomes=['new_position','finish',
-                            'aborted','preempted'],
-                             input_keys=['asr_userSaid','asr_userSaid_tags'],
-                             output_keys=['object'])
+        smach.State.__init__(self, outcomes=['new_position','finish','aborted', 'preempted'], 
+                                input_keys=["asr_userSaid",'object'],
+                                output_keys=['objectName','objectOrientation'])
+        self.tags = parserGrammar(GRAMMAR_NAME)
+       
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"i'm looking what tags are"+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
-        rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
-        userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
+        #rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
+        #userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
         
         if userdata.asr_userSaid=="finish" :
             rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
-        else :
-            return 'new_position'
-    
+        
+        
+        objectValue = self.tags[1][1]
+        locationValue = self.tags[2][1]
+        objectsRecognized=None
+        locationRecognized=None
+        phrase = []
+        
+        phrase = userdata.asr_userSaid.split()
+        rospy.logwarn(str(objectValue))
+        rospy.logwarn(str(locationValue))
+        rospy.logerr(phrase)
+        locationWord=False
+        objectWord=False
+        
+        for word in phrase:
+            
+            if not locationWord:
+                for element in locationValue:
+                    if element == word:
+                        locationRecognized=element
+                        locationWord = True
+                        break
+                    
+            if not objectWord:
+                rospy.logwarn(str(word))
+                for element in objectValue:
+                    if element == word:
+                        objectsRecognized = element
+                        objectWord = True
+                        break
+                    
+            if objectWord and locationWord :
+                userdata.objectName=objectsRecognized
+                userdata.objectOrientation=locationRecognized
+                return 'new_position'
+        
+        if not objectWord or objectsRecognized :
+            return 'aborted'
+      
+        return 'aborted'
+        
+
 class ListenOperator(smach.StateMachine):
 
 
@@ -116,7 +156,7 @@ class ListenOperator(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,
                                     outcomes=['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['standard_error'])
+                                    input_keys=['grammar_name'])
         
         with self:
             self.userdata.tts_wait_before_speaking=0
@@ -124,9 +164,10 @@ class ListenOperator(smach.StateMachine):
             self.userdata.tts_lang=None
             self.userdata.nav_to_poi_name=None
             self.userdata.standard_error='OK'
-            self.userdata.grammar_name="restaurant.gram"
             self.userdata.asr_userSaid=None
             self.userdata.asr_userSaid_tags=None
+            self.userdata.objectName=""
+            self.userdata.objectOrientation=""
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
@@ -138,7 +179,6 @@ class ListenOperator(smach.StateMachine):
                                    ListenToSM(),
                                    transitions={'succeeded': 'PROCES_TAGS',
                                                 'aborted': 'LISTEN_TO','preempted':'preempted'})
-            
             
         
             smach.StateMachine.add('CAN_YOU_REPEAT',
@@ -155,7 +195,8 @@ class ListenOperator(smach.StateMachine):
             smach.StateMachine.add('GET_POSE',
                                    get_current_robot_pose(),
                                    transitions={'succeeded': 'SAVE_POINT',
-                                                'aborted': 'GET_POSE','preempted':'preempted'})
+                                                'aborted': 'GET_POSE',
+                                                'preempted':'preempted'})
             
             #maybe the yaw of the robot we will have to change and say at your right you have....
             smach.StateMachine.add('SAVE_POINT',
