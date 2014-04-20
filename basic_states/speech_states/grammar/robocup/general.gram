@@ -1,178 +1,59 @@
 #JSGF V1.0;
-
-/**
- * Robot grammar;
- */
-
-grammar robot;
-
-public <command> =
-     (<yesno> |
-     <start_stop> |
-     <move> |
-     <operate_object> |
-     <greet> |
-     <upper_body> |
-     <recognize_action> |
-     <look_for> |
-     <track> |
-     <map> |
-     <poi>) {obj.put("external","1")} ;
-
-<move> =
-     <move_side> |
-     <stop> |
-     <turn> |
-     <rest> ;
+grammar general;
 
 
-<yesno> =
-  yes {obj.put("action","yes")} |
-  ok {obj.put("action","yes")} |
-  no {obj.put("action","no"} |
-  maybe {obj.put("action","maybe")} ;
-
-/* Start stop */
-
-<start_stop> =
-  start {obj.put("action","start")} |
-  begin {obj.put("action","start")} |
-  stop {obj.put("action","stop")} |
-  wait {obj.put("action","stop")};
-  
-/* Navigation */
+public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <action>)) | <garbage>);
 
 
-<move_side> = (
-  go {obj.put("action","go")} |
-  shift {obj.put("action","shift")} |
-  walk {obj.put("action","walk")} |
-  move {obj.put("action","walk")} |
-  navigate {obj.put("action","go")} )
-  ( forward {obj.put("direction","forward")} |
-  backward {obj.put("direction","backward")} |
-  aside {obj.put("direction","aside")} |
-  right {obj.put("direction","right")} | 
-  left {obj.put("direction","left")} ) ;
+<action> = (<goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <exit>);
 
-<stop> = (
-  stop {obj.put("action","stop")} |
-    wait {obj.put("action","stop")} )
-  [ here ] ;
+<goto>   = (<gocommand> to <determinant> <location>);
+<fetch>  = (<fetchcommand> <determinant> <item> from <determinant> <location>);
+<bringit>= (<bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> <location> );
+<askname>= (memorize the person | ask the person name);
+<findp>  = (<findcommand> a person);
+#<get>    = (<getcommand> ([the] <item> | it ));
+<follow> = ((follow (the person in front of you) ) );
+<find>   = (<finditcmd> <determinant> (<item> | <category>));
+<grasp>  = (<graspcommand> (the <item> | it));
+<give>   = (<givecommand> me <determinant> <category>);
+<recognize> = (recognize (him | her));
+#<stay>   = (stop here | wait there);
+<exit> =  (<exitcommand> the apartment);
 
-<turn> =
-  (turn) {obj.put("action","turn")}
-  ( left {obj.put("direction","left")} |
-  right {obj.put("direction","right")} |
-  left {obj.put("direction","left")} |
-  right {obj.put("direction","right")}
-  ) ;
 
-<rest> = rest {obj.put("action","rest")};
+<gocommand>   = (go | move | navigate);
+<fetchcommand>= (retrieve | bring);
+<bringcommand>= (bring | carry);
+<getcommand>  = (retrieve | get | bring);
+<findcommand> = (find);
+<finditcmd>   = (detect | find | identify);
+<graspcommand>= (get | take | grasp);
+<givecommand> = (give | get);
+<exitcommand> = (exit | leave);
 
-/* Grasping and object detection*/
+<determinant> = (the | an | a | some);
 
-<operate_object> =
-(
-  bring {obj.put("action","bring")} |
-  give me {obj.put("action","bring")} |
-  leave {obj.put("action","leave")} |
-  point [to] {obj.put("action","point")} |
-  show [to] {obj.put("action","point")} |
-  take the {obj.put("action","take")} |
-  grasp the {obj.put("action","grasp")} |
-  hold the {obj.put("action","hold")} |
-  detect the {obj.put("action","detect")} |
-  find the {obj.put("action","find")} |
-  look at {obj.put("action","look on")} |
-  give [me] [the] {obj.put("action" = "give")} |
-  release the {obj.put("action","give")} |
-  pick the {obj.put("action","pick")} |
-  choose the {obj.put("action","choose")}) <object>;
 
-<object> =
-  thing {obj.put("object","thing")} |
-  can {obj.put("object","can")} |
-  box {obj.put("object","box")} |
-  case {obj.put("object","box")} |
-  ball {obj.put("object","ball")} |
-  ballon {obj.put("object","ball")} ;
+<person> = ( albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather );
 
-/* Greeting */
+<location> = ( charger | exit | kitchen | business | sideboard | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table );
 
-<greet> =
-  hello {obj.put("action","say hello")} |
-  how do you do {obj.put("action","say how do you do")} |
-  hi {obj.put("action","hello")} |
-  how are you {obj.put("action","how do you do")} |
-  good day {obj.put("action","good day")} |
-  good morning {obj.put("action","good morning")} |
-  good night {obj.put("action","good night")} |
-  good evening {obj.put("action","good evening")};
+<item> = ( coke | soda | chips | biscuits | cheese | seafood | cornflakes | milk | beer | lemonade | milo | water | yoghurt | spoons | glass );
 
-/* Upper body movements */
+<category> = (drink | food | kitchenary | snack);
 
-<upper_body> =
-  wave {obj.put("action","wave hand")}
-      ( right {obj.put("hand","right")} | left {obj.put("hand","left")} )
-      hand |
-  shake {obj.put("action","shake hand")} hand |
-  ( show {obj.put("action","show")}
-     ( head {obj.put("object","head")} | hand {obj.put("object","hand")} | screen {obj.put("object","screen")} ) ) |
-  open arms {obj.put("action","open arms")} ;
+#<sentence>   = (hello | greetings | goodbye | your name);
 
-/* Face recognition */
 
-<recognize_action> =
-  recognize face once {obj.put("action","recognize face once")} |
-  recognize face continuously {obj.put("action","recognize face continuously")} |
-  reset recognition {obj.put("action","reset recognition")} |
-  recognize once {obj.put("action","recognize once")} |
-  recognize continuously {obj.put("action","recognize continuously")} |
-  reset recognition {obj.put("action","reset recognition")} |
-  remember <new_recognize_action_item> {obj.put("action","remember")} |
-  store <new_recognize_action_item> {obj.put("action","store")} |
-  add <new_recognize_action_item> {obj.put("action","add")} |
-  remove <new_recognize_action_item> {obj.put("action","remove")} |
-  forget <new_recognize_action_item> {obj.put("action","forget")};
 
-<new_recognize_action_item> =
- [new] face {obj.put("object","face")} |
- [new] user {obj.put("object","user")};
+<garbage>  = <garbage2>;
 
-/* People tracking*/
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
 
-<look_for> = (look for [a]| find) <person> {obj.put("action","find person")};
-
-<person> =
-  participant {obj.put("person","participant")} |
-  human {obj.put("person","human")} |
-  people {obj.put("person","people")} |
-  him {obj.put("person","him")} |
-  them {obj.put("person","them")} ;
-
-<track> =
- (track person) {obj.put("action","track person")} |
- (reset tracking)  {obj.put("action","reset tracking")} ;
-
-/* Map and poi */
-
-<map> =
-  ( create {obj.put("action","create")} |
-  start {obj.put("action","start")} |
-  stop {obj.put("action","stop")} |
-  close {obj.put("action","close")} )
-  map {obj.put("object","map")};
-
-<poi> =
-  ( ( add {obj.put("action","add")} |
-  add {obj.put("action","add")} |
-  reset {obj.put("action","reset")} |
-  remove {obj.put("action","remove")}) place {obj.put("object","place")} )
-  |
-  ( go to {obj.put("action","go to")} |
-  guide me to {obj.put("action","guide me to")} |
-  take me to {obj.put("action","take me to")} ) [the]
-  (charger {obj.put("object","charger")} | poi {obj.put("object","poi")}) ;
 
 
