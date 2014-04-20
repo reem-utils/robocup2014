@@ -26,9 +26,9 @@ class prepare_object_array(smach.State):
         
 
     def execute(self, userdata):
-        userdata.object_array[0]=['ObjectA', 'beverage', 'delivery1']
-        userdata.object_array[1]=['ObjectB', 'snack', 'delivery2']
-        userdata.object_array[2]=['ObjectC', 'beverage', 'delivery3']
+        userdata.object_array.append('ObjectA', 'beverage', 'delivery1')
+        userdata.object_array.append('ObjectB', 'snack', 'delivery2')
+        userdata.object_array.append('ObjectC', 'beverage', 'delivery3')
         
         return 'succeeded'   
 
@@ -38,7 +38,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
        
-        sm.userdata.object_array = 3*[3*[0]]
+        sm.userdata.object_array = []
        
         smach.StateMachine.add(
             'prepare_object_array',
