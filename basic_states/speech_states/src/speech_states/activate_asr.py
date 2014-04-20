@@ -65,6 +65,7 @@ class ActivateASR(smach.StateMachine):
                 requ.model.action = ASRLangModelMngmt.ENABLE
                 requ.model.modelName = userdata.grammar_name       
                 requ.lang.language = 'en_US'
+    
                 return requ
 
             smach.StateMachine.add('Activate_Gram',

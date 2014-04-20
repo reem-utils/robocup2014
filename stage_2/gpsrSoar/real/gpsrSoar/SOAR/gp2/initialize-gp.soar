@@ -51,11 +51,11 @@ sp {gp*apply*initialize-gp
 
       (<obj1> ^delivered no
            ^pointed no
-           ^locId 12
+           ^locId -1
            ^toBeGrasped no
            ^grasped no
            ^found no
-           ^id 6)
+           ^id -1)
 
       (<pers1> ^followed no
            ^memorized no
@@ -67,14 +67,9 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 5)
 
-   (<d> ^name bring-to
-        ^person <pp>
-        ^object <ii>
+   (<d> ^name go-to
         ^robot <rr>)
-   (<pp> ^obj1Id 6
-           ^id 5)
-   (<ii> ^delivered yes
-           ^id 6)
-   (<rr> ^id 1)
+   (<rr> ^locId 12
+           ^id 1)
 
 }

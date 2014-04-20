@@ -1,9 +1,9 @@
 ASR_LOOP: True
 ASR_ON: "True"
 #sentence: "Go to an exit"
-sentence: "Get me a drink"
+#sentence: "bring me a drink"
 #sentence: "Move to the sofa, then go to the fridge and exit the apartment"
-#sentence: "Move to the fridge, find the coke, and grasp it"
+sentence: "Move to the fridge, find the coke, and grasp it"
 
 
 
