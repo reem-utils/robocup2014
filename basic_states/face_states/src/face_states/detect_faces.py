@@ -49,6 +49,8 @@ class detect_face(smach.StateMachine):
                                  output_keys=['standard_error','faces'])
         
         with self:
+            self.userdata.faces = ""
+            
             # call request for Recognizer
             @smach.cb_interface(input_keys=[])
             def face_start_detect_request_cb(userdata, request):
@@ -69,6 +71,7 @@ class detect_face(smach.StateMachine):
             smach.StateMachine.add(
                                 'Read_Topic',
                                 topic_reader('/pal_face/faces', FaceDetections, 60),
+                                remapping={'topic_output_msg': 'faces'},
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
       
