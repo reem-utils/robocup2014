@@ -11,6 +11,7 @@ import smach
 from speech_states.say import text_to_say
 from speech_states.listen_to import ListenToSM
 from speech_states.parser_grammar import parserGrammar
+from read_asr import ReadASR
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -90,11 +91,11 @@ class SayYesOrNoSM(smach.StateMachine):
             # Listen 
             smach.StateMachine.add(
                 'listen_info',
-                ListenToSM(),
+                ReadASR(),
                 transitions={'succeeded': 'process_command', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-            # Prepare the informatparserGrammarion 
+            # Prepare the information 
             smach.StateMachine.add(
                 "process_command",
                 ProcessCommand(),
