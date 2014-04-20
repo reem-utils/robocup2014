@@ -62,7 +62,7 @@ def grammarFileWriter(wordlist, path=''):
     ff.close()
     return 'ok'
 
-def grammarFileWriter2(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/gentest.gram'):
+def grammarFileWriter2(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/general.gram'):
     # print 'aqui entra?'
     # if path == '':
     #     path = roslib.packages.get_pkg_dir('gpsrSoar') + '/src/gentest.gram'
