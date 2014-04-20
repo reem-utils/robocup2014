@@ -70,14 +70,18 @@ class process_restaurant_order(smach.State):
         objectsRecognized = []
         locationRecognized = ""
         userdata.object_array = []
-        
-        phrase = userdata.asr_userSaid.strip()
-        
+        locationFound = False
+        phrase = userdata.asr_userSaid.split()
+        rospy.logwarn("objects:========:   "+str(objectValue))
+        rospy.logwarn("locationValue:========:   "+str(locationValue))
+
         for word in phrase:
             wordFound = False
             
             for element in objectValue:
+                
                 if element == word:
+                    rospy.logfatal(str(word))
                     objectsRecognized.append(element)
                     wordFound = True
                     break
@@ -85,11 +89,13 @@ class process_restaurant_order(smach.State):
             if not wordFound:
                 for element in locationValue:
                     if element == word:
+                        rospy.logfatal(str(word))
                         locationRecognized = element
                         locationFound = True
                         break
                     
             if locationFound:
+                rospy.logwarn(str(objectsRecognized))
                 for obj in objectsRecognized:
                     classObj = self.obtain_object_class(obj)
                     userdata.object_array.append([obj, classObj, locationRecognized])
@@ -125,7 +131,11 @@ class process_restaurant_order(smach.State):
 #                 userdata.object_array.append([objectC, classC, location2])
 #       
         if userdata.object_array:
-            userdata.tts_text = "Got it! You asked me to, firstly, fetch the " + userdata.object_array[0][0] + ", and the " + userdata.object_array[1][0] + ", and deliver it to the " + userdata.object_array[0][2] + ". Afterwards, I will fetch the " + userdata.object_array[2][0] + ", and take it to the " + userdata.object_array[2][2]
+            userdata.tts_text = ("Got it! You asked me to, firstly, fetch the "
+                                 +str(userdata.object_array[0][0])+"  that is a  "
+                                 +str(userdata.object_array[0][1])+" and i have to put it in the  "
+                                 +str(userdata.object_array[0][2]))
+            # + userdata.object_array[0][0] + ", and the " + userdata.object_array[1][0] + ", and deliver it to the " + userdata.object_array[0][2] + ". Afterwards, I will fetch the " + userdata.object_array[2][0] + ", and take it to the " + userdata.object_array[2][2]
             return 'succeeded'
             
         return 'aborted'
@@ -191,7 +201,7 @@ class RestaurantOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'yesno_restaurant_order',
                 SayYesOrNoSM(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'listen_restaurant_order', 
+                transitions={'succeeded': 'ok_im_going', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
                       
             # Ask for repeat the order
@@ -199,6 +209,13 @@ class RestaurantOrder(smach.StateMachine):
                 'repeat_restaurant_order',
                 text_to_say("Excuse me, I don't understand you. Can you repeat your order?"),
                 transitions={'succeeded': 'listen_restaurant_order', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
+                        # Confirm Order
+            smach.StateMachine.add(
+                'ok_im_going',
+                text_to_say("OK i'm going to service"),
+                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
 
