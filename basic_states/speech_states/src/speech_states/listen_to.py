@@ -57,8 +57,13 @@ class ListenToSM(smach.StateMachine):
             
             smach.StateMachine.add('PrepareData',
                     prepareData(grammar),
-                    transitions={'succeeded':'ActivateASR', 'aborted':'aborted'})
+                    transitions={'succeeded':'DeactivateASR_start', 'aborted':'aborted'})
              
+            # Deactivate the server
+            smach.StateMachine.add('DeactivateASR_start',
+                    DeactivateASR(),
+                    transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
+            
             # Activate the server
             smach.StateMachine.add('ActivateASR',
                     ActivateASR(),

@@ -22,9 +22,11 @@ from gesture_states.gesture_recognition import GestureRecognition
 from object_grasping_states.search_object import SearchObjectSM
 from util_states.math_utils import normalize_vector, vector_magnitude
 from geometry_msgs.msg import Pose
+from speech_states.parser_grammar import parserGrammar
 
 # Constants
 NUMBER_OF_ORDERS = 3
+GRAMMAR_NAME = "robocup/drinks"
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -76,15 +78,23 @@ class process_order(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=["asr_answer","asr_answer_tags"],
                                 output_keys=['object_to_grasp'])
-
+        self.tags = parserGrammar(GRAMMAR_NAME)
+        
     def execute(self, userdata):
         
-        tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
-        if tags:
-            name = tags[0].value
-            userdata.object_to_grasp = name
-            return 'succeeded'
+        objectValue = self.tags[2][1]
         
+        for element in objectValue:
+            if element in userdata.asr_answer:
+                userdata.object_to_grasp = element
+                return 'succeeded'
+            
+#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
+#         if tags:
+#             name = tags[0].value
+#             userdata.object_to_grasp = name
+#             return 'succeeded'
+#         
         return 'aborted'
 
 class prepare_coord_order(smach.State):
@@ -207,7 +217,7 @@ class CocktailPartySM(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to drink?", "drink.gram"),
+                AskQuestionSM("What would you like to drink?", GRAMMAR_NAME),
                 transitions={'succeeded': 'process_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
