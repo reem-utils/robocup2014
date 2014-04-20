@@ -50,9 +50,9 @@ Point at a table.
 Point at a shelf.
 Point at a door.
 Point at an appliance.
-Go to an exit.
-Move to an exit.
-Navigate to an exit.
+Go to an exit. -
+Move to an exit. -
+Navigate to an exit. -
 Detect a drink. -
 Detect a snack. -
 Detect the kitchenary.

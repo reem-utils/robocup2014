@@ -9,6 +9,8 @@ NO = 'no'
 YES = 'yes'
 ignore = 'ignore'
 
+TARGET_FILE = "/SOAR/gp2/"
+
 
 class goal():
     def __init__(self, oaction, oitem, operson, olocation):
@@ -90,14 +92,15 @@ class world():
         # locations = 
         for loc in locations:
             locc = obj2idx(loc, 'LOCATIONS')
-            l.append(convert(locc))
-            ll = '   (' + convert(locc) + ' ^id ' + str(locc) + ' ^pointed-at no)'
-            lInits.append(ll)
-        allFile = allFile.replace('LOCATIONS', ' '.join(l))
-        allFile = allFile.replace('   LOCATION', '\n'.join(lInits))
+            l.append(convert(locc))     #puts locc between <l > and adds it to the array l
+            ll = '   (' + convert(locc) + ' ^id ' + str(locc) + ' ^pointed-at no)' #writes somthink like the following were 0 is locc
+                                                                                   # (<l0> ^id 0 ^pointed-at no)
+            lInits.append(ll)     #puts the previous phrase in to the array lInits
+        allFile = allFile.replace('LOCATIONS', ' '.join(l)) #replaces LOCATIONS in allFile (witch is like  init-template.soar
+        allFile = allFile.replace('   LOCATION', '\n'.join(lInits)) #the same as previous
 
 
-        person_text = '   (<pers1> '
+        person_text = '   (<pers1> '    #builds the person and its atributes with the correct format to add it to the file
         first_attr = True
         ignore_field = True
         for n in self.person.__dict__.keys():
@@ -438,7 +441,7 @@ def compileInit(oaction='go_to', oitem=0, operson=0, olocation=0,
 
     # oaction = oaction.replace('_', '-')
     templatesfilepath = roslib.packages.get_pkg_dir("gpsr") + "/src/goalSoars/"
-    targetfilepath = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2/"
+    targetfilepath = roslib.packages.get_pkg_dir("gpsrSoar") + TARGET_FILE #"/SOAR/gp2/"
     template = templatesfilepath + templatefile
     target = targetfilepath + goalfile
     tempfile = open(template, 'r')
@@ -531,7 +534,7 @@ def compileInit(oaction='go_to', oitem=0, operson=0, olocation=0,
     DesireInit = desired_world.gen_goal()
     allFile = allFile.replace(DESIRE, DesireInit)
 
-    targfile.write(allFile)
+    targfile.write(allFile)     #writes the file initialize-gp.soar
 
     targfile.close()
     tempfile.close()
