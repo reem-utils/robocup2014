@@ -141,23 +141,23 @@ class RecogCommand(smach.StateMachine):
                                                transitions={'succeeded': 'succeeded'})
 
 
-class BringLocationAsk(smach.State):
-
-        def __init__(self):
-                smach.State.__init__(self,
-                                     outcomes=['succeeded', 'preempted', 'aborted'],
-                                     input_keys=['userSaidTags'],
-                                     output_keys=['location_name']) 
-                
-        def execute(self, userdata):
-            try: 
-                  for tag in userdata.userSaidTags :
-                    if tag.key == 'location':
-                      userdata.location_name = tag.value
-                  return 'succeeded'
-            except:
-                  print 'faaaail object'
-                  return 'aborted'
+# class BringLocationAsk(smach.State):
+# 
+#         def __init__(self):
+#                 smach.State.__init__(self,
+#                                      outcomes=['succeeded', 'preempted', 'aborted'],
+#                                      input_keys=['userSaidTags'],
+#                                      output_keys=['location_name']) 
+#                 
+#         def execute(self, userdata):
+#             try: 
+#                   for tag in userdata.userSaidTags :
+#                     if tag.key == 'location':
+#                       userdata.location_name = tag.value
+#                   return 'succeeded'
+#             except:
+#                   print 'faaaail object'
+#                   return 'aborted'
 
 class BringOrderObject(smach.State):
 
@@ -182,7 +182,7 @@ class BringOrderLoc(smach.State):
         def __init__(self):
                 smach.State.__init__(self,
                                      outcomes=['succeeded', 'preempted', 'aborted'],
-                                     input_keys=['userSaidTags'],
+                                     input_keys=['userSaidTags', 'userSaidData','location_name'],
                                      output_keys=['location_name'])
 
         def execute(self, userdata):
@@ -190,7 +190,13 @@ class BringOrderLoc(smach.State):
                   for tag in userdata.userSaidTags :
                     if tag.key == 'location':
                       userdata.location_name = tag.value
-                  return 'succeeded'
+                  print "WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGHHHHHHHHHHHHHHHHHHHHH"+userdata.userSaidData
+                  if userdata.location_name == '':
+                    if 'fridge' in userdata.userSaidData: # TODO: recorrer la lista de locations para cogerlo
+                        print 'TODO VA BIEN, MIENTRAS SUENE ESTA ALARMA TODO VA BIEN'
+                        userdata.location_name = 'fridge'
+                        return 'succeeded'
+                    return 'aborted'
             except:
                   print 'faaaail location'
                   return 'aborted'
@@ -224,7 +230,7 @@ class askMissingInfo(smach.StateMachine):
                                                remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
                         
                         smach.StateMachine.add('BRING_LOCATION',
-                                               BringLocationAsk(),
+                                               BringOrderLoc(),#BringLocationAsk(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'PREPARATION_CONFIRM_OBJECT', 'preempted': 'preempted'},
                                                remapping={'location_name': 'location_name'})
 

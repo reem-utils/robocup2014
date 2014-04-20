@@ -30,9 +30,18 @@ class prepareData(smach.State):
         
         #Priority in init
         userdata.grammar_name = self.grammar if self.grammar else userdata.grammar_name   
- 
+        print "URAAAAAAAAAAAAAANIIIIIIIIUUUUUUUUUUUUUUUUUUUUMMMMMMMMMMMMMMMMMMMMMMMMMM!!!"
         return 'succeeded'
     
+
+class DummyState(smach.State):
+    
+    def __init__(self):
+        
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'])
+                
+    def execute(self, userdata): 
+        return 'succeeded'
 
 class DeactivateASR(smach.StateMachine):
 
@@ -52,6 +61,10 @@ class DeactivateASR(smach.StateMachine):
                     output_keys=[])
         
         with self:
+            
+            smach.StateMachine.add('Dummy',
+                                   DummyState(),
+                                   transitions={'succeeded':'succeeded', 'aborted':'aborted'})
     
             smach.StateMachine.add('PrepareData',
                                    prepareData(grammar),
@@ -62,11 +75,11 @@ class DeactivateASR(smach.StateMachine):
             def AsrServerRequestDeactivate_cb(userdata, request):
                 rospy.loginfo("Deactivating Asr service")
                 requ = ASRSrvRequest()
-                requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
+                requ.requests = [ASRSrvRequest.ACTIVATION] #, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
                 requ.activation.action = ASRActivation.DEACTIVATE                
-                requ.model.action = ASRLangModelMngmt.ENABLE
-                requ.model.modelName = userdata.grammar_name       
-                requ.lang.language = 'en_US'
+                #requ.model.action = ASRLangModelMngmt.ENABLE
+                #requ.model.modelName = userdata.grammar_name       
+                #requ.lang.language = 'en_US'
                 return requ
             
             smach.StateMachine.add('Deactivate_Asr',
