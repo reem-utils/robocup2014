@@ -23,7 +23,7 @@ from speech_states.ask_question import AskQuestionSM
 SENTENCE_SAID = '/parsing/sentence'
 NUM_LOOPS_TODO = 3
 NUM_LOOPS_I = 0
-GRAMATICA = 'robocup/gentest'
+GRAMATICA = 'robocup/general'
 
 class sent():
     def __init__(self, text):
@@ -174,6 +174,7 @@ class gpsrOrders(smach.StateMachine):
             self.userdata.tts_lang=''
             self.userdata.tts_wait_before_speaking=0            
             self.userdata.referee = 'referee'
+            self.userdata.grammar_name=''
             
             '''
             smach.StateMachine.add("START_GRASP_PROTOCOL",
@@ -234,13 +235,13 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                 'TELL_ABORTED_GO_TO',
                 text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?",wait_before_speaking=0),
-                transitions={'succeeded': 'LISTEN_ORDER'})
+                transitions={'succeeded': 'ASK_QUESTION'})
 
             smach.StateMachine.add(
                     'ASK_QUESTION',
                     AskQuestionSM(text="Give me the next order",grammar=GRAMATICA),
                     transitions={'succeeded': 'PARSE_ORDER', 'aborted': 'ASK_QUESTION'},
-                    remapping={'asr_userSaid': 'o_userSaidData'})
+                    remapping={'asr_answer': 'o_userSaidData'})
  
 #             smach.StateMachine.add(
 #                     'LISTEN_ORDER',
@@ -332,6 +333,7 @@ class testParsing(smach.StateMachine):
         with self:
             self.userdata.tts_text=''
             self.userdata.tts_lang=''
+            self.userdata.grammar_name=''
             self.userdata.tts_wait_before_speaking=0
             
             smach.StateMachine.add(

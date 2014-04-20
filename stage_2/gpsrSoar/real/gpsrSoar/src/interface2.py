@@ -188,7 +188,7 @@ def call_introduce():
     out = intro.execute()
     return succeeded '''
     
-    tosay = "I'm going to introduce somethink or someone"
+    tosay = "I'm going to introduce something or someone"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_introduce')
@@ -266,7 +266,7 @@ def call_find_object(object_name, loc_name):
     return succeeded
     '''
     
-    tosay = "I'm going to seartch for " + object_name
+    tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_find_object')
@@ -334,7 +334,7 @@ def call_bring_to(person_name): #Solo hace release TODO
     if person_name == '':
         tosay = "I'm leaving this here"
     else:
-        tosay = "I'm going to bring somethink to " + person_name
+        tosay = "I'm going to bring something to " + person_name
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to')

@@ -23,8 +23,8 @@ grammarNames['categories'] = 'category'
 try:
   per = GFR(wordset=grammarNames)
 except IOError:
-  PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
-  print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 27"
+  PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/general.gram"
+  #PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
   per = GFR(path=PATH, wordset=grammarNames)
 print per
 

@@ -3,7 +3,7 @@ ASR_ON: "True"
 #sentence: "Go to an exit"
 sentence: "Get me a drink"
 #sentence: "Move to the sofa, then go to the fridge and exit the apartment"
-#sentence: "Introduce yourself then grasp a coke and bring it to me"
+#sentence: "Move to the fridge, find the coke, and grasp it"
 
 
 
