@@ -72,16 +72,24 @@ class SearchObjectSM(smach.StateMachine):
             # Obtain the location where the object can stay
             smach.StateMachine.add('get_object_info_sm',
                    GetObjectInfoSM(),
-                   transitions={'succeeded': 'go_to_object',
+                   transitions={'succeeded': 'say_go_to_poi',
                                 'aborted': 'aborted',
                                 'preempted': 'preempted'})
-
+            
+            # Ask for person if it can see anyone
+            smach.StateMachine.add(
+                'say_go_to_poi',
+                text_to_say("I'm going to take the object"),
+                transitions={'succeeded': 'go_to_object', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
+            
             # Go to poi where the object can stay
             smach.StateMachine.add(
                 'go_to_object',
                 nav_to_poi(),
                 remapping={"nav_to_poi_name": "object_location"},
-                transitions={'succeeded': 'object_detection', 'aborted': 'aborted'})
+                transitions={'succeeded': 'aborted', 'aborted': 'aborted'})
+                #transitions={'succeeded': 'object_detection', 'aborted': 'aborted'})
                         
             # Object Detection
             smach.StateMachine.add(

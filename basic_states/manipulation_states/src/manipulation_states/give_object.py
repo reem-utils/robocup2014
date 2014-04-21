@@ -65,6 +65,9 @@ class give_object(smach.StateMachine):
                                     transitions={'succeeded':'Open_Hand', 'preempted':'Open_Hand', 'aborted':'Open_Hand'})
             smach.StateMachine.add('Open_Hand',
                                     move_hands_form(hand_pose_name='full_open', hand_side='right'),
-                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
+                                    transitions={'succeeded':'Home_position_end', 'preempted':'Home_position_end', 'aborted':'Home_position_end'})
                             
+            smach.StateMachine.add('Home_position_end',
+                                    play_motion_sm("home", 4.0),
+                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
 
