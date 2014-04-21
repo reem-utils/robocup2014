@@ -22,11 +22,11 @@ def main():
 
     with sm:
    
-        smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
-   
+#         smach.StateMachine.add(
+#             'CheckDepencences',
+#             CheckDependencesState(),
+#             transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
+#    
         smach.StateMachine.add(
             'CocktailPartySM',
             CocktailPartySM(),
