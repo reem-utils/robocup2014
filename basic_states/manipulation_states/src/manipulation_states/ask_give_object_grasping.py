@@ -92,17 +92,8 @@ class ask_give_object_grasping(smach.StateMachine):
             self.userdata.manip_time_to_play = 2.0
             smach.StateMachine.add('Reach_Arm',
                                     play_motion_sm(),
-                                    transitions={'succeeded':'Open_hand', 'preempted':'Open_hand', 'aborted':'Open_hand'})
-            
-            # Open the hand
-            smach.StateMachine.add('Open_hand', 
-                                   move_hands_form(hand_pose_name='full_open', hand_side='right'),
-                                   transitions={'succeeded':'Wait_for_object', 'preempted':'Wait_for_object', 'aborted':'Wait_for_object'})
-
-            # Wait 5 seconds
-            smach.StateMachine.add('Wait_for_object',
-                                    wait_state(1),
-                                    transitions={'succeeded':'Pre_Grasp', 'preempted':'Pre_Grasp', 'aborted':'Pre_Grasp'})
+                                    transitions={'succeeded':'Pre_Grasp', 'preempted':'Reach_Arm', 'aborted':'Reach_Arm'})
+    
 
             smach.StateMachine.add('Pre_Grasp',
                                     move_hands_form(hand_pose_name='pre_grasp', hand_side='right'),
