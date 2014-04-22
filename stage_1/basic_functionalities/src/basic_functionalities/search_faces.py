@@ -9,9 +9,9 @@ Created on 08/03/2014
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
-from face_states.searching_person import searching_person 
 from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
+from face_states.recognize_face import recognize_face_concurrent
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -128,21 +128,17 @@ class SearchFacesSM(smach.StateMachine):
                                         input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
                                         output_keys=['face', 'standard_error'],
                                         child_termination_cb = child_term_cb,
-					outcome_cb=out_cb)
-                                      #  outcome_map={'succeeded': {'find_faces': 'succeeded'},
-                                       #              'aborted': {'walk_to_poi':'succeeded', 
-                                        #                        'find_faces':'preemted'}})
+					                    outcome_cb=out_cb)
             
             with sm_conc:
                 # Go around the room 
                 smach.Concurrence.add('walk_to_poi', nav_to_poi())                  
           
                 # Move head
-             #   smach.Concurrence.add('move_head', DummyStateMachine())
                 smach.Concurrence.add('TimeOut', TimeOut())
                  
                 # Search for face
-                smach.Concurrence.add('find_faces', searching_person())
+                smach.Concurrence.add('find_faces', recognize_face_concurrent())
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 

@@ -6,15 +6,12 @@ Created on Tue Oct 22 12:00:00 2013
 @author: Roger Boldú
 """
 
-
-from pal_detection_msgs.msg import FaceDetection
-from pal_detection_msgs.msg import FaceDetections
-from face_states.detect_faces import detect_face
 import rospy
-from rospy.core import rospyinfo
 import smach
-from smach_ros import ServiceState
+
+from face_states.detect_faces import detect_face
 from operator import attrgetter
+from util_states.sleeper import Sleeper
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -88,6 +85,8 @@ class recognize_face(smach.StateMachine):
         
         with self:
 
+            self.userdata.face = ""
+            
             # extract the database that the robot is finding
             smach.StateMachine.add(
                                 'detect_face',
@@ -95,7 +94,7 @@ class recognize_face(smach.StateMachine):
                                 transitions={'succeeded': 'proces_face', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
             
-            # i filter a litlle bit
+            # i filter a little bit
             smach.StateMachine.add(
                     'proces_face',
                     proces_face(),
@@ -105,7 +104,60 @@ class recognize_face(smach.StateMachine):
 
 
 
+class recognize_face_concurrent(smach.StateMachine): 
+    """
+    Executes a SM that look if it can recognize faces
+    
+    It have 2 options:
+         if you complete the name, it will return if
+            it find this face, and return the face message of it.
+        If you don't complete it will return the face with more confidence.
+    
+    
+    Required parameters : 
+    No parameters.
 
+    Optional parameters:
+                    name, of the person that you are looking for, it will return
+                        aborted if can't find 
+
+    input keys:
+            Name, it's optional of the person we are looking for, it can be the name or ""
+    output keys:
+            standard_error: inform what is the problem
+            face, is a message that have FaceDetection, 
+                it will be None if can't find any faces
+    No io_keys.
+
+    Nothing must be taken into account to use this SM.
+    """
+    def __init__(self,minConfidence=90):
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=['name'], 
+                                 output_keys=['standard_error','face'])
+        
+        with self:
+
+            self.userdata.face = ""
+            
+            # extract the database that the robot is finding
+            smach.StateMachine.add(
+                                'detect_face',
+                                detect_face(minConfidence),
+                                transitions={'succeeded': 'proces_face', 'aborted': 'aborted', 
+                                'preempted': 'preempted'})
+            
+            # i filter a little bit
+            smach.StateMachine.add(
+                    'proces_face',
+                    proces_face(),
+                    transitions={'succeeded': 'succeeded', 'aborted': 'time_sleeper', 
+                    'preempted': 'preempted'})
+            
+            smach.StateMachine.add(
+                    'time_sleeper',
+                    Sleeper(0.5),
+                    transitions={'succeeded': 'detect_face', 'aborted': 'detect_face'})
                  
 
 

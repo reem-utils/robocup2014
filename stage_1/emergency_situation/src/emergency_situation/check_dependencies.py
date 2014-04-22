@@ -2,7 +2,7 @@
 
 """
 @author: Cristina De Saint Germain
-6 April 2014
+8 March 2014
 """
 
 import smach
@@ -10,28 +10,28 @@ import rospy
 import rosservice
 import rosgraph.masterapi
 from util_states.colors import Colors
+import smach_ros
+
 
 TOPIC_LIST_NAMES = [  # Topics and Actions
                     ##################### Topics #####################
                     "/amcl_pose",
                     "/scan_filtered",    
-                    "/asr_event"]
-
-SERVICES_LIST_NAMES = []  # #################### Services #####################
+                    "/asr_event",
+                    "/sonar_base",
+                    "/move_base/goal",
+                    "/gesture_detection/gesture"
+                    "/play_motion/goal"
+                    ]
+                    
+SERVICES_LIST_NAMES = ["/play_motion"]  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",
                     "/sound"]
 
-PARAMS_LIST_NAMES = ["/mmap/poi/submap_0/object_one",
-                     "/mmap/poi/submap_0/object_two",
-                     "/mmap/poi/submap_0/delivery_one",
-                     "/mmap/poi/submap_0/delivery_two",
-                     "/mmap/poi/submap_0/delivery_three",
-                     "/mmap/poi/submap_0/ordering"]  # #################### Params #####################
-
-PARAMS_DELETE_NAMES = ["/restaurant"]
-
+PARAMS_LIST_NAMES = []
+                     
 
 class UserdataHacked():
     def __init__(self):
@@ -61,8 +61,8 @@ class CheckDependencesState(smach.State):
     """
 
     def __init__(self, topic_names=TOPIC_LIST_NAMES,
-                  service_names=SERVICES_LIST_NAMES, action_names=ACTION_LIST_NAMES,
-                   params_names=PARAMS_LIST_NAMES, params_delete=PARAMS_DELETE_NAMES,
+                  service_names=SERVICES_LIST_NAMES, 
+                  action_names=ACTION_LIST_NAMES, params_names=PARAMS_LIST_NAMES,
                    input_keys=[], output_keys=[]):
         """Constructor for CheckDependencesState
 
@@ -97,7 +97,6 @@ class CheckDependencesState(smach.State):
         self.service_names = service_names
         self.action_names = action_names
         self.params_names = params_names
-        self.param_delete=params_delete
         self.rostopic = rosgraph.masterapi.Master('/rostopic')
         self.coordinates = None  # Coordinates 'of kitchen for example', in the map.
         self.object_id = None  # Id of the objects 'coke for example' at the database.
@@ -191,21 +190,50 @@ class CheckDependencesState(smach.State):
                 self.__check_params(param)
         else:
             self._print_warning("Not checking. 'params_names' is empty")
-    
-    def check_delete_params(self):
-        if self.param_delete:
-            for param in self.param_delete:
-                if (rospy.get_param(param,False)):
-                    rospy.delete_param(param)
-             
-        else:
-            self._print_warning("Not deleting any param")
-        
+
     def execute(self, userdata):  
         self.check_specific_topics()
         self.check_specific_services()
         self.check_specific_actions()
         self.check_specific_params()
-        self.check_delete_params()
 
         return 'succeeded' if self.ALL_OK else 'aborted'
+    
+   
+
+
+
+#from smach_ros import SimpleActionState, ServiceState
+from follow_me.follow_me_sm import FollowMe 
+ENDC = '\033[0m'
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
+
+
+
+def main():
+    rospy.loginfo('check DEPENDENCS')
+    rospy.init_node('CHECK_DEPENDENCE')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
+    with sm:
+        sm.userdata.standard_error='OK'
+        # it prepare the name and the function for drope
+        smach.StateMachine.add(
+            'CHECK',
+            CheckDependencesState(),
+            transitions={'succeeded':'succeeded','aborted' : 'aborted'})
+
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+    sis = smach_ros.IntrospectionServer(
+        'check_dependence', sm, '/CHECK')
+    sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+    sis.stop()
+
+
+if __name__ == '__main__':
+    main()

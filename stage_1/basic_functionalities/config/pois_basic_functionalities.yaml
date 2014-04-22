@@ -12,11 +12,11 @@ poi:
     fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
 
     init_find_me: [submap_0, init_find_me, -2.0, -2.0, 0]
-    find_me: [submap_0, find_me, -2.0, -2.0, 0]
+    find_me: [submap_0, find_me, -8.10, 6.84, 0.80]
 
     init_what_say: [submap_0, init_what_say, -2.0, -2.0, 0]
 
-    point_room_one: [submap_0, point_room_one, 3.0, 3.0, 0]
-    point_room_two: [submap_0, point_room_two, -3.0, 0.0, 0]
-    point_room_three: [submap_0, point_room_three, 3.0, -3.0, 0]
+    point_room_one: [submap_0, point_room_one, -5.99, 5.77, 0.80]
+    point_room_two: [submap_0, point_room_two, -4.47, 7.63, 0]
+    point_room_three: [submap_0, point_room_three, -6.06, 7.39, 0.80]
 

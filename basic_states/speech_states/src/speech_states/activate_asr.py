@@ -9,10 +9,12 @@ Created on Tue Mar 5 16:18:00 2014
 
 import rospy
 import smach
+import copy
 
 from smach_ros import ServiceState
 from pal_interaction_msgs.msg import ASRSrvRequest, ASRActivation, ASRLangModelMngmt
 from pal_interaction_msgs.srv import ASRService
+from util_states.sleeper import Sleeper
 
 class prepareData(smach.State):
     
@@ -54,44 +56,57 @@ class ActivateASR(smach.StateMachine):
     
             smach.StateMachine.add('PrepareData',
                                    prepareData(grammar),
-                                   transitions={'succeeded':'Activate_Asr', 'aborted':'aborted'})
+                                   transitions={'succeeded':'Activate_Gram', 'aborted':'aborted'})
+            # Call service state
+            @smach.cb_interface(input_keys=['grammar_name'])
+            def AsrServerActivateGram_cb(userdata, request):
+                rospy.loginfo("Activating Grammar " + userdata.grammar_name + " and Language")
+                requ = ASRSrvRequest()
+                requ.requests = [ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]                
+                requ.model.action = ASRLangModelMngmt.ENABLE
+                requ.model.modelName = copy.deepcopy(userdata.grammar_name)
+                requ.lang.language = 'en_US'
+                rospy.logwarn("AsrServerActivateGram_cb sending grammar: \n" + str(requ.model.modelName))
+                return requ
+
+            def AsrServerActivateGram_response_cb(userdata, response):
+                rospy.logwarn("response of Activate_Gram is: \n" + str(response))
+                return 'succeeded'
+
+            smach.StateMachine.add('Activate_Gram',
+                    ServiceState('/asr_service',
+                    ASRService,
+                    request_cb = AsrServerActivateGram_cb,
+                    response_cb = AsrServerActivateGram_response_cb,
+                    input_keys = ['grammar_name']),
+                    transitions={'succeeded':'Sleeper', 'aborted': 'aborted', 'preempted': 'preempted'})
              
+            smach.StateMachine.add("Sleeper", Sleeper(3), 
+                                   transitions={'succeeded':'Activate_Asr', 'aborted': 'aborted'})
             # Call service state
             @smach.cb_interface(input_keys=['grammar_name'])
             def AsrServerRequestActivate_cb(userdata, request):
                 rospy.loginfo("Activating Asr service")
                 requ = ASRSrvRequest()
-                requ.requests = [ASRSrvRequest.ACTIVATION, ASRSrvRequest.GRAMMAR, ASRSrvRequest.LANGUAGE]
-                requ.activation.action = ASRActivation.ACTIVATE                
+                requ.requests = [ASRSrvRequest.GRAMMAR, ASRSrvRequest.ACTIVATION]
+                requ.activation.action = ASRActivation.ACTIVATE 
                 requ.model.action = ASRLangModelMngmt.ENABLE
-                requ.model.modelName = userdata.grammar_name       
-                requ.lang.language = 'en_US'
+                requ.model.modelName = copy.deepcopy(userdata.grammar_name)
+                rospy.logwarn("AsrServerRequestActivate_cb activating grammar: " + str(requ.model.modelName))
                 return requ
+
+            def AsrServerRequestActivate_response_cb(userdata, response):
+                rospy.logwarn("response of Activate_Asr is: \n" + str(response))
+                return 'succeeded'
 
             smach.StateMachine.add('Activate_Asr',
                     ServiceState('/asr_service',
                     ASRService,
                     request_cb = AsrServerRequestActivate_cb,
-                    input_keys = ['grammar_name']),
-                    transitions={'succeeded':'Activate_Gram', 'aborted': 'aborted', 'preempted': 'preempted'})
-             
-            # Call service state
-            @smach.cb_interface(input_keys=['grammar_name'])
-            def AsrServerRequestActivate2_cb(userdata, request):
-                rospy.loginfo("Activating Asr service")
-                requ = ASRSrvRequest()
-                requ.requests = [ASRSrvRequest.GRAMMAR]
-                requ.activation.action = ASRActivation.ACTIVATE                
-                requ.model.action = ASRLangModelMngmt.LOAD
-                requ.model.modelName = userdata.grammar_name       
-                requ.lang.language = 'en_US'
-                return requ
-
-            smach.StateMachine.add('Activate_Gram',
-                    ServiceState('/asr_service',
-                    ASRService,
-                    request_cb = AsrServerRequestActivate2_cb,
+                    response_cb = AsrServerRequestActivate_response_cb,
                     input_keys = ['grammar_name']),
                     transitions={'succeeded':'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+             
+
 
 

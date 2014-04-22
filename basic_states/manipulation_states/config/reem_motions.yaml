@@ -1,22 +1,38 @@
 play_motion:
   motions:
     Macarena:
-      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint,
-        arm_left_1_joint, arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint, arm_left_7_joint,
-        arm_right_1_joint, arm_right_2_joint, arm_right_3_joint, arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
+        arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
+        arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
+        arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
       points:
       - positions: [0.0, 0.0, 0.0, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             0, 0, 0, 0, 0, 0, 0]
+      - positions: [0.0, 0.0, 0.0, 0.0,
+             0.0959403462627, 0.26020618552, -0.551778064327, 1.63015208371, 0.751822227704, 0.286770906157, -2.07447322629,
+             0, 0, 0, 0, 0, 0, 0]
         time_from_start: 0.0
       - positions: [0.0, 0.0, 0.0, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
+             0.0959403462627, 0.26020618552, -0.551778064327, 1.63015208371, 0.751822227704, 0.286770906157, -2.07447322629,
+             0.0959403462627, 0.26020618552, -0.551778064327, 1.63015208371, 0.751822227704, 0.286770906157, -2.07447322629]
         time_from_start: 2.0
       - positions: [0.0, 0.0, 0.0, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0,
-            0.35, 0.17, -0.9, 0.8, 0.1, -0.4, 0.0]
-        time_from_start: 2.5
+              0.251819834868, 0.157887812142, -0.503571448685, 0.632911846387, 1.77619820491, -0.90090197106, 0.109835191686,
+             0.0959403462627, 0.26020618552, -0.551778064327, 1.63015208371, 0.751822227704, 0.286770906157, -2.07447322629]
+        time_from_start: 4.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+              0.251819834868, 0.157887812142, -0.503571448685, 0.632911846387, 1.77619820491, -0.90090197106, 0.109835191686,
+             0.251819834868, 0.157887812142, -0.503571448685, 0.632911846387, 1.77619820491, -0.90090197106, 0.109835191686]
+        time_from_start: 6.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+              0.951915724991, 0.131554621256, -1.29678691705, 1.55526739101, 2.06991148004, -0.571917003171, -0.552876722835,
+             0.0959253273852, 0.260205502418, -0.551752894715, 1.63015573222, 0.751821351502, 0.286767144608, -2.0744785189]
+        time_from_start: 8.0
+      - positions: [0.0, 0.0, 0.0, 0.0,
+              0.951915724991, 0.131554621256, -1.29678691705, 1.55526739101, 2.06991148004, -0.571917003171, -0.552876722835,
+             0.997327146817, 0.372025846114, -0.350057425141, 1.51005338175, 0.564510662032, -1.28610881932, 0.207739494104]
+        time_from_start: 10.0
       meta:
         name: Macarena
         usage: specific
@@ -66,6 +82,18 @@ play_motion:
         time_from_start: 0.0
       meta:
         name: Give Object Right
+        usage: Manipulation
+        description: Reach the right arm to the person in front.
+    rest_object_right:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
+        arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
+        arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
+        arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.284690922684, 0.0742714409998, -0.707030202939, 0.860833777662, 0.72827285975, -0.679052443516, -0.438106727665]
+        time_from_start: 0.0
+      meta:
+        name: Rest Object Right
         usage: Manipulation
         description: Reach the right arm to the person in front.
     arms_t:

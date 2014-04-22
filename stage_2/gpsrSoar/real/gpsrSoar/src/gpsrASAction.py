@@ -23,8 +23,8 @@ grammarNames['categories'] = 'category'
 try:
   per = GFR(wordset=grammarNames)
 except IOError:
-  PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
-  print "si surt aixo al executar-se sobre REEM, es que s'ha de revisar que algo esta incorrecte a gpsrASAction.py line: 27"
+  PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/general.gram"
+  #PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
   per = GFR(path=PATH, wordset=grammarNames)
 print per
 
@@ -115,43 +115,44 @@ def new_world(loc_list):  #generates a new world
   return w  #return this world
 
 def ask_data(Type='LOCATIONS', objectName='coke'):
- ad = askMissingInfoSM(Type=Type, objectName=objectName)
- #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
- #ad.userdata.dataType = Type
- #ad.userdata.object_name = objectName
- out = ad.execute()
- loc = ad.userdata._data['location_name']
- return loc  #-------------------'''
- #return 'fridge'
+    ad = askMissingInfoSM(Type=Type, objectName=objectName)
+    #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
+    #ad.userdata.dataType = Type
+    #ad.userdata.object_name = objectName
+    out = ad.execute()
+    loc = ad.userdata._data['location_name']
+    print "EL loc ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+loc
+    return loc  #-------------------'''
+     #return 'fridge'
   
 def ask_category(category):
- ad = askCategorySM(GRAMMAR_NAME = category)
- out = ad.execute()
- obj = ad.userdata._data['object_name']
- #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- print obj
- return obj   #--------------'''
- #return 'milk'
+    ad = askCategorySM(GRAMMAR_NAME = category)
+    out = ad.execute()
+    obj = ad.userdata._data['object_name']
+    #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+    print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
+    return obj   #--------------'''
+    #return 'milk'
 
-def ask_category_loc(category): #-------------------------------------------sa de mirar aki
- ad = askCategoryLocSM(GRAMMAR_NAME = category) 
- out = ad.execute()
- print str(type(ad.userdata))
- obj = ad.userdata._data['loc_name']
- print obj
- #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
- return obj    #---------------------'''
- #return 'coke'
+def ask_category_loc(category): #-------------------------------------------si torna a petar es per el tag de on llegim la location
+    ad = askCategoryLocSM(GRAMMAR_NAME = category) 
+    out = ad.execute()
+    obj = ad.userdata._data['location_name']
+    #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
+    print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category_loc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
+    return obj    #---------------------'''
+    #return 'fridge'
 
 def check_object_location(obj):
-  if obj != '':
-      # result = get_obj_location(obj)
-      # if result == 'NULL':
-      result = ask_data(Type='LOCATIONS', objectName=obj)
-
-      return obj2idx(result, 'LOCATIONS')
-  else:
-      return '-1'
+    if obj != '':
+        # result = get_obj_location(obj)
+        # if result == 'NULL':
+        result = ask_data(Type='LOCATIONS', objectName=obj)
+     
+        return obj2idx(result, 'LOCATIONS')
+    else:
+        return '-1'
+    #return 'sofa'
 
 class gpsrASAction(object):
   _result   = gpsrSoar.msg.gpsrActionResult()
@@ -173,7 +174,8 @@ class gpsrASAction(object):
     self._world = new_world(range(len(get_list('LOCATIONS'))))  #generates a new world
     print self._world.robot.locId
     self.print_goal()
-        
+    #-----------------------------------------------------------orders list------------------------------
+
     rospy.logwarn (str(self._goal.orderList))
     while not success:
       soarResult = interface.main()
@@ -224,9 +226,9 @@ class gpsrASAction(object):
           iloc += 1
           locc.append(c.location)
 
-    command = commands[self._goalDonei] #Extract one of he commands to command
+    command = commands[self._goalDonei] #Extract command indexed by goalDonei to command
 
-    locc = get_list('LOCATIONS')
+    locc = get_list('LOCATIONS') #Saves in locc all possible locations
     
     #this is a dummy for tests!!!
     # command = commands[1]
@@ -242,47 +244,46 @@ class gpsrASAction(object):
 
     # checks that the item is or not a category
     # print 'blablabal'
-    if command.item in categories:
+    if command.item in categories: #if the item is a category this ask for further information and updates it
       objct = ask_category(command.item)
       self._world.item.id = obj2idx(objct, 'ITEMS')
       command.item = objct
 
 
-    if command.location in loc_categories:
+    if command.location in loc_categories: #if the location is a category this ask for further information and updates it
       loca = ask_category_loc(command.location)
-      # self._world.location.id = obj2idx(loca, 'LOCATIONS')
       command.location = loca
 
-    # checks if the location of objects or persons are known
+    # checks if the location of persons are known
     if self._world.person.locId == '-1' : # and command.person == self._world.person.id:
       ploc = check_object_location(idx2obj(int(self._world.person.id), 'PERSONS'))
       # if ploc != '-1':
       #   ploc = obj2idx(ploc,'LOCATIONS')
+      print "LA LOCATION DE LA PERSON ES!!!!!!!!!!!!!!!!: "+str(ploc)
       self._world.person.locId = ploc
+      
     
-    try:
+    try:    #adds to world the item id
       i = obj2idx(command.item, 'ITEMS')
       self._world.item.id = str(i)
     except ValueError:
       print str(self._world.item.id)
       print command.item
       i = ''
-    try:
+    try:    #adds to world the person id
       p = obj2idx(command.person, 'PERSONS')
       self._world.person.id = str(p)
     except ValueError:
       p = ''
-    try:
+    try:    
       l = obj2idx(command.location, 'LOCATIONS')
     except ValueError:
       l = ''
     print self._world.robot.locId
     
 
-    if self._world.item.locId == '-1' and self._world.item.id != '-1': # and command.item == self._world.item.id:
+    if self._world.item.locId == '-1' and self._world.item.id != '-1': # If we know the item but not the location we check it and save it in world
       iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
-      # if iloc != '-1':
-      #   iloc = obj2idx(iloc,'LOCATIONS')
       self._world.item.locId = iloc
     
     if command.action == 'bring_from':
@@ -291,27 +292,19 @@ class gpsrASAction(object):
     if (command.action == 'memorize' or command.action == 'recognize'):
       command.person = self._world.person.id
 
-
-    print "locc: "
-    print locc
-    print "perss: "
-    print perss
-    print "itt: "
-    print itt
-    print "command.action: "
-    print command.action
-    print "i: "
-    print i
-    print "p: "
-    print p
-    print "l: "
-    print l
-    print "self._world: "
-    print self._world
     
     self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, 
                                   oitem=i, operson=p, olocation=l, current_world=self._world)
-
+    '''
+    locc: array with all the locations
+    perss: array with all the persons involved in the commands
+    itt: array with all the items involved in the commands
+    comand.action: the action we want to perform
+    i: the index of the object involved in this action
+    p: index of the person involved in this action
+    l: index of the location involved in this action
+    self._world: the world we are working on
+    '''
 
     self._goalDonei += 1 
 

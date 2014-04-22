@@ -13,6 +13,7 @@ import rospy
 from rospy.core import rospyinfo
 import smach
 from smach_ros import ServiceState
+from util_states.topic_reader import topic_reader
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -20,27 +21,6 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-
-class read_topic_faces(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                             input_keys=['standard_error'],
-         output_keys=['standard_error','faces'])
-
-    def execute(self, userdata):
-        
-       # message=FaceDetections()
-        message = rospy.wait_for_message('/pal_face/recognizer', FaceDetections, 60)
-        
-        # Check the distance between the robot and the doo
-        if message!= None:
-            userdata.faces=message
-            userdata.standard_error="Detect_face OK"
-            return 'succeeded'
-        else:
-            userdata.faces=None
-            userdata.standard_error="Time live of Face Detection"
-            return 'aborted'
 
 class detect_face(smach.StateMachine): 
     """
@@ -69,6 +49,8 @@ class detect_face(smach.StateMachine):
                                  output_keys=['standard_error','faces'])
         
         with self:
+            self.userdata.faces = ""
+            
             # call request for Recognizer
             @smach.cb_interface(input_keys=[])
             def face_start_detect_request_cb(userdata, request):
@@ -84,15 +66,14 @@ class detect_face(smach.StateMachine):
                                             request_cb = face_start_detect_request_cb,
                                             input_keys = []),
                                transitions={'succeeded':'Read_Topic','aborted' : 'aborted','preempted':'preempted'})
-            # Wait learning_time, that the robot will be learning the face
+           
+                 
             smach.StateMachine.add(
                                 'Read_Topic',
-                                read_topic_faces(),
+                                topic_reader('/pal_face/faces', FaceDetections, 60),
+                                remapping={'topic_output_msg': 'faces'},
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
       
-
-                 
-
 
 
