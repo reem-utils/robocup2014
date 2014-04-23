@@ -63,6 +63,8 @@ def compute_orientation(pose1, pose2):
     substracted_point = substract_points(pose1.pose.position, pose2.pose.position)
     normalized_point = normalize_2d_vector(substracted_point)
     yaw_angle = get_2d_angle(dummy_point.x, normalized_point.x, dummy_point.y, normalized_point.y)
+    if math.degrees(yaw_angle) < -90.0:
+        yaw_angle = (math.pi - yaw_angle) * -1
     rospy.loginfo("yaw_angle is in degrees: " + str(math.degrees(yaw_angle)))
     tmp_quat = quaternion_from_euler(0.0, 0.0, -yaw_angle) # must give the inverse angle
     return Quaternion(*tmp_quat)
@@ -139,21 +141,22 @@ class TrackFromFaces():
                 transformed_baselink_pose.pose.position.z = 0.0
                 
                 # transform the pose to odom for convenience (follow planner needs odom)
-                transform_ok = False
-                while not transform_ok:
-                    try:
-                        transformed_odom_pose = self.tf_listener.transformPose("odom", transformed_baselink_pose)
-                        transform_ok = True
-                    except tf.ExtrapolationException:
-                        rospy.logwarn("Exception on transforming transformed_pose... trying again.")
-                        transformed_baselink_pose.header.stamp = rospy.Time.now()
+#                 transform_ok = False
+#                 while not transform_ok:
+#                     try:
+#                         transformed_odom_pose = self.tf_listener.transformPose("odom", transformed_baselink_pose)
+#                         transform_ok = True
+#                     except tf.ExtrapolationException:
+#                         rospy.logwarn("Exception on transforming transformed_pose... trying again.")
+#                         transformed_baselink_pose.header.stamp = rospy.Time.now()
 
                 if not pose_stamped_first_face:
-                    pose_stamped_first_face = transformed_odom_pose
+                    #pose_stamped_first_face = transformed_odom_pose
+                    pose_stamped_first_face = transformed_baselink_pose
                 per.targetId = target_id
                 target_id += 1
-                per.x = transformed_odom_pose.pose.position.x
-                per.y = transformed_odom_pose.pose.position.y
+                per.x = transformed_baselink_pose.pose.position.x
+                per.y = transformed_baselink_pose.pose.position.y
                 per.status = 4
                 person_arr.peopleSet.append(per)
 
