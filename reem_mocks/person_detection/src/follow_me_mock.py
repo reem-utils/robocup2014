@@ -18,7 +18,7 @@ from pal_detection_msgs.srv import SetDatabase, SetDatabaseRequest, SetDatabaseR
 from follow_me.msg import personArray, person
 
 fakepositionx=0
-fakepositiony=2
+fakepositiony=0
 fakeorientation=0
 information=True
 ENDC = '\033[0m'
