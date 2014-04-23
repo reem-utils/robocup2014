@@ -27,7 +27,7 @@ OKGREEN = '\033[92m'
 
 FACES_TOPIC = '/pal_face/faces'
 PEOPLE_TRACKER_TOPIC = '/people_tracker_node/peopleSet'
-TRACKED_POSESTAMPED_TOPIC = '/move_by/follow'
+TRACKED_POSESTAMPED_TOPIC = '/move_base/follow_goal'
 
 
 class TrackFromFaces():
@@ -72,6 +72,7 @@ class TrackFromFaces():
                         rospy.logwarn("Exception on transforming... trying again.")
                         face_ps.header.stamp = rospy.Time.now()
                 #rospy.loginfo("    Transformed!")
+                transformed_pose.pose.position.z = 0.0
                 pose_stamped_first_face = transformed_pose
                 per.targetId = target_id
                 target_id += 1
