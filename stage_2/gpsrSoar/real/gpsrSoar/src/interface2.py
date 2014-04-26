@@ -75,8 +75,8 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                 'SaySM',
-                text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
-                #dummy(),
+                #text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                dummy(),
                 transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
 
@@ -341,6 +341,32 @@ def call_bring_to(person_name): #Solo hace release TODO
     time.sleep(3)
     return "succeeded" 
 
+def call_bring_to_loc(location_name): #TODO :Inovating, to see if it work
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : bring_to %s" % (person_name)
+        tosay = "Take it please"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        r = ReleaseSM()
+        r.userdata.releasing_position = None;
+        out = r.execute()
+    
+    return succeeded
+    #Remember to control the case when person_name == '', given when we are delivering to a place not a person
+    '''
+    if location_name == '':
+        tosay = "I'm leaving this here"
+    else:
+        tosay = "I'm going to bring something to " + location_name + ". Thought it is a place"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_bring_to')
+    time.sleep(3)
+    return "succeeded" 
+
 def call_ask_name():   #no sap fer-ho per que no trova a la persona
     '''
     print "SM : ask_name" 
@@ -456,7 +482,7 @@ def main():
                     
                     out = call_grasp(obj)
 
-                elif command_name == "deliver":
+                elif command_name == "deliver": #to Person
                     to_pers = command.GetParameterValue("pers")
                     try:
                         pers = idx2obj(int(to_pers),'PERSONS')
@@ -468,6 +494,19 @@ def main():
                         pers = ''   
                         print pers
                         out = call_bring_to(pers)
+
+                elif command_name == "deliver": #to Loc
+                    to_pers = command.GetParameterValue("loc")
+                    try:
+                        loc = idx2obj(int(to_pers),'LOCATIONS')
+                        print loc
+                        if (loc =="NULL"):
+                            print "ERROR: l'objecte %s no existe" % (to_loc)                        
+                        out = call_bring_to_loc(loc)
+                    except:
+                        loc = ''   
+                        print loc
+                        out = call_bring_to_loc(loc)
 
                 elif command_name == "search-object":
                 

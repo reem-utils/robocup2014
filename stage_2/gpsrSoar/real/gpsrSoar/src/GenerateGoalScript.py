@@ -258,7 +258,7 @@ class world():
                     first_attr = False
                     ignore_field = False
                 else:
-                    item_text += '           ^' + n + ' ' + str(getattr(self.item, n))
+                    item_text += '         ^' + n + ' ' + str(getattr(self.item, n))
         if ignore_field:
             item_text = ''
         else:

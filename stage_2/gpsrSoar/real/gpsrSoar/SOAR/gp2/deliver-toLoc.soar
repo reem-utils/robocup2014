@@ -1,9 +1,9 @@
 sp {gp*propose*deliverToLoc
    (state <s> ^name gp
-               ^desired <d>
-               ^robot <r>
-               ^location <l>
-               ^object <o>)
+              ^location <l>
+              ^robot <r>
+              ^object <o>                       
+              ^desired <d>)
     (<l> ^id <rloc>)
     (<r> ^id 1
          ^locId <rloc>
@@ -22,10 +22,10 @@ sp {gp*propose*deliverToLoc
 
 sp {gp*propose*navigate*deliverToLoc
    (state <s> ^name gp
-               ^desired <d>
-               ^robot <r>
-               ^location <l>
-               ^object <o>)
+              ^location <l>
+              ^robot <r>
+              ^object <o>
+              ^desired <d>)
     (<l> ^id <iloc>)
     (<r> ^id 1
          ^locId {<> <iloc> <rloc>}

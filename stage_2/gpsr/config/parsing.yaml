@@ -1,14 +1,14 @@
 ASR_LOOP: True
-ASR_ON: "True"
+ASR_ON: "False"
 #sentence: "Go to an exit"
 #sentence: "bring me a drink"
 #sentence: "Move to the sofa, then go to the fridge and exit the apartment"
-sentence: "Move to the fridge, find the coke, and grasp it"
+#sentence: "Move to the fridge, find the coke, and grasp it"
 
 
 
 
-sentence0: "bring me a coke" #MOLAAA
+sentence: "bring a drink to a table"
 sentence1: "find a person then memorize the person and recognize him" #KOOOOO
 sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #KOOOOO (bussiness no mola)
 sentence3: "bring the coke to a sofa" #KOOOOO (keixarnos que no estem portan a una persona)
