@@ -1,0 +1,15 @@
+<launch>
+
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find basic_functionalities)/launch/basic_functionalities_params.launch" />
+
+    <!-- State Machine -->
+    <node 
+    	pkg ="basic_functionalities"
+        type="check_dependences.py"
+        name="check_dependences"
+        output="screen">
+     </node>
+
+
+</launch>
