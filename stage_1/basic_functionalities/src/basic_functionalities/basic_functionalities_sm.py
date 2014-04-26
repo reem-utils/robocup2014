@@ -59,7 +59,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_pick_and_place',
                 PickPlaceSM(),
-                transitions={'succeeded': 'prepare_avoid_that', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_avoid_that', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
            
             # Go to avoid that
@@ -73,7 +73,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_avoid_that',
                 Avoid_That(),
-                transitions={'succeeded': 'prepare_what_did_you_say', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_what_did_you_say', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Go to what did you say
