@@ -25,7 +25,7 @@ it_category:
         cleaning_stuff: ["deodorant", "tooth paste", "cleaner", "fresh discs", "sponge"]
 
 loc_category:
-        table: [" hallway table", "sidetable", "snacks", "kitchen table", "bedside table", "dinner table", "couch table"]
+        table: [" hallway table", "side table", "kitchen table", "bedside table", "dinner table", "couch table"]
         shelf: ["bar", "kitchen counter", "cupboard", "dresser", "sideboard", "bookshelf", "pantry", "cabinet "]
         appliance: ["stove", "sink", "fridge", "tv counter"]
         utensils: ["hanger", "umbrella stand", "trash bin", "plant"]

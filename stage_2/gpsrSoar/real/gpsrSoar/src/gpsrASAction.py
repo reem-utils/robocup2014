@@ -292,7 +292,7 @@ class gpsrASAction(object):
     if (command.action == 'memorize' or command.action == 'recognize'):
       command.person = self._world.person.id
 
-    
+
     self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, 
                                   oitem=i, operson=p, olocation=l, current_world=self._world)
     '''

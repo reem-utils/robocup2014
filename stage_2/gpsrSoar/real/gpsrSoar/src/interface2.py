@@ -490,23 +490,34 @@ def main():
                         if (pers =="NULL"):
                             print "ERROR: la persona %s no existe" % (to_pers)                        
                         out = call_bring_to(pers)
-                    except:
-                        pers = ''   
-                        print pers
-                        out = call_bring_to(pers)
+                    except:                     #or to Loc
+                        to_loc = command.GetParameterValue("loc")
+                        try:
+                            loc = idx2obj(int(to_loc),'LOCATIONS')
+                            print loc
+                            if (loc =="NULL"):
+                                print "ERROR: l'objecte %s no existe" % (to_loc)                        
+                            out = call_bring_to_loc(loc)
+                        except:
+                            loc = ''   
+                            print loc
+                            out = call_bring_to_loc(loc)
+#                         pers = ''   
+#                         print pers
+#                         out = call_bring_to(pers)
 
-                elif command_name == "deliver": #to Loc
-                    to_pers = command.GetParameterValue("loc")
-                    try:
-                        loc = idx2obj(int(to_pers),'LOCATIONS')
-                        print loc
-                        if (loc =="NULL"):
-                            print "ERROR: l'objecte %s no existe" % (to_loc)                        
-                        out = call_bring_to_loc(loc)
-                    except:
-                        loc = ''   
-                        print loc
-                        out = call_bring_to_loc(loc)
+#                 elif command_name == "deliver": #to Loc
+#                     to_loc = command.GetParameterValue("loc")
+#                     try:
+#                         loc = idx2obj(int(to_loc),'LOCATIONS')
+#                         print loc
+#                         if (loc =="NULL"):
+#                             print "ERROR: l'objecte %s no existe" % (to_loc)                        
+#                         out = call_bring_to_loc(loc)
+#                     except:
+#                         loc = ''   
+#                         print loc
+#                         out = call_bring_to_loc(loc)
 
                 elif command_name == "search-object":
                 
