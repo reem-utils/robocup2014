@@ -13,6 +13,7 @@ import smach_ros
 import actionlib
 
 from speech_states.say_yes_or_no import SayYesOrNoSM
+from speech_states.activate_asr import ActivateASR
 from speech_states.say import text_to_say
 """
     This file tests the say_yes_or_no function
@@ -29,6 +30,12 @@ def main():
         sm.userdata.tts_text = None
         sm.userdata.tts_wait_before_speaking = None
         sm.userdata.tts_lang = None
+        
+        # Load grammar yes/no
+        smach.StateMachine.add(
+            'ActivateASR_yesno',
+            ActivateASR("robocup/yes_no"),
+            transitions={'succeeded': 'DID_YOU_SAY', 'aborted': 'aborted', 'preempted': 'preempted'})                    
         
         smach.StateMachine.add('DID_YOU_SAY',
             text_to_say("ready"),                

@@ -26,7 +26,7 @@ class ProcessCommand(smach.State):
         smach.State.__init__(self, outcomes=['yes', 'no', 'aborted'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error'])
-        self.tags = parserGrammar(GRAMMAR_NAME)
+      #  self.tags = parserGrammar(GRAMMAR_NAME)
         
     def execute(self, userdata):        
         question = userdata.asr_userSaid
@@ -34,28 +34,28 @@ class ProcessCommand(smach.State):
 
         # We need to compare the userSaid with all the possible values that we can recognize
         
-#         yes = [tag for tag in questionTags if tag.key == 'yes']
-#         no = [tag for tag in questionTags if tag.key == 'no']
-#         
-#         print yes
-#         print no
-#         
-#         if yes:
-#             rospy.loginfo("YES")
-#             return 'yes'
-#         if no: 
-#             rospy.loginfo("NO")
-#             return 'no'
-#         
-#         rospy.loginfo("Aborted")
-#         return 'aborted'
-        
-        for element in self.tags:
-            for value in element[1]:
-                if userdata.asr_userSaid == value:
-                    return element[0]
-        
+        yes = [tag for tag in questionTags if tag.key == 'yes']
+        no = [tag for tag in questionTags if tag.key == 'no']
+         
+        print yes
+        print no
+         
+        if yes:
+            rospy.loginfo("YES")
+            return 'yes'
+        if no: 
+            rospy.loginfo("NO")
+            return 'no'
+         
+        rospy.loginfo("Aborted")
         return 'aborted'
+        
+#         for element in self.tags:
+#             for value in element[1]:
+#                 if userdata.asr_userSaid == value:
+#                     return element[0]
+#         
+#        return 'aborted'
     
 class SayYesOrNoSM(smach.StateMachine):
     """
