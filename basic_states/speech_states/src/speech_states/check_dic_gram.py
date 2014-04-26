@@ -19,28 +19,29 @@ def checkDictionaryGrammar(grammarFile):
     dic = {}
     while not end:
         line = f.readline()
-        print "Line is: " + str(line)
         value = line.partition('\t')[0]
-        print "Value: " + str(value)
         if(str(value).isalpha()):
             dic[value] = str(value)
         elif (str(value)[1:] == 'unk'):
             end = True
     print "Tags from parser: " + str(tags[:])
     existsInDic = True
+    notExistedArray = []
     for tagValueArray in tags:
         for tagValue in tagValueArray:
-            print "TAG Value :::: " + str(tagValue)
             for tagInValue in tagValue:
                 tagSeparated = str(tagInValue).split(' ')
                 for tagFinal in tagSeparated :
                     if tagFinal.isalpha(): 
+                        tagFinal = str(tagFinal).lower()
                         if str(tagFinal) in dic:
                             print "TAG Value: " + str(tagFinal) + " Exists!"
                         else:
                             existsInDic = False
+                            notExistedArray.append(tagFinal);
                             print "TAG Value: " + str(tagFinal) + " NOT Exists!"
     print "Exists??????? " + str(existsInDic)
+    print "Words that not exist : " + str(notExistedArray)
     return existsInDic
         
         
