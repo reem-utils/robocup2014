@@ -24,15 +24,15 @@ sp {gp*propose*navigate*deliverToLoc
    (state <s> ^name gp
               ^location <l>
               ^robot <r>
-              ^object <o>
+              ^object <o>                       
               ^desired <d>)
     (<l> ^id <iloc>)
     (<r> ^id 1
          ^locId {<> <iloc> <rloc>}
          ^obj1Id <oid>)
     (<o> ^id <oid>
-         ^grasped yes
-         ^delivered no)
+         ^grasped yes)
+         #^delivered no)
     (<d> ^object <do>)
     (<do> ^id <oid>
           ^locId <iloc>)

@@ -314,7 +314,7 @@ class world():
                     first_attr = False
                     ignore_field = False
                 else:
-                    robot_text += '\n           ^' + n + ' ' + str(getattr(self.robot, n)) 
+                    robot_text += '\n         ^' + n + ' ' + str(getattr(self.robot, n)) 
         if ignore_field:
             robot_text = ''
         else:
@@ -328,7 +328,7 @@ class world():
         desi += ')\n'
 
         DesiredState = desi + person_text + item_text + loc_text + robot_text
-
+        print DesiredState + '\n\n'
         return DesiredState
 
     def goal_bring_to(self, GOAL):
