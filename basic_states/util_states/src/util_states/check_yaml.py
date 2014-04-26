@@ -3,6 +3,9 @@ import string
 import os
 import rospkg
 import sys
+
+from util_states.colors import Colors
+
 """
     Checks if objects in the yaml file are included in the roboList from the Robocup
 """
@@ -24,34 +27,30 @@ def check_yaml_compare(yamlFilePath, file_to_compare):
         if len(value) == 0:
             end = True
         else:
-            print "NAME : " + name
-            print "VALUE : " + str(valueArray)
             name_field.append(name)
             for val in valueArray:
                 value_field.append(val)
-    print "VALUE ARRAY: " + str(value_field)
             
     #Comapare with yaml
     end = False
     in_yaml = True
+    not_in_yaml = []
     while not end:
         line = f.readline()
         if '[' in line:
             name, value = line.partition(':')[::2]
             name = name.strip(' ')
-            print "YAML VALUE: " + value
-            print "YAML NAME: " + name
-            if str(name) in value_field:
-            #if value_field.count(str(name))>0:
-                print "YES OK: NAME IN" + str(name) + " in array: " + str(value_field)
-            else:
+            if not str(name) in value_field:
                 in_yaml = False
+                not_in_yaml.append(name)
                 
-                print "Not OK: NAME IN" + str(name) + " in array: " + str(value_field)
         if line=='':
             end = True
-        
-    
+    if in_yaml:
+        print Colors().GREEN + "Dictionary OK!" + Colors().NATIVE_COLOR
+    else:
+        print Colors().RED + "The following objects do not exist in the file: " + str(not_in_yaml) + Colors().NATIVE_COLOR
+    return in_yaml
         
         
 

@@ -3,6 +3,7 @@ import string
 import os
 import rospkg
 import sys
+from util_states.colors import Colors
 
 def check_yaml_compare(yamlFilePath, file_to_compare, package_folder):
     """
@@ -39,12 +40,12 @@ def check_yaml_compare(yamlFilePath, file_to_compare, package_folder):
         if len(value) == 0:
             end = True
         else:
-            print "NAME : " + name
-            print "VALUE : " + str(valueArray)
+            #print "NAME : " + name
+#             print "VALUE : " + str(valueArray)
             name_field.append(name)
             for val in valueArray:
                 value_field.append(val)
-    print "VALUE ARRAY: " + str(value_field)
+#     print "VALUE ARRAY: " + str(value_field)
             
     #Comapare with yaml
     end = False
@@ -55,19 +56,24 @@ def check_yaml_compare(yamlFilePath, file_to_compare, package_folder):
         if '[' in line:
             name, value = line.partition(':')[::2]
             name = name.strip(' ')
-            print "YAML VALUE: " + value
-            print "YAML NAME: " + name
+            #print "YAML VALUE: " + value
+            #print "YAML NAME: " + name
             yaml_values.append(name)
         if line=='':
             end = True
-    
+    not_exist = []
     for val in value_field:
-        if val in yaml_values:
-            print "OBJECT IN ROBOCUPLIST: " + val + " Exists in yaml"
-        else:
-            print "OBJECT IN ROBOCUPLIST: " + val + " DOES NOT Exists in yaml"
+        if not val in yaml_values:
+    #        print "OBJECT IN ROBOCUPLIST: " + val + " DOES NOT Exists in yaml"
             in_yaml = False
+            not_exist.append(val)
+    if in_yaml:
+        print Colors().GREEN + "YAML OK!" + Colors().NATIVE_COLOR
+    else:    
+        print Colors().RED + "The following objects do not exist in the yaml file: " + str(not_exist) + Colors().NATIVE_COLOR 
     
+    f.close()
+    f_comp.close()
     return in_yaml
         
         
@@ -77,7 +83,7 @@ def main():
         yamlName = sys.argv[1]
         file_to_compare_name = sys.argv[2]
         package_folder_name = sys.argv[3] 
-        print "SYS"
+#         print "SYS"
     else:
         yamlName = 'pois_cocktail_party'
         file_to_compare_name = 'roboList'
