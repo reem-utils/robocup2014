@@ -1,7 +1,7 @@
 <launch>
 
-	<!-- TODO: maybe we need to delete the params before loading them -->
-	<include file="$(find robot_inspection)/launch/robot_inspection_params.launch" />
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find robot_inspection)/launch/robot_inspection_params.launch" />
 	
     <!-- State Machine -->
     <node 

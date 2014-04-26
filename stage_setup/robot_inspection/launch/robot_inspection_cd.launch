@@ -1,7 +1,7 @@
 <launch>
-    <!-- Launch map pois for the robot inspection test-->
-	<rosparam file="$(find robot_inspection)/config/pois_robot_inspection.yaml" command="load" ns="mmap" />
-
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find robot_inspection)/launch/robot_inspection_params.launch" />
+	
     <!-- State Machine -->
     <node 
     	pkg ="robot_inspection"
