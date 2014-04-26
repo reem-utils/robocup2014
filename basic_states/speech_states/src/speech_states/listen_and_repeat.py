@@ -75,6 +75,7 @@ class ListenRepeatSM(smach.StateMachine):
         with self:
             self.userdata.asr_userSaid = ''
             self.userdata.tts_lang = None
+            asr_userSaid_tags=''
             
             smach.StateMachine.add('PrepareData',
                     prepareData(grammar),

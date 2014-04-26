@@ -27,6 +27,8 @@ def checkDictionaryGrammar(grammarFile):
     print "Tags from parser: " + str(tags[:])
     existsInDic = True
     notExistedArray = []
+    
+     
     for tagValueArray in tags:
         for tagValue in tagValueArray:
             for tagInValue in tagValue:
@@ -42,6 +44,7 @@ def checkDictionaryGrammar(grammarFile):
                             print "TAG Value: " + str(tagFinal) + " NOT Exists!"
     print "Exists??????? " + str(existsInDic)
     print "Words that not exist : " + str(notExistedArray)
+    f.close()
     return existsInDic
         
         
