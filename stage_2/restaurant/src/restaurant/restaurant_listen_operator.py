@@ -176,7 +176,7 @@ class ListenOperator(smach.StateMachine):
             
             
             smach.StateMachine.add('LISTEN_TO',
-                                   ListenToSM(),
+                                   ListenToSM(GRAMMAR_NAME),
                                    transitions={'succeeded': 'PROCES_TAGS',
                                                 'aborted': 'LISTEN_TO','preempted':'preempted'})
             
