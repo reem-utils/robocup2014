@@ -23,7 +23,7 @@ from math import radians, degrees
 class createPlayMotionGoal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                             input_keys=['manip_motion_to_play','manip_time_to_play'],
+                             input_keys=['manip_motion_to_play'],
                              output_keys=['play_motion_sm_goal'])
 
     def execute(self, userdata):
@@ -41,7 +41,7 @@ class prepareData(smach.State):
     def __init__(self, motion, time=4.0):
         
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                            input_keys=['manip_motion_to_play','manip_time_to_play'], output_keys=['manip_motion_to_play','manip_time_to_play'])
+                            input_keys=['manip_motion_to_play'], output_keys=['manip_motion_to_play'])
         self.motion = motion
         self.time = time
         
@@ -53,7 +53,6 @@ class prepareData(smach.State):
         
         #Priority in init
         userdata.manip_motion_to_play = self.motion if self.motion else userdata.manip_motion_to_play   
-        userdata.manip_time_to_play = self.time if self.time else userdata.manip_time_to_play 
        
         return 'succeeded'
     
@@ -71,7 +70,6 @@ class play_motion_sm(smach.StateMachine):
     
         Input Keys:
         @key manip_motion_to_play: specifies the motion (from a predefined set of motions in a .yaml file)
-        @key manip_time_to_play: specifies the time to reach the motion. If exceeded an error is produced.
 
         Output Keys:
         @key standard_error: Specifies an error output occurred in the SM.
@@ -81,7 +79,7 @@ class play_motion_sm(smach.StateMachine):
     """
     def __init__(self, motion = None, time = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['manip_motion_to_play','manip_time_to_play'],
+                                    input_keys=['manip_motion_to_play'],
                                     output_keys=['standard_error'])
         rospy.loginfo('Play Motion StateMachine')
         with self:
