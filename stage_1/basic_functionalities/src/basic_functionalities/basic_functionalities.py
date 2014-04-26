@@ -12,7 +12,6 @@ import smach
 import smach_ros
 import actionlib
 
-from check_dependences import CheckDependencesState
 from basic_functionalities_sm import BasicFunctionalitiesSM
 
 def main():
@@ -21,12 +20,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-   
-        smach.StateMachine.add(
-            'CheckDepencences',
-            CheckDependencesState(),
-            transitions={'succeeded': 'BasicFunctionalitiesSM', 'aborted': 'aborted'}) 
-   
+
         smach.StateMachine.add(
             'BasicFunctionalitiesSM',
             BasicFunctionalitiesSM(),

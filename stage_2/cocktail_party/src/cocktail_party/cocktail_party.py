@@ -12,7 +12,6 @@ import smach
 import smach_ros
 import actionlib
 
-from check_dependences import CheckDependencesState
 from cocktail_party_sm import CocktailPartySM
 
 def main():
@@ -22,11 +21,6 @@ def main():
 
     with sm:
    
-#         smach.StateMachine.add(
-#             'CheckDepencences',
-#             CheckDependencesState(),
-#             transitions={'succeeded': 'CocktailPartySM', 'aborted': 'aborted'}) 
-#    
         smach.StateMachine.add(
             'CocktailPartySM',
             CocktailPartySM(),

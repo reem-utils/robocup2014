@@ -6,8 +6,8 @@
     <!-- State Machine -->
     <node 
     	pkg ="cocktail_party"
-        type="cocktail_party.py"
-        name="cocktail_party"
+        type="check_dependences.py"
+        name="check_dependences"
         output="screen">
      </node>
 

@@ -195,7 +195,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_what_did_you_say',
                  text_to_say("What did you say test"),
-                 transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
             
             # Go to the location
             smach.StateMachine.add(
@@ -233,7 +233,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_found',
                  text_to_say("I found you!"),
-                 transitions={'succeeded': 'DeactivateASR_start', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
             # Ask for TC if we dont find him
             smach.StateMachine.add(
@@ -250,11 +250,7 @@ class WhatSaySM(smach.StateMachine):
             # Question Part ---------------------------------------------------------------------------------------------
             
             # Init the asr service
-            # Deactivate the server
-            smach.StateMachine.add('DeactivateASR_start',
-                    DeactivateASR(),
-                    transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
-            
+
             # Activate the server
             smach.StateMachine.add('ActivateASR',
                     ActivateASR(),
@@ -309,8 +305,8 @@ class WhatSaySM(smach.StateMachine):
             
             # Deactivate ASR
             smach.StateMachine.add('DeactivateASR',
-                    DeactivateASR(),
-                    transitions={'succeeded': 'say_end', 'aborted': 'aborted', 'preempted': 'preempted'})
+                DeactivateASR(),
+                transitions={'succeeded': 'say_end', 'aborted': 'aborted', 'preempted': 'preempted'})
             
             smach.StateMachine.add(
                  'say_end',

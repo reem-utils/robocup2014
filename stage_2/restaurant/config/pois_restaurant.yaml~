@@ -1,7 +1,0 @@
-numberOfSubMaps: 1
-poi:
-  submap_0:
-    party_room: [submap_0, point_room_one, 3.0, 3.0, 0]
-    storage_room: [submap_0, point_room_two, -3.0, 0.0, 0]
-    leave_room: [submap_0, point_room_three, 3.0, -3.0, 0]
-
