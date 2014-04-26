@@ -4,6 +4,7 @@
 """
 import rospy
 import smach
+import math
 
 
 
@@ -18,6 +19,7 @@ import roslib
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from roslaunch.loader import rosparam
 from speech_states.parser_grammar import parserGrammar
+from hri_states.acknowledgment import acknowledgment
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -60,33 +62,36 @@ class save_point(smach.State):
         smach.State.__init__(
             self,
             outcomes=['succeeded', 'aborted','preempted'],
-            input_keys=['current_robot_pose','objectName','objectOrientation','current_robot_yaw'],output_keys=[])
+            input_keys=['current_robot_pose','objectName','objectOrientation','current_robot_yaw'],
+            output_keys=[])
 
     def execute(self, userdata):
         aux=userdata.current_robot_pose
         aux.pose.position.x
         aux.pose.position.y
+        yaw=userdata.current_robot_yaw
         rospy.loginfo(OKGREEN+"I Have a new point"+ENDC)
+        if (userdata.objectOrientation== 'right') :
+            yaw=yaw+(math.pi/2)
+        if (userdata.objectOrientation== 'left'):
+            yaw=yaw-(math.pi/2)
+        if (userdata.objectOrientation== 'back'):
+            yaw=yaw-math.pi
+        if (userdata.objectOrientation=='front'):
+            yaw=yaw
+        
+        
+        
         
         value=["submap_0",userdata.objectName,aux.pose.position.x,
-               aux.pose.position.y,userdata.current_robot_yaw]
+               aux.pose.position.y,yaw]
         
         rospy.loginfo(OKGREEN+str(value)+ENDC)
-        rospy.set_param("/restaurant/submap_0/"+str(userdata.objectName),value)
+        rospy.set_param("/mmap/poi/submap_0/"+str(userdata.objectName),value)
+        #"/restaurant/submap_0/"+str(userdata.objectName)
         return 'succeeded'
     
     
-class did_you_say(smach.State):
-
-    def __init__(self):
-        smach.State.__init__(
-            self,
-            outcomes=['succeeded', 'aborted','preempted'],input_keys=[],output_keys=[])
-
-    def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"DID you say...."+ENDC)
-
-        return 'succeeded'
 
 class proces_Tags(smach.State):
 
@@ -178,11 +183,11 @@ class ListenOperator(smach.StateMachine):
             smach.StateMachine.add('LISTEN_TO',
                                    ListenToSM(GRAMMAR_NAME),
                                    transitions={'succeeded': 'PROCES_TAGS',
-                                                'aborted': 'LISTEN_TO','preempted':'preempted'})
+                                                'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
             
         
             smach.StateMachine.add('CAN_YOU_REPEAT',
-                       text_to_say(SAY_REPEAT),
+                       acknowledgment(tts_text=SAY_REPEAT,type_movement='no'),
                        transitions={'succeeded': 'LISTEN_TO',
                                     'aborted': 'LISTEN_TO','preempted':'preempted'})
                         
@@ -205,7 +210,7 @@ class ListenOperator(smach.StateMachine):
                                                 'aborted': 'aborted','preempted':'preempted'})
 
             smach.StateMachine.add('SAY_OK',
-                                   text_to_say(SAY_OK),
+                                   acknowledgment(tts_text=SAY_OK,type_movement='yes'),
                                    transitions={'succeeded': 'LISTEN_TO',
                                                 'aborted': 'LISTEN_TO','preempted':'preempted'})
             
