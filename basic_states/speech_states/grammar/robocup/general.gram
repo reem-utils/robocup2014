@@ -37,11 +37,11 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 
 <person> = ( albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather );
 
-<location> = ( charger | exit | kitchen | business | sideboard | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table );
+<location> = ( charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table );
 
-<item> = ( coke | soda | chips | biscuits | cheese | seafood | cornflakes | milk | beer | lemonade | milo | water | yoghurt | spoons | glass );
+<item> = ( coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | yogurt | spoons | glass );
 
-<category> = (drink | food | kitchenary | snack);
+<category> = (drink | food | kitchenware | snack);
 
 #<sentence>   = (hello | greetings | goodbye | your name);
 

@@ -29,6 +29,7 @@ OKGREEN = '\033[92m'
 FREQ_FIND=4 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
+DISTANCE_HUMAN=0.2
 
 
 
@@ -100,7 +101,7 @@ class calculate_goal(smach.State):
                              output_keys=['nav_to_coord_goal'])
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-        self.distanceToHuman=0.2
+        self.distanceToHuman=DISTANCE_HUMAN
         #Calculating vectors for the position indicated
         new_pose = Pose()
         
@@ -120,14 +121,16 @@ We want that if the person comes closer, the robot stays in the place.
 Thats why we make desired distance zero if person too close.
 """
 
-        distance_des = 0.3
+        distance_des = 0.3 #TODO: I DON? UNDERSTAND força un moviment sempre
+        
         if position_distance >= self.distanceToHuman: 
             distance_des = position_distance - self.distanceToHuman
-            alfa = math.atan2(userdata.tracking_msg_filtered.y,userdata.tracking_msg_filtered.x)
+            #alfa = math.atan2(userdata.tracking_msg_filtered.y,userdata.tracking_msg_filtered.x)
         else:
             rospy.loginfo(OKGREEN+" Person too close => not moving, just rotate"+ENDC)
         #atan2 will return a value inside (-Pi, +Pi) so we can compute the correct quadrant
-            alfa = math.atan2(new_pose.position.y, new_pose.position.x)
+        
+        alfa = math.atan2(new_pose.position.y, new_pose.position.x)
         dist_vector = multiply_vector(unit_vector, distance_des)
 
         alfa_degree = math.degrees(alfa)
@@ -150,7 +153,8 @@ Thats why we make desired distance zero if person too close.
         # it will send the cord
 class freq_goal(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted'],input_keys=['nav_goal_msg'],
+        smach.State.__init__(self, outcomes=['succeeded','preempted'],
+                             input_keys=['nav_goal_msg'],
                              output_keys=['nav_goal_msg'])
     
     def execute(self, userdata):
@@ -166,7 +170,8 @@ class freq_goal(smach.State):
 class debug(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'],
-                             input_keys=['nav_goal_msg','tracking_msg_filtered','tracking_msg'])
+                             input_keys=['nav_goal_msg',
+                                         'tracking_msg_filtered','tracking_msg'])
     def execute(self, userdata):
             rospy.loginfo("i'm in dummy debug state")
             return 'succeeded'
@@ -205,7 +210,7 @@ class FollowOperator(smach.StateMachine):
 
         with self:
             self.userdata.standard_error='OK'
-            self.userdata.in_learn_person=1
+            #self.userdata.in_learn_person=1
             self.userdata.word_to_listen=None
 
             
