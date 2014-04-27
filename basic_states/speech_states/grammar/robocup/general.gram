@@ -7,9 +7,9 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 
 <action> = (<goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <exit>);
 
-<goto>   = (<gocommand> to <determinant> <location>);
-<fetch>  = (<fetchcommand> <determinant> <item> from <determinant> <location>);
-<bringit>= (<bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> <location> );
+<goto>   = (<gocommand> to <determinant> (<location>|<loccategory>));
+<fetch>  = (<fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>));
+<bringit>= (<bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>));
 <askname>= (memorize the person | ask the person name);
 <findp>  = (<findcommand> a person);
 #<get>    = (<getcommand> ([the] <item> | it ));
@@ -39,9 +39,11 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 
 <location> = ( charger | exit | kitchen | business | sideboard | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table );
 
-<item> = ( coke | soda | chips | biscuits | cheese | seafood | cornflakes | milk | beer | lemonade | milo | water | yoghurt | spoons | glass );
+<item> = ( cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | cornflakes | milk | beer | lemonade | milo | water | yoghurt | spoons | glass );
 
 <category> = (drink | food | kitchenary | snack);
+
+<loccategory> = (table | shelf | appliance | utensils | seat | seating | door);
 
 #<sentence>   = (hello | greetings | goodbye | your name);
 

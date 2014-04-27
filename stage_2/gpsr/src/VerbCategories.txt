@@ -15,9 +15,9 @@ find_person find_person
 grasp grasp
 get grasp
 take grasp
+get grasp
 bring_to bring_to
 bring bring_to
-get bring_to
 give bring_to
 carry bring_to
 carry_to bring_to

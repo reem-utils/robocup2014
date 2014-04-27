@@ -1,5 +1,5 @@
-object=coke
-location=fridge
+object=spoon
+location=sofa
 yes=yes
 name=cris
 objectA=coke
