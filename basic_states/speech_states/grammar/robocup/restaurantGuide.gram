@@ -5,7 +5,7 @@ grammar restaurantGuide;
 public <basic> = ((<locations>) | <garbage> ){obj.put("external","1");}; 
 
 
-<locations>= here at your <direction> you have <objects>
+<locations>= here at your <direction> you have <objects>;
 
 
 <objects> = (beverage | snacks | drinks);

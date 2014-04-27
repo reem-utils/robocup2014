@@ -23,7 +23,7 @@ it_category:
         food: [" tomato sauce", "peanut butter", "chicken noodles", "marmalade", "veggie noodles", "garlic sauce "]
         snack: [" chocolate", "cookies", "drops", "crackers"]
         cleaning_stuff: ["deodorant", "tooth paste", "cleaner", "fresh discs", "sponge"]
-        kitchenary: ["cook book", "spoon"]
+        kitchenware: ["cook book", "spoon"]
 
 loc_category:
         table: [" hallway table", "side table", "kitchen table", "bedside table", "dinner table", "couch table"]

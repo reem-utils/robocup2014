@@ -63,18 +63,9 @@ class learn_person(smach.State):
                                     'aborted','preempted'],output_keys=['in_learn_person'])
     def execute(self,userdata):
         rospy.loginfo("im learning a person")
-        userdata.in_learn_person="temporal"
+        userdata.in_learn_person=1
         return 'succeeded'
              
-        
-class ListenOperator_dummy(smach.State):
-    # gets called when ANY child state terminates
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
-    def execute(self,userdata):
-        rospy.sleep()
-        rospy.loginfo("im dummy listen the operator")
-        return 'succeeded'
         
 def child_term_cb(outcome_map):
 

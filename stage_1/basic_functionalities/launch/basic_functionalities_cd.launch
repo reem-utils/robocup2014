@@ -6,8 +6,8 @@
     <!-- State Machine -->
     <node 
     	pkg ="basic_functionalities"
-        type="basic_functionalities.py"
-        name="basic_functionalities"
+        type="check_dependences.py"
+        name="check_dependences"
         output="screen">
      </node>
 

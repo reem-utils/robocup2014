@@ -13,7 +13,6 @@ import smach_ros
 
 
 from robot_inspection_sm import RobotInspectionSM
-from check_dependences import CheckDependencesState
 
 def main():
     rospy.init_node('robot_inspection')
@@ -21,12 +20,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-
-   #     smach.StateMachine.add(
-   #         'CheckDepencences',
-   #         CheckDependencesState(),
-   #         transitions={'succeeded': 'RobotInspectionSM', 'aborted': 'aborted'})
-        
+  
         smach.StateMachine.add(
             'RobotInspectionSM',
             RobotInspectionSM(),

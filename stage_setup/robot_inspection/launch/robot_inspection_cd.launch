@@ -1,14 +1,13 @@
 <launch>
-
     <!-- TODO: maybe we need to delete the params before loading them -->
     <include file="$(find robot_inspection)/launch/robot_inspection_params.launch" />
 	
     <!-- State Machine -->
     <node 
     	pkg ="robot_inspection"
-        type="robot_inspection.py"
-        name="robot_inspection"
+        type="check_dependences.py"
+        name="check_dependences"
         output="screen">
      </node>
-
+  
 </launch>

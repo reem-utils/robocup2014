@@ -2,10 +2,10 @@
 
 grammar first;
 
-public <basic> = (  ( <yes> {obj.put("yes",$.$value);} ) | ( <no> {obj.put("no",$.$value);} ) | <garbage> ) {obj.put("external","1");}; 
+public <basic> = ( <yes> {obj.put("yes",$.$value);} ) | ( <no> {obj.put("no",$.$value);} )  {obj.put("external","1");}; 
 
-<yes> = (yes | yeah | sure);
-<no> = (no);
+<yes> = yes | yeah | sure;
+<no> = no;
 
 <garbage>  = <garbage2>;
 

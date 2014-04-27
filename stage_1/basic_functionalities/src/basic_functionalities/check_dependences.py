@@ -199,3 +199,23 @@ class CheckDependencesState(smach.State):
         self.check_specific_params()
 
         return 'succeeded' if self.ALL_OK else 'aborted'
+    
+    
+def main():
+    rospy.init_node('basic_functionalities_cd')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+
+    with sm:
+
+        smach.StateMachine.add(
+            'CheckDepencences',
+            CheckDependencesState(),
+            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})    
+
+    sm.execute()
+
+
+if __name__ == '__main__':
+    main()
+    

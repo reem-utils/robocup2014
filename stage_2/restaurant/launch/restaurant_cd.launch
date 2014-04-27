@@ -6,8 +6,8 @@
     <!-- State Machine -->
     <node 
     	pkg ="restaurant"
-        type="restaurant.py"
-        name="restaurant"
+        type="check_dependences.py"
+        name="check_dependences"
         output="screen">
      </node>
 </launch>

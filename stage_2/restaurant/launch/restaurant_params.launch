@@ -1,5 +1,5 @@
 <launch>
     <!-- Launch map pois for the restaurant test-->
-	<rosparam file="$(find restaurant)/config/pois_restaurant.yaml" command="load" ns="mmap" />
+    <rosparam file="$(find restaurant)/config/pois_restaurant.yaml" command="load" ns="mmap" />
 
 </launch>
