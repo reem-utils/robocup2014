@@ -103,7 +103,7 @@ def call_go_to(loc_name):
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_go_to'+ loc_name)
+    rospy.logwarn('call_go_to '+ loc_name)
     time.sleep(3)  
     return "succeeded" 
     
@@ -232,7 +232,7 @@ def call_follow(): #TODO  #no sap fer-ho
     speak = speaker(tosay)
     speak.execute()
     time.sleep(3)
-    return succeeded
+    return "succeeded"
 #     print "SM : follow" 
 #     f = FollowMeSM()
 #     out = f.execute()
@@ -269,7 +269,7 @@ def call_find_object(object_name, loc_name):
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_object'+object_name)
+    rospy.logwarn('call_find_object '+object_name)
     time.sleep(3)
     return "succeeded"
 
@@ -294,7 +294,7 @@ def call_grasp(obj):
     tosay = "I'm going to grasp the " + obj
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_grasp'+obj)
+    rospy.logwarn('call_grasp '+obj)
     time.sleep(3)
     return "succeeded"
 
@@ -311,7 +311,7 @@ def call_find_person(person_name):
     tosay = "I'm going to search for the person known as " + person_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_person'+person_name)
+    rospy.logwarn('call_find_person '+person_name)
     time.sleep(3)
     return "succeeded"
 
@@ -337,7 +337,7 @@ def call_bring_to(person_name): #Solo hace release TODO
         tosay = "I'm going to bring something to " + person_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_bring_to'+person_name)
+    rospy.logwarn('call_bring_to '+person_name)
     time.sleep(3)
     return "succeeded" 
 
@@ -363,7 +363,7 @@ def call_bring_to_loc(location_name): #TODO :Inovating, to see if it work
         tosay = "I'm going to bring something to " + location_name + ". Thought it is a place"
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_bring_to'+location_name)
+    rospy.logwarn('call_bring_to '+location_name)
     time.sleep(3)
     return "succeeded" 
 

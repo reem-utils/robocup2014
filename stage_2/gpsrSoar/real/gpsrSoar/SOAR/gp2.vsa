@@ -23,5 +23,7 @@ VERSION 4
 20	0	OPERATOR recognize-person recognize-person.soar 21
 21	0	OPERATOR record record.soar 22
 22	0	OPERATOR search-object search-object.soar 23
-23	0	OPERATOR search-person search-person.soar 24
+23	0	HLOPERATOR search-person search-person.soar search-person 122 24
+24	23	FOPERATOR elaborations elaborations.soar 25
+25	23	OPERATOR follow follow.soar 26
 END

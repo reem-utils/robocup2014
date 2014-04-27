@@ -364,7 +364,7 @@ class world():
                 print 'hauria de ser aqui a sobre'
                 self.person.id = '-1'
             self.person.found = YES
-            self.recognized = YES
+            self.recognized = YES # ----------------------------------------------------------
 
     def goal_introduce(self, GOAL):
         self.robot.introduced = YES
@@ -375,7 +375,7 @@ class world():
         else:
             self.person.id = '-1'
         self.person.near = YES
-        self.followed = YES
+        self.person.followed = YES
 
     def goal_learn_person(self, GOAL):
         if GOAL.person != '':

@@ -107,3 +107,13 @@ sp {gp*monitor*operator-application*introduce-me
 -->
    (write (crlf) | INTRODUCE_MYSELF()|)
 }
+
+
+sp {gp*monitor*operator-application*follow
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name follow
+        ^toPers.id <p>)
+-->
+   (write (crlf) | FOLLOW(| <p> |)|)
+}
