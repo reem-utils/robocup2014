@@ -63,8 +63,8 @@ sp {gp*apply*search-person*remove-search-person
    (<st> ^status complete)
 -->
    (<p> ^found yes
-               no -)
-   (<p> ^locId <rlocid>
+               no -
+        ^locId <rlocid>
                 <plocid> -
         ^near yes)
 
