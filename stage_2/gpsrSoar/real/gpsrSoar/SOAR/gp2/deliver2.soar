@@ -74,7 +74,6 @@ sp {gp*apply*deliver*remove-deliver
          ^pers <pid>)
    (<p> ^id <pid>
         ^obj1Id <poid>)
-#   (<op> ^id <pid>)
    (<o> ^id <oid>
         ^delivered <val>)
    (<r> ^id 1

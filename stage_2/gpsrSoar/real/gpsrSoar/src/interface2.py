@@ -218,7 +218,8 @@ def call_point_at(): #TO TEST   #no sap fer-ho
     time.sleep(3)
     return "succeeded"
 
-def call_follow(): #TODO  #no sap fer-ho
+def call_follow(pers): #TODO  #no sap fer-ho    
+    print pers
     rospy.logwarn("SM : follow-me")
     '''
     tosay = "I'm going to follow you"
@@ -227,8 +228,7 @@ def call_follow(): #TODO  #no sap fer-ho
     sm =FollowMeSM(0.9, 'gpsr_follow')
     out = sm.execute(ud=None)
     '''
-    
-    tosay = "I'm going to follow you"
+    tosay = "I'm going to follow " + pers
     speak = speaker(tosay)
     speak.execute()
     time.sleep(3)
@@ -545,8 +545,10 @@ def main():
                 elif command_name == "ask-name":
                     out = call_ask_name()
                 
-                elif command_name == "follow":
-                    out = call_follow()
+                elif command_name == "follow":          
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_follow(pers)
                 
                 elif command_name == "introduce-me":
                     out = call_introduce_me()
