@@ -10,7 +10,7 @@ import rospy
 import smach
 import smach_ros
 
-from restaurant.restaurant_guide_phase import restaurantGuide
+from restaurant.restaurant_listen_operator import ListenOperator
 from navigation_states.nav_to_poi import nav_to_poi
 
 ENDC = '\033[0m'
@@ -19,21 +19,31 @@ OKGREEN = '\033[92m'
 
 
 def main():
-    rospy.init_node('restaurant_guide_test')
+    rospy.init_node('restaurant_listen_operator_test')
     
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     
     with sm:
-
+        
         smach.StateMachine.add(
-            'restaurant_guide_test',
-            restaurantGuide(),
-            transitions={'succeeded': 'succeeded','aborted': 'aborted'})
+            'listen_operator',
+            ListenOperator(),
+            transitions={'succeeded': 'rospi_go_to_poi','aborted': 'aborted'})
+        
+        sm.userdata.nav_to_poi_name='drinks'
+        smach.StateMachine.add(
+            'rospi_go_to_poi',
+            nav_to_poi(),
+            transitions={'succeeded': 'listen_operator','aborted': 'aborted'})
+
+
+        
+
 
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
     sis = smach_ros.IntrospectionServer(
-        'restaurant_guide_Test', sm, '/restaurant_guide')
+        'restaurant_listen_operator_Test', sm, '/restaurant_guide_listen')
     sis.start()
 
     sm.execute()
