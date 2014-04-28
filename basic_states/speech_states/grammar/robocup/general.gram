@@ -12,13 +12,13 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 <bringit>= (<bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> <location> );
 <askname>= (memorize the person | ask the person name);
 <findp>  = (<findcommand> a person);
-#<get>    = (<getcommand> ([the] <item> | it ));
+<get>    = (<getcommand> ([the] <item> | it ));
 <follow> = ((follow (the person in front of you) ) );
 <find>   = (<finditcmd> <determinant> (<item> | <category>));
 <grasp>  = (<graspcommand> (the <item> | it));
 <give>   = (<givecommand> me <determinant> <category>);
 <recognize> = (recognize (him | her));
-#<stay>   = (stop here | wait there);
+<stay>   = (stop here | wait there);
 <exit> =  (<exitcommand> the apartment);
 
 
@@ -43,7 +43,7 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 
 <category> = (drink | food | kitchenware | snack);
 
-#<sentence>   = (hello | greetings | goodbye | your name);
+<sentence>   = (hello | greetings | goodbye | your name);
 
 
 
