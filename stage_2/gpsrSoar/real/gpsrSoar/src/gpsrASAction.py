@@ -280,7 +280,7 @@ class gpsrASAction(object):
     except ValueError:
       l = ''
     print self._world.robot.locId
-    
+      
     
     if command.action == 'bring_from':
       self._world.item.locId = str(obj2idx(command.location, 'LOCATIONS'))
