@@ -1,44 +1,44 @@
 Move to the LOCATION, then go to the LOCATION and exit the apartment. -
 Move to the LOCATION, then move to the LOCATION and leave the apartment. -
-Move to the LOCATION, then move to the LOCATION and exit the apartment.
-Move to the LOCATION, then navigate to the LOCATION and leave the apartment.
-Move to the LOCATION, then navigate to the LOCATION and exit the apartment.
-Navigate to the LOCATION, then go to the LOCATION and leave the apartment.
-Navigate to the LOCATION, then go to the LOCATION and exit the apartment.
-Navigate to the LOCATION, then move to the LOCATION and leave the apartment.
-Navigate to the LOCATION, then move to the LOCATION and exit the apartment.
-Navigate to the LOCATION, then navigate to the LOCATION and leave the apartment.
-Navigate to the LOCATION, then navigate to the LOCATION and exit the apartment.
+Move to the LOCATION, then move to the LOCATION and exit the apartment. -
+Move to the LOCATION, then navigate to the LOCATION and leave the apartment. -
+Move to the LOCATION, then navigate to the LOCATION and exit the apartment. -
+Navigate to the LOCATION, then go to the LOCATION and leave the apartment. -
+Navigate to the LOCATION, then go to the LOCATION and exit the apartment. -
+Navigate to the LOCATION, then move to the LOCATION and leave the apartment. -
+Navigate to the LOCATION, then move to the LOCATION and exit the apartment. -
+Navigate to the LOCATION, then navigate to the LOCATION and leave the apartment. -
+Navigate to the LOCATION, then navigate to the LOCATION and exit the apartment. -
 Go to the LOCATION, get the ITEM, and leave the apartment. -
-Go to the LOCATION, get the ITEM, and exit the apartment.
-Go to the LOCATION, take the ITEM, and leave the apartment.
-Go to the LOCATION, take the ITEM, and exit the apartment.
-Go to the LOCATION, grasp the ITEM, and leave the apartment.
-Go to the LOCATION, grasp the ITEM, and exit the apartment.
-Move to the LOCATION, get the ITEM, and leave the apartment.
-Move to the LOCATION, get the ITEM, and exit the apartment.
-Move to the LOCATION, take the ITEM, and leave the apartment.
-Move to the LOCATION, take the ITEM, and exit the apartment.
-Move to the LOCATION, grasp the ITEM, and leave the apartment.
-Move to the LOCATION, grasp the ITEM, and exit the apartment.
-Navigate to the LOCATION, get the ITEM, and leave the apartment.
-Navigate to the LOCATION, get the ITEM, and exit the apartment.
-Navigate to the LOCATION, take the ITEM, and leave the apartment.
-Navigate to the LOCATION, take the ITEM, and exit the apartment.
-Navigate to the LOCATION, grasp the ITEM, and leave the apartment.
-Navigate to the LOCATION, grasp the ITEM, and exit the apartment.
-Go to the LOCATION, introduce yourself, and leave the apartment.
-Go to the LOCATION, introduce yourself, and exit the apartment.
-Go to the LOCATION, tell something about yourself, and leave the apartment.
-Go to the LOCATION, tell something about yourself, and exit the apartment.
-Move to the LOCATION, introduce yourself, and leave the apartment.
-Move to the LOCATION, introduce yourself, and exit the apartment.
-Move to the LOCATION, tell something about yourself, and leave the apartment.
-Move to the LOCATION, tell something about yourself, and exit the apartment.
-Navigate to the LOCATION, introduce yourself, and leave the apartment.
-Navigate to the LOCATION, introduce yourself, and exit the apartment.
-Navigate to the LOCATION, tell something about yourself, and leave the apartment.
-Navigate to the LOCATION, tell something about yourself, and exit the apartment.
+Go to the LOCATION, get the ITEM, and exit the apartment. -
+Go to the LOCATION, take the ITEM, and leave the apartment. -
+Go to the LOCATION, take the ITEM, and exit the apartment. -
+Go to the LOCATION, grasp the ITEM, and leave the apartment. -
+Go to the LOCATION, grasp the ITEM, and exit the apartment. -
+Move to the LOCATION, get the ITEM, and leave the apartment. -
+Move to the LOCATION, get the ITEM, and exit the apartment. -
+Move to the LOCATION, take the ITEM, and leave the apartment. -
+Move to the LOCATION, take the ITEM, and exit the apartment. -
+Move to the LOCATION, grasp the ITEM, and leave the apartment. -
+Move to the LOCATION, grasp the ITEM, and exit the apartment. -
+Navigate to the LOCATION, get the ITEM, and leave the apartment. -
+Navigate to the LOCATION, get the ITEM, and exit the apartment. -
+Navigate to the LOCATION, take the ITEM, and leave the apartment. -
+Navigate to the LOCATION, take the ITEM, and exit the apartment. -
+Navigate to the LOCATION, grasp the ITEM, and leave the apartment. -
+Navigate to the LOCATION, grasp the ITEM, and exit the apartment. -
+Go to the LOCATION, introduce yourself, and leave the apartment. -
+Go to the LOCATION, introduce yourself, and exit the apartment. -
+Go to the LOCATION, tell something about yourself, and leave the apartment. -
+Go to the LOCATION, tell something about yourself, and exit the apartment. -
+Move to the LOCATION, introduce yourself, and leave the apartment. -
+Move to the LOCATION, introduce yourself, and exit the apartment. -
+Move to the LOCATION, tell something about yourself, and leave the apartment. -
+Move to the LOCATION, tell something about yourself, and exit the apartment. -
+Navigate to the LOCATION, introduce yourself, and leave the apartment. -
+Navigate to the LOCATION, introduce yourself, and exit the apartment. -
+Navigate to the LOCATION, tell something about yourself, and leave the apartment. -
+Navigate to the LOCATION, tell something about yourself, and exit the apartment. -
 Go to the LOCATION, memorize the person, and recognize him.
 Go to the LOCATION, ask the person's name, and recognize him.
 Move to the LOCATION, memorize the person, and recognize him.
@@ -59,6 +59,7 @@ Find a person, retrieve the ITEM from the LOCATION, and leave the apartment.
 Find a person, retrieve the ITEM from the LOCATION, and exit the apartment.
 Find a person, bring the ITEM from the LOCATION, and leave the apartment.
 Find a person, bring the ITEM from the LOCATION, and exit the apartment.
+----------------------------------------------------------------------------------------continuar revisan
 Go to the LOCATION, find a person, and retrieve the ITEM from the LOCATION.
 Go to the LOCATION, find a person, and bring the ITEM from the LOCATION.
 Move to the LOCATION, find a person, and retrieve the ITEM from the LOCATION.

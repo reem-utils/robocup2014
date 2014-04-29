@@ -54,6 +54,16 @@ sp {gp*monitor*operator-application*deliver
    (write (crlf) | DELIVER(obj:| <obj> | to:| <p> |)|)
 }
 
+sp {gp*monitor*operator-application*deliverToLoc #added by me
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name deliver
+        ^toLoc.id <l>
+        ^withRob.obj1Id <> -1 <obj>)
+-->
+   (write (crlf) | DELIVER(obj:| <obj> | to:| <l> |)|)
+}
+
 sp {gp*monitor*operator-application*point-obj
    (state <s> ^name gp
               ^operator <o>)
@@ -96,4 +106,14 @@ sp {gp*monitor*operator-application*introduce-me
    (<o> ^name introduce-me)
 -->
    (write (crlf) | INTRODUCE_MYSELF()|)
+}
+
+
+sp {gp*monitor*operator-application*follow
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name follow
+        ^toPers.id <p>)
+-->
+   (write (crlf) | FOLLOW(| <p> |)|)
 }

@@ -10,7 +10,7 @@ def parserGrammar(grammarFile):
     rospack_instance = rospkg.RosPack()
     file_path = rospack_instance.get_path("speech_states")
     #pathFile = os.path.expanduser("~") + "/catkin_ws/src/robocup2014/reem_mocks/asr_mock/src/tags.txt"
-    filePath = os.path.expanduser(file_path) + "/grammar/robocup/" + grammarFile + ".gram"
+    filePath = os.path.expanduser(file_path) + "/grammar/" + grammarFile + ".gram"
     
     # '/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/general.gram'
     # filePath = "/home/cristi/catkin_ws/src/robocup2014/basic_states/speech_states/grammar/" + grammarFile + '.gram'

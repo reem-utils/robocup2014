@@ -1,18 +1,18 @@
-sp {gp*propose*deliver
-    (state <s> ^name gp)
- -->
-   (<s> ^operator <op> + >)
-    (<op> ^name deliver)
-}
+#sp {gp*propose*deliver                   #comentat per mi
+#    (state <s> ^name gp)
+# -->
+#   (<s> ^operator <op> + >)
+#    (<op> ^name deliver)
+#}
+#
 
-
-sp {gp*apply*deliver
-   (state <s> ^operator <op> +
-              ^io.output-link <out>)
-   (<op> ^name deliver) 
--->
-   (<out> ^deliver.pers 1)
-}
+#sp {gp*apply*deliver                   #comentat per mi
+#   (state <s> ^operator <op> +
+#              ^io.output-link <out>)
+#   (<op> ^name deliver) 
+#-->
+#   (<out> ^deliver.pers 1)
+#}
 
 # sp {gp*apply*deliver
 #    (state <s> ^operator <op>
@@ -75,35 +75,36 @@ sp {gp*apply*deliver
 #          ^toLoc <l1>)
 # }
 
-
-sp {gp*apply*deliver*remove-deliver
-   (state <s> ^operator <op>
-              ^object <obj>
-              ^io.output-link <out>
-              ^person <p>
-              ^robot <r>)
-   
-  (<op> ^name deliver
-         ^withRob <rop>
-         ^toPers <pop>) 
-   
-   (<pop> ^id <popid>)
-   (<p> ^id <popid>
-        ^obj1Id { <> <robjid> <pObj>})
-               
-   (<r> ^obj1Id <robjid>)
-   (<obj> ^id <robjid>)
-   
-   (<out> ^deliver <st>)
-   (<st> ^status complete)
-
--->
-   (<p> ^obj1Id <robjid>
-                <pObj> -)
-   (<r> ^obj1Id -1
-                <robjid> -)
-   (<obj> ^delivered yes
-                     no -)
-   
-   (<out> ^deliver <st> -)
-}
+#                                          #comemtnat per mi
+#sp {gp*apply*deliver*remove-deliver
+#   (state <s> ^operator <op>
+#              ^object <obj>
+#              ^io.output-link <out>
+#              ^person <p>
+#              ^robot <r>)
+#   
+#  (<op> ^name deliver
+#         ^withRob <rop>
+#         ^toPers <pop>) 
+#   
+#   (<pop> ^id <popid>)
+#   (<p> ^id <popid>
+#        ^obj1Id { <> <robjid> <pObj>})
+#               
+#   (<r> ^obj1Id <robjid>)
+#   (<obj> ^id <robjid>)
+#   
+#   (<out> ^deliver <st>)
+#   (<st> ^status complete)
+#
+#-->
+#   (<p> ^obj1Id <robjid>
+#                <pObj> -)
+#   (<r> ^obj1Id -1
+#                <robjid> -)
+#   (<obj> ^delivered yes
+#                     no -)
+#   
+#   (<out> ^deliver <st> -)
+#}
+#
