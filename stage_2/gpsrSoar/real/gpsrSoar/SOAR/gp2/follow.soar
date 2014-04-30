@@ -39,8 +39,13 @@ sp {gp*apply*follow*remove-follow
    (<op> ^name follow
          ^toPers <pop>)
    (<pop> ^id <pid>)
-   (<p> ^id <pid>)
+   (<p> ^id <pid>
+        ^followed <blaf>
+        ^near <blan>)
 -->
-   (<p> ^followed yes)
+   (<p> ^followed yes
+                  <blaf> -
+        ^near yes
+              <blan> -)
    (<out> ^follow <st> -)
 }
