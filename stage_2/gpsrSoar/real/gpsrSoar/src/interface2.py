@@ -134,7 +134,7 @@ def call_exit(): #TODO well
     time.sleep(3)   
     return "succeeded"  
 
-def call_learn_person():    #no sap fer-ho
+def call_learn_person(pers):    #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
     '''    out = aborted
     tries = 0
     while(out==aborted and tries<3):
@@ -152,14 +152,14 @@ def call_learn_person():    #no sap fer-ho
     return succeeded #(out, PersonName)
     '''
     
-    tosay = "I'm going to learn the person in front of me"
+    tosay = "I'm going to learn the person in front of me, known as " + pers
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_learn_person')
+    rospy.logwarn('call_learn_person ' + pers)
     time.sleep(3)
     return "succeeded"
 
-def call_recognize_person():   #no sap fer-ho
+def call_recognize_person(pers):   #no sap fer-ho
     '''    out = aborted
     tries = 0
     while(out==aborted and tries<3):
@@ -174,10 +174,10 @@ def call_recognize_person():   #no sap fer-ho
     
     return succeeded #(out, PersonName)    '''
     
-    tosay = "I'm going to recognize the person in front of me"
+    tosay = "I'm going to recognize " + pers
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_recognize_person')
+    rospy.logwarn('call_recognize_person ' + pers)
     time.sleep(3)
     return "succeeded" 
 
@@ -556,10 +556,14 @@ def main():
                     out = call_introduce_me()
                 
                 elif command_name == "memorize-person":
-                    out = call_learn_person()
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_learn_person(pers)
                 
                 elif command_name == "recognize-person":
-                    out = call_recognize_person()
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_recognize_person(pers)
 
                 # elif command_name == "exit-apartment":
                 #     loc_to_navigate = command.GetParameterValue("loc")

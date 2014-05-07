@@ -59,20 +59,21 @@ sp {gp*apply*initialize-gp
            ^id -1)
 
       (<pers1> ^followed no
-           ^memorized no
+           ^memorized yes
            ^locId 27
            ^obj1Id -1
            ^recognized no
            ^askedName no
            ^near no
            ^found no
-           ^id 26)
+           ^id 5)
 
-   (<d> ^name learn-person
+   (<d> ^name recognize-person
         ^person <pp>
         ^robot <rr>)
-   (<pp> ^memorized yes
-           ^id 26)
+   (<pp> ^recognized yes
+           ^near yes
+           ^id 5)
    (<rr> ^id 1)
 
 }
