@@ -443,8 +443,6 @@ def main():
 
     goal_achieved = False
     while not goal_achieved:
-        # if (time.time()-first_time > 300):
-        #     return aborted
         agent.Commit()  
         agent.RunSelfTilOutput()
         agent.Commands()
@@ -502,22 +500,6 @@ def main():
                             loc = ''   
                             print loc
                             out = call_bring_to_loc(loc)
-#                         pers = ''   
-#                         print pers
-#                         out = call_bring_to(pers)
-
-#                 elif command_name == "deliver": #to Loc
-#                     to_loc = command.GetParameterValue("loc")
-#                     try:
-#                         loc = idx2obj(int(to_loc),'LOCATIONS')
-#                         print loc
-#                         if (loc =="NULL"):
-#                             print "ERROR: l'objecte %s no existe" % (to_loc)                        
-#                         out = call_bring_to_loc(loc)
-#                     except:
-#                         loc = ''   
-#                         print loc
-#                         out = call_bring_to_loc(loc)
 
                 elif command_name == "search-object":
                 
@@ -565,15 +547,6 @@ def main():
                     pers = idx2obj(int(to_pers),'PERSONS')
                     out = call_recognize_person(pers)
 
-                # elif command_name == "exit-apartment":
-                #     loc_to_navigate = command.GetParameterValue("loc")
-                #     loc = trad_loc(loc_to_navigate)
-                #     print loc
-                #     if (loc =="NULL"):
-                #         print "ERROR: la loacalizacion %s no existe" % (loc_to_navigate)
-
-                #     out = call_go_to(loc)
-
                 elif command_name == "achieved":
                     goal_achieved = True
                     out = "succeeded"
@@ -592,7 +565,6 @@ def main():
                     exit(1)
                 
                 i+=1
-
 
     command.AddStatusComplete()
     return 'succeeded'

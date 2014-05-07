@@ -193,7 +193,7 @@ class world():
         return self
 
 
-    def get_goal(self, GOAL):
+    def get_goal(self, GOAL,robot):
         verb = GOAL.action
         self.name = verb.replace('_', '-')
         if verb == 'go_to':
@@ -211,7 +211,7 @@ class world():
         elif verb == 'bring_from':
             self.goal_bring_from(GOAL)
         elif verb == 'learn_person':
-            self.goal_learn_person(GOAL)
+            self.goal_learn_person(GOAL,robot)
         elif verb == 'exit':
             GOAL.location = obj2idx('exit', 'LOCATIONS')
             self.goal_go_to(GOAL)
@@ -377,9 +377,10 @@ class world():
         self.person.near = YES
         self.person.followed = YES
 
-    def goal_learn_person(self, GOAL):
+    def goal_learn_person(self, GOAL,robot):
         if GOAL.person != '':
             self.person.id = GOAL.person
+            self.person.locId = robot.locId
         else:
             self.person.id = '-1'
         self.person.memorized = YES
@@ -530,7 +531,7 @@ def compileInit(oaction='go_to', oitem=0, operson=0, olocation=0,
 
     desired_world = world()
     
-    desired_world = desired_world.get_goal(GOAL)
+    desired_world = desired_world.get_goal(GOAL,current_world.robot)
     DesireInit = desired_world.gen_goal()
     allFile = allFile.replace(DESIRE, DesireInit)
 

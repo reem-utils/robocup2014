@@ -60,7 +60,7 @@ sp {gp*apply*remove*recognize-person
          ^toPers <pop>)
    (<pop> ^id <pid>)  
    (<p> ^id <pid>
-        ^recogize <pr>
+        ^recognized <pr>
         ^near <pn>)
 -->
    (<p> ^recognized yes
