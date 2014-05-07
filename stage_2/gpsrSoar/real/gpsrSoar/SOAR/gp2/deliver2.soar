@@ -1,13 +1,12 @@
 sp {gp*propose*deliver
     (state <s> ^name gp
-               ^desired <d>
-               ^robot <r>
-               ^location <l>
-               ^person <p>
-               ^object <o>)
+               ^location <l> 
+               ^robot <r>   
+               ^person <p>  
+               ^object <o>         
+               ^desired <d>)
     (<l> ^id <ploc>)
-    (<r> ^id 1
-         ^locId <ploc>
+    (<r> ^locId <ploc>
          ^obj1Id <oid>)
     (<p> ^id <pid>
          ^locId <ploc>
@@ -33,8 +32,7 @@ sp {gp*propose*navigate-to*deliver
                ^object <o>
                ^desired <d>)
     (<l> ^id <ploc>)
-    (<r> ^id 1
-         ^locId {<> <ploc> <rloc>}
+    (<r> ^locId {<> <ploc> <rloc>}
          ^obj1Id <oid>)
     (<p> ^id <pid>
          ^locId <ploc>

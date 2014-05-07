@@ -20,9 +20,14 @@ from speech_states.ask_question import AskQuestionSM
 # from GenerateGoalScript import printNewGoal
 
 # import rospy
-SENTENCE_SAID = '/parsing/sentence'
-NUM_LOOPS_TODO = 3
-NUM_LOOPS_I = 0
+SENTENCE_SAID = '/parsing/sentence' 
+TEST = False
+if TEST : 
+    NUM_LOOPS_TODO = 140 
+    NUM_LOOPS_I = 42
+else: 
+    NUM_LOOPS_TODO = 3
+    NUM_LOOPS_I = 0
 GRAMATICA = 'robocup/general'
 
 class sent():
@@ -72,8 +77,16 @@ class init_parameters(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'],
             output_keys=['o_sentence', 'o_asrLoop', 'o_asrOn'])
+        self.loop= NUM_LOOPS_I
     def execute(self, userdata):
-        userdata.o_sentence = rospy.get_param(SENTENCE_SAID)#'/parsing/sentence')
+        if TEST == True:
+            aux = "cat1Sentences/sentence"+str(self.loop)
+            rospy.logwarn("--------- " + aux + " ---------")
+            self.loop = self.loop + 1        
+            userdata.o_sentence = rospy.get_param(aux)#SENTENCE_SAID)#'/parsing/sentence')
+        else:        
+            userdata.o_sentence = rospy.get_param(SENTENCE_SAID)#'/parsing/sentence')
+        
         userdata.o_asrLoop = rospy.get_param('/parsing/ASR_LOOP')
         userdata.o_asrOn = rospy.get_param('/parsing/ASR_ON')
         return 'succeeded'
@@ -119,8 +132,8 @@ class check_AsrLoop(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['LOOP_ON', 'LOOP_OFF', 'aborted'],
             input_keys=['i_asrLoop'])
-        self.loop_i = 0
-        self.max_loop = 3
+        self.loop_i = NUM_LOOPS_I
+        self.max_loop = NUM_LOOPS_TODO
 
 
     def execute(self,userdata):
@@ -182,7 +195,7 @@ class gpsrOrders(smach.StateMachine):
                                    transitions={succeeded: 'init_SM',
                                                 aborted: aborted,
                                                 preempted: aborted})
-                                                '''
+            '''
             
             def move_to_caller_goal_cb(userdata, nav_goal):
                 move_base_goal = MoveBaseGoal()
@@ -233,9 +246,9 @@ class gpsrOrders(smach.StateMachine):
 #                    remapping={'nav_to_poi_name': 'room_location'})#'room_name':'room_name'})
 
             smach.StateMachine.add(
-                'TELL_ABORTED_GO_TO',
-                text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?",wait_before_speaking=0),
-                transitions={'succeeded': 'ASK_QUESTION'})
+                    'TELL_ABORTED_GO_TO',
+                    text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?",wait_before_speaking=0),
+                    transitions={'succeeded': 'ASK_QUESTION'})
 
             smach.StateMachine.add(
                     'ASK_QUESTION',
@@ -273,8 +286,6 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTECE_RIGHT',
                 text_to_say(text="Sir yes sir. As you command Sir",wait_before_speaking=0),
-                # call greeting movements!
-                # call states for message pools
                 transitions={'succeeded': 'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation'})
 
             smach.StateMachine.add(
@@ -293,11 +304,6 @@ class gpsrOrders(smach.StateMachine):
                 text_to_say(),# input_keys=['o_actionSet']),
                 transitions={'succeeded': 'PUBLISH_ORDERS'})
 
-            # smach.StateMachine.add(
-            #     'GENERATE_GOALS',
-            #     generateGoals(),
-            #     transitions={succeeded: 'PUBLISH_ORDERS'})
-#gpsrSoar/real/gpsrSoar/src/interface.py
             smach.StateMachine.add('PUBLISH_ORDERS',
                         SimpleActionState(
                             'gpsrSoar',
@@ -321,70 +327,70 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                     'Check_LOOP',
                     checkAsrLoopState,
-                    transitions={'LOOP_ON': 'Check_ASR', 'LOOP_OFF': 'succeeded', 'aborted': 'Check_ASR'},
+                    transitions={'LOOP_ON': 'init_SM', 'LOOP_OFF': 'succeeded', 'aborted': 'init_SM'},#Check_ASR
                     remapping={'i_asrLoop': 'asrLoop'})
         
 
 
-class testParsing(smach.StateMachine):
-    def __init__(self):
-        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
-
-        with self:
-            self.userdata.tts_text=''
-            self.userdata.tts_lang=''
-            self.userdata.grammar_name=''
-            self.userdata.tts_wait_before_speaking=0
-            
-            smach.StateMachine.add(
-                    'init_SM',
-                    init_parameters(),
-                    transitions={succeeded: 'Check_ASR'},
-                    remapping={'o_sentence': 'sentence', 'o_asrOn': 'asrOn', 'o_asrLoop': 'asrLoop'})
-
-            smach.StateMachine.add(
-                    'Check_LOOP',
-                    check_AsrLoop(),
-                    transitions={'LOOP_ON': 'Check_ASR', 'LOOP_OFF': succeeded, aborted: aborted},
-                    remapping={'i_asrLoop': 'asrLoop'})
-
-            smach.StateMachine.add(
-                    'Check_ASR',
-                    check_AsrOn(),
-                    transitions={'ASR_ON': 'LISTEN_ORDER', 'ASR_OFF': 'PARSE_ORDER', aborted: aborted},
-                    remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
-
-            smach.StateMachine.add(
-                    'LISTEN_ORDER',
-                    ListenToSM(GRAMMAR_NAME=GRAMATICA),
-                    transitions={succeeded: 'PARSE_ORDER', aborted: 'LISTEN_ORDER'},
-                    remapping={'o_userSaidData': 'o_userSaidData'})
-
-            smach.StateMachine.add(
-                    'PARSE_ORDER',
-                    ParseSentence(),
-                    transitions={succeeded: 'ANNOUNCE_LISTENED_SENTECE_RIGHT', aborted: 'ANNOUNCE_LISTENED_SENTENCE_WRONG'},
-                    remapping={'o_actionSet': 'o_actionSet', 'i_userSaidData': 'o_userSaidData'})
-
-            smach.StateMachine.add(
-                'ANNOUNCE_LISTENED_SENTECE_RIGHT',
-                text_to_say(text="Sir yes sir. As you command Sir", wait_before_speaking=0),
-                # call greeting movements!
-                # call states for message pools
-                transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation'})
-
-            smach.StateMachine.add(
-                'ANNOUNCE_LISTENED_SENTENCE_WRONG',
-                text_to_say(text="I think I couldn't understand you, sir. Can you repeat the order?", wait_before_speaking=0),
-                transitions={succeeded: 'Check_ASR'})
-            
-            smach.StateMachine.add(
-                'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation',
-                announce_sentence_understood(),
-                transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD'})
-
-            smach.StateMachine.add(
-                'ANNOUNCE_SENTENCE_UNDERSTOOD',
-                text_to_say(),# input_keys=['o_actionSet']),
-                transitions={succeeded: 'Check_LOOP'})
+# class testParsing(smach.StateMachine):
+#     def __init__(self):
+#         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+# 
+#         with self:
+#             self.userdata.tts_text=''
+#             self.userdata.tts_lang=''
+#             self.userdata.grammar_name=''
+#             self.userdata.tts_wait_before_speaking=0
+#             
+#             smach.StateMachine.add(
+#                     'init_SM',
+#                     init_parameters(),
+#                     transitions={succeeded: 'Check_ASR'},
+#                     remapping={'o_sentence': 'sentence', 'o_asrOn': 'asrOn', 'o_asrLoop': 'asrLoop'})
+# 
+#             smach.StateMachine.add(
+#                     'Check_LOOP',
+#                     check_AsrLoop(),
+#                     transitions={'LOOP_ON': 'Check_ASR', 'LOOP_OFF': succeeded, aborted: aborted},
+#                     remapping={'i_asrLoop': 'asrLoop'})
+# 
+#             smach.StateMachine.add(
+#                     'Check_ASR',
+#                     check_AsrOn(),
+#                     transitions={'ASR_ON': 'LISTEN_ORDER', 'ASR_OFF': 'PARSE_ORDER', aborted: aborted},
+#                     remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
+# 
+#             smach.StateMachine.add(
+#                     'LISTEN_ORDER',
+#                     ListenToSM(GRAMMAR_NAME=GRAMATICA),
+#                     transitions={succeeded: 'PARSE_ORDER', aborted: 'LISTEN_ORDER'},
+#                     remapping={'o_userSaidData': 'o_userSaidData'})
+# 
+#             smach.StateMachine.add(
+#                     'PARSE_ORDER',
+#                     ParseSentence(),
+#                     transitions={succeeded: 'ANNOUNCE_LISTENED_SENTECE_RIGHT', aborted: 'ANNOUNCE_LISTENED_SENTENCE_WRONG'},
+#                     remapping={'o_actionSet': 'o_actionSet', 'i_userSaidData': 'o_userSaidData'})
+# 
+#             smach.StateMachine.add(
+#                 'ANNOUNCE_LISTENED_SENTECE_RIGHT',
+#                 text_to_say(text="Sir yes sir. As you command Sir", wait_before_speaking=0),
+#                 # call greeting movements!
+#                 # call states for message pools
+#                 transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation'})
+# 
+#             smach.StateMachine.add(
+#                 'ANNOUNCE_LISTENED_SENTENCE_WRONG',
+#                 text_to_say(text="I think I couldn't understand you, sir. Can you repeat the order?", wait_before_speaking=0),
+#                 transitions={succeeded: 'Check_ASR'})
+#             
+#             smach.StateMachine.add(
+#                 'ANNOUNCE_SENTENCE_UNDERSTOOD_preparation',
+#                 announce_sentence_understood(),
+#                 transitions={succeeded: 'ANNOUNCE_SENTENCE_UNDERSTOOD'})
+# 
+#             smach.StateMachine.add(
+#                 'ANNOUNCE_SENTENCE_UNDERSTOOD',
+#                 text_to_say(),# input_keys=['o_actionSet']),
+#                 transitions={succeeded: 'Check_LOOP'})
 

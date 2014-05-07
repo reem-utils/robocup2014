@@ -13,6 +13,8 @@ from speech_states.listen_general_command import askMissingInfo as askMissingInf
 from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
 
+from sm_gpsr_orders import TEST
+
 import actionlib
 import gpsrSoar.msg
 grammarNames = {}
@@ -114,7 +116,9 @@ def new_world(loc_list):  #generates a new world
 
   return w  #return this world
 
-def ask_data(Type='LOCATIONS', objectName='coke'):
+def ask_data(Type='LOCATIONS', objectName='coke'):    
+    if TEST:
+        return 'fridge'
     ad = askMissingInfoSM(Type=Type, objectName=objectName)
     #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
     #ad.userdata.dataType = Type
@@ -123,25 +127,48 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
     loc = ad.userdata._data['location_name']
     print "EL loc ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+loc
     return loc  #-------------------'''
-     #return 'fridge'
-  
+
 def ask_category(category):
+    if TEST:
+        if category == "drink":
+            return 'coke'
+        if category == "food":
+            return 'tomato sauce'
+        if category == "snack":
+            return 'chocolate'
+        if category == "cleaning":
+            return 'deodorant'
+        if category == "kitchenware":
+            return 'spoon'
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
     obj = ad.userdata._data['object_name']
     #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
     print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
     return obj   #--------------'''
-    #return 'milk'
 
 def ask_category_loc(category):
+    if TEST:
+        if category == "table":
+            return 'hallway table'
+        if category == "shelf":
+            return 'bar'
+        if category == "appliance":
+            return 'fridge'
+        if category == "utensils":
+            return 'plant'
+        if category == "seat":
+            return 'sofa'
+        if category == "seating":
+            return 'bench'
+        if category == "door":
+            return 'exit'
     ad = askCategoryLocSM(GRAMMAR_NAME = category) 
     out = ad.execute()
     obj = ad.userdata._data['location_name']
     #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
     print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category_loc!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
     return obj    #---------------------'''
-    #return 'fridge'
 
 def check_object_location(obj):
     if obj != '':
@@ -166,6 +193,11 @@ class gpsrASAction(object):
     self._goal = []
     self._world = world()
     
+    if TEST:
+        errorfilepath = roslib.packages.get_pkg_dir("gpsr") + "/config/"
+        error = errorfilepath + "error.txt"
+        targfile = open(error, 'w')
+        
   def execute_cb(self, goal):
     self._goalDonei = 0  #contador de goals
 
@@ -175,7 +207,7 @@ class gpsrASAction(object):
     print self._world.robot.locId
     self.print_goal()
     
-    print "-----------------------------------------------------------orders list------------------------------"
+    #"-----------------------------------------------------------orders list------------------------------"
     rospy.logwarn (str(self._goal.orderList))
     while not success:
       soarResult = interface.main()
@@ -183,6 +215,10 @@ class gpsrASAction(object):
         self._result.outcome = 'aborted'
         self._as.set_succeeded(self._result)
         success = True
+        
+        if TEST:
+            rospy.logerr("THE SENTENCE IS: "+str(self._goal.orderList)+"\n")
+            targfile.write(str(self._goal.orderList)+"\n")
       else: 
         if len(self._goal.orderList) == self._goalDonei:
           self._result.outcome = 'succeeded'
