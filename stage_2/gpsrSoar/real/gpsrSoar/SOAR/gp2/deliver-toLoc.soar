@@ -5,8 +5,7 @@ sp {gp*propose*deliverToLoc
               ^object <o>                       
               ^desired <d>)
     (<l> ^id <rloc>)
-    (<r> ^id 1
-         ^locId <rloc>
+    (<r> ^locId <rloc>
          ^obj1Id <oid>)
     (<o> ^id <oid>
          ^grasped yes

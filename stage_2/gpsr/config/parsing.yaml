@@ -1,6 +1,6 @@
 ASR_LOOP: True
 ASR_ON: "False"
-sentence: "Go to the fridge, memorize homer, and recognize him"
+sentence: "bring me a coke"
 sentence1: "find a person then memorize the person and recognize him" #KOOOOO
 sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #KOOOOO (bussiness no mola)
 sentence3: "bring the coke to a sofa" #KOOOOO (keixarnos que no estem portan a una persona)
@@ -9,4 +9,7 @@ sentence5: "Bring the kitchenware to a table" #ko soar don't like kitchenware
 sentence6: "Bring a snack to a seat" #ko
 sentence7: "Go to the bar, ask the person name, and recognize him" #KOOOO no pot fer lern person
 sentence8: "Go to the bar, introduce yourself, and follow the person in front of you" #KOOOO follow person no va
+
+
+
 

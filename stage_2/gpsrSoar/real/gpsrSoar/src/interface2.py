@@ -13,6 +13,7 @@ from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 
 from speech_states.say import text_to_say
+from sm_gpsr_orders import TEST
 
 #TODO: find_person import FindPersonSM
 #TODO: complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
@@ -52,8 +53,11 @@ except ImportError:
     import Python_sml_ClientInterface as sml
 
 SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar" #previously gp2
-
-
+if TEST:
+    SLEEP_TIME = 0
+else:
+    SLEEP_TIME = 3
+    
 class dummy(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
@@ -104,7 +108,7 @@ def call_go_to(loc_name):
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_go_to '+ loc_name)
-    time.sleep(3)  
+    time.sleep(SLEEP_TIME)  
     return "succeeded" 
     
 def call_exit(): #TODO well
@@ -131,7 +135,7 @@ def call_exit(): #TODO well
     speak = speaker("I am going to the exit")
     speak.execute()
     rospy.logwarn('call_exit') 
-    time.sleep(3)   
+    time.sleep(SLEEP_TIME)   
     return "succeeded"  
 
 def call_learn_person(pers):    #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
@@ -156,7 +160,7 @@ def call_learn_person(pers):    #Recorda que abans sempre busca una persona que 
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_learn_person ' + pers)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_recognize_person(pers):   #no sap fer-ho
@@ -178,7 +182,7 @@ def call_recognize_person(pers):   #no sap fer-ho
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_recognize_person ' + pers)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded" 
 
 def call_introduce(): 
@@ -192,7 +196,7 @@ def call_introduce():
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_introduce')
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_point_at(loc_name): #TO TEST   #no sap fer-ho 
@@ -215,7 +219,7 @@ def call_point_at(loc_name): #TO TEST   #no sap fer-ho
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_point_at ' + loc_name)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_follow(pers): #TODO  #no sap fer-ho    
@@ -231,7 +235,7 @@ def call_follow(pers): #TODO  #no sap fer-ho
     tosay = "I'm going to follow " + pers
     speak = speaker(tosay)
     speak.execute()
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 #     print "SM : follow" 
 #     f = FollowMeSM()
@@ -270,7 +274,7 @@ def call_find_object(object_name, loc_name):
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_find_object '+object_name)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_grasp(obj):
@@ -295,7 +299,7 @@ def call_grasp(obj):
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_grasp '+obj)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_find_person(person_name):
@@ -312,7 +316,7 @@ def call_find_person(person_name):
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_find_person '+person_name)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_bring_to(person_name): #Solo hace release TODO
@@ -338,7 +342,7 @@ def call_bring_to(person_name): #Solo hace release TODO
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to '+person_name)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded" 
 
 def call_bring_to_loc(location_name): #TODO :Inovating, to see if it work
@@ -364,7 +368,7 @@ def call_bring_to_loc(location_name): #TODO :Inovating, to see if it work
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to '+location_name)
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded" 
 
 def call_ask_name():   #no sap fer-ho per que no trova a la persona
@@ -376,7 +380,7 @@ def call_ask_name():   #no sap fer-ho per que no trova a la persona
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_ask_name')
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_introduce_me():
@@ -396,7 +400,7 @@ def call_introduce_me():
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_introduce_me')
-    time.sleep(3)
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 
