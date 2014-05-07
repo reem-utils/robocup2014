@@ -260,10 +260,16 @@ class orderList():
             if action == 'exit' or action == 'leave':
                 action = 'go_to'
                 location = 'exit'
-            if action == 'bring':
+            
+            try:
+                action=acts[action]
+            except:
+                action=action
+                
+            if action == 'bring' or action == 'bring_from':
                 if person == '':
-                    person == 'referee'
-            print action
+                    person = 'referee'
+            print action + person
             try:
                 o.define_order(action1=acts[action], item1=item, person1=person, location1=location)
             except KeyError:

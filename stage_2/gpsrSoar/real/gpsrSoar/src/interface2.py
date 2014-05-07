@@ -75,8 +75,8 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                 'SaySM',
-                text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
-                #dummy(),
+                #text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                dummy(),
                 transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
 
@@ -103,7 +103,7 @@ def call_go_to(loc_name):
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_go_to')
+    rospy.logwarn('call_go_to '+ loc_name)
     time.sleep(3)  
     return "succeeded" 
     
@@ -218,7 +218,8 @@ def call_point_at(): #TO TEST   #no sap fer-ho
     time.sleep(3)
     return "succeeded"
 
-def call_follow(): #TODO  #no sap fer-ho
+def call_follow(pers): #TODO  #no sap fer-ho    
+    print pers
     rospy.logwarn("SM : follow-me")
     '''
     tosay = "I'm going to follow you"
@@ -227,12 +228,11 @@ def call_follow(): #TODO  #no sap fer-ho
     sm =FollowMeSM(0.9, 'gpsr_follow')
     out = sm.execute(ud=None)
     '''
-    
-    tosay = "I'm going to follow you"
+    tosay = "I'm going to follow " + pers
     speak = speaker(tosay)
     speak.execute()
     time.sleep(3)
-    return succeeded
+    return "succeeded"
 #     print "SM : follow" 
 #     f = FollowMeSM()
 #     out = f.execute()
@@ -269,7 +269,7 @@ def call_find_object(object_name, loc_name):
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_object')
+    rospy.logwarn('call_find_object '+object_name)
     time.sleep(3)
     return "succeeded"
 
@@ -294,7 +294,7 @@ def call_grasp(obj):
     tosay = "I'm going to grasp the " + obj
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_grasp')
+    rospy.logwarn('call_grasp '+obj)
     time.sleep(3)
     return "succeeded"
 
@@ -311,7 +311,7 @@ def call_find_person(person_name):
     tosay = "I'm going to search for the person known as " + person_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_person')
+    rospy.logwarn('call_find_person '+person_name)
     time.sleep(3)
     return "succeeded"
 
@@ -337,7 +337,33 @@ def call_bring_to(person_name): #Solo hace release TODO
         tosay = "I'm going to bring something to " + person_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_bring_to')
+    rospy.logwarn('call_bring_to '+person_name)
+    time.sleep(3)
+    return "succeeded" 
+
+def call_bring_to_loc(location_name): #TODO :Inovating, to see if it work
+    '''
+    out = aborted
+    tries = 0
+    while(out==aborted and tries<3):
+        print "SM : bring_to %s" % (person_name)
+        tosay = "Take it please"
+        speak = SpeakActionState(text=tosay)
+        speak.execute(ud=None)
+        r = ReleaseSM()
+        r.userdata.releasing_position = None;
+        out = r.execute()
+    
+    return succeeded
+    #Remember to control the case when person_name == '', given when we are delivering to a place not a person
+    '''
+    if location_name == '':
+        tosay = "I'm leaving this here"
+    else:
+        tosay = "I'm going to bring something to " + location_name + ". Thought it is a place"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_bring_to '+location_name)
     time.sleep(3)
     return "succeeded" 
 
@@ -456,7 +482,7 @@ def main():
                     
                     out = call_grasp(obj)
 
-                elif command_name == "deliver":
+                elif command_name == "deliver": #to Person
                     to_pers = command.GetParameterValue("pers")
                     try:
                         pers = idx2obj(int(to_pers),'PERSONS')
@@ -464,10 +490,34 @@ def main():
                         if (pers =="NULL"):
                             print "ERROR: la persona %s no existe" % (to_pers)                        
                         out = call_bring_to(pers)
-                    except:
-                        pers = ''   
-                        print pers
-                        out = call_bring_to(pers)
+                    except:                     #or to Loc
+                        to_loc = command.GetParameterValue("loc")
+                        try:
+                            loc = idx2obj(int(to_loc),'LOCATIONS')
+                            print loc
+                            if (loc =="NULL"):
+                                print "ERROR: l'objecte %s no existe" % (to_loc)                        
+                            out = call_bring_to_loc(loc)
+                        except:
+                            loc = ''   
+                            print loc
+                            out = call_bring_to_loc(loc)
+#                         pers = ''   
+#                         print pers
+#                         out = call_bring_to(pers)
+
+#                 elif command_name == "deliver": #to Loc
+#                     to_loc = command.GetParameterValue("loc")
+#                     try:
+#                         loc = idx2obj(int(to_loc),'LOCATIONS')
+#                         print loc
+#                         if (loc =="NULL"):
+#                             print "ERROR: l'objecte %s no existe" % (to_loc)                        
+#                         out = call_bring_to_loc(loc)
+#                     except:
+#                         loc = ''   
+#                         print loc
+#                         out = call_bring_to_loc(loc)
 
                 elif command_name == "search-object":
                 
@@ -495,8 +545,10 @@ def main():
                 elif command_name == "ask-name":
                     out = call_ask_name()
                 
-                elif command_name == "follow":
-                    out = call_follow()
+                elif command_name == "follow":          
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_follow(pers)
                 
                 elif command_name == "introduce-me":
                     out = call_introduce_me()

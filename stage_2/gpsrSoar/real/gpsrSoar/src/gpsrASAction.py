@@ -28,7 +28,7 @@ except IOError:
   per = GFR(path=PATH, wordset=grammarNames)
 print per
 
-categories = ['drink', 'snack', 'cleaning_stuff', 'food']
+categories = ['drink', 'snack', 'cleaning_stuff', 'food', 'kitchenary']
 loc_categories = ['door', 'table', 'shelf', 'appliance', 'seat', 'seating', 'utensil']
 # except:
 #   persons = {'homer': 0, '': ''}
@@ -134,7 +134,7 @@ def ask_category(category):
     return obj   #--------------'''
     #return 'milk'
 
-def ask_category_loc(category): #-------------------------------------------si torna a petar es per el tag de on llegim la location
+def ask_category_loc(category):
     ad = askCategoryLocSM(GRAMMAR_NAME = category) 
     out = ad.execute()
     obj = ad.userdata._data['location_name']
@@ -280,19 +280,19 @@ class gpsrASAction(object):
     except ValueError:
       l = ''
     print self._world.robot.locId
-    
-
-    if self._world.item.locId == '-1' and self._world.item.id != '-1': # If we know the item but not the location we check it and save it in world
-      iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
-      self._world.item.locId = iloc
+      
     
     if command.action == 'bring_from':
       self._world.item.locId = str(obj2idx(command.location, 'LOCATIONS'))
 
+    if self._world.item.locId == '-1' and self._world.item.id != '-1': # If we know the item but not the location we check it and save it in world
+      iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
+      self._world.item.locId = iloc
+
     if (command.action == 'memorize' or command.action == 'recognize'):
       command.person = self._world.person.id
 
-    
+
     self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, 
                                   oitem=i, operson=p, olocation=l, current_world=self._world)
     '''

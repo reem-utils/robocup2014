@@ -64,26 +64,26 @@ class world():
         self.location.append(location())
         self.name = ''
 
-    def new_object(self, Object, iters):
-            f = Object[0]
-            text = '   (<' + f + f + str(iters) + '> '
-            first_attr = True
-            ignore_field = True
-            obj = getattr(self, Object)
-            for n in obj.__dict__.keys():
-                # print n
-                if str(getattr(obj, n)) != ignore:
-                    if first_attr:
-                        text += '^' + n + ' ' + str(getattr(getattr(self, Object), n)) + '\n'
-                        first_attr = False
-                        ignore_field = False
-                    else:
-                        text += '           ^' + n + ' ' + str(getattr(self.robot, n)) + '\n'
-            if ignore_field:
-                text = ''
-            else:
-                text += ')\n'
-            return text
+#     def new_object(self, Object, iters):
+#             f = Object[0]
+#             text = '   (<' + f + f + str(iters) + '> '
+#             first_attr = True
+#             ignore_field = True
+#             obj = getattr(self, Object)
+#             for n in obj.__dict__.keys():
+#                 # print n
+#                 if str(getattr(obj, n)) != ignore:
+#                     if first_attr:
+#                         text += '^' + n + ' ' + str(getattr(getattr(self, Object), n)) + '\n'
+#                         first_attr = False
+#                         ignore_field = False
+#                     else:
+#                         text += '           ^' first_attr+ n + ' ' + str(getattr(self.robot, n)) + '\n'
+#             if ignore_field:
+#                 text = ''
+#             else:
+#                 text += ')\n'
+#             return text
 
     def new_world(self, allFile, locations):
 
@@ -93,7 +93,7 @@ class world():
         for loc in locations:
             locc = obj2idx(loc, 'LOCATIONS')
             l.append(convert(locc))     #puts locc between <l > and adds it to the array l
-            ll = '   (' + convert(locc) + ' ^id ' + str(locc) + ' ^pointed-at no)' #writes somthink like the following were 0 is locc
+            ll = '   (' + convert(locc) + ' ^id ' + str(locc) + ' ^pointed-at no)' #writes something like the following were 0 is locc
                                                                                    # (<l0> ^id 0 ^pointed-at no)
             lInits.append(ll)     #puts the previous phrase in to the array lInits
         allFile = allFile.replace('LOCATIONS', ' '.join(l)) #replaces LOCATIONS in allFile (witch is like  init-template.soar
@@ -258,7 +258,7 @@ class world():
                     first_attr = False
                     ignore_field = False
                 else:
-                    item_text += '           ^' + n + ' ' + str(getattr(self.item, n))
+                    item_text += '         ^' + n + ' ' + str(getattr(self.item, n))
         if ignore_field:
             item_text = ''
         else:
@@ -314,7 +314,7 @@ class world():
                     first_attr = False
                     ignore_field = False
                 else:
-                    robot_text += '\n           ^' + n + ' ' + str(getattr(self.robot, n)) 
+                    robot_text += '\n         ^' + n + ' ' + str(getattr(self.robot, n)) 
         if ignore_field:
             robot_text = ''
         else:
@@ -328,7 +328,7 @@ class world():
         desi += ')\n'
 
         DesiredState = desi + person_text + item_text + loc_text + robot_text
-
+        print DesiredState + '\n\n'
         return DesiredState
 
     def goal_bring_to(self, GOAL):
@@ -337,7 +337,7 @@ class world():
             self.person.obj1Id = GOAL.item
         elif GOAL.location != '':
             self.item.locId = GOAL.location
-        print GOAL.location
+            print self.item.locId
         self.item.id = GOAL.item
         self.item.delivered = YES
 
@@ -364,7 +364,7 @@ class world():
                 print 'hauria de ser aqui a sobre'
                 self.person.id = '-1'
             self.person.found = YES
-            self.recognized = YES
+            self.recognized = YES # ----------------------------------------------------------
 
     def goal_introduce(self, GOAL):
         self.robot.introduced = YES
@@ -375,7 +375,7 @@ class world():
         else:
             self.person.id = '-1'
         self.person.near = YES
-        self.followed = YES
+        self.person.followed = YES
 
     def goal_learn_person(self, GOAL):
         if GOAL.person != '':
@@ -403,33 +403,33 @@ class world():
         self.item.toBeGrasped = NO
         self.robot.obj1Id = GOAL.item
 
-def printNewGoal(oaction='go_to', oitem=0, operson=0, olocation='kitchen',
-    templatefile='-goal.soar', goalfile='goal-test'):
-    oaction = oaction.replace('_', '-')
-    templatesfilepath = roslib.packages.get_pkg_dir("gpsr") + "/src/goalSoars/"
-    targetfilepath = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp/elaborations/"
-    template = templatesfilepath + oaction + templatefile
-    target = targetfilepath + goalfile + '.soar'
-    tempfile = open(template, 'r')
-    targfile = open(target, 'w')
-
-    for line in tempfile.readlines():
-        # print line
-        line = line.replace('ITEM', str(oitem))
-        line = line.replace('PERSON', str(operson))
-        line = line.replace('LOCATION', str(olocation))
-        targfile.write(line)
-    line = '\n\n'
-    targfile.write(line)
-    tempfile.close()
-    template = templatesfilepath + 'goalPart2.soar'
-    tempfile = open(template, 'r')
-
-    for line in tempfile.readlines():
-        targfile.write(line)
-
-    tempfile.close()
-    targfile.close()
+# def printNewGoal(oaction='go_to', oitem=0, operson=0, olocation='kitchen',
+#     templatefile='-goal.soar', goalfile='goal-test'):
+#     oaction = oaction.replace('_', '-')
+#     templatesfilepath = roslib.packages.get_pkg_dir("gpsr") + "/src/goalSoars/"
+#     targetfilepath = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp/elaborations/"
+#     template = templatesfilepath + oaction + templatefile
+#     target = targetfilepath + goalfile + '.soar'
+#     tempfile = open(template, 'r')
+#     targfile = open(target, 'w')
+# 
+#     for line in tempfile.readlines():
+#         # print line
+#         line = line.replace('ITEM', str(oitem))
+#         line = line.replace('PERSON', str(operson))
+#         line = line.replace('LOCATION', str(olocation))
+#         targfile.write(line)
+#     line = '\n\n'
+#     targfile.write(line)
+#     tempfile.close()
+#     template = templatesfilepath + 'goalPart2.soar'
+#     tempfile = open(template, 'r')
+# 
+#     for line in tempfile.readlines():
+#         targfile.write(line)
+# 
+#     tempfile.close()
+#     targfile.close()
 
 def convert(element):
     el = '<l' + str(element) + '>'
