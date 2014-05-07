@@ -1,38 +1,39 @@
-# podria tenir errors
 sp {gp*propose*point-obj
    (state <s> ^name gp
               ^robot <r>
               ^location <l>
               ^desired <d>)
+   (<r> ^pointedAtLoc -1)
    (<l> ^id <lId>
-       ^pointed-at no)
-   (<r> ^id 1
-        ^locId <lId>)
-
-   (<d> ^robot.pointedAtLoc <lId>)
+        ^pointed-at no)
+   (<d> ^name point-at
+        ^robot <rr>
+        ^location <ll>)
+   (<rr> ^pointedAtLoc <lId>)
+   (<ll> ^id <lId>
+         ^pointed_at yes)
 -->
    (<s> ^operator <op> + >)
    (<op> ^name point-obj
          ^locId <lId>)
 }
 
-sp {gp*propose*move*point-obj
-   (state <s> ^name gp
-              ^robot <r>
-              ^location <l>
-              ^desired <d>)
-   (<l> ^id <lId>
-       ^pointed-at no)
-   (<r> ^id 1
-        ^locId {<> <lId> <rlocid>})
-
-   (<d> ^robot.pointedAtLoc <lId>)
--->
-   (<s> ^operator <op> + >)
-   (<op> ^name navigate
-         ^locId <lId>)
-}
-
+#sp {gp*propose*move*point-obj
+#   (state <s> ^name gp
+#              ^robot <r>
+#              ^location <l>
+#              ^desired <d>)
+#   (<l> ^id <lId>
+#       ^pointed-at no)
+#   (<r> ^id 1
+#        ^locId {<> <lId> <rlocid>})
+#
+#   (<d> ^robot.pointedAtLoc <lId>)
+#-->
+#   (<s> ^operator <op> + >)
+#   (<op> ^name navigate
+#         ^locId <lId>)
+#}
 
 sp {gp*apply*point-obj
    (state <s> ^operator <op>
@@ -44,18 +45,23 @@ sp {gp*apply*point-obj
 }
 
 sp {gp*apply*remove*point-obj
-  (state <s> ^operator <op>
-              ^io.output-link <out>
-              ^location <l>)
-   
+  (state <s> ^io.output-link <out>
+             ^operator <op>
+             ^location <l>
+             ^robot <r>)
+   (<out> ^point-obj <st>)
+   (<st> ^status complete
+         ^loc <loc>)
    (<op> ^name point-obj
          ^locId <loc>)
-   (<l> ^id <loc>)
-   
-   (<out> ^point-obj <st>)
-   (<st> ^status complete)
+   (<l> ^id <loc>
+        ^pointed-at no)
+   (<r> ^pointedAtLoc <rloc>)
 -->
-   (<l> ^pointed-at yes
+   (<r> ^pointedAtLoc <loc>
+                      <rloc> -)
+   (<l> ^id <loc>
+        ^pointed_at yes
                     no -)
    (<out> ^point-obj <st> -)
 }

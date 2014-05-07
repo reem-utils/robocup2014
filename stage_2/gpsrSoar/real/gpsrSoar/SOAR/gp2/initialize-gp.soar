@@ -46,7 +46,7 @@ sp {gp*apply*initialize-gp
    (<l28> ^id 28 ^pointed-at no)
       (<r> ^pointedAtLoc -1
            ^introduced no
-           ^locId 27
+           ^locId 12
            ^id 1
            ^obj1Id -1)
 
@@ -66,14 +66,13 @@ sp {gp*apply*initialize-gp
            ^askedName no
            ^near no
            ^found no
-           ^id 5)
+           ^id 26)
 
-   (<d> ^name follow
+   (<d> ^name learn-person
         ^person <pp>
         ^robot <rr>)
-   (<pp> ^followed yes
-           ^near yes
-           ^id 5)
+   (<pp> ^memorized yes
+           ^id 26)
    (<rr> ^id 1)
 
 }
