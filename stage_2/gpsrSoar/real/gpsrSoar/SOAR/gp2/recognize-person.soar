@@ -1,11 +1,13 @@
 sp {gp*propose*recognize-person
    (state <s> ^name gp
+              ^robot <r>
               ^person <p>
               ^desired <d>)
+   (<r> ^locId <rlid>)
    (<p> ^recognized no
-        ^near yes
         ^memorized yes
-        ^id <pid>)
+        ^id <pid>
+        ^locId <rlid>)
    (<d> ^name recognize-person
         ^person <dp>)
    (<dp> ^id <pid>
@@ -13,8 +15,27 @@ sp {gp*propose*recognize-person
 -->
    (<s> ^operator <op> + =)
    (<op> ^name recognize-person         
-         ^toPers <p>
-         ^withRob <r>)
+         ^toPers <p>)
+}
+
+sp {gp*propose*navigate-to*recognize-person
+    (state <s> ^name gp
+               ^location <l>
+               ^robot <r>
+               ^person <p>
+               ^desired <d>)
+    (<l> ^id <ploc>)
+    (<r> ^id 1
+         ^locId {<> <ploc> <rloc>})
+    (<p> ^id <pid>
+         ^locId <ploc>
+         ^found no)
+    (<d> ^person <dp>)
+    (<dp> ^id <pid>)
+ -->
+   (<s> ^operator <op> + >)
+    (<op> ^name navigate
+          ^toLoc <l>)
 }
 
 sp {gp*apply*recognize-person
@@ -24,7 +45,7 @@ sp {gp*apply*recognize-person
          ^toPers <pop>) 
    (<pop> ^id <pid>)
 -->
-   (<out> ^recognize-person.aux <pid>)
+   (<out> ^recognize-person.pers <pid>)
 }
 
 sp {gp*apply*remove*recognize-person
