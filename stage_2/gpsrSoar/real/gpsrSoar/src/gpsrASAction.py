@@ -174,8 +174,8 @@ class gpsrASAction(object):
     self._world = new_world(range(len(get_list('LOCATIONS'))))  #generates a new world
     print self._world.robot.locId
     self.print_goal()
-    #-----------------------------------------------------------orders list------------------------------
-
+    
+    print "-----------------------------------------------------------orders list------------------------------"
     rospy.logwarn (str(self._goal.orderList))
     while not success:
       soarResult = interface.main()
