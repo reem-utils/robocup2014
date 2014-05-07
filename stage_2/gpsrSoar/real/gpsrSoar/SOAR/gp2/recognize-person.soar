@@ -30,7 +30,8 @@ sp {gp*propose*navigate-to*recognize-person
     (<p> ^id <pid>
          ^locId <ploc>
          ^found no)
-    (<d> ^person <dp>)
+    (<d> ^name recognize-person
+         ^person <dp>)
     (<dp> ^id <pid>)
  -->
    (<s> ^operator <op> + >)

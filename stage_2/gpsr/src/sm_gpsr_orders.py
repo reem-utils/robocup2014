@@ -21,10 +21,10 @@ from speech_states.ask_question import AskQuestionSM
 
 # import rospy
 SENTENCE_SAID = '/parsing/sentence' 
-TEST = False
+TEST = True
 if TEST : 
     NUM_LOOPS_TODO = 140 
-    NUM_LOOPS_I = 42
+    NUM_LOOPS_I = 0
 else: 
     NUM_LOOPS_TODO = 3
     NUM_LOOPS_I = 0

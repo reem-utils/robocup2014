@@ -1,14 +1,14 @@
 sp {gp*propose*search-object
    (state <s> ^name gp
-              ^object <obj>
-              ^location <l>
               ^robot <r>
+              ^location <l>
+              ^object <obj>
               ^desired <d>)
    (<r> ^locId <rloc>)
    (<l> ^id <rloc>)
    (<obj> ^id <oid>
           ^found no
-           ^locId <rloc>)
+          ^locId <rloc>)
    (<d> ^object.id <oid>)
 -->
    (<s> ^operator <op> + =)
@@ -19,9 +19,9 @@ sp {gp*propose*search-object
 
 sp {gp*propose*navigate-to*search-object
    (state <s> ^name gp
-              ^object <obj>
-              ^location <l>
               ^robot <r>
+              ^location <l>
+              ^object <obj>
               ^desired <d>)
    (<r> ^locId <rloc>)
    (<l> ^id <oloc>)
