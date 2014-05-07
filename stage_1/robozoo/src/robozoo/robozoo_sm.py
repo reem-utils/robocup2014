@@ -62,14 +62,14 @@ class RoboZooSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_macarena',
                 #DummyStateMachine(),
-                play_motion_sm('macarena'),
+                play_motion_sm(motion='macarena'),
                 transitions={'succeeded': 'do_YMCA', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
 
             # Do the YMCA Dance
             smach.StateMachine.add(
                 'do_YMCA',
-                play_motion_sm('ymca'),
+                play_motion_sm(motion='ymca'),
                 transitions={'succeeded': 'do_robot', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
 

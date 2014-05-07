@@ -1,0 +1,3 @@
+pois : party_room | storage_room | leave_room
+object: coke | pringles
+
