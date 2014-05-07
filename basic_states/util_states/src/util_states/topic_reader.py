@@ -8,6 +8,7 @@ Created on Tue Oct 22 12:00:00 2013
 """
 import rospy
 import smach
+import copy
 
 #from global_common import ''preempted'', aborted, preempted, o1, o2, o3, o4
 class topic_reader_state(smach.State):
@@ -19,20 +20,13 @@ class topic_reader_state(smach.State):
         self.topic_type = topic_type
         self.topic_time_out = topic_time_out
         self.blocked=blocked
-        self.msg=False
-        self.time_exit=False
-        self.time_init=rospy.get_rostime()
-    def calul_time(self):
-        #if rospy.get_rostime().secs-self.time_init.secs > self.time_out :
-         #   self.time_exit=True
-         self.time_exit=False
-            
-        
+        self.received_msg=False
 
     def execute(self, userdata):
+        self.received_msg=False
+        self.time_init=rospy.get_rostime()
         if (self.blocked):
             try:
-               
                 _topic_info = rospy.wait_for_message(self.topic_name, self.topic_type, self.topic_time_out)
                 userdata.topic_output_msg = _topic_info
                 userdata.standard_error = "Topic Reader : No Error "
@@ -46,28 +40,27 @@ class topic_reader_state(smach.State):
                     return 'preempted'
                 return 'aborted'
         else :
-            self.pub=rospy.Subscriber(self.topic_name,self.topic_type, self.callback)
+            self.subs=rospy.Subscriber(self.topic_name,self.topic_type, self.callback_topic)
             
-            while not self.msg and not self.time_exit :
-                self.calul_time()
+            while not self.received_msg and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
                 rospy.sleep(0.5)
                 if self.preempt_requested():
                     return 'preempted'
 
-            if self.msg :
-   
-                userdata.topic_output_msg=self.msg_data
+            if self.received_msg :
+                userdata.topic_output_msg = copy.deepcopy(self.msg_data)
+                userdata.standard_error = ''
                 return 'succeeded'
             else :
-                
                 userdata.standard_error = "Topic Reader : TimeOut Error"
                 userdata.topic_output_msg = ''
                 return 'aborted'
             
-    def callback(self,data):
-        self.msg_data=data
-        self.msg=True
-        self.pub.unregister()
+    def callback_topic(self,data):
+        self.msg_data = data
+        self.received_msg = True
+        self.subs.unregister()
+
 class topic_reader(smach.StateMachine):
     """
     Executes a SM that reads a specified topic.
@@ -110,9 +103,9 @@ class topic_reader(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                              output_keys=['topic_output_msg', 'standard_error'])
  #       rospy.init_node("Topic_reader")
-        self.blocked=blocked
+
         with self:
             
             smach.StateMachine.add('Topic_reader_state', 
-                                   topic_reader_state(topic_name, topic_type, topic_time_out,self.blocked), 
+                                   topic_reader_state(topic_name, topic_type, topic_time_out,blocked), 
                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})

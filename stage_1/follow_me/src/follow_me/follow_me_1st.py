@@ -66,7 +66,8 @@ class follow_me_1st(smach.StateMachine):
         CHECK_ELEVATOR
     """
     def __init__(self, distToHuman=0.5):
-        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted','operator_say_out'],
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted',
+                                                    'aborted','operator_say_out'],
                                     input_keys=['in_learn_person'])
         
         with self:
@@ -74,8 +75,11 @@ class follow_me_1st(smach.StateMachine):
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
             self.userdata.standar_error="ok"
+            self.userdata.word_to_listen=None
+            
             sm=smach.Concurrence(outcomes=['ELEVATOR', 'LOST','preempted','OPERATOR'],
-                                    default_outcome='ELEVATOR',input_keys=["in_learn_person"],
+                                    default_outcome='ELEVATOR',input_keys=["in_learn_person",
+                                                                           'word_to_listen'],
                                     child_termination_cb = child_term_cb,
                                     outcome_cb=out_cb_follow,output_keys=[])
             

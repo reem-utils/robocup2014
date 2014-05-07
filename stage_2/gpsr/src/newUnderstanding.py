@@ -2,6 +2,7 @@ import roslib
 roslib.load_manifest('gpsrSoar')
 import nltk
 import grammarReader 
+import rospy
 
 #from gpsrSoar.grammarReader import grammarFileReader
 GFR = grammarReader.grammarFileReader
@@ -67,8 +68,9 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     try:            #fills per with an array of arrays each for one category with all their posible values in them
         per = GFR(wordset=grammarNames) 
         #print 'bla'        
-    except IOError:
-        PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"
+    except IOError:        
+        PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/general.gram"
+        #PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"
         print 'estem carregan la gramatica del PC i no del robot!!'
         # print 'ble'
         per = GFR(path=PATH, wordset=grammarNames)
@@ -76,7 +78,7 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     # print GFW(wordlist = per)
     # print 'per aqui anem be?'
 
-    PATH = roslib.packages.get_pkg_dir("gpsr") + "/src/newGrammar.cfg"
+    PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/newGrammar.cfg" #gpsr/src..
     PATH = 'file:' + PATH
     gram = nltk.data.load(PATH)
     pars = nltk.RecursiveDescentParser(gram)
@@ -89,39 +91,43 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
     print ("==========sent=========")
     print sent
     print ("=========fi sent========")
-    trees = pars.nbest_parse(sent)
-    print ("==========trees=========")
-    print trees
-    print ("=========fi trees========")
-    if len(trees) == 0:
-        print 'The sentence is not from CAT1 in the robocup'
-        t = 'unk'
-    else:
-        for tree in trees:
-            value = tree.height() + len(tree.leaves())
-            subtrees = retrieveCommands(tree)
-            sign = -1
-            for sub in subtrees:
-                a = sub.subtrees().next().node
-                if a == 'NP':
-                    value = value + sign*0.05*len(a.leaves())
-                    sign = sign * -1
-            # print value
-            if value < bestVal[0]:
-                bestVal = (value, i)
-            print tree
-            i += 1
-            # t = treeParse(tree)
-            # tree.height()
-            # tree.productions()
-            # tree.pos()
-            # n = subtree(tree)
-            # print n
-        # print bestVal[0]
-        # print bestVal
-        # print bestVal[1]
-        t = retrieveCommands(trees[bestVal[1]])
-    return t
+    try:
+        trees = pars.nbest_parse(sent)
+        print ("==========trees=========")
+        print trees
+        print ("=========fi trees========")
+        if len(trees) == 0:
+            print 'The sentence is not from CAT1 in the robocup'
+            t = 'unk'
+        else:
+            for tree in trees:
+                value = tree.height() + len(tree.leaves())
+                subtrees = retrieveCommands(tree)
+                sign = -1
+                for sub in subtrees:
+                    a = sub.subtrees().next().node
+                    if a == 'NP':
+                        value = value + sign*0.05*len(a.leaves())
+                        sign = sign * -1
+                # print value
+                if value < bestVal[0]:
+                    bestVal = (value, i)
+                print tree
+                i += 1
+                # t = treeParse(tree)
+                # tree.height()
+                # tree.productions()
+                # tree.pos()
+                # n = subtree(tree)
+                # print n
+            # print bestVal[0]
+            # print bestVal
+            # print bestVal[1]
+            t = retrieveCommands(trees[bestVal[1]])
+        return t
+    except:
+        rospy.logwarn('Except [pars.nbest_parse(sent)]: Grammar does not cover some of the input words')
+        return 'unk'
 
 def retrieveCommands(tree):
     subtrees=tree.subtrees()

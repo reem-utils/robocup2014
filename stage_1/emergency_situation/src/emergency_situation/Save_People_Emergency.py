@@ -129,31 +129,24 @@ class Save_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Ask_Status',
                 text_to_say(),
-                transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
+                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
             #TODO: Do we have to add an SayYesOrNoSM?
             # smach.StateMachine.add(
             #     'Yes_No',
             #     SayYesOrNoSM(),
             #     transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
-            #Register Position --> TODO? or done?
-            #Output keys: emergency_location 
-            #TODO: At the moment /amcl_pose in gazebo is not working properly
-            smach.StateMachine.add(
-                'Register_Position',
-                #DummyStateMachine(),
-                get_current_robot_pose(),
-                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'},
-                remapping={'current_robot_pose':'person_location'})
+            
+            #TODO: Actually Generate the PDF (TODO: Look for USB/Path...)
             #Save_Info(): Saves the emergency info and generates a pdf file
-            #TODO: PDF
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
-                transitions={'succeeded':'Say_Save', 'aborted':'Say_Save', 'preempted':'preempted'})
-            smach.StateMachine.add(
-                                   'Say_Save',
-                                   text_to_say('Information Saved'),
-                                   transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+#             
+#             smach.StateMachine.add(
+#                 'Say_Save',
+#                 text_to_say('Information Saved'),
+#                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

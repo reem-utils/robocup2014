@@ -1,10 +1,20 @@
 ASR_LOOP: True
-ASR_ON: "False"
-sentence: "Go to the sofa, introduce yourself, and leave the apartment"
-sentence0: "bring me a coke"
-sentence1: "find a person then memorize the person and recognize him" #ko
-sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #ko
-sentence3: "bring the coke to a sofa" #ko (keixarnos que sofa no es una persona)
-sentence4: "bring a coke to the bookshelf bring a coke to the bookshelf bring a coke to the bookshelf " #ko
-sentence5: "grasp the coke bring the coke to bookshelf and tell something about yourself" #ko  
-sentence6: "Bring the kitchenary to a table" #ko soar don't like kitchenary
+ASR_ON: "True"
+#sentence: "Go to an exit"
+#sentence: "bring me a drink"
+#sentence: "Move to the sofa, then go to the fridge and exit the apartment"
+sentence: "Move to the fridge, find the coke, and grasp it"
+
+
+
+
+sentence0: "bring me a coke" #MOLAAA
+sentence1: "find a person then memorize the person and recognize him" #KOOOOO
+sentence2: "grasp the coke bring the coke to business and tell something about yourself"  #KOOOOO (bussiness no mola)
+sentence3: "bring the coke to a sofa" #KOOOOO (keixarnos que no estem portan a una persona)
+sentence4: "grasp the coke bring the coke to bookshelf and tell something about yourself" #ko  
+sentence5: "Bring the kitchenary to a table" #ko soar don't like kitchenary
+sentence6: "Bring a snack to a seat" #ko
+sentence7: "Go to the bar, ask the person name, and recognize him" #KOOOO no pot fer lern person
+sentence8: "Go to the bar, introduce yourself, and follow the person in front of you" #KOOOO follow person no va
+

@@ -13,3 +13,5 @@ object:
     coke: [information, coke, beverage]
     fanta: [information, fanta, beverage]
     cookies: [information, cookies, snack]
+
+

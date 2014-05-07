@@ -74,6 +74,8 @@ class FollowMe(smach.StateMachine):
             self.userdata.tts_lang=None
             self.userdata.standard_error='OK'
             self.userdata.standard_error='OK'
+            self.userdata.in_learn_person=1
+            self.userdata.word_to_listen=None
             
             smach.StateMachine.add('INIT_FOLLOW',
                                    FollowMeInit(),

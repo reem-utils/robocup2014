@@ -13,19 +13,23 @@ import smach
 from speech_states.say import text_to_say
 from speech_states.listen_and_repeat import ListenRepeatSM
 from speech_states.say_yes_or_no import SayYesOrNoSM
+from activate_asr import ActivateASR
+from deactivate_asr import DeactivateASR
+from read_asr import ReadASR
 
 class saveData(smach.State):
     
     def __init__(self):
         
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                            input_keys=['asr_userSaid', 'asr_userSaid_tags'], output_keys=['asr_answer', 'asr_answer_tags'])
+                            input_keys=['asr_userSaid', 'asr_userSaid_tags'], output_keys=['asr_answer', 'asr_answer_tags', 'tts_text'])
 
         
     def execute(self, userdata):
 
         userdata.asr_answer = userdata.asr_userSaid 
         userdata.asr_answer_tags = userdata.asr_userSaid_tags  
+        userdata.tts_text = "Did you said " + userdata.asr_userSaid + "?"
  
         return 'succeeded'
     
@@ -61,8 +65,8 @@ class AskQuestionSM(smach.StateMachine):
         If return succeeded, the confirm answer was yes. Otherwise, it return aborted
         
         @input string text or tts_text
-        @output string asr_userSaid
-        @output actiontag[] asr_userSaid_tags
+        @output string asr_answer
+        @output actiontag[] asr_answer_tags
     """
     
     def __init__(self, text=None, grammar = None):
@@ -77,29 +81,53 @@ class AskQuestionSM(smach.StateMachine):
             self.userdata.grammar_name = None
     
             smach.StateMachine.add('PrepareData',
-                    prepareData(text, grammar),
-                    transitions={'succeeded':'ask_question', 'aborted':'aborted'})
-             
+                 prepareData(text, grammar),
+                 transitions={'succeeded':'ActivateASR', 'aborted':'aborted'})
+            
+            # Activate the asr
+            smach.StateMachine.add('ActivateASR',
+                 ActivateASR(),
+                 transitions={'succeeded': 'ask_question', 'aborted': 'aborted', 'preempted': 'preempted'})                    
+            
             # Ask for order
             smach.StateMachine.add(
-                    'ask_question',
-                    text_to_say(),
-                    transitions={'succeeded': 'listen_repeat_question', 'aborted': 'aborted', 'preempted': 'preempted'})
-            
+                'ask_question',
+                text_to_say(),
+                transitions={'succeeded': 'listen_answer', 'aborted': 'aborted', 'preempted': 'preempted'})
+
             # Listen the order and repeat
             smach.StateMachine.add(
-                    'listen_repeat_question',
-                    ListenRepeatSM(),
-                    transitions={'succeeded': 'SaveData', 'aborted': 'aborted', 'preempted': 'preempted'})
+                'listen_answer',
+                ReadASR(),
+                transitions={'succeeded': 'SaveData', 'aborted': 'aborted', 'preempted': 'preempted'})
            
             # Save information
-            smach.StateMachine.add('SaveData',
-                    saveData(),
-                    transitions={'succeeded':'confirm_question', 'aborted':'aborted'})
+            smach.StateMachine.add(
+                'SaveData',
+                saveData(),
+                transitions={'succeeded':'ActivateASR_yesno', 'aborted':'aborted'})
+            
+            # Load grammar yes/no
+            smach.StateMachine.add(
+                'ActivateASR_yesno',
+                ActivateASR("robocup/yes_no"),
+                transitions={'succeeded': 'repeat_info', 'aborted': 'aborted', 'preempted': 'preempted'})                    
+            
+            # Repeat the question
+            smach.StateMachine.add(
+                'repeat_info',
+                text_to_say(),
+                transitions={'succeeded': 'confirm_question', 'aborted': 'aborted', 
+                'preempted': 'preempted'}) 
             
             # Confirm order
             smach.StateMachine.add(
-                    'confirm_question',
-                    SayYesOrNoSM(),
-                    transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+                'confirm_question',
+                SayYesOrNoSM(),
+                transitions={'succeeded': 'DeactivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
 
+            # Deactivate the server
+            smach.StateMachine.add('DeactivateASR',
+                DeactivateASR(),
+                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+            

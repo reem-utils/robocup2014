@@ -10,23 +10,30 @@ import rospy
 import smach
 from speech_states.say import text_to_say
 from speech_states.listen_to import ListenToSM
+from speech_states.parser_grammar import parserGrammar
+from read_asr import ReadASR
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
     
+GRAMMAR_NAME = 'robocup/yes_no'
+
 class ProcessCommand(smach.State):
     def __init__(self):
         rospy.loginfo("Entering SelectAnswer")
         smach.State.__init__(self, outcomes=['yes', 'no', 'aborted'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error'])
-
+        self.tags = parserGrammar(GRAMMAR_NAME)
+        
     def execute(self, userdata):        
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
 
+        # We need to compare the userSaid with all the possible values that we can recognize
+        
 #         yes = [tag for tag in questionTags if tag.key == 'yes']
 #         no = [tag for tag in questionTags if tag.key == 'no']
 #         
@@ -42,11 +49,11 @@ class ProcessCommand(smach.State):
 #         
 #         rospy.loginfo("Aborted")
 #         return 'aborted'
-    
-        if question == 'yes':
-            return 'yes'
-        elif question == 'no':
-            return 'no'
+        
+        for element in self.tags:
+            for value in element[1]:
+                if userdata.asr_userSaid == value:
+                    return element[0]
         
         return 'aborted'
     
@@ -76,7 +83,7 @@ class SayYesOrNoSM(smach.StateMachine):
 
         with self:
             self.userdata.asr_userSaid = ''    
-            self.userdata.grammar_name = 'confirming'
+            self.userdata.grammar_name = GRAMMAR_NAME
             self.userdata.tts_text = None
             self.userdata.tts_wait_before_speaking = None
             self.userdata.tts_lang = None
@@ -84,7 +91,7 @@ class SayYesOrNoSM(smach.StateMachine):
             # Listen 
             smach.StateMachine.add(
                 'listen_info',
-                ListenToSM(),
+                ReadASR(),
                 transitions={'succeeded': 'process_command', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

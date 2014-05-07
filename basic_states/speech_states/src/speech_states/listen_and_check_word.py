@@ -17,7 +17,8 @@ class checkData(smach.State):
     def __init__(self):
         
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                            input_keys=['asr_userSaid', 'asr_userSaid_tags', 'word_to_listen'], output_keys=[])
+                            input_keys=['asr_userSaid', 'asr_userSaid_tags', 'word_to_listen'],
+                             output_keys=[])
 
         
     def execute(self, userdata):

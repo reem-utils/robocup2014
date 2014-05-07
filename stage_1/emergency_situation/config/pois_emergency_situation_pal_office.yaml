@@ -1,8 +1,8 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    emergency_room: [submap_0, emergency_room, -11.991,  11.647, -0.169]
-    entry_door_init: [submap_0, entry_door_init, -2.027, -7.907, 0]
-    entry_door_exit: [submap_0, entry_door_exit,-13.634, 11.061,  0.875]
-    kitchen: [submap_0, kitchen, -11.991, 11.647, -0.169]
+    emergency_room: [submap_0, emergency_room,-5.011, 6.372, -1.780]
+    entry_door_init: [submap_0, entry_door_init, -1.319, 9.927, -2.169]
+    entry_door_exit: [submap_0, entry_door_exit, -4.165, 7.206,  -2.276]
+    kitchen: [submap_0, kitchen, -12.691, 10.713, 0.900]
 

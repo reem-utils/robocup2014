@@ -13,6 +13,8 @@ import rospy
 from rospy.core import rospyinfo
 import smach
 from smach_ros import ServiceState
+from pal_detection_msgs.srv import RecognizerRequest, Recognizer, RecognizerResponse
+
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -53,7 +55,7 @@ class learn_face(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self, learning_time=20):
+    def __init__(self,learning_time=20,minConfidence=80):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
                                  output_keys=['standard_error'])
@@ -106,5 +108,20 @@ class learn_face(smach.StateMachine):
                                            StopEnrollment,
                                            response_cb = stop_response_cb,
                                            output_keys = ['standard_error']),
-                              transitions={'succeeded':'succeeded','aborted': 'aborted','preempted':'preempted'})
-      
+                              transitions={'succeeded':'Start_recognizer','aborted': 'Start_recognizer',
+                                           'preempted':'preempted'})
+        
+            def face_start_detect_request_cb(userdata, request):
+                start_request = RecognizerRequest()
+                start_request.enabled=True
+                start_request.minConfidence=minConfidence
+                return start_request
+          
+            #call request of start recognizer
+            smach.StateMachine.add('Start_recognizer',
+                               ServiceState('/pal_face/recognizer',
+                                            Recognizer,
+                                            request_cb = face_start_detect_request_cb,
+                                            input_keys = []),
+                               transitions={'succeeded':'succeeded',
+                                            'aborted' : 'aborted','preempted':'preempted'})            
