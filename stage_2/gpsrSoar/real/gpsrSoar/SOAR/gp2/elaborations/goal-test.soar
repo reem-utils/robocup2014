@@ -51,7 +51,6 @@ sp {gp*apply*detect*goal*achieved*remove-achieved
 
    (<out> ^achieved <st>)
    (<st> ^status complete)
-
 -->
    (<out> ^achieved <st> -)
    (write (crlf) |The problem has been solved|)

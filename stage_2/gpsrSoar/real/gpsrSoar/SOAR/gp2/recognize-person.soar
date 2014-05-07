@@ -1,48 +1,50 @@
 sp {gp*propose*recognize-person
    (state <s> ^name gp
-              ^robot <r>
-              ^person <p>)
-   (<r> ^locId <rloc>)
-   (<p> ^locId <rloc>
+              ^person <p>
+              ^desired <d>)
+   (<p> ^recognized no
         ^near yes
-        ^recognized no
-        ^memorized yes)
+        ^memorized yes
+        ^id <pid>)
+   (<d> ^name recognize-person
+        ^person <dp>)
+   (<dp> ^id <pid>
+         ^recognized yes)
 -->
    (<s> ^operator <op> + =)
-   (<op> ^name recognize-person
-         ^withRob <r>
-         ^toPers <p>)
+   (<op> ^name recognize-person         
+         ^toPers <p>
+         ^withRob <r>)
 }
 
 sp {gp*apply*recognize-person
    (state <s> ^operator <op>
-              ^person <p>
               ^io.output-link <out>)
    (<op> ^name recognize-person
-         ^withRob <r>
          ^toPers <pop>) 
    (<pop> ^id <pid>)
-   (<p> ^id <pid>)
 -->
-   (<out> ^recognize-person.aux 1)
-#   (<p> ^recognized yes
-#                    no -)
+   (<out> ^recognize-person.aux <pid>)
 }
 
 sp {gp*apply*remove*recognize-person
-   (state <s> ^operator <op>
-              ^io.output-link <out>
-              ^person <p>)
-   (<op> ^name recognize-person
-         ^withRob <r>
-         ^toPers <pop>)
-   (<p> ^id <pid>)
-   (<pop> ^id <pid>)
-   
+   (state <s> ^io.output-link <out>
+              ^operator <op> 
+              ^person <p>
+              ^robot <r>)
    (<out> ^recognize-person <st>)
-   (<st> ^status complete)
+   (<st> ^status complete
+         ^pers <pid>)
+   (<op> ^name recognize-person
+         ^toPers <pop>)
+   (<pop> ^id <pid>)  
+   (<p> ^id <pid>
+        ^recogize <pr>
+        ^near <pn>)
 -->
    (<p> ^recognized yes
-                   no -)
+                    <pr> -
+        ^near yes
+              <pn> -)
    (<out> ^recognize-person <st> -)
 }

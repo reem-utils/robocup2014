@@ -195,7 +195,7 @@ def call_introduce():
     time.sleep(3)
     return "succeeded"
 
-def call_point_at(): #TO TEST   #no sap fer-ho 
+def call_point_at(loc_name): #TO TEST   #no sap fer-ho 
     '''
     out = aborted
     tries = 0
@@ -211,10 +211,10 @@ def call_point_at(): #TO TEST   #no sap fer-ho
     return succeeded
     '''
     
-    tosay = "I'm going to point"
+    tosay = "I'm going to point to " + loc_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_point_at')
+    rospy.logwarn('call_point_at ' + loc_name)
     time.sleep(3)
     return "succeeded"
 
@@ -539,8 +539,10 @@ def main():
                     out = call_find_person(pers)
                 
 
-                elif command_name == "point-obj":
-                    out = "succeeded" #call_point_at()
+                elif command_name == "point-obj":                    
+                    to_loc = command.GetParameterValue("loc")
+                    loc = idx2obj(int(to_loc),'LOCATIONS')
+                    out = call_point_at(loc)
                 
                 elif command_name == "ask-name":
                     out = call_ask_name()
