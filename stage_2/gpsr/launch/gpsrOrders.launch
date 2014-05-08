@@ -7,6 +7,10 @@
 <!-- load the sentences for test file -->
   <rosparam file="$(find gpsr)/config/cat1Sentences.yaml"
       command="load" ns="cat1Sentences" />
+
+<!-- load the sentences for test file -->
+  <rosparam file="$(find gpsr)/config/cat2Sentences.yaml"
+      command="load" ns="cat2Sentences" />
 <!--
   <include file="$(find object_recognition_mock)/launch/object_recognition_mock.launch" />
   <include file="$(find speech_recognition_mock)/launch/speech_recognition_mock.launch" />
