@@ -30,7 +30,7 @@ except IOError:
   per = GFR(path=PATH, wordset=grammarNames)
 print per
 
-categories = ['drink', 'snack', 'cleaning_stuff', 'food', 'kitchenary']
+categories = ['drink', 'snack', 'cleaning_stuff', 'food', 'kitchenware']
 loc_categories = ['door', 'table', 'shelf', 'appliance', 'seat', 'seating', 'utensil']
 # except:
 #   persons = {'homer': 0, '': ''}
