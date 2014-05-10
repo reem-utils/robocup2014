@@ -27,8 +27,6 @@ def parserGrammar(grammarFile):
         if line[0] == '<':
             # Obtain tag name 
             name, value = line.partition(">")[::2]
-            print "Name : " + str(name)
-            print "Value: " + str(value)
             tagObject = [name[1::]]
 
             if name[1::] == 'garbage':
@@ -38,11 +36,8 @@ def parserGrammar(grammarFile):
                 value = value[string.find(value, '(')+1:string.find(value, ')'):]
                 tagValues = value.strip(' ').split(' | ')                
                 if str(value).count('"')==0 and str(value).count('$')==0:
-                    print "Count: " + str(str(value).count('"'))
                     tagObject.append(tagValues)
                     tags.append(tagObject)
-                    print "Value 2 : " + str(value)
-                    print "tagValue 2 : " + str(tagValues) + "\n"
              
         # Else, next line
      
