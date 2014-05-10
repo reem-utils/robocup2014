@@ -5,6 +5,7 @@ import rospkg
 import sys
 
 from speech_states.parser_grammar import parserGrammar
+from util_states.colors import Colors
 
 def checkDictionaryGrammar(grammarFile):
     tags = parserGrammar(grammarFile)
@@ -24,7 +25,7 @@ def checkDictionaryGrammar(grammarFile):
             dic[value] = str(value)
         elif (str(value)[1:] == 'unk'):
             end = True
-    print "Tags from parser: " + str(tags[:])
+#     print "Tags from parser: " + str(tags[:])
     existsInDic = True
     notExistedArray = []
     
@@ -36,14 +37,14 @@ def checkDictionaryGrammar(grammarFile):
                 for tagFinal in tagSeparated :
                     if tagFinal.isalpha(): 
                         tagFinal = str(tagFinal).lower()
-                        if str(tagFinal) in dic:
-                            print "TAG Value: " + str(tagFinal) + " Exists!"
-                        else:
+                        if not str(tagFinal) in dic:
                             existsInDic = False
                             notExistedArray.append(tagFinal);
-                            print "TAG Value: " + str(tagFinal) + " NOT Exists!"
-    print "Exists??????? " + str(existsInDic)
-    print "Words that not exist : " + str(notExistedArray)
+#                             print "TAG Value: " + str(tagFinal) + " NOT Exists!"
+    if existsInDic:
+        print Colors().GREEN + "Dictionary OK!" + Colors().NATIVE_COLOR
+    else:
+        print Colors().RED + "Words that not exist : " + str(notExistedArray) + Colors().NATIVE_COLOR
     f.close()
     return existsInDic
         
@@ -54,8 +55,7 @@ def main():
         grammarName = sys.argv[1] 
     else:
         grammarName = 'deliver'
-    
-    print "MAAAIN"
+
     checkDictionaryGrammar(grammarName)
 
 if __name__ == '__main__':

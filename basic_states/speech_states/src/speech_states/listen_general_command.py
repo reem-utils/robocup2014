@@ -190,13 +190,14 @@ class BringOrderLoc(smach.State):
                   for tag in userdata.userSaidTags :
                     if tag.key == 'location':
                       userdata.location_name = tag.value
-                  print "WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGHHHHHHHHHHHHHHHHHHHHH"+userdata.userSaidData
+                      return 'succeeded'
+                  print "WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGHHHHHHHHHHHHHHHHHHHHH "+userdata.userSaidData
                   if userdata.location_name == '':
                     if 'fridge' in userdata.userSaidData: # TODO: recorrer la lista de locations para cogerlo
                         print 'TODO VA BIEN, MIENTRAS SUENE ESTA ALARMA TODO VA BIEN'
                         userdata.location_name = 'fridge'
                         return 'succeeded'
-                    return 'aborted'
+                  return 'aborted'
             except:
                   print 'faaaail location'
                   return 'aborted'
@@ -381,11 +382,11 @@ class prepare_ask_info_loc(smach.State):
          
         def __init__(self):
           smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
-                               input_keys=['cat', 'objectList'], output_keys=['objectList', 'tosay'])
+                               input_keys=['cat', 'locList'], output_keys=['locList', 'tosay'])
  
         def execute(self, userdata):
-          userdata.tosay = ('You said a ' + self.userdata.cat + '. I could go to ' + 
-                                       ', '.join(self.userdata.locList) + '. Which ' + self.userdata.cat + ' do you prefer?')
+          userdata.tosay = ('You said a ' + userdata.cat + '. I could go to ' + 
+                                       ', '.join(userdata.locList) + '. Which ' + userdata.cat + ' do you prefer?')
                                                
           return 'succeeded'
                         
