@@ -22,7 +22,7 @@ from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
-
+from manipulation_states.grasp_time_out import grasping_with_timeout
 import time
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -199,24 +199,28 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             
             self.userdata.time_grasp = 0.0
-            sm_conc = smach.Concurrence(outcomes=['succeeded', 'time_out'],
-                                        default_outcome='succeeded',
-                                        input_keys=['object_to_grasp, time_grasp'],
-                                        child_termination_cb = child_term_cb,
-                                        putcome_cb = out_cb)
-
-            with sm_conc:
-                smach.StateMachine.add(
-                    'Find_and_grab_object',
-                    #Find_and_grab_object(),
-                    DummyStateMachine())
-                smach.StateMachine.add(
-                                       'Time_State')
-                
-            smach.StateMachine.add('GRASP_CONCURRENCE',
-                                   sm_conc,
-                                   transitions={'succeeded':'Prepare_Go_To_Person',
-                                                'time_out':'Grasp_fail_Ask_Person'})
+            smach.StateMachine.add('Grasping_with_timeout',
+                                   grasping_with_timeout(),
+                                   transitions={'succeeded':'Prepare_Go_To_Person', 'time_out':'Grasp_fail_Ask_Person'})
+#             sm_conc = smach.Concurrence(outcomes=['succeeded', 'time_out'],
+#                                         default_outcome='succeeded',
+#                                         input_keys=['object_to_grasp, time_grasp'],
+#                                         child_termination_cb = child_term_cb,
+#                                         outcome_cb = out_cb)
+# 
+#             with sm_conc:
+#                 sm_conc.add(
+#                     'Find_and_grab_object',
+#                     #Find_and_grab_object(),
+#                     DummyStateMachine())
+#                 sm_conc.add(
+#                             'Time_State',
+#                             Time_State())
+#                 
+#             smach.StateMachine.add('GRASP_CONCURRENCE',
+#                                    sm_conc,
+#                                    transitions={'succeeded':'Prepare_Go_To_Person',
+#                                                 'time_out':'Grasp_fail_Ask_Person'})
             #Find Object + Grab Object SM
 #             smach.StateMachine.add(
 #                 'Find_and_grab_object',
