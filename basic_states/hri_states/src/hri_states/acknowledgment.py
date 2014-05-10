@@ -61,7 +61,7 @@ class acknowledgment(smach.StateMachine):
     """
     def __init__(self,type_movement="yes",tts_text=''):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
-                                 input_keys=[], 
+                                 input_keys=['tts_text','type_movment'], 
                                  output_keys=['standard_error'])
         
         self.type_movement=type_movement

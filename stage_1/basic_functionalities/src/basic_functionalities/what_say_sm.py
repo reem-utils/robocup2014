@@ -83,10 +83,18 @@ class SelectAnswer(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
                                 output_keys=['standard_error', 'tts_text', 'tts_wait_before_speaking'])
-        self.tags = parserGrammar(GRAMMAR_NAME)
+        #self.tags = parserGrammar(GRAMMAR_NAME)
         
     def execute(self, userdata):        
 
+        question = userdata.asr_userSaid
+        questionTags = userdata.asr_userSaid_tags
+
+        info = [tag for tag in questionTags if tag.key == 'info']
+        country = [tag for tag in questionTags if tag.key == 'country']
+        attr = [tag for tag in questionTags if tag.key == 'attr']
+        object = [tag for tag in questionTags if tag.key == 'object']
+        
         #important to do add the .yalm before
         question_params = rospy.get_param("/question_list/questions/what_say")
     
@@ -94,13 +102,27 @@ class SelectAnswer(smach.State):
             print "Key: " + str(key)
             print "Value: " + str(value)
             
-            # Process info -> value[2] and Process country -> value[3]
-            if value[2] in userdata.asr_userSaid and value[3] in userdata.asr_userSaid:
-                # Select answer -> value[4]
+            # Type info and country
+            if (info and info[0].value == value[2]) and (country and country[0].value == value[3]):
                 userdata.tts_text = "The answer is " + value[4]
                 userdata.tts_wait_before_speaking = 0
                 userdata.standard_error=''
                 return 'succeeded'
+            
+            # Type attr and animal 
+            if (attr and attr[0].value == value[2]) and (object and object[0].value == value[3]):
+                userdata.tts_text = "The answer is " + value[4]
+                userdata.tts_wait_before_speaking = 0
+                userdata.standard_error=''
+                return 'succeeded'
+            
+            # Process info -> value[2] and Process country -> value[3]
+#             if value[2] in userdata.asr_userSaid and value[3] in userdata.asr_userSaid:
+#                 # Select answer -> value[4]
+#                 userdata.tts_text = "The answer is " + value[4]
+#                 userdata.tts_wait_before_speaking = 0
+#                 userdata.standard_error=''
+#                 return 'succeeded'
                 
         userdata.tts_text = "I don't know the answer"
         userdata.tts_wait_before_speaking = 0
@@ -195,7 +217,8 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_what_did_you_say',
                  text_to_say("What did you say test"),
-                 transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
+                 #transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
             
             # Go to the location
             smach.StateMachine.add(

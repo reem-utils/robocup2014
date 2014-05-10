@@ -14,6 +14,7 @@ import math
 from navigation_states.nav_to_poi import nav_to_poi
 #from navigation_states.enter_room import EnterRoomSM
 from object_grasping_states.recognize_object import recognize_object
+from speech_states.say import text_to_say
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -124,7 +125,7 @@ class RestaurantNavigation(smach.StateMachine):
             # Grasp Object
             smach.StateMachine.add(
                 'grasp_object',
-                DummyStateMachine("Grasping Object"),
+                text_to_say("Grasping Object"),
                 transitions={'succeeded': 'go_to_delivery', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -139,7 +140,7 @@ class RestaurantNavigation(smach.StateMachine):
             # Deliver object
             smach.StateMachine.add(
                 'deliver_object',
-                DummyStateMachine("Delivering Object"),
+                text_to_say("Delivering Object"),
                 transitions={'succeeded': 'check_loop', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
