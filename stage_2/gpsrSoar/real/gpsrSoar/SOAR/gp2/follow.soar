@@ -22,8 +22,8 @@ sp {gp*apply*follow
    (state <s> ^operator <op>
               ^io.output-link <out>)
    (<op> ^name follow
-         ^toPers <p>)
-   (<p> ^id <pid>)
+         ^toPers <pop>)
+   (<pop> ^id <pid>)
 -->
    (<out> ^follow.pers <pid>)
 }
@@ -40,12 +40,12 @@ sp {gp*apply*follow*remove-follow
          ^toPers <pop>)
    (<pop> ^id <pid>)
    (<p> ^id <pid>
-        ^followed <blaf>
-        ^near <blan>)
+        ^followed <pf>
+        ^near <pn>)
 -->
    (<p> ^followed yes
-                  <blaf> -
+                  <pf> -
         ^near yes
-              <blan> -)
+              <pn> -)
    (<out> ^follow <st> -)
 }

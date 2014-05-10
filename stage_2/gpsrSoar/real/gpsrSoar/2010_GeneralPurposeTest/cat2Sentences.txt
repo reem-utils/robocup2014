@@ -1,64 +1,64 @@
-Bring a drink to a table. -
-Bring a drink to a shelf. -
-Bring a drink to a door. -
-Bring a drink to an appliance. -
-Bring a snack to a seat. -
-Bring a snack to a table. -
-Bring a snack to a shelf. -
-Bring a snack to a door. -
-Bring a snack to an appliance. -
-Bring the kitchenary to a seat. -
-Bring the kitchenary to a table. -
-Bring the kitchenary to a shelf. -
-Bring the kitchenary to a door. -
-Bring the kitchenary to an appliance. -
-Bring some food to a seat. -
-Bring some food to a table. -
-Bring some food to a shelf. -
-Bring some food to a door. -
-Bring some food to an appliance. -
-Carry a drink to a seat. -
-Carry a drink to a table. -
-Carry a drink to a shelf. -
-Carry a drink to a door. -
-Carry a drink to an appliance. -
-Carry a snack to a seat. -
-Carry a snack to a table. -
-Carry a snack to a shelf. -
-Carry a snack to a door. -
-Carry a snack to an appliance. -
-Carry the kitchenary to a seat. -
-Carry the kitchenary to a table. -
-Carry the kitchenary to a shelf. -
-Carry the kitchenary to a door. -
-Carry the kitchenary to an appliance. -
-Carry some food to a seat. -
-Carry some food to a table. -
-Carry some food to a shelf. -
-Carry some food to a door. -
-Carry some food to an appliance. -
-Get me a drink. -
-Get me a snack. -
-Get me the kitchenary. -
-Get me some food. -
-Give me a drink. -
-Give me a snack. -
-Give me the kitchenary. -
-Give me some food. -
+Bring a drink to a table. 
+Bring a drink to a shelf. 
+Bring a drink to a door. 
+Bring a drink to an appliance. 
+Bring a snack to a seat. 
+Bring a snack to a table. 
+Bring a snack to a shelf. 
+Bring a snack to a door. 
+Bring a snack to an appliance. 
+Bring the kitchenary to a seat. 
+Bring the kitchenary to a table. 
+Bring the kitchenary to a shelf. 
+Bring the kitchenary to a door. 
+Bring the kitchenary to an appliance. 
+Bring some food to a seat. 
+Bring some food to a table. 
+Bring some food to a shelf. 
+Bring some food to a door. 
+Bring some food to an appliance. 
+Carry a drink to a seat. 
+Carry a drink to a table. 
+Carry a drink to a shelf. 
+Carry a drink to a door. 
+Carry a drink to an appliance. 
+Carry a snack to a seat. 
+Carry a snack to a table. 
+Carry a snack to a shelf. 
+Carry a snack to a door. 
+Carry a snack to an appliance. 
+Carry the kitchenary to a seat. 
+Carry the kitchenary to a table. 
+Carry the kitchenary to a shelf. 
+Carry the kitchenary to a door. 
+Carry the kitchenary to an appliance.
+Carry some food to a seat. 
+Carry some food to a table. 
+Carry some food to a shelf. 
+Carry some food to a door. 
+Carry some food to an appliance. 
+Get me a drink. 
+Get me a snack. 
+Get me the kitchenary. 
+Get me some food. 
+Give me a drink. 
+Give me a snack.
+Give me the kitchenary. 
+Give me some food. 
 Point at a seat.
 Point at a table.
 Point at a shelf.
 Point at a door.
 Point at an appliance.
-Go to an exit. -
-Move to an exit. -
-Navigate to an exit. -
-Detect a drink. -
-Detect a snack. -
-Detect the kitchenary. -
-Detect some food. -
-Find a drink. -
-Find a snack. -
-Find the kitchenary. -
-Find some food. -
-Bring a drink to a seat. -
+Go to an exit. 
+Move to an exit. 
+Navigate to an exit. 
+Detect a drink. 
+Detect a snack. 
+Detect the kitchenary.
+Detect some food. 
+Find a drink.
+Find a snack. 
+Find the kitchenary. 
+Find some food. 
+Bring a drink to a seat. 

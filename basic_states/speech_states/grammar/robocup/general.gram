@@ -17,7 +17,7 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 <find>   = (<finditcmd> <determinant> (<item> | <category>));
 <grasp>  = (<graspcommand> (the <item> | it));
 <give>   = (<givecommand> me <determinant> <category>);
-<recognize> = (recognize (him | her));
+<recognize> = (recognize (him | her| me));
 <stay>   = (stop here | wait there);
 <exit> =  (<exitcommand> the apartment);
 

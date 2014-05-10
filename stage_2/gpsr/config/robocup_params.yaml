@@ -20,13 +20,13 @@ location:
 
 it_category:
         drink: ["beer bottle", "fanta", "beer can", "coke", "seven up", "chocolate milk", "energy drink", "orange juice", "milk", "apple juice"]
-        food: [" tomato sauce", "peanut butter", "chicken noodles", "marmalade", "veggie noodles", "garlic sauce "]
-        snack: [" chocolate", "cookies", "drops", "crackers"]
+        food: ["tomato sauce", "peanut butter", "chicken noodles", "marmalade", "veggie noodles", "garlic sauce "]
+        snack: ["chocolate", "cookies", "drops", "crackers"]
         cleaning_stuff: ["deodorant", "tooth paste", "cleaner", "fresh discs", "sponge"]
         kitchenware: ["cook book", "spoon"]
 
 loc_category:
-        table: [" hallway table", "side table", "kitchen table", "bedside table", "dinner table", "couch table"]
+        table: ["hallway table", "side table", "kitchen table", "bedside table", "dinner table", "couch table"]
         shelf: ["bar", "kitchen counter", "cupboard", "dresser", "sideboard", "bookshelf", "pantry", "cabinet "]
         appliance: ["stove", "sink", "fridge", "tv counter"]
         utensils: ["hanger", "umbrella stand", "trash bin", "plant"]
