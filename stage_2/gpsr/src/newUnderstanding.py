@@ -97,7 +97,7 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
         print trees
         print ("=========fi trees========")
         if len(trees) == 0:
-            print 'The sentence is not from CAT1 in the robocup'
+            print 'The sentence is not from CAT1 nor CAT2 in the robocup'
             t = 'unk'
         else:
             for tree in trees:
