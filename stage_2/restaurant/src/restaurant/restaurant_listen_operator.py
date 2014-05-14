@@ -97,14 +97,16 @@ class proces_Tags(smach.State):
 
     def __init__(self):
         smach.State.__init__(self, outcomes=['new_position','finish','aborted', 'preempted'], 
-                                input_keys=["asr_userSaid",'object'],
+                                input_keys=["asr_userSaid", 'asr_userSaid_tags', 'object'],
                                 output_keys=['objectName','objectOrientation'])
-        self.tags = parserGrammar(GRAMMAR_NAME)
+        #self.tags = parserGrammar(GRAMMAR_NAME)
+        
        
 
     def execute(self, userdata):
         rospy.loginfo(OKGREEN+"i'm looking what tags are"+ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
+        #rospy.loginfo(OKGREEN+"TAGS: "+str(self.tags)+ENDC)
         #rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
         #userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
         
@@ -112,46 +114,60 @@ class proces_Tags(smach.State):
             rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
         
+        listTags = userdata.asr_userSaid_tags
+         
+        #Process tags
+        userdata.object_array = []
+        locationValue = [tag for tag in listTags if tag.key == 'direction']
+        objectValue = [tag for tag in listTags if tag.key == 'class']
+     
+        if objectValue and locationValue:
+            userdata.objectOrientation = locationValue[0].value
+            userdata.objectName = objectValue[0].value
+            return 'new_position'  
+        else:
+            rospy.logerr("Object or Location not set")
+            return 'aborted'  
+              
+        #objectValue =          self.tags[0][1]
+        #locationValue = self.tags[1][1]
+        #objectsRecognized=None
+        #locationRecognized=None
+        #phrase = []
         
-        objectValue = self.tags[1][1]
-        locationValue = self.tags[2][1]
-        objectsRecognized=None
-        locationRecognized=None
-        phrase = []
-        
-        phrase = userdata.asr_userSaid.split()
-        rospy.logwarn(str(objectValue))
-        rospy.logwarn(str(locationValue))
-        rospy.logerr(phrase)
-        locationWord=False
-        objectWord=False
-        
-        for word in phrase:
-            
-            if not locationWord:
-                for element in locationValue:
-                    if element == word:
-                        locationRecognized=element
-                        locationWord = True
-                        break
-                    
-            if not objectWord:
-                rospy.logwarn(str(word))
-                for element in objectValue:
-                    if element == word:
-                        objectsRecognized = element
-                        objectWord = True
-                        break
-                    
-            if objectWord and locationWord :
-                userdata.objectName=objectsRecognized
-                userdata.objectOrientation=locationRecognized
-                return 'new_position'
-        
-        if not objectWord or objectsRecognized :
-            return 'aborted'
-      
-        return 'aborted'
+#         phrase = userdata.asr_userSaid.split()
+#         rospy.logwarn(str(objectValue))
+#         rospy.logwarn(str(locationValue))
+#         rospy.logerr(phrase)
+#         locationWord=False
+#         objectWord=False
+#               
+#         for word in phrase:
+#             
+#             if not locationWord:
+#                 for element in locationValue:
+#                     if element == word:
+#                         locationRecognized=element
+#                         locationWord = True
+#                         break
+#                     
+#             if not objectWord:
+#                 rospy.logwarn(str(word))
+#                 for element in objectValue:
+#                     if element == word:
+#                         objectsRecognized = element
+#                         objectWord = True
+#                         break
+#                     
+#             if objectWord and locationWord :
+#                 userdata.objectName=objectsRecognized
+#                 userdata.objectOrientation=locationRecognized
+#                 return 'new_position'
+#         
+#         if not objectWord or objectsRecognized :
+#             return 'aborted'
+#       
+#         return 'aborted'
         
 
 class ListenOperator(smach.StateMachine):

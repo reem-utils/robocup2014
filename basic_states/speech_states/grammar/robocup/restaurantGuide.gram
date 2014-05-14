@@ -5,10 +5,9 @@ grammar restaurantGuide;
 public <basic> = (<locations> | finish | <garbage> ){obj.put("external","1");}; 
 
 
-<locations>= here at your <direction> {obj.put("direction",$.$value);} you have <objects> {obj.put("objects",$.$value);};
+<locations>= here at your <class> {obj.put("class",$.$value);} you have <objects> {obj.put("objects",$.$value);};
 
-
-<objects> = (beverage | snacks | drinks);
+<class> = (beverage | snacks | drinks);
 <direction> = (right | left | back | front);
 
 <garbage>  = <garbage1>;
