@@ -17,6 +17,8 @@ import actionlib
 
 from check_dependences import CheckDependencesState
 from robozoo_sm import RoboZooSM
+
+
 def main():
     rospy.init_node('robozoo')
 
