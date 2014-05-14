@@ -21,7 +21,7 @@ from speech_states.ask_question import AskQuestionSM
 
 # import rospy
 SENTENCE_SAID = '/parsing/sentence' 
-TEST = True
+TEST = False
 if TEST : 
     NUM_LOOPS_TODO = 140 
     NUM_LOOPS_I = 0
