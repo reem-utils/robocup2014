@@ -1,15 +1,13 @@
 ASR_LOOP: True
 ASR_ON: "False"
-sentence0: "get the bottle of Fanta from the kitchen table"
-sentence: "find a person then memorize the person and recognize him"
-sentence2: "grasp the coke bring the coke to business and tell something about yourself"
+sentence: "Take the coke, bring it to the sofa, and introduce yourself"
+sentence1: "Go to the sofa, detect the coke, and get it"
+sentence2: "go to the sofa and follow the person in front of you"
 sentence3: "bring the coke to a sofa"
 sentence4: "grasp the coke bring the coke to bookshelf and tell something about yourself"  
 sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
-sentence8: "Go to the bar, introduce yourself, and follow the person in front of you"
-
 
 
 

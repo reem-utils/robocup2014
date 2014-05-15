@@ -1,17 +1,35 @@
 sp {gp*propose*navigate
    (state <s> ^name gp
               ^robot <r>
-              ^location <l>)
+              ^location <l>
+              ^desired <d>)
    (<r> ^locId <rloc>)
-   (<l> ^id {<> <rloc> <lloc>})
+   (<l> ^id <rrloc>)
+   (<d> ^robot <rr>)
+   (<rr> ^locId {<> <rloc> <rrloc>})
 -->
    (<s> ^operator <op> + =)
    (<op> ^name navigate
-         ^withRob <r>
          ^toLoc <l>)
-#   (<op> ^name deliver
-#         ^toPers <pid>)
 }
+
+#sp {gp*propose*person*navigate
+#   (state <s> ^name gp
+#              ^robot <r>
+#              ^location <l>
+#              ^person <p>
+#              ^desired <d>)
+#   (<r> ^locId <rloc>)
+#   (<l> ^id <ploc>)
+#   (<p> ^id <pid>)
+#   (<d> ^person <pp>)
+#   (<pp> ^id <pid>
+#         ^locId {<> <rloc> <ploc>})
+#-->
+#   (<s> ^operator <op> + =)
+#   (<op> ^name navigate
+#         ^toLoc <l>)
+#}
 
 # sp {gp*propose*navigate*best
 #    (state <s> ^name gp
@@ -103,39 +121,4 @@ sp {gp*apply*navigate*navigate*far
         ^found no
               <val2> -)
 }
-# sp {gp*elaborate*navigate*near
-#    (state <s> ^name gp
-#               ^person <p>)
-#    (<p> ^near {<val> no})
-# -->
-#    (<p> ^near <val> -)
-# }
 
-# sp {gp*elaborate*navigate*far
-#    (state <s> ^name gp
-#               ^person <p>
-#               ^robot <r>
-#               ^location.id <ploc>)
-#    (<p> ^near yes
-#         ^locId <ploc>)
-#    (<r> ^locId { <> <ploc> <rloc>})
-# -->
-#    (<p> ^near no
-#               yes -)
-# }
-
-# sp {gp*propose*deliver
-#     (state <s> ^name gp)
-#  -->
-#    (<s> ^operator <op> + >)
-#     (<op> ^name deliver)
-# }
-
-
-# sp {gp*apply*deliver
-#    (state <s> ^operator <op> +
-#               ^io.output-link <out>)
-#    (<op> ^name deliver) 
-# -->
-#    (<out> ^deliver.pers 1)
-# }

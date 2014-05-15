@@ -136,7 +136,7 @@ class point_to_poi(smach.StateMachine):
 
             # We get current coodenades of robot in userdata 'current_robot_pose', 'current_robot_yaw', 'pose_current'
             smach.StateMachine.add('get_yaw',
-               calculateYaw(),
+               calculateYaw(), #output ['desired_angle']
                transitions={'succeeded': 'turn', 'aborted': 'aborted', 'preempted': 'aborted'})
                 
             # Turn to face poi
