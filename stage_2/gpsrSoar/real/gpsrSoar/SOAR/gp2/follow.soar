@@ -18,34 +18,53 @@ sp {gp*propose*follow
          ^withRob <r>)
 }
 
-sp {gp*apply*follow
-   (state <s> ^operator <op>
-              ^io.output-link <out>)
-   (<op> ^name follow
-         ^toPers <pop>)
-   (<pop> ^id <pid>)
--->
-   (<out> ^follow.pers <pid>)
-}
+#sp {gp*propose*navigate*follow
+#   (state <s> ^name gp 
+#              ^location <l> 
+#              ^robot <r> 
+#              ^person <p> 
+#              ^desired <d>) 
+#   (<l> ^id <ploc>) 
+#   (<r> ^locId <rloc>) 
+#   (<p> ^id <pid> 
+#        ^locId {<> <ploc> <rloc>}) 
+#   (<d> ^name follow 
+#        ^person <dp>) 
+#   (<dp> ^id <pid>) 
+#--> 
+#   (<s> ^operator <op> + >) 
+#   (<op> ^name navigate 
+#         ^toLoc <l>) 
+#} 
 
-sp {gp*apply*follow*remove-follow
-   (state <s> ^io.output-link <out>
-              ^operator <op>
-              ^person <p>
-              ^robot <r>)
-   (<out> ^follow <st>)
-   (<st> ^status complete
-         ^pers <pid>)
-   (<op> ^name follow
-         ^toPers <pop>)
-   (<pop> ^id <pid>)
-   (<p> ^id <pid>
-        ^followed <pf>
-        ^near <pn>)
--->
-   (<p> ^followed yes
-                  <pf> -
-        ^near yes
-              <pn> -)
-   (<out> ^follow <st> -)
-}
+sp {gp*apply*follow 
+   (state <s> ^operator <op> 
+              ^io.output-link <out>) 
+   (<op> ^name follow 
+         ^toPers <pop>) 
+   (<pop> ^id <pid>) 
+--> 
+   (<out> ^follow.pers <pid>) 
+} 
+
+sp {gp*apply*follow*remove-follow 
+   (state <s> ^io.output-link <out> 
+              ^operator <op> 
+              ^person <p> 
+              ^robot <r>) 
+   (<out> ^follow <st>) 
+   (<st> ^status complete 
+         ^pers <pid>) 
+   (<op> ^name follow 
+         ^toPers <pop>) 
+   (<pop> ^id <pid>) 
+   (<p> ^id <pid> 
+        ^followed <pf> 
+        ^near <pn>) 
+--> 
+   (<p> ^followed yes 
+                  <pf> - 
+        ^near yes 
+              <pn> -) 
+   (<out> ^follow <st> -) 
+} 

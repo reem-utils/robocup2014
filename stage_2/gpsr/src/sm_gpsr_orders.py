@@ -22,9 +22,10 @@ from speech_states.ask_question import AskQuestionSM
 # import rospy
 SENTENCE_SAID = '/parsing/sentence' 
 TEST = False
+TEST_SENTENCE = "cat1Sentences/sentence"
 if TEST : 
     NUM_LOOPS_TODO = 140 
-    NUM_LOOPS_I = 0
+    NUM_LOOPS_I = 0 # --> vai per la 70
 else: 
     NUM_LOOPS_TODO = 3
     NUM_LOOPS_I = 0
@@ -80,7 +81,7 @@ class init_parameters(smach.State):
         self.loop= NUM_LOOPS_I
     def execute(self, userdata):
         if TEST == True:
-            aux = "cat1Sentences/sentence"+str(self.loop)
+            aux = TEST_SENTENCE+str(self.loop)
             rospy.logwarn("--------- " + aux + " ---------")
             self.loop = self.loop + 1        
             userdata.o_sentence = rospy.get_param(aux)#SENTENCE_SAID)#'/parsing/sentence')
