@@ -1,11 +1,11 @@
 #JSGF V1.0;
 grammar minimals;
 
-public <basic> = (<actioncat2> | <goto> [and] <middleaction> [and] <finalaction>) | <garbage>;
+public <basic> = ( <goto> [and] <middleaction> [and] <finalaction> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
 
 <actioncat2>      = <bringsome> <category> from a <loccategory>;
-
+<actioncat3>      = <bringme> <item> from the <location>;
 <middleaction>    = <goto> | <findp> | <grasp>;
 <finalaction>     = <goto> | <leave> | <guide> | <bringit> | <introduce>;
 
@@ -19,8 +19,9 @@ public <basic> = (<actioncat2> | <goto> [and] <middleaction> [and] <finalaction>
 
 
 <gocommand>     = move;
-<bringsome> = bring me some;
+<bringsome>     = bring me some;
 <bringcommand>  = bring | put;
+<bringme>       = bring me the;
 <findcommand>   = find;
 <graspcommand>  = grasp;
 
