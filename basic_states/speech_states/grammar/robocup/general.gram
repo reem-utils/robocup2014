@@ -1,8 +1,7 @@
 #JSGF V1.0;
 grammar general;
 
-
-public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <action>)) | <garbage>;
+public <basic> = <action> <garbage2> | <action> [then] [and] <action> [and] [then] <action> <garbage2> | <garbage>;
 
 
 <action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
