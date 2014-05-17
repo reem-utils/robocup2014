@@ -196,7 +196,7 @@ class gpsrASAction(object):
     if TEST:
         errorfilepath = roslib.packages.get_pkg_dir("gpsr") + "/config/"
         error = errorfilepath + "error.txt"
-        targfile = open(error, 'w')
+        self.targfile = open(error, 'w')
         
   def execute_cb(self, goal):
     self._goalDonei = 0  #contador de goals
@@ -218,7 +218,7 @@ class gpsrASAction(object):
         
         if TEST:
             rospy.logerr("THE SENTENCE IS: "+str(self._goal.orderList)+"\n")
-            targfile.write(str(self._goal.orderList)+"\n")
+            self.targfile.write(str(self._goal.orderList).replace('\n','\t').replace(',','\n')+"\n\n")
       else: 
         if len(self._goal.orderList) == self._goalDonei:
           self._result.outcome = 'succeeded'
@@ -328,6 +328,8 @@ class gpsrASAction(object):
     if (command.action == 'memorize' or command.action == 'recognize'):
       command.person = self._world.person.id
 
+    if (idx2obj(int(self._world.person.id), 'PERSONS') == 'person'): #prova per coneguir
+      self._world.person.locId = self._world.robot.locId
 
     self._last_goal = compileInit(locations=locc, persons=perss, items=itt, oaction=command.action, 
                                   oitem=i, operson=p, olocation=l, current_world=self._world)

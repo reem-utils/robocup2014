@@ -5,11 +5,11 @@ sp {gp*propose*deliver
                ^person <p>  
                ^object <o>         
                ^desired <d>)
-    (<l> ^id <ploc>)
-    (<r> ^locId <ploc>
+    (<l> ^id <rloc>)
+    (<r> ^locId <rloc>
          ^obj1Id <oid>)
     (<p> ^id <pid>
-         ^locId <ploc>
+         ^locId <rloc>
          ^obj1Id -1
          ^found yes)
     (<o> ^id <oid>
