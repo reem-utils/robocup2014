@@ -1,13 +1,13 @@
 #JSGF V1.0;
 grammar minimals;
 
-public <basic> = ( <goto> [and] <middleaction> [and] <finalaction> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
+public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
-
+<actioncat1>      = <goto> [and] <secondaction>;
 <actioncat2>      = <bringsome> <category> from a <loccategory>;
 <actioncat3>      = <bringme> <item> from the <location>;
-<middleaction>    = <goto> | <findp> | <grasp>;
-<finalaction>     = <goto> | <leave> | <guide> | <bringit> | <introduce>;
+    
+<secondaction>    = <goto> [and] ( <goto> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
 
 <goto>      = <gocommand> to the (<location> | <loccategory>);
 <leave>     = leave the apartment;
