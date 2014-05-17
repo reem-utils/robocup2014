@@ -29,14 +29,14 @@ class PrintUserdataPose(smach.State):
         return 'succeeded'
 
 def main():
-    rospy.loginfo('Main Get Current Position')
-    rospy.init_node('get_current_position')
+    rospy.loginfo('Play Motion Training Node')
+    rospy.init_node('play_motion_training_node')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_motion_to_play = 'give_object_right'
+        sm.userdata.manip_motion_to_play = 'arms_t'
         sm.userdata.manip_time_to_play = 8.0
         smach.StateMachine.add(
-            'dummy_state',
+            'play_motion_state',
             play_motion_sm(),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 

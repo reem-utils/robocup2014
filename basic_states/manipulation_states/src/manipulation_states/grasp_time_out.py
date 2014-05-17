@@ -20,14 +20,14 @@ from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 from smach_ros.simple_action_state import SimpleActionState
 from manipulation_states.play_motion_sm import play_motion_sm
-from speech_states.say import text_to_say
 from manipulation_states.move_hands_form import move_hands_form
 
 import time
 
 time_First = True
 
-class DummyStateMachine(smach.State):
+#This Class must be replaced by the actual GRASPING
+class DummyStateMachine(smach.State): 
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[]) 
@@ -81,20 +81,21 @@ class grasping_with_timeout(smach.StateMachine):
     """
     Executes a SM that: 
         Executes the Grasping SM (Object detection + Grasping)
-        Calculates the time_out.
+        And has a time_out 
         
     Required parameters: None
     
-    Optional parameters: None
+    Optional parameters: 
+        @param in_ttl:  indicates the maximum grasping time (or by userdata)
     
     Input keys:
         @key object_to_grasp: indicates the object's name we want to grasp.            
-        @key time_out_grasp: indicates the maximum grasping time
+        @key time_out_grasp: indicates the maximum grasping time (or by parameters)
     Output keys:
         @key standard_error: Error
     """
         
-    def __init__(self):
+    def __init__(self, in_ttl):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'time_out'], 
                                     input_keys=['object_to_grasp', 'time_out_grasp'],
                                     output_keys=['standard_error'])
@@ -109,14 +110,15 @@ class grasping_with_timeout(smach.StateMachine):
                                         outcome_cb = out_cb)
 
             with sm_conc:
+                #Needs to be replaced by the actual Find_and_grasp_object SM
                 sm_conc.add(
-                    'Find_and_grab_object',
+                    'Find_and_grasp_object',
                     #Find_and_grab_object(),
                     DummyStateMachine())
                 
                 sm_conc.add(
                             'Time_State',
-                            Time_State(ttl=5.0))
+                            Time_State(ttl=in_ttl))
                 
             smach.StateMachine.add('GRASP_CONCURRENCE',
                                    sm_conc,
