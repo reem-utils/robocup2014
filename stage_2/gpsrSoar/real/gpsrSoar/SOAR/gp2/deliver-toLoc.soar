@@ -2,39 +2,58 @@ sp {gp*propose*deliverToLoc
    (state <s> ^name gp
               ^location <l>
               ^robot <r>
-              ^object <o>                       
+              ^object <o>
               ^desired <d>)
-    (<l> ^id <rloc>)
-    (<r> ^locId <rloc>
-         ^obj1Id <oid>)
+    (<l> ^id <oloc>)
+    (<r> ^obj1Id <oid>)
     (<o> ^id <oid>
+         ^locId <oloc>
          ^grasped yes
          ^delivered no)
     (<d> ^object <do>)
     (<do> ^id <oid>
-          ^locId <rloc>)
+          ^delivered yes)
  -->
-   (<s> ^operator <op> + >)
+    (<s> ^operator <op> + >)
     (<op> ^name deliver
           ^toLoc <l>)
 }
 
+#sp {gp*propose*deliverToLoc
+#   (state <s> ^name gp
+#              ^location <l>
+#              ^robot <r>
+#              ^object <o>                       
+#              ^desired <d>)
+#    (<l> ^id <rloc>)
+#    (<r> ^locId <rloc>
+#         ^obj1Id <oid>)
+#    (<o> ^id <oid>
+#         ^grasped yes
+#         ^delivered no)
+#    (<d> ^object <do>)
+#    (<do> ^id <oid>
+#          ^locId <rloc>)
+# -->
+#   (<s> ^operator <op> + >)
+#    (<op> ^name deliver
+#          ^toLoc <l>)
+#}
+
 sp {gp*propose*navigate*deliverToLoc
    (state <s> ^name gp
               ^location <l>
-              ^robot <r>
               ^object <o>                       
-              ^desired <d>)
+              ^desired <d>
+              ^robot <r>)
     (<l> ^id <iloc>)
-    (<r> ^id 1
-         ^locId {<> <iloc> <rloc>}
-         ^obj1Id <oid>)
     (<o> ^id <oid>
          ^grasped yes)
-         #^delivered no)
     (<d> ^object <do>)
     (<do> ^id <oid>
           ^locId <iloc>)
+    (<r> ^locId {<> <iloc> <rloc>}
+         ^obj1Id <oid>)
  -->
    (<s> ^operator <op> + >)
     (<op> ^name navigate

@@ -1,0 +1,35 @@
+<launch>
+
+  <arg name="classifiers_path" value="$(find pal_person)/classifiers" /> 
+  <arg name="verbose_publishing" default="True"/> <!-- If false the node will only publish when there is some person detected -->
+  <arg name="test_image"       value="$(find pal_person)/etc/fullbody_
+detector_test.jpg" />
+
+  <node name="fullbody_2d_detector" pkg="pal_detector_2d_node" type="detector_2d_node" args="$(arg classifiers_path) $(arg verbose_publishing) $(arg test_image)">
+    <rosparam>
+      image_topic:           "stereo/left/image"
+      rate:                  6
+      processing_img_width:  320
+      processing_img_height: 240
+      detector:              "PAL_Haar_fullbody_classifier.xml"
+      detector_type:         "CV_CASCADE"
+      refiner:               "PAL_cvHog_fullbody_classifier.txt"
+      refiner_type:          "PAL_ADABOOST_CASCADE"
+      min_detection_width:   35
+      min_detection_height:  70
+      max_detection_width:   100
+      max_detection_height:  200
+      horizon_line:          120     <!-- bottom line of bounding boxes will have to be below this line -->
+      only_largest:          False
+      store_camera_pose:     True
+
+      camera_frame:          "/stereo_optical_frame"
+      reference_frame:       "/base_link"
+      <!-- Params related to status reporting to supervisor -->
+      report_diagnostics:    True
+
+      functionality:         "Person detection"   <!-- see pal_core/src/qa/supervisor/errorCodes/FunctionalityErrorCodes.cpp -->
+      expected_detections:   2
+    </rosparam>
+  </node>
+</launch>
