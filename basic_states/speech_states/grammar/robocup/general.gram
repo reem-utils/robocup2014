@@ -43,15 +43,7 @@ public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <ac
 
 <category> = (drink | food | kitchenware | snack);
 
-<<<<<<< HEAD
 <loccategory> = (table | shelf | appliance | utensils | seat | seating | door);
-
-#<sentence>   = (hello | greetings | goodbye | your name);
-=======
-<sentence>   = (hello | greetings | goodbye | your name);
->>>>>>> cef43b8357eadf0a65f4272e9aad6d18f36e1ce4
-
-
 
 <garbage>  = <garbage2>;
 
