@@ -3,13 +3,13 @@ grammar minimals;
 
 public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
-<actioncat1>      = <goto> [and] <secondaction>;
+<actioncat1>      = <golocation> [and] <secondaction>;
 <actioncat2>      = <bringsome> <category> from a <loccategory>;
 <actioncat3>      = <bringme> <item> from the <location>;
-    
-<secondaction>    = <goto> [and] ( <goto> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
 
-<goto>      = <gocommand> to the (<location> | <loccategory>);
+<secondaction>    = <golocation> [and] ( <golocation> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
+
+<golocation>= <gocommand> to the <location>;
 <leave>     = leave the apartment;
 <bringit>   = <bringcommand> it <preposition> [the] (me | <location>);
 <findp>     = <findcommand> a person;
