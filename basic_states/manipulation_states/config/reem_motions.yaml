@@ -1,5 +1,18 @@
 play_motion:
   motions:
+    point_forward:
+      joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
+        arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
+        arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
+        arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
+      points:
+      - positions: [0.0, 0.0, 0.0, 0.0, 1.21172585206, -0.061557484195, -0.434741686434, 0.635339221437, -1.71909669349, -0.360438252111, 2.07451992554, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0, 0.0]
+        time_from_start: 0.0
+      meta:
+        name: Point_Forward
+        usage: posture
+        description: Pointing left arm forward
     Macarena:
       joints: [torso_1_joint, torso_2_joint, head_1_joint, head_2_joint, arm_left_1_joint,
         arm_left_2_joint, arm_left_3_joint, arm_left_4_joint, arm_left_5_joint, arm_left_6_joint,
