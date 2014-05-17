@@ -1,41 +1,41 @@
 #JSGF V1.0;
-grammar general;
+grammar minimals;
+
+public <basic> = (<actioncat2> | <goto> [and] <middleaction> [and] <finalaction>) | <garbage>;
 
 
-public <basic> = ((<fetchcat2>) | (<action> [and] <action> [and] <action>)) | <garbage>;
+<actioncat2>      = <bringsome> <category> from a <loccategory>;
 
+<middleaction>    = <goto> | <findp> | <grasp>;
+<finalaction>     = <goto> | <leave> | <guide> | <bringit> | <introduce>;
 
-<action> = <goto> | <fetch> | <bringit> | <findp> | <find> | <grasp> | <introduce>;
-<goto>   = <gocommand> to <determinant> (<location>|<loccategory>);
-<fetch>  = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
-<fetchcat2> = <fetchcommand> me some <category> from a <loccategory>;
-<bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
-<findp>  = <findcommand> a person;
-<find>   = <finditcmd> <determinant> (<item> | <category>);
-<grasp>  = <graspcommand> (the <item> | it);
+<goto>      = <gocommand> to the (<location> | <loccategory>);
+<leave>     = leave the apartment;
+<bringit>   = <bringcommand> it <preposition> [the] (me | <location>);
+<findp>     = <findcommand> a person;
+<guide>     = guide it to the exit;
+<grasp>     = <graspcommand> the <item>;
 <introduce> = introduce yourself;
 
 
-<gocommand>   = go | move | navigate;
-<fetchcommand>= retrieve | bring;
-<bringcommand>= bring | carry;
-<getcommand>  = retrieve | get | bring;
-<findcommand> = find;
-<finditcmd>   = detect | find | identify;
-<graspcommand>= get | take | grasp;
+<gocommand>     = move;
+<bringsome> = bring me some;
+<bringcommand>  = bring | put;
+<findcommand>   = find;
+<graspcommand>  = grasp;
 
-<determinant> = the | an | a | some;
+<preposition>   = in | to;
 
 
-<person> = albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather;
+<person> = Michael | Christopher | Matthew | Joshua | Daniel | David | Andrew | James | Justin | Joseph | Jessica | Ashley | Brittany | Amanda | Samantha | Sarah | Stephanie | Jennifer | Elizabeth | Lauren;
 
-<location> = charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table;
+<location> = bench | hallway table | bar | side table | kitchen table | kitchen counter | stove | bed | dresser | side board | bookshelf | pantry | cabinet | dinner table | couch table;
 
-<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | spoons | glass;
+<item> = deodorant | tooth paste | cleaner | fresh discs | sponge | fanta | beer can | coke | seven up | energy drink | orange juice | milk | apple juice | tomato sauce | peanut butter | chicken noodles | marmalade | veggie noodles | garlic sauce | chocolate | cookies | drops | crackers;
 
-<category> = drink | leaning stuff | food | snack;
+<category> = cleaning stuff | drink | food | snack;
 
-<loccategory> = table | shelf | appliance | utensil | seat | seating | door;
+<loccategory> = seating | table | utensils | appliance | shelf;
 
 <garbage>  = <garbage2>;
 
