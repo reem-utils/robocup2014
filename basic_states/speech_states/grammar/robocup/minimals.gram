@@ -1,0 +1,49 @@
+#JSGF V1.0;
+grammar general;
+
+
+public <basic> = ((<fetchcat2>) | (<action> [and] <action> [and] <action>)) | <garbage>;
+
+
+<action> = <goto> | <fetch> | <bringit> | <findp> | <find> | <grasp> | <introduce>;
+<goto>   = <gocommand> to <determinant> (<location>|<loccategory>);
+<fetch>  = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
+<fetchcat2> = <fetchcommand> me some <category> from a <loccategory>;
+<bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
+<findp>  = <findcommand> a person;
+<find>   = <finditcmd> <determinant> (<item> | <category>);
+<grasp>  = <graspcommand> (the <item> | it);
+<introduce> = introduce yourself;
+
+
+<gocommand>   = go | move | navigate;
+<fetchcommand>= retrieve | bring;
+<bringcommand>= bring | carry;
+<getcommand>  = retrieve | get | bring;
+<findcommand> = find;
+<finditcmd>   = detect | find | identify;
+<graspcommand>= get | take | grasp;
+
+<determinant> = the | an | a | some;
+
+
+<person> = albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather;
+
+<location> = charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table;
+
+<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | spoons | glass;
+
+<category> = drink | leaning stuff | food | snack;
+
+<loccategory> = table | shelf | appliance | utensil | seat | seating | door;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+
