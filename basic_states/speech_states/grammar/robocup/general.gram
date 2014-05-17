@@ -2,48 +2,49 @@
 grammar general;
 
 
-public <basic> = (((<action>) | (<action> [then] [and] <action> [and] [then] <action>)) | <garbage>);
+public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <action>)) | <garbage>;
 
 
-<action> = (<goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <exit>);
+<action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
 
-<goto>   = (<gocommand> to <determinant> (<location>|<loccategory>));
-<fetch>  = (<fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>));
-<bringit>= (<bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>));
-<askname>= (memorize the person | ask the person name);
-<findp>  = (<findcommand> a person);
-<get>    = (<getcommand> ([the] <item> | it ));
-<follow> = ((follow (the person in front of you) ) );
-<find>   = (<finditcmd> <determinant> (<item> | <category>));
-<grasp>  = (<graspcommand> (the <item> | it));
-<give>   = (<givecommand> me <determinant> <category>);
-<recognize> = (recognize (him | her| me));
-<stay>   = (stop here | wait there);
-<exit> =  (<exitcommand> the apartment);
-
-
-<gocommand>   = (go | move | navigate);
-<fetchcommand>= (retrieve | bring);
-<bringcommand>= (bring | carry);
-<getcommand>  = (retrieve | get | bring);
-<findcommand> = (find);
-<finditcmd>   = (detect | find | identify);
-<graspcommand>= (get | take | grasp);
-<givecommand> = (give | get);
-<exitcommand> = (exit | leave);
-
-<determinant> = (the | an | a | some);
+<goto>   = <gocommand> to <determinant> (<location>|<loccategory>);
+<fetch>  = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
+<bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
+<askname>= memorize the person | ask the person name;
+<findp>  = <findcommand> a person;
+<get>    = <getcommand> ([the] <item> | it );
+<follow> = follow the person in front of you;
+<find>   = <finditcmd> <determinant> (<item> | <category>);
+<grasp>  = <graspcommand> (the <item> | it);
+<give>   = <givecommand> me <determinant> <category>;
+<recognize> = recognize (him | her| me);
+<introduce> = tell something about yourself | introduce yourself;
+<stay>   = stop here | wait there;
+<exit> =  <exitcommand> the apartment;
 
 
-<person> = ( albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather );
+<gocommand>   = go | move | navigate;
+<fetchcommand>= retrieve | bring;
+<bringcommand>= bring | carry;
+<getcommand>  = retrieve | get | bring;
+<findcommand> = find;
+<finditcmd>   = detect | find | identify;
+<graspcommand>= get | take | grasp;
+<givecommand> = give | get;
+<exitcommand> = exit | leave;
 
-<location> = ( charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table );
+<determinant> = the | an | a | some;
 
-<item> = ( cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | yoghurt | spoons | glass );
 
-<category> = (drink | food | kitchenware | snack);
+<person> = albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather;
 
-<loccategory> = (table | shelf | appliance | utensils | seat | seating | door);
+<location> = charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table;
+
+<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | spoons | glass;
+
+<category> = drink | food | kitchenware | snack;
+
+<loccategory> = table | shelf | appliance | utensils | seat | seating | door;
 
 <garbage>  = <garbage2>;
 
