@@ -4,7 +4,7 @@ grammar followme;
 
 public <basic> = (  <follow> {obj.put("action","follow");} | <garbage> ) {obj.put("external","1");}; 
 
-<follow> = (follow me | come | come with me | lets go | exit); 
+<follow> = follow me  | exit; 
 
 <garbage>  = <garbage2>;
 
