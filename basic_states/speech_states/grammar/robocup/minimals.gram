@@ -4,8 +4,8 @@ grammar minimals;
 public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
 <actioncat1>      = <golocation> [and] <secondaction>;
-<actioncat2>      = <bringsome> <category> from a <loccategory>;
-<actioncat3>      = <bringme> <item> from the <location>;
+<actioncat2>      = <bringsome> <category> from <loccategory>;
+<actioncat3>      = <bringme> <item> from [the] <location>;
 
 <secondaction>    = <golocation> [and] ( <golocation> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
 
@@ -14,7 +14,7 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 <bringit>   = <bringcommand> it <preposition> [the] (me | <location>);
 <findp>     = <findcommand> a person;
 <guide>     = guide it to the exit;
-<grasp>     = <graspcommand> the <item>;
+<grasp>     = <graspcommand> [the] <item>;
 <introduce> = introduce yourself;
 
 
@@ -36,7 +36,10 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 
 <category> = cleaning stuff | drink | food | snack;
 
-<loccategory> = seating | table | utensils | appliance | shelf;
+<loccategory> = <aloccategory> | <anloccategory>;
+<aloccategory> = a seating | a table | a shelf;
+<anloccategory> = an utensils | an appliance;
+
 
 <garbage>  = <garbage2>;
 
