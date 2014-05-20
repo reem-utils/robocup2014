@@ -2,11 +2,15 @@
 
 grammar bring;
 
-public <basic> = (  (<bringcmd> [<person>] {obj.put("person",$.$value)} [the] <objects> {obj.put("object",$.$value);}) | <objects> {obj.put("object",$.$value);} | <garbage>  ) {obj.put("external","1");}; 
+public <basic> = (  (<bringcmd> [<person>] {obj.put("person",$.$value)} <objects> {obj.put("object",$.$value);}) | <objects> {obj.put("object",$.$value);} | <garbage>  ) {obj.put("external","1");}; 
 
 <bringcmd> = ((bring) {obj.put("action","bring");});
 <person> = me ;
-<objects> = red bull | coke | juice | beer | water | wine;
+<objects> = <aobject> | <anobject> | <object>;
+
+<aobject>  = a red bull | a coke | a beer;
+<anobject> = an apple juice;
+<object>   = juice | beer | water | wine;
 
 <garbage>  = <garbage2>;
 
