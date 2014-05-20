@@ -2,13 +2,13 @@
 
 grammar locations;
 
-public <basic> = (  ([it] [is] [<prep>] [<determinant>] <location> {obj.put("location",$.$value);} ) | <garbage> ) ; 
+public <basic> = ([it] [is] [<prep>] [<determinant>] <location> {obj.put("location",$.$value);} ) | <garbage>; 
 
-<prep> = (in | at | on | by);
+<prep> = in | at | on | by;
 
-<determinant> = (a | an | the | some | one);
+<determinant> = a | an | the | some | one;
 
-<location> = ( bench | (hallway table) | hanger | (umbrella stand) | bar | (side table) | (kitchen table) | (kitchen counter) | stove | (trash bin) | cupboard | sink | fridge | bed | dresser | sideboard | (bedside table) | bookshelf | pantry | cabinet | (dinner table) | (couch table) | (arm chair) | sofa | (tv counter) |  plant );
+<location> = bench | hallway table | hanger | umbrella stand | bar | side table | kitchen table | kitchen counter | stove | trash bin | cupboard | sink | fridge | bed | dresser | sideboard | bedside table | bookshelf | pantry | cabinet | dinner table | couch table | arm chair | sofa | tv counter |  plant ;
 
 <garbage>  = <garbage2>;
 
