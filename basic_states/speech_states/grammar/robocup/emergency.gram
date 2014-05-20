@@ -2,7 +2,7 @@
 
 grammar bring;
 
-public <basic> = (  (<bringcmd> [<person>] {obj.put("person",$.$value)} [the] <objects> {obj.put("object",$.$value);} ) | <garbage> ) {obj.put("external","1");}; 
+public <basic> = (  (<bringcmd> [<person>] {obj.put("person",$.$value)} [the | a] <objects> {obj.put("object",$.$value);} ) | <garbage> ) {obj.put("external","1");}; 
 
 <bringcmd> = ((bring) {obj.put("action","bring");});
 <person> = me ;
