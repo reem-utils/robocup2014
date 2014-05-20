@@ -2,14 +2,14 @@
 
 grammar restaurantGuide;
 
-public <basic> = (<locations> | finish | <garbage> ){obj.put("external","1");}; 
+public <basic> = (<locations> | finish ) | <garbage> {obj.put("external","1");}; 
 
 
 <locations>= here at your <direction> {obj.put("direction",$.$value);} you have <objects> {obj.put("objects",$.$value);};
 
 
-<objects> = (beverage | snacks | drinks);
-<direction> = (right | left | back | front);
+<objects> = beverage | snacks | drinks;
+<direction> = right | left | back | front;
 
 <garbage>  = <garbage1>;
 
