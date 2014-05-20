@@ -56,15 +56,17 @@ sp {gp*apply*search-person*remove-search-person
    (<rloc> ^id <rlocid>)
    (<pop> ^id <popid>)
    (<p> ^id <popid>
-        ^locId <plocid>)
+        ^locId <plocid>
+        ^near no)
    
    (<out> ^search-person <st>)
    (<st> ^status complete)
 -->
    (<p> ^found yes
-               no -)
-   (<p> ^locId <rlocid>
-                <plocid> -)
+               no -
+        ^locId <rlocid>
+                <plocid> -
+        ^near yes)
 
    (<out> ^search-person <st> -)
 }

@@ -17,3 +17,7 @@ situation: The refrigerator is closed, but there is a soda can inside
 question: Robot, get the soda can from the refrigerator
 situation: There are 5 persons in the living room, John is NOT one of them
 question: Robot, go to the living room and point at John
+
+
+#GRAMAR!!! no entendrem res si hem diuen barbaritats
+

@@ -225,11 +225,13 @@ class orderList():
         # not implemented: must be set the list of word topics to find and in which grammar
         # wordlist = grammarFileReader(wordset,path)
         # grammarFileWriter(wordlist)
-        
+        pervious_person = ''
+        person = ''
         for c in commands:
             o = orders()
             action = ''
             item = ''
+            pervious_person = person
             person = ''
             location = ''
             for prod in c.productions():
@@ -248,6 +250,8 @@ class orderList():
                         item = self.actionSet[len(self.actionSet)-1].item
                     elif r == 'me':
                         person = 'referee'
+                    elif r == 'him':
+                        person = pervious_person
                 elif s == 'FROM': # could be cleaned
                     if action == 'bring':
                         action = 'bring_from'
@@ -260,10 +264,16 @@ class orderList():
             if action == 'exit' or action == 'leave':
                 action = 'go_to'
                 location = 'exit'
-            if action == 'bring':
+            
+            try:
+                action=acts[action]
+            except:
+                action=action
+                
+            if action == 'bring' or action == 'bring_from':
                 if person == '':
-                    person == 'referee'
-            print action
+                    person = 'referee'
+            print action + person
             try:
                 o.define_order(action1=acts[action], item1=item, person1=person, location1=location)
             except KeyError:

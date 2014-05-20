@@ -1,16 +1,15 @@
 sp {gp*propose*deliver
     (state <s> ^name gp
-               ^desired <d>
-               ^robot <r>
-               ^location <l>
-               ^person <p>
-               ^object <o>)
-    (<l> ^id <ploc>)
-    (<r> ^id 1
-         ^locId <ploc>
+               ^location <l> 
+               ^robot <r>   
+               ^person <p>  
+               ^object <o>         
+               ^desired <d>)
+    (<l> ^id <rloc>)
+    (<r> ^locId <rloc>
          ^obj1Id <oid>)
     (<p> ^id <pid>
-         ^locId <ploc>
+         ^locId <rloc>
          ^obj1Id -1
          ^found yes)
     (<o> ^id <oid>
@@ -27,14 +26,13 @@ sp {gp*propose*deliver
 
 sp {gp*propose*navigate-to*deliver
     (state <s> ^name gp
-               ^desired <d>
-               ^robot <r>
                ^location <l>
+               ^robot <r>
                ^person <p>
-               ^object <o>)
+               ^object <o>
+               ^desired <d>)
     (<l> ^id <ploc>)
-    (<r> ^id 1
-         ^locId {<> <ploc> <rloc>}
+    (<r> ^locId {<> <ploc> <rloc>}
          ^obj1Id <oid>)
     (<p> ^id <pid>
          ^locId <ploc>
@@ -64,8 +62,8 @@ sp {gp*apply*deliver
 }
 
 sp {gp*apply*deliver*remove-deliver
-   (state <s> ^operator <op>
-              ^io.output-link <out>
+   (state <s> ^io.output-link <out>
+              ^operator <op>
               ^person <p>
               ^object <o>
               ^robot <r>)
@@ -74,7 +72,6 @@ sp {gp*apply*deliver*remove-deliver
          ^pers <pid>)
    (<p> ^id <pid>
         ^obj1Id <poid>)
-#   (<op> ^id <pid>)
    (<o> ^id <oid>
         ^delivered <val>)
    (<r> ^id 1

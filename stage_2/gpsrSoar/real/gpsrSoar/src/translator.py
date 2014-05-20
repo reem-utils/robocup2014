@@ -14,7 +14,7 @@ PERSONS = NAMES
 # items = ['q', 'w', 'e', 'r']
 
 def obj2idx(Object, List):
-    return globals()[List].index(Object)
+    return globals()[List].index(Object.replace(' ', '_'))
 
 def idx2obj(Index, List):
     return globals()[List][Index]

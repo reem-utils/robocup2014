@@ -13,11 +13,12 @@ from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 
 from speech_states.say import text_to_say
+from sm_gpsr_orders import TEST
 
 #TODO: find_person import FindPersonSM
 #TODO: complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
 #TODO: search_object_with_confidence import SearchObjectWithConfidenceStateMachine as SearchObjSM
-from navigation_states import nav_to_poi #navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
+from navigation_states.nav_to_poi import nav_to_poi #navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
 # from pal_smach_utils.navigation.follow_and_stop import FollowAndStop as FollowMeSM
 #TODO: learn_face import LearnFaceStateMachine as LearnPersonSM
 #from pal_smach_utils.utils.point_at import SMPointInFront as PointAtSM
@@ -27,6 +28,24 @@ from navigation_states import nav_to_poi #navigation.move_to_room import MoveToR
 #TODO: sound_action import SpeakActionState <-- listen to
 
 #edit your path in gpsrSoar/src/pathscript.py
+
+'''
+SKILLS TODO:
+
+go_to (poi)
+grasp    (object)
+bring_to(person)
+bring_to_loc(poi)
+find_object(object)
+fins_person(person)
+point_at(poi)
+ask_name()
+follow(person)
+introduce_me()
+learn_person(person)
+recognize_person(person)
+
+'''
 
 try:
     from pathscript import *
@@ -51,16 +70,19 @@ except ImportError:
     sys.path.append(path)
     import Python_sml_ClientInterface as sml
 
-SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar" #previously gp2
-
-
+SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar"
+if TEST:
+    SLEEP_TIME = 0
+else:
+    SLEEP_TIME = 3
+    
 class dummy(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
     def execute(self, userdata):
         return 'succeeded'
         
-class speaker(smach.StateMachine):
+class speaker(smach.StateMachine): 
     
     
     def __init__(self, text=None):
@@ -75,8 +97,8 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                 'SaySM',
-                text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
-                #dummy(),
+                #text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                dummy(),
                 transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
 
@@ -103,38 +125,15 @@ def call_go_to(loc_name):
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_go_to')
-    time.sleep(3)  
+    rospy.logwarn('call_go_to '+ loc_name)
+    #############################################################################
+    '''sm = nav_to_poi(poi_name = loc_name)
+    sm.execute()'''
+    #############################################################################
+    time.sleep(SLEEP_TIME)  
     return "succeeded" 
-    
-def call_exit(): #TODO well
-    '''    out = aborted
-    tries = 0
-    while(out==aborted and tries<3):
-        print "SM : go_to exit"
-        tosay = "I'm going to the exit"
-        speak = SpeakActionState(text=tosay)
-        speak.execute(ud=None)
-        mr = nav_to_poi()#MoveToRoomSM()
-        mr.userdata._data = {'nav_to_poi_name': 'pre_exit'}#{'room_name': 'pre_exit'} #preguntar gerard
-        #mr.userdata.room_name = loc_name
-        out = mr.execute()
-        # sr = ServiceState('/alive_engine/stop', Empty)
-        # out = sr.execute(ud=None)
-        mr.userdata._data = {'nav_to_poi_name': 'exit'}#{'room_name': 'exit'}
-        out = mr.execute() 
-        
-        tries = tries+1
-    
-    return succeeded ''' 
 
-    speak = speaker("I am going to the exit")
-    speak.execute()
-    rospy.logwarn('call_exit') 
-    time.sleep(3)   
-    return "succeeded"  
-
-def call_learn_person():    #no sap fer-ho
+def call_learn_person(pers): #TODO   #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
     '''    out = aborted
     tries = 0
     while(out==aborted and tries<3):
@@ -152,14 +151,18 @@ def call_learn_person():    #no sap fer-ho
     return succeeded #(out, PersonName)
     '''
     
-    tosay = "I'm going to learn the person in front of me"
+    tosay = "I'm going to learn the person in front of me, known as " + pers
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_learn_person')
-    time.sleep(3)
+    rospy.logwarn('call_learn_person ' + pers)    
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_recognize_person():   #no sap fer-ho
+def call_recognize_person(pers): #TODO  
     '''    out = aborted
     tries = 0
     while(out==aborted and tries<3):
@@ -174,28 +177,18 @@ def call_recognize_person():   #no sap fer-ho
     
     return succeeded #(out, PersonName)    '''
     
-    tosay = "I'm going to recognize the person in front of me"
+    tosay = "I'm going to recognize " + pers
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_recognize_person')
-    time.sleep(3)
+    rospy.logwarn('call_recognize_person ' + pers)
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded" 
 
-def call_introduce(): 
-    '''    print "SM : introduce" 
-    
-    intro = IntroduceSM()
-    out = intro.execute()
-    return succeeded '''
-    
-    tosay = "I'm going to introduce something or someone"
-    speak = speaker(tosay)
-    speak.execute()
-    rospy.logwarn('call_introduce')
-    time.sleep(3)
-    return "succeeded"
-
-def call_point_at(): #TO TEST   #no sap fer-ho 
+def call_point_at(loc_name): #TODO  #to finish, test and include
     '''
     out = aborted
     tries = 0
@@ -210,35 +203,36 @@ def call_point_at(): #TO TEST   #no sap fer-ho
 
     return succeeded
     '''
+    rpose = get_current_robot_pose()
+    rpose.execute()
     
-    tosay = "I'm going to point"
+    tosay = "I'm going to point to " + loc_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_point_at')
-    time.sleep(3)
+    rospy.logwarn('call_point_at ' + loc_name)
+    #############################################################################
+    '''
+    sm = point_to_poi(loc_name)    #to finish, test and include
+    sm.execute()
+    '''
+    #############################################################################    
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_follow(): #TODO  #no sap fer-ho
+def call_follow(pers): #TODO   
+    print pers
     rospy.logwarn("SM : follow-me")
-    '''
-    tosay = "I'm going to follow you"
-    speak = SpeakActionState(text=tosay)
-    speak.execute(ud=None)
-    sm =FollowMeSM(0.9, 'gpsr_follow')
-    out = sm.execute(ud=None)
-    '''
-    
-    tosay = "I'm going to follow you"
+    tosay = "I'm going to follow " + pers
     speak = speaker(tosay)
     speak.execute()
-    time.sleep(3)
-    return succeeded
-#     print "SM : follow" 
-#     f = FollowMeSM()
-#     out = f.execute()
-#     return out
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
+    return "succeeded"
 
-def call_find_object(object_name, loc_name):
+def call_find_object(object_name): #TODO 
     '''
     out = aborted
     tries = 0
@@ -269,11 +263,15 @@ def call_find_object(object_name, loc_name):
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_object')
-    time.sleep(3)
+    rospy.logwarn('call_find_object '+object_name)
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_grasp(obj):
+def call_grasp(obj): #TODO #adding grasping
     '''
     out = aborted
     tries = 0
@@ -294,11 +292,16 @@ def call_grasp(obj):
     tosay = "I'm going to grasp the " + obj
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_grasp')
-    time.sleep(3)
+    rospy.logwarn('call_grasp '+obj)
+    #############################################################################
+    '''
+    #grasping here
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_find_person(person_name):
+def call_find_person(person_name): #TODO 
     # print "SM : find_person %s" % (person_name)
     # tosay = "I'm going to search for a person" #+person_name
     # speak = SpeakActionState(text=tosay)
@@ -311,11 +314,16 @@ def call_find_person(person_name):
     tosay = "I'm going to search for the person known as " + person_name
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_find_person')
-    time.sleep(3)
+    rospy.logwarn('call_find_person '+person_name)
+    #############################################################################
+    '''
+    what did you say
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_bring_to(person_name): #Solo hace release TODO
+def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some responsible person
     '''
     out = aborted
     tries = 0
@@ -332,28 +340,54 @@ def call_bring_to(person_name): #Solo hace release TODO
     #Remember to control the case when person_name == '', given when we are delivering to a place not a person
     '''
     if person_name == '':
-        tosay = "I'm leaving this here"
+        tosay = "I'm leaving this here, sorry but you asked for a person without name"
     else:
-        tosay = "I'm going to bring something to " + person_name
+        tosay = person_name + "would you mind picking this up when I release it?"
     speak = speaker(tosay)
     speak.execute()
-    rospy.logwarn('call_bring_to')
-    time.sleep(3)
+    rospy.logwarn('call_bring_to '+person_name)
+    #############################################################################
+    '''
+    #realese here
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded" 
 
-def call_ask_name():   #no sap fer-ho per que no trova a la persona
+def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may be add some human recognition to avoid throwing stuff to the ground
+
+    if location_name == '':
+        tosay = "I'm leaving this here"
+    else:
+        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this provably you will want to take it before I throw it to the floor, thanks"
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_bring_to_loc '+location_name)    
+    #############################################################################
+    '''
+    #realese here
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
+    return "succeeded" 
+
+def call_ask_name(): #TOMAKESURE this is what we need if we even need this
     '''
     print "SM : ask_name" 
     return call_learn_person()
     '''
-    tosay = "I'm going to ask your name, prepare yourself"
+    tosay = "Excuse me, would you mind telling me your name?"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_ask_name')
-    time.sleep(3)
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_introduce_me():
+def call_introduce_me(): #TOASKSAM for a proper introduction
     '''
     out = aborted
     tries = 0
@@ -366,15 +400,19 @@ def call_introduce_me():
     return succeeded
     '''
     
-    tosay = "I'm going to introduce myself"
+    tosay = "Hi, I am reem a fancy and cool robot designed by PAL robotics and prepared by la Salle students to beat the fuck up all germans teams with a huge cucumber"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_introduce_me')
-    time.sleep(3)
+    #############################################################################
+    '''
+    '''
+    #############################################################################
+    time.sleep(SLEEP_TIME)
     return "succeeded"
 
 
-def define_prohibitions(): #TODO
+def define_prohibitions(): #TODISCOVER WTF IS THIS
     pass
 
 def create_kernel():
@@ -417,8 +455,6 @@ def main():
 
     goal_achieved = False
     while not goal_achieved:
-        # if (time.time()-first_time > 300):
-        #     return aborted
         agent.Commit()  
         agent.RunSelfTilOutput()
         agent.Commands()
@@ -456,18 +492,26 @@ def main():
                     
                     out = call_grasp(obj)
 
-                elif command_name == "deliver":
-                    to_pers = command.GetParameterValue("pers")
+                elif command_name == "deliver": #to Person
                     try:
+                        to_pers = command.GetParameterValue("pers")
                         pers = idx2obj(int(to_pers),'PERSONS')
                         print pers
                         if (pers =="NULL"):
                             print "ERROR: la persona %s no existe" % (to_pers)                        
                         out = call_bring_to(pers)
-                    except:
-                        pers = ''   
-                        print pers
-                        out = call_bring_to(pers)
+                    except:                     #or to Loc
+                        to_loc = command.GetParameterValue("loc")
+                        try:
+                            loc = idx2obj(int(to_loc),'LOCATIONS')
+                            print loc
+                            if (loc =="NULL"):
+                                print "ERROR: l'objecte %s no existe" % (to_loc)                        
+                            out = call_bring_to_loc(loc)
+                        except:
+                            loc = ''   
+                            print loc
+                            out = call_bring_to_loc(loc)
 
                 elif command_name == "search-object":
                 
@@ -477,7 +521,7 @@ def main():
                     if (obj =="NULL"):
                         print "ERROR: el objeto %s no existe" % (obj_to_search)
                     
-                    out = call_find_object(obj,"asd")
+                    out = call_find_object(obj)
                 
                 elif command_name == "search-person":
                     pers_to_search = command.GetParameterValue("pers")
@@ -489,32 +533,31 @@ def main():
                     out = call_find_person(pers)
                 
 
-                elif command_name == "point-obj":
-                    out = "succeeded" #call_point_at()
+                elif command_name == "point-obj":                    
+                    to_loc = command.GetParameterValue("loc")
+                    loc = idx2obj(int(to_loc),'LOCATIONS')
+                    out = call_point_at(loc)
                 
                 elif command_name == "ask-name":
                     out = call_ask_name()
                 
-                elif command_name == "follow":
-                    out = call_follow()
+                elif command_name == "follow":          
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_follow(pers)
                 
                 elif command_name == "introduce-me":
                     out = call_introduce_me()
                 
                 elif command_name == "memorize-person":
-                    out = call_learn_person()
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_learn_person(pers)
                 
                 elif command_name == "recognize-person":
-                    out = call_recognize_person()
-
-                # elif command_name == "exit-apartment":
-                #     loc_to_navigate = command.GetParameterValue("loc")
-                #     loc = trad_loc(loc_to_navigate)
-                #     print loc
-                #     if (loc =="NULL"):
-                #         print "ERROR: la loacalizacion %s no existe" % (loc_to_navigate)
-
-                #     out = call_go_to(loc)
+                    to_pers = command.GetParameterValue("pers")
+                    pers = idx2obj(int(to_pers),'PERSONS')
+                    out = call_recognize_person(pers)
 
                 elif command_name == "achieved":
                     goal_achieved = True
@@ -534,7 +577,6 @@ def main():
                     exit(1)
                 
                 i+=1
-
 
     command.AddStatusComplete()
     return 'succeeded'

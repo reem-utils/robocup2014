@@ -20,6 +20,7 @@ from speech_states.parser_grammar import parserGrammar
 from speech_states.activate_asr import ActivateASR
 from speech_states.deactivate_asr import DeactivateASR
 from speech_states.read_asr import ReadASR
+from hri_states.acknowledgment import acknowledgment
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -47,7 +48,7 @@ class process_restaurant_order(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['asr_userSaid_tags', 'asr_userSaid', 'object_array'],
                                 output_keys=['standard_error', 'object_array', 'tts_text'])
-        self.tag = parserGrammar(GRAMMAR_NAME)
+       # self.tag = parserGrammar(GRAMMAR_NAME)
 
     def obtain_object_class(self, objectName):
                     
@@ -68,104 +69,128 @@ class process_restaurant_order(smach.State):
         # and Object C in location 2  
         
         # Recognize all the objects
-        objectValue = self.tag[4][1]
-        locationValue = self.tag[3][1]
-        objectsRecognized = []
-        locationRecognized = ""
-        userdata.object_array = []
-        locationFound = False
-        phrase = userdata.asr_userSaid.split()
-        rospy.logwarn("objects:========:   "+str(objectValue))
-        rospy.logwarn("locationValue:========:   "+str(locationValue))
-
-        for word in phrase:
-            wordFound = False
-            
-            for element in objectValue:
-                
-                if element == word:
-                    rospy.logfatal(str(word))
-                    objectsRecognized.append(element)
-                    wordFound = True
-                    break
-                    
-            if not wordFound:
-                for element in locationValue:
-                    if element == word:
-                        rospy.logfatal(str(word))
-                        locationRecognized = element
-                        locationFound = True
-                        break
-                    
-            if locationFound:
-                rospy.logwarn(str(objectsRecognized))
-                for obj in objectsRecognized:
-                    classObj = self.obtain_object_class(obj)
-                    userdata.object_array.append([obj, classObj, locationRecognized])
-                objectsRecognized = []
-                locationFound = False
-
-       
-#         listTags = userdata.asr_userSaid_tags
-#         
-#         #Process tags
+#         objectValue = self.tag[4][1]
+#         locationValue = self.tag[3][1]
+#         objectsRecognized = []
+#         locationRecognized = ""
 #         userdata.object_array = []
-#         actiontag = [tag for tag in listTags if tag.key == 'action']
-#         objectAtag = [tag for tag in listTags if tag.key == 'objectA']
-#         objectBtag = [tag for tag in listTags if tag.key == 'objectB']
-#         objectCtag  = [tag for tag in listTags if tag.key == 'objectC']
-#         location1tag = [tag for tag in listTags if tag.key == 'location1']
-#         location2tag = [tag for tag in listTags if tag.key == 'location2']
-#     
-#         for i in range(len(actiontag)):
-#             if actiontag and actiontag[i].value == 'goto' and objectAtag and objectBtag and objectCtag and location1tag and location2tag:
-#                 objectA = objectAtag[i].value
-#                 objectB = objectBtag[i].value
-#                 objectC = objectCtag[i].value
-#                 location1 = location1tag[i].value
-#                 location2 = location2tag[i].value
-#                   
-#                 classA = self.obtain_object_class(objectA)
-#                 classB = self.obtain_object_class(objectB)
-#                 classC = self.obtain_object_class(objectC)
+#         locationFound = False
+#         phrase = userdata.asr_userSaid.split()
+#         rospy.logwarn("objects:========:   "+str(objectValue))
+#         rospy.logwarn("locationValue:========:   "+str(locationValue))
+# 
+#         for word in phrase:
+#             wordFound = False
+#             
+#             for element in objectValue:
 #                 
-#                 userdata.object_array.append([objectA, classA, location1])
-#                 userdata.object_array.append([objectB, classB, location1])
-#                 userdata.object_array.append([objectC, classC, location2])
-#       
+#                 if element == word:
+#                     rospy.logfatal(str(word))
+#                     objectsRecognized.append(element)
+#                     wordFound = True
+#                     break
+#                     
+#             if not wordFound:
+#                 for element in locationValue:
+#                     if element == word:
+#                         rospy.logfatal(str(word))
+#                         locationRecognized = element
+#                         locationFound = True
+#                         break
+#                     
+#             if locationFound:
+#                 rospy.logwarn(str(objectsRecognized))
+#                 for obj in objectsRecognized:
+#                     classObj = self.obtain_object_class(obj)
+#                     userdata.object_array.append([obj, classObj, locationRecognized])
+#                 objectsRecognized = []
+#                 locationFound = False
+# 
+#        
+        listTags = userdata.asr_userSaid_tags
+         
+        #Process tags
+        userdata.object_array = []
+        actiontag = [tag for tag in listTags if tag.key == 'action']
+        objectAtag = [tag for tag in listTags if tag.key == 'objectA']
+        objectBtag = [tag for tag in listTags if tag.key == 'objectB']
+        objectCtag  = [tag for tag in listTags if tag.key == 'objectC']
+        location1tag = [tag for tag in listTags if tag.key == 'location1']
+        location2tag = [tag for tag in listTags if tag.key == 'location2']
+     
+        for i in range(len(actiontag)):
+            if actiontag and actiontag[i].value == 'goto' and objectAtag and objectBtag and objectCtag and location1tag and location2tag:
+                objectA = objectAtag[i].value
+                objectB = objectBtag[i].value
+                objectC = objectCtag[i].value
+                location1 = location1tag[i].value
+                location2 = location2tag[i].value
+                   
+                classA = self.obtain_object_class(objectA)
+                classB = self.obtain_object_class(objectB)
+                classC = self.obtain_object_class(objectC)
+                 
+                userdata.object_array.append([objectA, classA, location1])
+                userdata.object_array.append([objectB, classB, location1])
+                userdata.object_array.append([objectC, classC, location2])
+       
         if userdata.object_array:
             
-            userdata.tts_text = ("I Got it! You asked me to, firstly, fetch the "
-                                 +str(userdata.object_array[0][0])+ " and the "
-                                 +str(userdata.object_array[1][0])+ " and i have to put it in the table "
+            userdata.tts_text = ("I Got it! You asked me to,     firsstly, fetch the "
+                                 +str(userdata.object_array[0][0])+ ", that is a "
+                                 +str(userdata.object_array[0][1])+ ", and the "
+                                 +str(userdata.object_array[1][0])+ ", that is a " 
+                                 +str(userdata.object_array[1][1])+ " and i have to put it in the "
                                  +str(userdata.object_array[0][2])+ ". Afterwards, I will fetch the " 
-                                 +str(userdata.object_array[2][0]) + ", and take it to the " + str(userdata.object_array[2][2]))
-                                 
-#                                  
-#             userdata.tts_text = ("I Got it   ! You asked me to, firstly,  fetch the    "
-#                                  +str(userdata.object_array[0][0])+ "   that is a    "
-#                                  +str(userdata.object_array[0][1])+"    and i have to put it in the table     "
-#                                  +str(userdata.object_array[0][2])
-#             
-#             userdata.tts_text = ("I Got it   ! You asked me to, firstly,  fetch the    "
-#                                  +str(userdata.object_array[1][0])+"     that is a    "
-#                                  +str(userdata.object_array[1][1])+"    and i have to put it in the table     "
-#                                  +str(userdata.object_array[1][2]))
-#                                  
-#             userdata.tts_text = ("I Got it   ! You asked me to, firstly,  fetch the    "
-#                                  +str(userdata.object_array[2][0])+ "   that is a    "
-#                                  +str(userdata.object_array[2][1])+"    and i have to put it in the table     "
-#                                  +str(userdata.object_array[2][2])
-#             
+                                 +str(userdata.object_array[2][0])+ " that is a " 
+                                 +str(userdata.object_array[2][1])+ ", and take it to the " 
+                                 +str(userdata.object_array[2][2])) + ".  It is correct?"
+                                          
             rospy.logwarn("I Got it! You asked me to, firstly, fetch the "
                                  +str(userdata.object_array[0][0])+ " and the "
-                                 +str(userdata.object_array[1][0])+ " and i have to put it in the table "
+                                 +str(userdata.object_array[1][0])+ " and i have to put it in the "
                                  +str(userdata.object_array[0][2])+ ". Afterwards, I will fetch the " 
                                  +str(userdata.object_array[2][0]) + ", and take it to the " + str(userdata.object_array[2][2]))
-            # + userdata.object_array[0][0] + ", and the " + userdata.object_array[1][0] + ", and deliver it to the " + userdata.object_array[0][2] + ". Afterwards, I will fetch the " + userdata.object_array[2][0] + ", and take it to the " + userdata.object_array[2][2]
             return 'succeeded'
             
-        return 'aborted'
+        return 'aborted'#         objectValue = self.tag[4][1]
+#         locationValue = self.tag[3][1]
+#         objectsRecognized = []
+#         locationRecognized = ""
+#         userdata.object_array = []
+#         locationFound = False
+#         phrase = userdata.asr_userSaid.split()
+#         rospy.logwarn("objects:========:   "+str(objectValue))
+#         rospy.logwarn("locationValue:========:   "+str(locationValue))
+# 
+#         for word in phrase:
+#             wordFound = False
+#             
+#             for element in objectValue:
+#                 
+#                 if element == word:
+#                     rospy.logfatal(str(word))
+#                     objectsRecognized.append(element)
+#                     wordFound = True
+#                     break
+#                     
+#             if not wordFound:
+#                 for element in locationValue:
+#                     if element == word:
+#                         rospy.logfatal(str(word))
+#                         locationRecognized = element
+#                         locationFound = True
+#                         break
+#                     
+#             if locationFound:
+#                 rospy.logwarn(str(objectsRecognized))
+#                 for obj in objectsRecognized:
+#                     classObj = self.obtain_object_class(obj)
+#                     userdata.object_array.append([obj, classObj, locationRecognized])
+#                 objectsRecognized = []
+#                 locationFound = False
+# 
+#        
 
 class RestaurantOrder(smach.StateMachine):
     """
@@ -191,6 +216,8 @@ class RestaurantOrder(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=None
+            self.userdata.grammar_name = None
+            self.userdata.type_movment = None
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.tts_lang = None
             self.userdata.standard_error='OK'
@@ -225,12 +252,19 @@ class RestaurantOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'process_restaurant_order',
                 process_restaurant_order(),
-                transitions={'succeeded': 'confirm_restaurant_order', 'aborted': 'aborted'})
+                transitions={'succeeded': 'ActivateASR_yesno', 'aborted': 'aborted'})
               
+            # Load grammar yes/no
+            smach.StateMachine.add(
+                'ActivateASR_yesno',
+                ActivateASR("robocup/yes_no"),
+                transitions={'succeeded': 'confirm_restaurant_order', 'aborted': 'aborted', 'preempted': 'preempted'})                    
+            
+            
             # Confirm Order
             smach.StateMachine.add(
                 'confirm_restaurant_order',
-                text_to_say(),
+                acknowledgment(type_movement="yes"),
                 transitions={'succeeded': 'yesno_restaurant_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -244,11 +278,11 @@ class RestaurantOrder(smach.StateMachine):
             # Ask for repeat the order
             smach.StateMachine.add(
                 'repeat_restaurant_order',
-                text_to_say("Excuse me, I don't understand you. Can you repeat your order?"),
+                acknowledgment(type_movement="no",tts_text="Excuse me, I don't understand you. Can you repeat your order?"),
                 transitions={'succeeded': 'ReadASR', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-                        # Confirm Order
+            # Confirm Order
             smach.StateMachine.add(
                 'ok_im_going',
                 text_to_say("OK i'm going to service"),

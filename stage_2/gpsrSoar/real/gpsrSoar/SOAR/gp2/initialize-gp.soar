@@ -10,7 +10,7 @@ sp {gp*apply*initialize-gp
    (state <s> ^operator.name initialize-gp)
 -->
    (<s> ^name gp
-        ^location <l0> <l1> <l2> <l3> <l4> <l5> <l6> <l7> <l8> <l9> <l10> <l11> <l12> <l13> <l14> <l15> <l16> <l17> <l18> <l19> <l20> <l21> <l22> <l23> <l24> <l25> <l26> <l27>
+        ^location <l0> <l1> <l2> <l3> <l4> <l5> <l6> <l7> <l8> <l9> <l10> <l11> <l12> <l13> <l14> <l15> <l16> <l17> <l18> <l19> <l20> <l21> <l22> <l23> <l24> <l25> <l26> <l27> <l28>
         ^robot <r>
         ^object <obj1>
         ^person <pers1>
@@ -43,17 +43,18 @@ sp {gp*apply*initialize-gp
    (<l25> ^id 25 ^pointed-at no)
    (<l26> ^id 26 ^pointed-at no)
    (<l27> ^id 27 ^pointed-at no)
+   (<l28> ^id 28 ^pointed-at no)
       (<r> ^pointedAtLoc -1
            ^introduced no
            ^locId 27
            ^id 1
-           ^obj1Id -1)
+           ^obj1Id 6)
 
-      (<obj1> ^delivered no
+      (<obj1> ^delivered yes
            ^pointed no
-           ^locId 12
+           ^locId 23
            ^toBeGrasped no
-           ^grasped no
+           ^grasped yes
            ^found no
            ^id 6)
 
@@ -67,14 +68,9 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 5)
 
-   (<d> ^name bring-to
-        ^person <pp>
-        ^object <ii>
+   (<d> ^name introduce
         ^robot <rr>)
-   (<pp> ^obj1Id 6
-           ^id 5)
-   (<ii> ^delivered yes
-           ^id 6)
-   (<rr> ^id 1)
+   (<rr> ^introduced yes
+         ^id 1)
 
 }

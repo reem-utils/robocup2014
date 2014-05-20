@@ -10,6 +10,7 @@ Created on Sat March 16 11:30:00 2013
 
 import rospy
 import smach
+from smach import Concurrence
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.enter_room import EnterRoomSM
@@ -21,12 +22,15 @@ from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
-
+from manipulation_states.grasp_time_out import grasping_with_timeout
+import time
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
+
+time_First = True
 
 import random
 
@@ -89,7 +93,41 @@ class Process_Tags(smach.State):
 #             name = tags[0].value
 #             userdata.object_to_grasp = name
         return 'aborted'
+
+class Time_State(smach.State):
+    def __init__(self, ttl=20.0):
+        smach.State.__init__(self,
+                             outcomes=['succeeded', 'time_out', 'preempted'],
+                             input_keys=['time_grasp'],
+                             output_keys=['time_grasp'])
+        self.time_to_live_grasp = ttl
+    def execute(self, userdata):
+        if time_First :
+            time_First = False
+            userdata.time_grasp = time.time()
         
+        if (time.time() - self.time_to_live_grasp) > userdata.time_grasp :
+            return 'time_out'
+        else:
+            return 'preempted' 
+        
+
+def child_term_cb(outcome_map):
+    if outcome_map['Time_State'] == 'time_out':
+        return True
+    
+    if outcome_map['Find_and_grab_object'] == 'succeeded':
+        return True
+    
+    return False
+        
+def out_cb(outcome_map):
+    if outcome_map['Time_State'] == 'time_out':
+        return 'time_out'
+    if outcome_map['Find_and_grab_object'] == 'succeeded':
+        return 'succeeded'
+    return 'aborted'
+    
 class Get_Person_Desired_Object(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation's Save People SM.
@@ -159,18 +197,42 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Go_To_Object_Place',
                 nav_to_poi('kitchen'),
                 transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
-
+            
+            self.userdata.time_grasp = 0.0
+            smach.StateMachine.add('Grasping_with_timeout',
+                                   grasping_with_timeout(),
+                                   transitions={'succeeded':'Prepare_Go_To_Person', 'time_out':'Grasp_fail_Ask_Person'})
+#             sm_conc = smach.Concurrence(outcomes=['succeeded', 'time_out'],
+#                                         default_outcome='succeeded',
+#                                         input_keys=['object_to_grasp, time_grasp'],
+#                                         child_termination_cb = child_term_cb,
+#                                         outcome_cb = out_cb)
+# 
+#             with sm_conc:
+#                 sm_conc.add(
+#                     'Find_and_grab_object',
+#                     #Find_and_grab_object(),
+#                     DummyStateMachine())
+#                 sm_conc.add(
+#                             'Time_State',
+#                             Time_State())
+#                 
+#             smach.StateMachine.add('GRASP_CONCURRENCE',
+#                                    sm_conc,
+#                                    transitions={'succeeded':'Prepare_Go_To_Person',
+#                                                 'time_out':'Grasp_fail_Ask_Person'})
             #Find Object + Grab Object SM
-            smach.StateMachine.add(
-                'Find_and_grab_object',
-                #Find_and_grab_object(),
-                DummyStateMachine(),
-                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+#             smach.StateMachine.add(
+#                 'Find_and_grab_object',
+#                 #Find_and_grab_object(),
+#                 DummyStateMachine(),
+#                 transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
                 transitions={'succeeded':'Rest_arm', 'aborted':'Rest_arm', 'preempted':'Rest_arm'})
-            self.userdata.manip_time_to_play = 4.0
+            
+            
             smach.StateMachine.add(
                                    'Rest_arm',
                                    play_motion_sm('rest_object_right'),

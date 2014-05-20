@@ -12,9 +12,6 @@ sp {gp*elaborate*goal*different*value
               ^operator <op> +
               ^<element> <el>)
    (<op> ^name goal-achieved)
-   # (<d> ^<element> <del>)
-   # (<del> ^id <ide>
-   #        ^<atr> <val1>)
    (<el> ^id <ide>
          ^<atr> <val1>)
    (<d> ^<element> <del>)
@@ -54,17 +51,8 @@ sp {gp*apply*detect*goal*achieved*remove-achieved
 
    (<out> ^achieved <st>)
    (<st> ^status complete)
-
 -->
    (<out> ^achieved <st> -)
    (write (crlf) |The problem has been solved|)
    (interrupt)
 }
-
-
-#sp {gp*achived*best
-#   (state <s> ^name gp
-#              ^operator <o1> = <o2>)
-#   (<o1> ^name goal-achieved)
-#-->
-#   (<s> ^operator <o2> -)}
