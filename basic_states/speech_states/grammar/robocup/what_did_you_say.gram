@@ -4,11 +4,11 @@ grammar what_did_you_say;
 
 public <basic> = (  ( <begin> is the <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( <begin> is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | <garbage> ) {obj.put("external","1");}; 
 
-<begin> = (what | who);
-<info> = (capital | president);
-<country> = (spain | germany | holland | portugal | france | italy | russia | catalonia);
-<attr> = (heaviest | fastest);
-<object> = (animal);
+<begin> = what | who;
+<info> = capital | president;
+<country> = spain | germany | holland | portugal | france | italy | russia | catalonia;
+<attr> = heaviest | fastest;
+<object> = animal;
 
 <garbage>  = <garbage2>;
 
