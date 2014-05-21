@@ -11,7 +11,7 @@ from translator import idx2obj, obj2idx
 
 from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
-
+from GenerateGoalScript import world
 from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST
 
@@ -102,7 +102,7 @@ class speaker(smach.StateMachine):
                 transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
 
-def call_go_to(loc_name):
+def call_go_to(loc_name,world):
     '''
     out = aborted
     tries = 0
@@ -130,6 +130,7 @@ def call_go_to(loc_name):
     '''sm = nav_to_poi(poi_name = loc_name)
     sm.execute()'''
     #############################################################################
+    world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
     return "succeeded" 
 
@@ -203,8 +204,8 @@ def call_point_at(loc_name): #TODO  #to finish, test and include
 
     return succeeded
     '''
-    rpose = get_current_robot_pose()
-    rpose.execute()
+#     rpose = get_current_robot_pose()
+#     rpose.execute()
     
     tosay = "I'm going to point to " + loc_name
     speak = speaker(tosay)
@@ -400,7 +401,7 @@ def call_introduce_me(): #TOASKSAM for a proper introduction
     return succeeded
     '''
     
-    tosay = "Hi, I am reem a fancy and cool robot designed by PAL robotics and prepared by la Salle students to beat the fuck up all germans teams with a huge cucumber"
+    tosay = "Hi, I am reem a robot designed by PAL robotics and prepared by la Salle students to win the robocup"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_introduce_me')
@@ -436,7 +437,7 @@ def agent_load_productions(agent, path):
         exit(1)
 
 
-def main():
+def main(world):
     print "******************************\n******************************\nNew goal\n******************************\n******************************\n"
     first_time = time.time()
     kernel = create_kernel()
@@ -480,7 +481,7 @@ def main():
                     if (loc =="NULL"):
                         print "ERROR: la loacalizacion %s no existe" % (loc_to_navigate)
                     
-                    out = call_go_to(loc)
+                    out = call_go_to(loc,world)
 
                 elif command_name == "grasp":
                     obj_to_grasp = command.GetParameterValue("obj")
