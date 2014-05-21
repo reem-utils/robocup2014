@@ -16,6 +16,7 @@ from util_states.topic_reader import topic_reader
 from pal_vision_msgs.msg import Gesture
 import numpy
 import copy
+from util_states.math_utils import *
 
 GESTURE_TOPIC = '/head_mount_xtion/gestures'
 final_frame_id = 'base_link'
@@ -27,7 +28,7 @@ class TransformGesture(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
                              input_keys=['topic_output_msg'],
-                             output_keys=['wave_position','standard_error'])
+                             output_keys=['wave_position', 'wave_yaw_degree','standard_error'])
 
 
         rospy.loginfo("Subscribing to '" + GESTURE_TOPIC + "'")
@@ -83,6 +84,15 @@ class TransformGesture(smach.State):
             self.pub2.publish(pub2_ps)
             userdata.wave_position = transformed_gesture_pointstamped
 
+            userdata.wave_position = transformed_gesture_pointstamped
+
+            aux_pose = Pose()
+            aux_pose.position.x = transformed_gesture_pointstamped.point.x
+            aux_pose.position.y = transformed_gesture_pointstamped.point.y
+
+            wave_degree = math.atan2(aux_pose.position.y, aux_pose.position.x)
+            userdata.wave_yaw_degree = wave_degree
+            rospy.loginfo("Degree Transformed: ----[" + str(wave_degree) + "]----")
             return 'succeeded'
         except:
             rospy.loginfo('Transform Exception -- Trying again')
@@ -105,6 +115,15 @@ class TransformGesture(smach.State):
                               )
             self.pub2.publish(pub2_ps)
             userdata.wave_position = transformed_gesture_pointstamped
+
+            aux_pose = Pose()
+            aux_pose.position.x = transformed_gesture_pointstamped.point.x
+            aux_pose.position.y = transformed_gesture_pointstamped.point.y
+
+            wave_degree = math.atan2(aux_pose.position.y, aux_pose.position.x)
+            userdata.wave_yaw_degree = wave_degree
+            rospy.loginfo("Degree Transformed2222: ----[" + str(wave_degree) + "]----")
+
             if transformed_gesture_pointstamped is None:
                 return 'aborted'
             else:
