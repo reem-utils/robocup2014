@@ -210,7 +210,7 @@ class gpsrASAction(object):
     #"-----------------------------------------------------------orders list------------------------------"
     rospy.logwarn (str(self._goal.orderList))
     while not success:
-      soarResult = interface.main()
+      soarResult = interface.main(self._world)
       if soarResult == 'aborted':
         self._result.outcome = 'aborted'
         self._as.set_succeeded(self._result)

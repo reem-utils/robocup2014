@@ -1,0 +1,8 @@
+numberOfSubMaps: 1
+poi:
+  submap_0:
+    sofa: [submap_0, sofa, 1.0, 1.0, 0]
+    fridge: [submap_0, fridge, -1.0, 0.0, 0]
+    exit: [submap_0, exit, 1.0, -1.0, 0]
+    referee: [submap_0, referee, 0.0, 0.0, 0]
+

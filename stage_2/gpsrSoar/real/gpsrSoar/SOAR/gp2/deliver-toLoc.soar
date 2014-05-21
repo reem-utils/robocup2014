@@ -4,14 +4,16 @@ sp {gp*propose*deliverToLoc
               ^robot <r>
               ^object <o>
               ^desired <d>)
-    (<l> ^id <oloc>)
-    (<r> ^obj1Id <oid>)
+    (<l> ^id <rloc>)
+    (<r> ^obj1Id <oid>
+         ^locId <rloc>)
     (<o> ^id <oid>
-         ^locId <oloc>
          ^grasped yes
          ^delivered no)
-    (<d> ^object <do>)
+    (<d> ^object <do>
+        -^person <po>) #potser sa de borrar
     (<do> ^id <oid>
+          ^locId <rloc>
           ^delivered yes)
  -->
     (<s> ^operator <op> + >)

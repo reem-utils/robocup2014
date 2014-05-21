@@ -84,7 +84,10 @@ class world():
 #             else:
 #                 text += ')\n'
 #             return text
-
+    def set_current_position(self,location):
+        loc = obj2idx(location, 'LOCATIONS')
+        self.robot.locId = loc
+    
     def new_world(self, allFile, locations):
 
         l = []
