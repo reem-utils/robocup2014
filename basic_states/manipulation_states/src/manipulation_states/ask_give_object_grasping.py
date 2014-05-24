@@ -89,7 +89,6 @@ class ask_give_object_grasping(smach.StateMachine):
             
             # Reach the arm
             self.userdata.manip_motion_to_play = 'give_object_right'
-            self.userdata.manip_time_to_play = 2.0
             smach.StateMachine.add('Reach_Arm',
                                     play_motion_sm(),
                                     transitions={'succeeded':'Pre_Grasp', 'preempted':'Reach_Arm', 'aborted':'Reach_Arm'})
