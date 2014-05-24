@@ -2,7 +2,7 @@
 
 grammar bring;
 
-public <basic> =  (<bringcmd> [<person>] <objects> | <objects> )| <garbage>  ; 
+public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ; 
 
 <bringcmd> = bring;
 <person> = me ;
