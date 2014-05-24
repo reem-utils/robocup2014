@@ -4,7 +4,7 @@ grammar first;
 
 public <basic> = ( <yes> {obj.put("yes",$.$value);} ) | ( <no> {obj.put("no",$.$value);} )  {obj.put("external","1");}; 
 
-<yes> = yes | yeah | sure;
+<yes> = yes | yeah ;
 <no> = no;
 
 <garbage>  = <garbage2>;
