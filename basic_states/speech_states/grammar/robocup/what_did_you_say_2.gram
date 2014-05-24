@@ -1,0 +1,23 @@
+#JSGF V1.0;
+
+grammar what_did_you_say;
+
+public <basic> = ( ( <begin> is the <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( <begin> is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | (<begin> many {obj.put("quantity",$.$value);} <quantity> {obj.put("qtype",$.$value);})  | <garbage> ) {obj.put("external","1");}; 
+
+<begin> = what | who | how;
+<info> = capital | president;
+<country> = spain | germany | holland | portugal | france | italy | russia | catalonia;
+<quantity> = inhabitants | teams;
+<attr> = heaviest | fastest;
+<object> = animal;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 

@@ -132,7 +132,7 @@ class TransformGesture(smach.State):
         
 
 
-class GestureDetection(smach.StateMachine):
+class WaveDetection(smach.StateMachine):
     """
         GestureDetection - It is a State Machine that subscibes to the topic '/head_mount_xtion/gestures', using the topic_reader()
         This Topic gives the 3D position of the wave gesture in the frame 'head_mount_xtion_depth_optical_frame', 
@@ -142,6 +142,7 @@ class GestureDetection(smach.StateMachine):
             None
         Output Keys:
             @key wave_position: A PointStamped point referenced to /base_link
+            @key wave_yaw_degree: the yaw in degrees for the robot to turn.
             @key standard_error: A base error to inform.
 
         Required Parameters: 
@@ -151,7 +152,7 @@ class GestureDetection(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                  input_keys=[],
-                                 output_keys=['wave_position','standard_error'])
+                                 output_keys=['wave_position', 'wave_yaw_degree','standard_error'])
         with self:
             smach.StateMachine.add(
                 'Gesture_Topic_Reader',
@@ -172,7 +173,7 @@ def main():
     with sm:
         smach.StateMachine.add(
             'gesture_state',
-            GestureDetection(),
+            WaveDetection(),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 
     sm.execute()
