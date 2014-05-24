@@ -17,6 +17,7 @@ import math
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from manipulation_states.play_motion_sm import play_motion_sm
+from util_states.sleeper import Sleeper
 from sensor_msgs.msg import LaserScan
 from speech_states.say import text_to_say
  
@@ -139,6 +140,12 @@ class EnterRoomSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_open_door',
                 text_to_say("Can anyone open the door please?"),
+                transitions={'succeeded': 'sleep_state', 'aborted': 'sleep_state'})
+            
+            # Sleep time before speak
+            smach.StateMachine.add(
+                'sleep_state',
+                Sleeper(5),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
             
             # Home position
