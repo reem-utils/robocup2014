@@ -1,9 +1,9 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    party_room: [submap_0, party_room, 1.0, 1.0, 0]
-    storage_room: [submap_0, storage_room, -1.0, 0.0, 0]
-    leave_room: [submap_0, leave_room, 1.0, -1.0, 0]
+    party_room: [submap_0, party_room, -4.980, -6.084, 0.119]
+    storage_room: [submap_0, storage_room, -11.192, -5.540, 1.448]
+    leave_room: [submap_0, leave_room, 0.823, -8.587, 3.112]
 
 object:
   information:
