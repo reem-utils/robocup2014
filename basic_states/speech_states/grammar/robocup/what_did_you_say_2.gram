@@ -2,19 +2,22 @@
 
 grammar what_did_you_say;
 
-public <basic> = (  ( <begin> [is the] [<time>] <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( what is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | (what <attribute> {obj.put("attribute",$.$value);} does the <nationality> {obj.put("nationality",$.$value);} flag have) | (how many {obj.put("many",$.$value);} <quantity> {obj.put("quantity",$.$value);} are (there in Brazil | participating in the RoboCup at home contest this year) | (how much {obj.put("much",$.$value);} does a <price> {obj.put("price",$.$value);} cost) | <garbage> ) {obj.put("external","1");}; 
+public <basic> = ( <whatquest> | <howquest> | <whoquest>) | <garbage> ;
 
-<begin> = what | who;
+<whatquest> = what (is the (<capital> | <animal>) | <color>);
+<howquest> = how ( <many> | <much>);
+<whoquest> = who is the current president of brazil {obj.put("questionumber","7");};
 
-<info> = capital | president;
-<country> = brazil;
-<price> = beer;
-<attr> = fastest;
-<attribute> = colors;
-<object> = animal;
-<quantity> = people | inhabitants | teams;
-<time> = current | old;
-<nationality> = brazilian;
+<color> = colors does the brazilian flag have {obj.put("questionumber","3");};
+<capital> = capital of brazil {obj.put("questionumber","1");};
+<animal> = fastest animal in the world {obj.put("questionumber","2");};
+
+<many> = many (<inhabitants> | <teams>);
+<inhabitants> = inhabitants are there in brazil {obj.put("questionumber","4");};
+<teams> = teams are participating in the at home contest this year {obj.put("questionumber","5");};
+
+<much> = much does a beer cost {obj.put("questionumber","6");};
+
 <garbage>  = <garbage2>;
 
 <garbage1> = _unk;
