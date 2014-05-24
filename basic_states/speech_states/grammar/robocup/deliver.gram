@@ -7,10 +7,10 @@ public <basic> = (<carry1> [and] <carry2> {obj.put("action","goto");} | <garbage
 <carry1> = <carrycommand> [the] <objects> {obj.put("objectA", $.$value);}  and <objects> {obj.put("objectB",$.$value);} to <location> {obj.put("location1",$.$value);};
 <carry2> = <carrycommand> [the] <objects> {obj.put("objectC", $.$value);} to <location> {obj.put("location2",$.$value);};
 
-<carrycommand> = (carry | move);
+<carrycommand> = carry | move;
 
 <location> = table (one | two | three);
-<objects> = (coke | red bull | juice | matches | cards | flowers | beer | water | cookies | peanuts | chocolate | creme | hazelnuts | wine | soap | kleenex | sponge | bag | headphone | cube | tape | cup | noodles | microphone | fanta);
+<objects> = coke | red bull | juice | matches | cards | flowers | beer | water | cookies | peanuts | chocolate | creme | hazelnuts | wine | soap | kleenex | sponge | bag | headphone | cube | tape | cup | noodles | microphone | fanta;
 
 <garbage>  = <garbage2>;
 

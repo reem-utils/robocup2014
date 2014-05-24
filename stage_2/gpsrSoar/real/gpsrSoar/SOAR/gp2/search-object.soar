@@ -27,6 +27,7 @@ sp {gp*propose*navigate-to*search-object
    (<l> ^id <oloc>)
    (<obj> ^id <oid>
           ^found no
+          ^grasped no
           ^locId {<> <rloc> <oloc>})
    (<d> ^object.id <oid>)
 -->

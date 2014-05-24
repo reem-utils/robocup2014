@@ -6,10 +6,8 @@ pushd elaborations
 source elaborations_source.soar
 popd
 source ask-name.soar
-source deliver.soar
 source deliver-toLoc.soar
 source deliver2.soar
-source exit-apartment.soar
 source follow.soar
 source grasp.soar
 source initialize-gp.soar

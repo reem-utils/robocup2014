@@ -19,6 +19,7 @@ from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from gesture_states.gesture_detection_sm import gesture_detection_sm
 from gesture_states.gesture_recognition import GestureRecognition 
+from gesture_states.wave_detection_sm import WaveDetection
 from gesture_detection_mock.msg import Gesture
 from navigation_states.get_current_robot_pose import get_current_robot_pose
 
@@ -54,11 +55,12 @@ class prepare_go_to_wave(smach.State):
     def __init__(self):
         smach.State.__init__(self,
                             outcomes=['succeeded', 'aborted', 'preempted'],
-                            input_keys=['gesture_detected', 'nav_to_coord_goal'],
+                            input_keys=['wave_position','wave_yaw_degree', 'nav_to_coord_goal'],
                             output_keys=['standard_error', 'nav_to_coord_goal'])
     def execute(self, userdata):
-        userdata.nav_to_coord_goal = [userdata.gesture_detected.gesture_position.position.x, userdata.gesture_detected.gesture_position.position.y, 
-                                            userdata.gesture_detected.gesture_position.orientation.w]
+        userdata.nav_to_coord_goal = [userdata.wave_position.point.x, userdata.wave_position.point.y, 
+                                            userdata.wave_yaw_degree]
+        
         #userdata.nav_to_coord_goal.y = userdata.gesture_detected.gesture_position.position.y
         #userdata.nav_to_coord_goal.yaw  = userdata.gesture_detected.gesture_position.orientation.w
         return 'succeeded'        
@@ -137,7 +139,7 @@ class Search_People_Emergency(smach.StateMachine):
 
             smach.StateMachine.add(
                 'Gesture_Recognition',
-                GestureRecognition('wave'),
+                WaveDetection(),
                 transitions={'succeeded':'Prepare_Go_To_Wave','aborted':'Gesture_Recognition', 'preempted':'preempted'})
             
             smach.StateMachine.add(

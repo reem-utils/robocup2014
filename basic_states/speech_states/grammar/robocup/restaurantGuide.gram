@@ -2,13 +2,19 @@
 
 grammar restaurantGuide;
 
-public <basic> = (<locations> | finish | <garbage> ){obj.put("external","1");}; 
+public <basic> = (<locations> | finish ) | <garbage> {obj.put("external","1");}; 
 
 
 <locations>= here at your <class> {obj.put("class",$.$value);} you have <objects> {obj.put("objects",$.$value);};
 
+<<<<<<< HEAD
 <class> = (beverage | snacks | drinks);
 <direction> = (right | left | back | front);
+=======
+
+<objects> = beverage | snacks | drinks;
+<direction> = right | left | back | front;
+>>>>>>> master
 
 <garbage>  = <garbage1>;
 

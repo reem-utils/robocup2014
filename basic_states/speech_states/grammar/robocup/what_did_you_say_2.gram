@@ -1,0 +1,27 @@
+#JSGF V1.0;
+
+grammar what_did_you_say;
+
+public <basic> = (  ( <begin> [is the] [<time>] <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( what is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | (what <attribute> {obj.put("attribute",$.$value);} does the <nationality> {obj.put("nationality",$.$value);} flag have) | (how many {obj.put("many",$.$value);} <quantity> {obj.put("quantity",$.$value);} are (there in Brazil | participating in the RoboCup at home contest this year) | (how much {obj.put("much",$.$value);} does a <price> {obj.put("price",$.$value);} cost) | <garbage> ) {obj.put("external","1");}; 
+
+<begin> = what | who;
+
+<info> = capital | president;
+<country> = brazil;
+<price> = beer;
+<attr> = fastest;
+<attribute> = colors;
+<object> = animal;
+<quantity> = people | inhabitants | teams;
+<time> = current | old;
+<nationality> = brazilian;
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 

@@ -81,15 +81,16 @@ class grasping_with_timeout(smach.StateMachine):
     """
     Executes a SM that: 
         Executes the Grasping SM (Object detection + Grasping)
-        Calculates the time_out.
+        And has a time_out 
         
     Required parameters: None
     
-    Optional parameters: None
+    Optional parameters: 
+        @param in_ttl:  indicates the maximum grasping time (or by userdata)
     
     Input keys:
         @key object_to_grasp: indicates the object's name we want to grasp.            
-        @key time_out_grasp: indicates the maximum grasping time
+        @key time_out_grasp: indicates the maximum grasping time (or by parameters)
     Output keys:
         @key standard_error: Error
     """
@@ -109,8 +110,9 @@ class grasping_with_timeout(smach.StateMachine):
                                         outcome_cb = out_cb)
 
             with sm_conc:
+                #Needs to be replaced by the actual Find_and_grasp_object SM
                 sm_conc.add(
-                    'Find_and_grab_object',
+                    'Find_and_grasp_object',
                     #Find_and_grab_object(),
                     DummyStateMachine())
                 
