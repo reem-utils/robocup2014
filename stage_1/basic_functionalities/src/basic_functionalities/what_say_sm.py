@@ -30,7 +30,7 @@ from speech_states.read_asr import ReadASR
 
 # Constants
 NUMBER_OF_QUESTIONS = 3
-GRAMMAR_NAME = 'robocup/what_did_you_say'
+GRAMMAR_NAME = 'robocup/what_did_you_say_2'
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -92,9 +92,18 @@ class SelectAnswer(smach.State):
 
         info = [tag for tag in questionTags if tag.key == 'info']
         country = [tag for tag in questionTags if tag.key == 'country']
+        
         attr = [tag for tag in questionTags if tag.key == 'attr']
         object = [tag for tag in questionTags if tag.key == 'object']
         
+        attribute = [tag for tag in questionTags if tag.key == 'attribute']
+        nationality = [tag for tag in questionTags if tag.key == 'nationality']
+        
+        many = [tag for tag in questionTags if tag.key == 'many']
+        quantity = [tag for tag in questionTags if tag.key == 'quantity']
+        
+        much = [tag for tag in questionTags if tag.key == 'much']
+        price = [tag for tag in questionTags if tag.key == 'price']
         #important to do add the .yalm before
         question_params = rospy.get_param("/question_list/questions/what_say")
     
@@ -115,6 +124,28 @@ class SelectAnswer(smach.State):
                 userdata.tts_wait_before_speaking = 0
                 userdata.standard_error=''
                 return 'succeeded'
+            
+            # Type many and quantity 
+            if (many and many[0].value == value[2]) and (quantity and quantity[0].value == value[3]):
+                userdata.tts_text = "The answer is " + value[4]
+                userdata.tts_wait_before_speaking = 0
+                userdata.standard_error=''
+                return 'succeeded'
+            
+            # Type attribute and nationality 
+            if (attribute and attribute[0].value == value[2]) and (nationality and nationality[0].value == value[3]):
+                userdata.tts_text = "The answer is " + value[4]
+                userdata.tts_wait_before_speaking = 0
+                userdata.standard_error=''
+                return 'succeeded'
+            
+            # Type attribute and nationality 
+            if (much and much[0].value == value[2]) and (price and price[0].value == value[3]):
+                userdata.tts_text = "The answer is " + value[4]
+                userdata.tts_wait_before_speaking = 0
+                userdata.standard_error=''
+                return 'succeeded'
+            
             
             # Process info -> value[2] and Process country -> value[3]
 #             if value[2] in userdata.asr_userSaid and value[3] in userdata.asr_userSaid:
@@ -335,3 +366,18 @@ class WhatSaySM(smach.StateMachine):
                  'say_end',
                  text_to_say("What did you say test finished"),
                  transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
+def main():
+    rospy.loginfo('what say Node')
+    rospy.init_node('what_say_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:
+        smach.StateMachine.add(
+            'what_say',
+            WhatSaySM(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()

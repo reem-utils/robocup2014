@@ -2,15 +2,19 @@
 
 grammar what_did_you_say;
 
-public <basic> = ( ( <begin> is the <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( <begin> is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | (<begin> many {obj.put("quantity",$.$value);} <quantity> {obj.put("qtype",$.$value);})  | <garbage> ) {obj.put("external","1");}; 
+public <basic> = (  ( <begin> [is the] [<time>] <info> {obj.put("info",$.$value);} of <country> {obj.put("country",$.$value);} ) | ( what is the <attr> {obj.put("attr",$.$value);} <object> in the world {obj.put("object",$.$value);} ) | (what <attribute> {obj.put("attribute",$.$value);} does the <nationality> {obj.put("nationality",$.$value);} flag have) | (how many {obj.put("many",$.$value);} <quantity> {obj.put("quantity",$.$value);} are (there in Brazil | participating in the RoboCup at home contest this year) | (how much {obj.put("much",$.$value);} does a <price> {obj.put("price",$.$value);} cost) | <garbage> ) {obj.put("external","1");}; 
 
-<begin> = what | who | how;
+<begin> = what | who;
+
 <info> = capital | president;
-<country> = spain | germany | holland | portugal | france | italy | russia | catalonia;
-<quantity> = inhabitants | teams;
-<attr> = heaviest | fastest;
+<country> = brazil;
+<price> = beer;
+<attr> = fastest;
+<attribute> = colors;
 <object> = animal;
-
+<quantity> = people | inhabitants | teams;
+<time> = current | old;
+<nationality> = brazilian;
 <garbage>  = <garbage2>;
 
 <garbage1> = _unk;
