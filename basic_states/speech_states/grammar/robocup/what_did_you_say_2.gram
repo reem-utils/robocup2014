@@ -1,0 +1,30 @@
+#JSGF V1.0;
+
+grammar what_did_you_say;
+
+public <basic> = ( <whatquest> | <howquest> | <whoquest>) | <garbage> ;
+
+<whatquest> = what (is the (<capital> | <animal>) | <color>);
+<howquest> = how ( <many> | <much>);
+<whoquest> = who is the current president of brazil {obj.put("questionumber","7");};
+
+<color> = colors does the brazilian flag have {obj.put("questionumber","3");};
+<capital> = capital of brazil {obj.put("questionumber","1");};
+<animal> = fastest animal in the world {obj.put("questionumber","2");};
+
+<many> = many (<inhabitants> | <teams>);
+<inhabitants> = inhabitants are there in brazil {obj.put("questionumber","4");};
+<teams> = teams are participating in the at home contest this year {obj.put("questionumber","5");};
+
+<much> = much does a beer cost {obj.put("questionumber","6");};
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 

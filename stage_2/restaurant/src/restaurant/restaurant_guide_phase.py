@@ -21,7 +21,7 @@ RESTAURANT_guide.PY
 """
 
 
-SAY_FINISH_FOLLOWING= "OK, now we can stard ordering 33"
+SAY_FINISH_FOLLOWING= "OK, now we can start ordering 33"
 SAY_LETS_GO=" i'M READY, WHEN YOU WANT WE CAN START"
 
 import roslib
@@ -43,7 +43,7 @@ gramar= 'robocup/restaurantGuide'
 class init_var(smach.State):
 
     def __init__(self):
-        smach.State.__init__(
+        smach.State.__init__(  
             self,
             outcomes=['succeeded', 'aborted','preempted'],
             input_keys=[],output_keys=['standard_error'])
@@ -124,7 +124,7 @@ class restaurantGuide(smach.StateMachine):
                 update.input = LOCALIZATION_MODE
                 return update
             
-            smach.StateMachine.add( 'CHANGE_STATE_MAP',
+            smach.StateMachine.add('CHANGE_STATE_MAP',
                                     ServiceState('pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_MAP_cb ),
                                     transitions = {'succeeded': 'LEARN_INIT',

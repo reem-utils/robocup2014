@@ -76,7 +76,7 @@ class SearchObjectSM(smach.StateMachine):
                                 'aborted': 'aborted',
                                 'preempted': 'preempted'})
             
-            # Ask for person if it can see anyone
+            # say that it goes to the poi
             smach.StateMachine.add(
                 'say_go_to_poi',
                 text_to_say("I'm going to take the object"),
@@ -88,9 +88,15 @@ class SearchObjectSM(smach.StateMachine):
                 'go_to_object',
                 nav_to_poi(),
                 remapping={"nav_to_poi_name": "object_location"},
-                transitions={'succeeded': 'aborted', 'aborted': 'aborted'})
-                #transitions={'succeeded': 'object_detection', 'aborted': 'aborted'})
-                        
+                transitions={'succeeded': 'say_start_recognition', 'aborted': 'aborted'})
+            
+            # Say start recognition
+            smach.StateMachine.add(
+                'say_start_recognition',
+                text_to_say("I'm going to start object recognition"),
+                transitions={'succeeded': 'object_detection', 'aborted': 'object_detection', 
+                'preempted': 'preempted'}) 
+                  
             # Object Detection
             smach.StateMachine.add(
                 'object_detection',

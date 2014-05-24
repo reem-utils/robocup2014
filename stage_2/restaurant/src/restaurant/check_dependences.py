@@ -23,11 +23,13 @@ ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",
                     "/sound"]
 
-PARAMS_LIST_NAMES = ["/mmap/poi/submap_0/object_one",
-                     "/mmap/poi/submap_0/object_two",
-                     "/mmap/poi/submap_0/delivery_one",
-                     "/mmap/poi/submap_0/delivery_two",
-                     "/mmap/poi/submap_0/delivery_three",
+PARAMS_LIST_NAMES = [# #################### Objects #####################
+                     "/mmap/object/information/beer",
+                     "/mmap/object/information/coke",
+                     "/mmap/object/information/cookies",
+                     "/mmap/object/information/fanta",
+                     "/mmap/object/information/water",
+                     # #################### Places #####################
                      "/mmap/poi/submap_0/ordering"]  # #################### Params #####################
 
 PARAMS_DELETE_NAMES = ["/restaurant"]
