@@ -28,17 +28,16 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 <preposition>   = in | to;
 
 
-<person> = Michael | Christopher | Matthew | Joshua | Daniel | David | Andrew | James | Justin | Joseph | Jessica | Ashley | Brittany | Amanda | Samantha | Sarah | Stephanie | Jennifer | Elizabeth | Lauren;
+<person> = andrew | charles | george | amanda | hannah | donald | frank | james | samuel | deborah | michelle | rebecca | taylor | paul | edward | referee | person;
 
-<location> = bench | hallway table | bar | side table | kitchen table | kitchen counter | stove | bed | dresser | side board | bookshelf | pantry | cabinet | dinner table | couch table;
+<location> = kitchen table | kitchen counter | kitchen | hallway | bookshelf | living room | armchair | pantry | dinner table | working desk | lift | entrance | exit | referee;
 
-<item> = deodorant | tooth paste | cleaner | fresh discs | sponge | fanta | beer can | coke | seven up | energy drink | orange juice | milk | apple juice | tomato sauce | peanut butter | chicken noodles | marmalade | veggie noodles | garlic sauce | chocolate | cookies | drops | crackers;
+<item> = coke | coke zero | juice | energy drink | aquarius | fanta | pringles | beans can | cookies | medicine | mug | cup;
 
-<category> = cleaning stuff | drink | food | snack;
+<category> = drink | food | utils;
 
-<loccategory> = <aloccategory> | <anloccategory>;
-<aloccategory> = a seating | a table | a shelf;
-<anloccategory> = an utensils | an appliance;
+<loccategory> = <aloccategory>;
+<aloccategory> = a table | a seating | a seat | a shelf | a door;
 
 
 <garbage>  = <garbage2>;

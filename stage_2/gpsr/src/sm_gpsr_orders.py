@@ -30,7 +30,9 @@ if TEST :
 else: 
     NUM_LOOPS_TODO = 3
     NUM_LOOPS_I = 0
-GRAMATICA = 'robocup/general'
+    
+GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
+#GRAMATICA = 'robocup/minimals'#'robocup/general'
 
 class sent():
     def __init__(self, text):

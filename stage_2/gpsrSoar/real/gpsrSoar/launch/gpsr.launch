@@ -8,10 +8,6 @@
   <!-- <include file="$(find tts_mock)/launch/tts_mock.launch" />
   -->
 
-
-  <rosparam file="$(find gpsr)/config/robocup_params.yaml"
-      command="load" ns="robocup_params" />
-
   <rosparam file="$(find gpsr)/config/cocktail_party.yaml"
       command="load" ns="cocktail_party" />
 

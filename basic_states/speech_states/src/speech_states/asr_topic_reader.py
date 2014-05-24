@@ -27,13 +27,15 @@ class topic_reader_state(smach.State):
         
         
          # USAR ENUM DE EL TIPO DE EVENT_ID, NO EL NUMERO
-        while not self.msg_data.event_id == 2 and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
+        while not self.msg_data.event_id == ASREvent.EVENT_RECOGNIZED_UTT and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
+            if self.msg_data.recognized_utterance.text =='' :##################k
+                print "self.msg_data is: " + str(self.msg_data)
             rospy.sleep(0.3)
             if self.preempt_requested():
                 return 'preempted'
         
         self.subs.unregister()
-        if self.msg_data.event_id == 2 :
+        if self.msg_data.event_id == ASREvent.EVENT_RECOGNIZED_UTT :
             userdata.topic_output_msg = copy.deepcopy(self.msg_data)
             userdata.standard_error = ''
             return 'succeeded'

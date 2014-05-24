@@ -32,18 +32,18 @@ from navigation_states.nav_to_poi import nav_to_poi #navigation.move_to_room imp
 '''
 SKILLS TODO:
 
-go_to (poi)
-grasp    (object)
-bring_to(person)
-bring_to_loc(poi)
-find_object(object)
-fins_person(person)
-point_at(poi)
-ask_name()
-follow(person)
-introduce_me()
-learn_person(person)
-recognize_person(person)
+--go_to (poi)
+grasp    (object)           --> grasping
+bring_to(person)            --> grasping
+bring_to_loc(poi)           --> grasping
+find_object(object)         --> object detection
+fins_person(person)         --> person detection
+point_at(poi)               --> to finish, adding point functionality and finishing turn one
+--ask_name()
+follow(person)              --> follow me
+--introduce_me()
+learn_person(person)        --> face recognition
+recognize_person(person)    --> face recognition
 
 '''
 
@@ -97,8 +97,8 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                 'SaySM',
-                #text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
-                dummy(),
+                text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                #dummy(),
                 transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
 
@@ -131,6 +131,22 @@ def call_go_to(loc_name,world):
     sm.execute()'''
     #############################################################################
     world.set_current_position(loc_name)
+    time.sleep(SLEEP_TIME)  
+    return "succeeded" 
+
+def call_guide_to(loc_name,world):
+    
+    tosay = "Please follow me to the "+str(loc_name)
+    speak = speaker(tosay)
+    speak.execute()
+    rospy.logwarn('call_guide_to '+ loc_name)
+    #############################################################################
+    '''sm = nav_to_poi(poi_name = loc_name)
+    sm.execute()'''
+    #############################################################################
+    print(world.robot.locId)
+    world.set_current_position(loc_name)
+    print(world.robot.locId)
     time.sleep(SLEEP_TIME)  
     return "succeeded" 
 
@@ -212,10 +228,10 @@ def call_point_at(loc_name): #TODO  #to finish, test and include
     speak.execute()
     rospy.logwarn('call_point_at ' + loc_name)
     #############################################################################
-    '''
+    
     sm = point_to_poi(loc_name)    #to finish, test and include
     sm.execute()
-    '''
+    
     #############################################################################    
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -383,6 +399,7 @@ def call_ask_name(): #TOMAKESURE this is what we need if we even need this
     rospy.logwarn( 'call_ask_name')
     #############################################################################
     '''
+    Maybe we should save that the person in front of me is, instead of a random person the one with the identifier asociated to his name
     '''
     #############################################################################
     time.sleep(SLEEP_TIME)
@@ -401,7 +418,7 @@ def call_introduce_me(): #TOASKSAM for a proper introduction
     return succeeded
     '''
     
-    tosay = "Hi, I am reem a robot designed by PAL robotics and prepared by la Salle students to win the robocup"
+    tosay = "Hi, I am reem a robot designed by PAL robotics and prepared by la Salle students to take part in the robocup competition"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn( 'call_introduce_me')
@@ -559,6 +576,14 @@ def main(world):
                     to_pers = command.GetParameterValue("pers")
                     pers = idx2obj(int(to_pers),'PERSONS')
                     out = call_recognize_person(pers)
+                    
+                elif command_name == "guide":
+                    loc_to_navigate = command.GetParameterValue("loc")
+                    loc = idx2obj(int(loc_to_navigate), 'LOCATIONS')
+                    print loc
+                    if (loc =="NULL"):
+                        print "ERROR: la loacalizacion %s no existe" % (loc_to_navigate)
+                    out = call_guide_to(loc,world)
 
                 elif command_name == "achieved":
                     goal_achieved = True

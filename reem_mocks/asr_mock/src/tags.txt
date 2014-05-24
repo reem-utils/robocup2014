@@ -1,5 +1,5 @@
 object=spoon
-location=fridge
+location=lift
 yes=yes
 name=cris
 objectA=coke

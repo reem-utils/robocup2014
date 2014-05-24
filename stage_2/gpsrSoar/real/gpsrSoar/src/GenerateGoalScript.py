@@ -222,6 +222,8 @@ class world():
             self.goal_recognize(GOAL)
         elif verb == 'point_at':
             self.goal_point_at(GOAL)
+        elif verb == 'guide':
+            self.goal_guide(GOAL)
         # return self.gen_goal()
         return self
 
@@ -407,6 +409,10 @@ class world():
         self.item.toBeGrasped = NO
         self.robot.obj1Id = GOAL.item
 
+
+    def goal_guide(self, GOAL):
+        self.robot.locId = GOAL.location
+
 # def printNewGoal(oaction='go_to', oitem=0, operson=0, olocation='kitchen',
 #     templatefile='-goal.soar', goalfile='goal-test'):
 #     oaction = oaction.replace('_', '-')
@@ -453,7 +459,7 @@ def compileInit(oaction='go_to', oitem=0, operson=0, olocation=0,
 
     allFile = tempfile.read()
     # print 'u'
-
+    
     GOAL = goal(oaction, oitem, operson, olocation)
 
     print current_world.robot.locId
