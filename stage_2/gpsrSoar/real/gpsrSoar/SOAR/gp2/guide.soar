@@ -1,0 +1,46 @@
+sp {gp*propose*guide
+   (state <s> ^name gp
+              ^robot <r>
+              ^location <l>
+              ^desired <d>)
+   (<r> ^locId <rloc>)
+   (<l> ^id <rrloc>)
+   (<d> ^robot <rr>
+        ^name guide)
+   (<rr> ^locId {<> <rloc> <rrloc>})
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name guide
+         ^toLoc <l>)
+}
+
+sp {gp*apply*guide
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^desired <d>)
+   (<op> ^name guide
+         ^toLoc <l>)
+   (<l> ^id <lid>)
+   (<d> ^name guide)
+-->
+   (<out> ^guide.loc <lid>)
+}
+
+
+sp {gp*apply*guide*remove-guide
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^robot <r>)
+   (<op> ^name guide
+         ^toLoc <lop>)
+   
+   (<r> ^locId <rlocid>)
+   (<lop> ^id <lopid>)
+   
+   (<out> ^guide <st>)
+   (<st> ^status complete)
+-->
+   (<r> ^locId <lopid>
+               <rlocid> -)
+   (<out> ^guide <st> -)
+}

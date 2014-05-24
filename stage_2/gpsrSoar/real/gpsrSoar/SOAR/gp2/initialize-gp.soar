@@ -10,7 +10,7 @@ sp {gp*apply*initialize-gp
    (state <s> ^operator.name initialize-gp)
 -->
    (<s> ^name gp
-        ^location <l0> <l1> <l2> <l3> <l4> <l5> <l6> <l7> <l8> <l9> <l10> <l11> <l12> <l13> <l14> <l15> <l16> <l17> <l18> <l19> <l20> <l21> <l22> <l23> <l24> <l25> <l26> <l27> <l28>
+        ^location <l0> <l1> <l2> <l3> <l4> <l5> <l6> <l7> <l8> <l9> <l10> <l11> <l12> <l13>
         ^robot <r>
         ^object <obj1>
         ^person <pers1>
@@ -29,48 +29,37 @@ sp {gp*apply*initialize-gp
    (<l11> ^id 11 ^pointed-at no)
    (<l12> ^id 12 ^pointed-at no)
    (<l13> ^id 13 ^pointed-at no)
-   (<l14> ^id 14 ^pointed-at no)
-   (<l15> ^id 15 ^pointed-at no)
-   (<l16> ^id 16 ^pointed-at no)
-   (<l17> ^id 17 ^pointed-at no)
-   (<l18> ^id 18 ^pointed-at no)
-   (<l19> ^id 19 ^pointed-at no)
-   (<l20> ^id 20 ^pointed-at no)
-   (<l21> ^id 21 ^pointed-at no)
-   (<l22> ^id 22 ^pointed-at no)
-   (<l23> ^id 23 ^pointed-at no)
-   (<l24> ^id 24 ^pointed-at no)
-   (<l25> ^id 25 ^pointed-at no)
-   (<l26> ^id 26 ^pointed-at no)
-   (<l27> ^id 27 ^pointed-at no)
-   (<l28> ^id 28 ^pointed-at no)
       (<r> ^pointedAtLoc -1
            ^introduced no
-           ^locId 12
+           ^locId 13
            ^id 1
-           ^obj1Id 6)
+           ^obj1Id -1)
 
       (<obj1> ^delivered no
            ^pointed no
-           ^locId 12
+           ^locId -1
            ^toBeGrasped no
-           ^grasped yes
+           ^grasped no
            ^found no
-           ^id 6)
+           ^id -1)
 
       (<pers1> ^followed no
            ^memorized no
-           ^locId 27
+           ^locId 13
            ^obj1Id -1
            ^recognized no
            ^askedName no
            ^near no
            ^found no
-           ^id 5)
+           ^id 15)
 
-   (<d> ^name go-to
+   (<d> ^name point-at
+        ^location <ll>
         ^robot <rr>)
-   (<rr> ^locId 26
+   (<ll> ^id 
+           ^pointed_at yes
+)
+   (<rr> ^pointedAtLoc 
          ^id 1)
 
 }

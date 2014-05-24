@@ -25,13 +25,15 @@ class topic_reader_state(smach.State):
         self.msg_data=ASREvent()
         self.subs=rospy.Subscriber(topic_name, ASREvent, self.callback_topic)
         
+
         while not self.msg_data.event_id == ASREvent.EVENT_RECOGNIZED_UTT and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
             rospy.sleep(0.3)
             if self.preempt_requested():
                 return 'preempted'
 
         self.subs.unregister()
-        if self.msg_data.event_id == ASREvent.EVENT_RECOGNIZED_UTT:
+
+        if self.msg_data.event_id == ASREvent.EVENT_RECOGNIZED_UTT :
             userdata.topic_output_msg = copy.deepcopy(self.msg_data)
             userdata.standard_error = ''
             return 'succeeded'

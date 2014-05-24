@@ -31,3 +31,4 @@ exit exit
 recognize recognize_person
 point_at point_at
 point point_at
+guide guide

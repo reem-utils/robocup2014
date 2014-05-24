@@ -1,8 +1,19 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    sofa: [submap_0, sofa, 1.0, 1.0, 0]
-    fridge: [submap_0, fridge, -1.0, 0.0, 0]
-    exit: [submap_0, exit, 1.0, -1.0, 0]
+    kitchen table: [submap_0, kitchen table, 1.0, 1.0, 0]
+    kitchen counter: [submap_0, kitchen counter, -1.0, 0.0, 0]
+    kitchen: [submap_0, kitchen, 1.0, -1.0, 0]
     referee: [submap_0, referee, 0.0, 0.0, 0]
+    hallway: [submap_0, hallway, 0.0, 0.0, 0]
+    bookshelf: [submap_0, bookshelf, 0.0, 0.0, 0]
+    living room: [submap_0, living room, 0.0, 0.0, 0]
+    dinner table: [submap_0, dinner table, 0.0, 0.0, 0]
+    pantry: [submap_0, pantry, 0.0, 0.0, 0]
+    armchair: [submap_0, armchair, 0.0, 0.0, 0]
+    working desk: [submap_0, working desk, 0.0, 0.0, 0]
+    lift: [submap_0, lift, 0.0, 0.0, 0]
+    exit: [submap_0, exit, 0.0, 0.0, 0]
+    entrance: [submap_0, entrance, 0.0, 0.0, 0]
+    
 
