@@ -19,7 +19,7 @@ class topic_reader_state(smach.State):
                              output_keys=['topic_output_msg', 'standard_error'])
         self.topic_name = topic_name
         self.topic_time_out = topic_time_out
-
+        print 'Topic reader ASR Init'
     def execute(self, userdata):
         self.time_init=rospy.get_rostime()
         self.msg_data=ASREvent()
@@ -43,7 +43,8 @@ class topic_reader_state(smach.State):
             return 'aborted'
             
     def callback_topic(self,data):
-        self.msg_data = data
+        if data.event_id == ASREvent.EVENT_RECOGNIZED_UTT:
+            self.msg_data = data
         
 
 class topic_reader(smach.StateMachine):
