@@ -1,6 +1,6 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    exit_door: [submap_0, exit_door, -6.03, 5.73, 0.30]
-    intermediate: [submap_0, intermediate, -5.00, 3.00, 0.50]
+    exit_door: [submap_0, exit_door, -0.966, -8.503,  2.946]
+    intermediate: [submap_0, intermediate, -4.980, -6.084, 0.119]
 
