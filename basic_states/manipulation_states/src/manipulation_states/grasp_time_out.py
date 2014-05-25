@@ -95,7 +95,7 @@ class grasping_with_timeout(smach.StateMachine):
         @key standard_error: Error
     """
         
-    def __init__(self, in_ttl):
+    def __init__(self, in_ttl=20.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'time_out'], 
                                     input_keys=['object_to_grasp', 'time_out_grasp'],
                                     output_keys=['standard_error'])
