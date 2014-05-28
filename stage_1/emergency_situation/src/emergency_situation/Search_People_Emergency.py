@@ -134,7 +134,6 @@ class Search_People_Emergency(smach.StateMachine):
 
             # Search for a Wave Gesture
             # Output_keys: gesture_detected: type Gesture
-            self.userdata.gesture_name = 'wave'
             self.userdata.nav_to_coord = [0, 0, 0]
             #Look Down
             #Move head right/left
@@ -172,15 +171,4 @@ class Search_People_Emergency(smach.StateMachine):
                 'TreatPoseForCoord',
                 PoseToArray(),
                 transitions={'succeeded':'succeeded', 'aborted':'Register_Position', 'preempted':'Register_Position'})
-            
-            
-            
-            # smach.StateMachine.add(
-            #     'Detect_Wave',
-            #     gesture_detection_sm(),
-            #     transitions={'succeeded':'Analyze_Wave', 'aborted':'Analyze_Wave', 'preempted':'Analyze_Wave'})
-            # smach.StateMachine.add(
-            #     'Analyze_Wave',
-            #     Analyze_Wave(),
-            #     transitions={'succeeded':'Go_to_Wave', 'aborted':'Detect_Wave', 'preempted':'Detect_Wave'})
             
