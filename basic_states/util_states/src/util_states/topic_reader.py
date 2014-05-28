@@ -52,8 +52,15 @@ class topic_reader_state(smach.State):
                 userdata.standard_error = ''
                 return 'succeeded'
             else :
-                userdata.standard_error = "Topic Reader : TimeOut Error"
+                #Time out to consider...
+                #The following snippet is an example of usage.
+                
+#                 userdata.topic_output_msg = ''
+#                 if rospy.get_rostime().secs - self.time_init.secs > self.topic_time_out:
+#                     userdata.standard_error = "Topic Reader : TimeOut Error"
+#                     return 'topic_reader_time_out'
                 userdata.topic_output_msg = ''
+                userdata.standard_error = "Topic Reader : TimeOut Error"
                 return 'aborted'
             
     def callback_topic(self,data):

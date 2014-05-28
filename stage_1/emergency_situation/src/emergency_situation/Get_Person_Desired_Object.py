@@ -178,7 +178,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
             smach.StateMachine.add(
                 'Listen_Question',
-                ListenToSM(grammar='robocup/drinks'),
+                ListenToSM(grammar='robocup/emergency'),
                 transitions={'succeeded':'Process_Tags', 'aborted':'Ask_Question', 'preempted':'Ask_Question'})
 
             # Get the output from AskQuestionSM, process it, and search in the yaml file for the location of the object asked 
@@ -186,7 +186,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
             # Output keys: object
             smach.StateMachine.add(
                 'Process_Tags',
-                #DummyStateMachine(),
                 Process_Tags(),
                 transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             smach.StateMachine.add(
