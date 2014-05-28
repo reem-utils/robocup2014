@@ -37,7 +37,7 @@ class prepare_move_head(smach.State):
     def execute(self, userdata):
         
         if userdata.loop_iterations == NUMBER_OF_HEAD_POSES:
-            return 'end'
+            return 'end_searching'
         else:
             rospy.loginfo(userdata.loop_iterations)
             userdata.standard_error='OK'
@@ -74,6 +74,11 @@ class Search_Wave_SM(smach.StateMachine):
 
         Required Parameters: 
             None
+            
+        Outcomes:
+            'succeeded' : Found a person
+            'aborted' : something went wrong
+            'end_searching' : No one is found, so searching is cancelled
 
     """
     def __init__(self, head_position=None):
@@ -87,7 +92,7 @@ class Search_Wave_SM(smach.StateMachine):
                                    'Move_head_prepare',
                                    prepare_move_head(),
                                     transitions={'succeeded': 'move_head', 'aborted': 'aborted', 
-                                                'preempted': 'preempted', 'end':'end_searching'})
+                                                'preempted': 'preempted', 'end_searching':'end_searching'})
             smach.StateMachine.add(
                                    'move_head',
                                    move_head_form(head_up_down='normal'),

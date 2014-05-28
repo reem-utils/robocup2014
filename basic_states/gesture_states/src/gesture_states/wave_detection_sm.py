@@ -122,7 +122,7 @@ class TransformGesture(smach.State):
 
             wave_degree = math.atan2(aux_pose.position.y, aux_pose.position.x)
             userdata.wave_yaw_degree = wave_degree
-            rospy.loginfo("Degree Transformed2222: ----[" + str(wave_degree) + "]----")
+            rospy.loginfo("Degree Transformed 2: ----[" + str(wave_degree) + "]----")
 
             if transformed_gesture_pointstamped is None:
                 return 'aborted'
@@ -149,15 +149,15 @@ class WaveDetection(smach.StateMachine):
             None
 
     """
-    def __init__(self):
+    def __init__(self, time_for_wave=20.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                  input_keys=[],
                                  output_keys=['wave_position', 'wave_yaw_degree','standard_error'])
         with self:
             smach.StateMachine.add(
                 'Gesture_Topic_Reader',
-                topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=60.0, blocked=False),
-                transitions={'succeeded':'TransformGesture', 'preempted':'Gesture_Topic_Reader', 'aborted':'Gesture_Topic_Reader'})
+                topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=time_for_wave, blocked=False),
+                transitions={'succeeded':'TransformGesture', 'preempted':'preempted', 'aborted':'aborted'})
 
             smach.StateMachine.add(
                 'TransformGesture',
