@@ -100,26 +100,6 @@ class Save_People_Emergency(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-            smach.StateMachine.add(
-                'Prepare_Say_Rescue',
-                prepare_tts('I am going to rescue you!'),
-                transitions={'succeeded':'Say_Rescue', 'aborted':'Say_Rescue', 'preempted':'Say_Rescue'})
-            smach.StateMachine.add(
-                'Say_Rescue',
-                text_to_say(),
-                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
-
-            # TODO: instead of using nav_to_poi(), we'll be using nav_to_coord(), as we have the coordenates of the person in emergency
-            # It is done in the Search_People_Emergency SM
-#            smach.StateMachine.add(
-#                'Prepare_Go_To_Person',
-#                prepare_coord_person_emergency(),
-#                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
-#            smach.StateMachine.add(
-#                'Go_To_Person',
-#                DummyStateMachine(),
-#                #nav_to_coord('\base_link'),
-#                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             #It should be Speech Recognition: ListenTo(?)
             smach.StateMachine.add(
