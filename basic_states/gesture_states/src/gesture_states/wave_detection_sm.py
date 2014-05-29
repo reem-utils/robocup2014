@@ -160,6 +160,9 @@ class WaveDetection(smach.StateMachine):
                 'Gesture_Topic_Reader',
                 topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=time_for_wave, blocked=False),
                 transitions={'succeeded':'TransformGesture', 'preempted':'preempted', 'aborted':'aborted'})
+            
+            #topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=60.0, blocked=False),
+            #      transitions={'succeeded':'TransformGesture', 'preempted':'Gesture_Topic_Reader', 'aborted':'Gesture_Topic_Reader'})
 
             smach.StateMachine.add(
                 'TransformGesture',
