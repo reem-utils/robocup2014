@@ -7,7 +7,7 @@ public <basic> = ( <yes> {obj.put("yes",$.$value);}  |  <no> {obj.put("no",$.$va
 <yes> = yes | yeah ;
 <no> = no;
 
-<garbage>  = <garbage1;
+<garbage>  = <garbage1>;
 
 <garbage1> = _unk;
 <garbage2> = <garbage1> | (_unk _unk);
