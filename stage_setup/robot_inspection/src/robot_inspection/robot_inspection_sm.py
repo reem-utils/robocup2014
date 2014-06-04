@@ -118,7 +118,13 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'save_robot_position',
                 save_robot_position(),
-                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted':'preempted'})
+                transitions={'succeeded': 'say_save_position', 'aborted': 'aborted', 'preempted':'preempted'})
+            
+            # Indicate that we are saving our position
+            smach.StateMachine.add(
+                'say_save_position',
+                text_to_say("I've saved my position, please touch my button"),
+                transitions= {'succeeded':'wait_time', 'aborted':'aborted', 'preempted':'preempted'})
             
             # Test of robot 
             smach.StateMachine.add(
@@ -130,6 +136,12 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'end_time_inspection',
                 text_to_say("Time finished"),
+                transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
+            
+            # Indicate that we are ready to go
+            smach.StateMachine.add(
+                'say_end_time_inspection',
+                text_to_say("I suppose that, if someone had to stop me, already did it. Now I'm leaving"),
                 transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
             
             # Set position
@@ -144,9 +156,14 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'cross_door_out',
                 nav_to_poi('exit_door'),
-                transitions={'succeeded': 'succeeded', 'aborted': 'cross_door_out', 
+                transitions={'succeeded': 'say_exit', 'aborted': 'cross_door_out', 
                 'preempted': 'preempted'})  
 
+            # Indicate that we are ready to go
+            smach.StateMachine.add(
+                'say_exit',
+                text_to_say("I arrived successfully to the exit, challenge complete"),
+                transitions= {'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
 
                  
 

@@ -247,7 +247,7 @@ class WhatSaySM(smach.StateMachine):
             # Enter room
             smach.StateMachine.add(
                  'say_what_did_you_say',
-                 text_to_say("What did you say test"),
+                 text_to_say("I'm beginning the what did you say test"),
                  #transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
                  transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
             

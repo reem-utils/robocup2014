@@ -1,4 +1,4 @@
-object=spoon
+object=coke
 location=lift
 yes=yes
 name=cris

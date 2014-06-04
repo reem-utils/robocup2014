@@ -11,6 +11,7 @@ Created on Tue Oct 22 12:00:00 2013
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from speech_states.say import text_to_say
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -85,8 +86,14 @@ class Avoid_That(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_Avoid',
                 prepare_Avoid(),
-                transitions={'succeeded': 'go_to_poi', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_go_to_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
+            
+            # Announce going to a place
+            smach.StateMachine.add(
+                    'say_go_to_poi',
+                    text_to_say(text="I'm going to my destiny"),
+                    transitions={'succeeded': 'go_to_poi'})
 
             # Go to the POI
             smach.StateMachine.add(
