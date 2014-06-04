@@ -21,7 +21,7 @@ from speech_states.ask_question import AskQuestionSM
 
 # import rospy
 SENTENCE_SAID = '/parsing/sentence' 
-TEST = True
+TEST = False
 TEST_SENTENCE1 = "cat1Sentences/sentence"
 TEST_SENTENCE2 = "cat2Sentences/sentence"
 if TEST : 
