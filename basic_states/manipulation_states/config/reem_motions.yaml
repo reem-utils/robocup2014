@@ -468,8 +468,8 @@ play_motion:
         arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
         arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
       points:
-      - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-          0.0, 0.0, 0.0, 0.0, 0.0]
+      - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         time_from_start: 0.0
       meta:
         name: Home

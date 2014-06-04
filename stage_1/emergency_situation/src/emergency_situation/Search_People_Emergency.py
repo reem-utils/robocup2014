@@ -91,7 +91,7 @@ class PoseToArray(smach.State):
 class Search_People_Emergency(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation's Search People SM.
-    Pre: The robot has to be in the same room as the peson.
+    Pre: The robot has to be in the same room as the person.
     It is a SuperStateMachine (contains submachines) with these functionalities (draft):
     1. Wave detector
     2. Face detector
