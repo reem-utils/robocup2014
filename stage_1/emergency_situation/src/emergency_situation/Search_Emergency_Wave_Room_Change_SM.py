@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Created on Sat May 28 11:30:00 2014
+Created on Sat May 29 13:30:00 2014
 
 @author: Chang Long Zhu
 @email: changlongzj@gmail.com
@@ -39,43 +39,19 @@ class DummyStateMachine(smach.State):
         rospy.sleep(1)
         return 'succeeded'
 
-# Class that prepare the value need for nav_to_poi
-class prepare_coord_person_emergency(smach.State):
+class Select_Possible_Poi(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['person_location'], 
-            output_keys=['nav_to_coord_goal']) 
-
-    def execute(self,userdata):
-        roll, pitch, yaw = euler_from_quaternion([userdata.person_location.orientation.x,
-                                userdata.person_location.orientation.y,
-                                userdata.person_location.orientation.z,
-                                userdata.person_location.orientation.w])
-        userdata.nav_to_coord_goal = [userdata.person_location.position.x, userdata.person_location.position.y, yaw]
-
-        return 'succeeded'
-
-class prepare_tts(smach.State):
-    def __init__(self, tts_text_phrase):
-        smach.State.__init__(self, 
-            outcomes=['succeeded','aborted', 'preempted'], 
-            output_keys=['tts_text']) 
-        self.tts_text_phrase_in = tts_text_phrase
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
+                                input_keys=[],
+                                output_keys=['standard_error', 'nav_to_poi_name'])
     def execute(self, userdata):
-        userdata.tts_text = self.tts_text_phrase_in
-
+        
         return 'succeeded'
 
 
-class Save_People_Emergency(smach.StateMachine):
+class Search_Emergency_Wave_Room_Change(smach.StateMachine):
     """
-    Executes a SM that does the Emergency Situation's Save People SM.
-    It is a SuperStateMachine (contains submachines) with these functionalities (draft):
-    1. Go to Person location
-    2. Ask Status
-    3. Register position
-    4. Save info
-    What to do if fail?
+    Executes a SM that navigates to each room to detect a wave gesture, in order to find the person in emergency state.
 
     Required parameters:
     No parameters.
@@ -84,49 +60,29 @@ class Save_People_Emergency(smach.StateMachine):
     No optional parameters
 
     Input_keys:
-    @key: person_location: person's location (Pose or PoseStamped)
-
+        None
     Output Keys:
-        none
+        @key poi_location: location of the emergency room
+        @key wave_position 
+        @key wave_yaw_degree
     No io_keys.
 
     Nothing must be taken into account to use this SM.
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['person_location'])
+                                    input_keys=[],
+                                    output_keys=['poi_location'])
 
+        
         with self:           
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-
-            #It should be Speech Recognition: ListenTo(?)
-            smach.StateMachine.add(
-                'Prepare_Ask_Status',
-                prepare_tts('Are you Ok?'),
-                transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
-            smach.StateMachine.add(
-                'Ask_Status',
-                text_to_say(),
-                transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
-            #TODO: Do we have to add an SayYesOrNoSM?
-            # smach.StateMachine.add(
-            #     'Yes_No',
-            #     SayYesOrNoSM(),
-            #     transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
-            
-            #TODO: Actually Generate the PDF (TODO: Look for USB/Path...)
-            #Save_Info(): Saves the emergency info and generates a pdf file
-            #input_keys: emergency_location
+    
             smach.StateMachine.add(
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-#             
-#             smach.StateMachine.add(
-#                 'Say_Save',
-#                 text_to_say('Information Saved'),
-#                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-            
+

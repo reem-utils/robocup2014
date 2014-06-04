@@ -42,6 +42,9 @@ class TransformGesture(smach.State):
         #self.gesture_data = self.userdata.gesture_data.topic_output_msg
         
     def execute(self, userdata): 
+        userdata.wave_position = PoseStamped()
+        userdata.wave_yaw_degree = 0.0
+        
         self.gesture_data = userdata.topic_output_msg
         rospy.loginfo("Got gesture:\n" + str(self.gesture_data))
         #self.gesture_data = Gesture()
@@ -69,7 +72,7 @@ class TransformGesture(smach.State):
 
         try:
             transformed_gesture_pointstamped = self.tf_listener.transformPoint(final_frame_id, gesture_pointstamped)
-            rospy.loginfo("Transformed pose:\n" + str(transformed_gesture_pointstamped))
+            rospy.logwarn("Transformed pose:\n" + str(transformed_gesture_pointstamped))
             # Debugging PoseStamped
             pub2_ps = PoseStamped(
                                header = Header(
@@ -82,8 +85,7 @@ class TransformGesture(smach.State):
                                              )
                               )
             self.pub2.publish(pub2_ps)
-            userdata.wave_position = transformed_gesture_pointstamped
-
+            
             userdata.wave_position = transformed_gesture_pointstamped
 
             aux_pose = Pose()
@@ -92,10 +94,10 @@ class TransformGesture(smach.State):
 
             wave_degree = math.atan2(aux_pose.position.y, aux_pose.position.x)
             userdata.wave_yaw_degree = wave_degree
-            rospy.loginfo("Degree Transformed: ----[" + str(wave_degree) + "]----")
+            rospy.logwarn("Degree Transformed: ----[" + str(wave_degree) + "]----")
             return 'succeeded'
         except:
-            rospy.loginfo('Transform Exception -- Trying again')
+            rospy.logwarn('Transform Exception -- Trying again')
             #userdata.wave_position = PointStamped()
             rospy.sleep(1)
 
@@ -158,6 +160,9 @@ class WaveDetection(smach.StateMachine):
                 'Gesture_Topic_Reader',
                 topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=time_for_wave, blocked=False),
                 transitions={'succeeded':'TransformGesture', 'preempted':'preempted', 'aborted':'aborted'})
+            
+            #topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=60.0, blocked=False),
+            #      transitions={'succeeded':'TransformGesture', 'preempted':'Gesture_Topic_Reader', 'aborted':'Gesture_Topic_Reader'})
 
             smach.StateMachine.add(
                 'TransformGesture',
