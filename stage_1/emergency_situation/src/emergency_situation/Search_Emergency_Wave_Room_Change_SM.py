@@ -10,14 +10,9 @@ Created on Sat May 29 13:30:00 2014
 
 import rospy
 import smach
-from navigation_states.get_current_robot_pose import get_current_robot_pose
-from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
-from navigation_states.enter_room import EnterRoomSM
 from speech_states.say import text_to_say
-from manipulation_states.play_motion_sm import play_motion_sm
-from util_states.topic_reader import topic_reader
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from gesture_states.search_wave_sm import Search_Wave_SM
 
 #from emergency_situation.GeneratePDF_State import GeneratePDF_State
 
@@ -26,8 +21,6 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 possible_pois = []
-
-import random
 
 class Prepare_Data(smach.State):
     def __init__(self):
@@ -111,7 +104,11 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
                 'Navigate_to_Room',
                 nav_to_poi(),
                 remapping={'nav_to_poi_name':'nav_to_poi_name_possible'},
-                transitions={'succeeded': 'Search_Emergency', 'aborted': 'aborted', 'preempted': 'preempted'})
+                transitions={'succeeded': 'Search_Wave', 'aborted': 'Navigate_to_Room', 'preempted': 'preempted'})
+            smach.StateMachine.add(
+                'Search_Wave',
+                Search_Wave_SM(),
+                transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted', 'end_searching':'Search_Emergency'})
 
 
 def main():
