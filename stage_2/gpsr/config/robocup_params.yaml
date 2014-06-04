@@ -1,4 +1,4 @@
-locations: ["kitchen_table", "kitchen_counter", "kitchen", "hallway", "bookshelf", "living_room", "armchair", "pantry", "dinner_table", "working_desk", "lift", "entrance", "exit", "referee"]
+locations: ["kitchen_table", "kitchen_counter", "kitchen", "hallway", "bookshelf", "living_room", "armchair", "pantry", "dinner_table", "working_desk", "lift", "entrance", "exit", "referee", "trash_bin"]
 
 items: ["coke", "coke_zero", "juice", "energy_drink", "aquarius", "fanta", "pringles", "beans_can", "cookies", "medicine", "mug", "cup"]
 

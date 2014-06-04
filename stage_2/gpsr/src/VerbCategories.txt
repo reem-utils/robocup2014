@@ -21,6 +21,7 @@ bring bring_to
 give bring_to
 carry bring_to
 carry_to bring_to
+put bring_to
 retrieve bring_from
 retrieve_from bring_from
 bring_from bring_from
