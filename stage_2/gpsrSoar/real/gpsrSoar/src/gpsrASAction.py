@@ -144,6 +144,7 @@ def ask_category(category):
             return 'deodorant'
         if category == "kitchenware":
             return 'spoon'
+    print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
     obj = ad.userdata._data['object_name']
