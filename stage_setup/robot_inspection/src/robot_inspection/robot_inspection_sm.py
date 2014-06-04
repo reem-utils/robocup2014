@@ -78,12 +78,15 @@ class RobotInspectionSM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
+            self.userdata.tts_time_before_speaking = 0
+            self.userdata.tts_text = ""
+            self.userdata.tts_lang = ""
             
             # Indicate that we are ready
             smach.StateMachine.add(
                 'say_ready_inspection',
                 text_to_say("I'm ready for Robot Inspection test"),
-                transitions= {'succeeded':'enter_start_door', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions= {'succeeded':'enter_start_door', 'aborted':'enter_start_door', 'preempted':'preempted'})
             
             # Cross start door and go to intermediate point 
             smach.StateMachine.add(
@@ -100,55 +103,55 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 "robot_presentation",
                 ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
-                transitions={'succeeded': 'home_position', 'aborted': "aborted"})
+                transitions={'succeeded': 'home_position', 'aborted': "robot_presentation"})
             
             # Home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm('home', 10),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': 'aborted', 'preempted': 'succeeded'})
+                play_motion_sm('home'),
+                transitions={'succeeded': 'get_actual_pos', 'aborted': 'home_position', 'preempted': 'succeeded'})
            
             # Calculate the actual position
             smach.StateMachine.add(
                 'get_actual_pos',
                 get_current_robot_pose(),
-                transitions={'succeeded': 'wait_time', 'aborted': 'aborted', 'preempted': 'succeeded'})
+                transitions={'succeeded': 'save_robot_position', 'aborted': 'get_actual_pos', 'preempted': 'succeeded'})
 
             # Save position
             smach.StateMachine.add(
                 'save_robot_position',
                 save_robot_position(),
-                transitions={'succeeded': 'say_save_position', 'aborted': 'aborted', 'preempted':'preempted'})
+                transitions={'succeeded': 'say_save_position', 'aborted': 'save_robot_position', 'preempted':'preempted'})
             
             # Indicate that we are saving our position
             smach.StateMachine.add(
                 'say_save_position',
                 text_to_say("I've saved my position, please touch my button"),
-                transitions= {'succeeded':'wait_time', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions= {'succeeded':'wait_time', 'aborted':'wait_time', 'preempted':'preempted'})
             
             # Test of robot 
             smach.StateMachine.add(
                  'wait_time',
                  Sleeper(20),
-                 transitions={'succeeded': 'end_time_inspection', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'end_time_inspection', 'aborted': 'end_time_inspection'})
 
             # Indicate that we are ready
             smach.StateMachine.add(
                 'end_time_inspection',
                 text_to_say("Time finished"),
-                transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
             
             # Indicate that we are ready to go
             smach.StateMachine.add(
                 'say_end_time_inspection',
                 text_to_say("I suppose that, if someone had to stop me, already did it. Now I'm leaving"),
-                transitions= {'succeeded':'set_robot_position', 'aborted':'aborted', 'preempted':'preempted'})
+                transitions= {'succeeded':'set_robot_position', 'aborted':'set_robot_position', 'preempted':'preempted'})
             
             # Set position
             smach.StateMachine.add(
                 'set_robot_position',
                 set_robot_position(),
-                transitions={'succeeded': 'cross_door_out', 'aborted': 'aborted', 
+                transitions={'succeeded': 'cross_door_out', 'aborted': 'set_robot_position', 
                 'preempted': 'preempted'})
                         
             # Go to the exit door and cross exit door 

@@ -99,8 +99,14 @@ class Avoid_That(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_poi',
                 nav_to_poi(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_get_to_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
+            
+            # Announce arriving to a place
+            smach.StateMachine.add(
+                    'say_get_to_poi',
+                    text_to_say(text="I've arrived to my destiny"),
+                    transitions={'succeeded': 'succeeded'})
 
             # If its time to live, will return aborted, else it will tri again sending de same goal
             #smach.StateMachine.add(
