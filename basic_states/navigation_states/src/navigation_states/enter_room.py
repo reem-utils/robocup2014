@@ -152,9 +152,15 @@ class EnterRoomSM(smach.StateMachine):
             smach.StateMachine.add(
                 'home_position',
                 play_motion_sm('home', 10),
-                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room', 'preempted': 'succeeded'})
+                transitions={'succeeded': 'say_enter_room', 'aborted': 'enter_room', 'preempted': 'succeeded'})
             
             # We don't need to prepare the state, it takes the input_key directly
+            
+            # Robot announces it is going through the door
+            smach.StateMachine.add(
+                'say_enter_room',
+                text_to_say("I am going to enter the room"),
+                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room'})
 
             # Go to the poi in the other site of the door
             smach.StateMachine.add(
