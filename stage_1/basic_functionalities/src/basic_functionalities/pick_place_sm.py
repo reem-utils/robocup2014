@@ -10,6 +10,7 @@
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from speech_states.say import text_to_say
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -58,7 +59,7 @@ class PickPlaceSM(smach.StateMachine):
     No io_keys.
 
     Nothing must be taken into account to use this SM.
-    """
+    """say_going_pick_place
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 
@@ -66,48 +67,89 @@ class PickPlaceSM(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
             
+            # Say start Pick and Place
+            smach.StateMachine.add(
+                 'say_start_pick_place',
+                 text_to_say("I'm going to start Pick and Place test"),
+                 transitions={'succeeded': 'say_go_location', 'aborted': 'say_go_location'}) 
+            
+            # Say Going to location
+            smach.StateMachine.add(
+                 'say_go_location',
+                 text_to_say("I'm going to the location where I have to recognize some objects"),
+                 transitions={'succeeded': 'prepare_location', 'aborted': 'prepare_location'}) 
+            
             # Prepare the poi for nav_to_poi
             smach.StateMachine.add(
                 'prepare_location',
                 prepare_location(),
-                transitions={'succeeded': 'go_location', 'aborted': 'aborted', 
+                transitions={'succeeded': 'go_location', 'aborted': 'prepare_location', 
                 'preempted': 'preempted'})  
 
             # Go to the location
             smach.StateMachine.add(
                 'go_location',
                 nav_to_poi(),
-                transitions={'succeeded': 'object_recognition', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
                 'preempted': 'preempted'})    
 
+            # Say start object recognition
+            smach.StateMachine.add(
+                 'say_start_obj_recognition',
+                 text_to_say("I'm going to start the Object recognition"),
+                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
+            
             # Do object_recognition 
             smach.StateMachine.add(
                 'object_recognition',
                 DummyStateMachine(),
-                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
                 'preempted': 'preempted'}) 
 
+            # Say grasp object
+            smach.StateMachine.add(
+                 'say_grasp_object',
+                 text_to_say("I'm going to grasp the object"),
+                 transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
+            
             # Grasp the object
             smach.StateMachine.add(
                 'grasp_object',
                 DummyStateMachine(),
-                transitions={'succeeded': 'go_second_location', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_go_second_location', 'aborted': 'say_go_second_location', 
                 'preempted': 'preempted'})     
 
+            # Say go to second location
+            smach.StateMachine.add(
+                 'say_go_second_location',
+                 text_to_say("I'm going to the location where I should release the object"),
+                 transitions={'succeeded': 'go_second_location', 'aborted': 'go_second_location'})
+            
             # Go the location - We need to go to the place to object category, so we assume that the
             # object recognition will init the poi to the object must to go
             smach.StateMachine.add(
                 'go_second_location',
                 nav_to_poi(),
-                transitions={'succeeded': 'release_object', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_release_obj', 'aborted': 'say_go_second_location', 
                 'preempted': 'preempted'}) 
 
+            # Say release object
+            smach.StateMachine.add(
+                 'say_release_obj',
+                 text_to_say("I'm going to release the object"),
+                 transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
+            
             # Release the object
             smach.StateMachine.add(
                 'release_object',
                 DummyStateMachine(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_end_pick_place', 'aborted': 'say_end_pick_place', 
                 'preempted': 'preempted'})    
 
+            # Say end Pick and Place
+            smach.StateMachine.add(
+                 'say_end_pick_place',
+                 text_to_say("I finished the Pick and Place test"),
+                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
            
 
