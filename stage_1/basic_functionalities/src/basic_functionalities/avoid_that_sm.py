@@ -88,7 +88,8 @@ class Avoid_That(smach.StateMachine):
                 prepare_Avoid(),
                 transitions={'succeeded': 'say_go_to_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
-
+            
+            # Announce going to a place
             smach.StateMachine.add(
                     'say_go_to_poi',
                     text_to_say(text="I'm going to my destiny"),
