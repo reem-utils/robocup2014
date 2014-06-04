@@ -151,8 +151,8 @@ class EnterRoomSM(smach.StateMachine):
             # Home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm('home', 10),
-                transitions={'succeeded': 'say_enter_room', 'aborted': 'enter_room', 'preempted': 'succeeded'})
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_enter_room', 'aborted': 'say_enter_room', 'preempted': 'succeeded'})
             
             # We don't need to prepare the state, it takes the input_key directly
             
