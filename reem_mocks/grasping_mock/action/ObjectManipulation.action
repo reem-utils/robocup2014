@@ -1,0 +1,37 @@
+# Possible actions
+int8 PICK = 1
+int8 PLACE = 2
+
+# What to do (PICK or PLACE)
+int8 operation
+
+# What group to use
+# This can be: right_arm_torso, left_arm_torso, right_arm, left_arm
+string group
+
+# Pose of object
+# If it's a pick operation the closest cluster to this pose will be picked
+# If it's a place operation the object will be placed there
+geometry_msgs/PoseStamped target_pose
+
+---
+
+# Name of desired object in the planning scene
+string object_scene_name
+
+# Resulting pose of the operation
+# Pick operations pick the nearest cluster near the pose given
+# Place operations place the object in the nearest possible location from the one given
+geometry_msgs/PoseStamped object_pose
+
+# Error information
+# Inherited error code from the operation that if failed (if it failed)
+moveit_msgs/MoveItErrorCodes error_code
+
+# More verbose information of the error
+string error_message
+
+---
+
+# Last state of the actionserver execution
+string last_state
