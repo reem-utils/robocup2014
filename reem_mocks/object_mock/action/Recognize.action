@@ -1,0 +1,12 @@
+# Goal
+# Names of objects to search for
+object_recognition_msgs/ObjectType[] objects
+# Time allowed to spend on the procedure
+float64 refine_pose_time
+---
+# Result
+object_recognition_msgs/RecognizedObjectArray recognized_objects
+---
+# Feedback
+#The time left to finish the detection run
+float64 time_left
