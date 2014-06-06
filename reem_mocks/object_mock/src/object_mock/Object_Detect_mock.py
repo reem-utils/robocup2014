@@ -5,6 +5,7 @@ import actionlib
 
 from object_mock.msg import RecognizeAction, RecognizeResult, RecognizeGoal
 from object_recognition_msgs.msg import ObjectType, RecognizedObject, RecognizedObjectArray
+from geometry_msgs.msg import Pose
 
 class object_detect_server:
     def __init__(self):
@@ -20,6 +21,16 @@ class object_detect_server:
         rospy.loginfo("One of the Goals are:: " + str(object_goal))
         possibleObjects.type = object_goal
         
+        possibleObjects.pose.pose = Pose()
+        possibleObjects.pose.pose.position.x = 0.3
+        possibleObjects.pose.pose.position.y = -0.3
+        possibleObjects.pose.pose.position.z = 1.1
+        possibleObjects.pose.header.frame_id = '/base_link' 
+        
+        possibleObjects.pose.pose.orientation.x = 0.0
+        possibleObjects.pose.pose.orientation.y = 0.0
+        possibleObjects.pose.pose.orientation.z = 0.0
+        possibleObjects.pose.pose.orientation.w = 1.0
         rospy.loginfo("PossibleObject:: " + str(possibleObjects))
         
         objectArray = RecognizedObjectArray()
