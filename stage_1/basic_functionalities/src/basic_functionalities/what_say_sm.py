@@ -27,7 +27,7 @@ from face_states.detect_faces import detect_face
 from speech_states.activate_asr import ActivateASR
 from speech_states.deactivate_asr import DeactivateASR
 from speech_states.read_asr import ReadASR
-
+from manipulation_states.play_motion_sm import play_motion_sm
 # Constants
 NUMBER_OF_QUESTIONS = 3
 GRAMMAR_NAME = 'robocup/what_did_you_say_2'
@@ -201,8 +201,8 @@ class WhatSaySM(smach.StateMachine):
             # Listen the first question
             self.userdata.grammar_name = GRAMMAR_NAME
             
-            # Find me Part 
-            
+
+                     
             # Enter room
             smach.StateMachine.add(
                  'say_what_did_you_say',

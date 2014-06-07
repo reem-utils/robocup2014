@@ -59,7 +59,7 @@ class PickPlaceSM(smach.StateMachine):
     No io_keys.
 
     Nothing must be taken into account to use this SM.
-    """say_going_pick_place
+    """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
 

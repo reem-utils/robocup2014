@@ -58,6 +58,7 @@ def child_term_cb(outcome_map):
     # terminate all running states if walk_to_poi finished with outcome succeeded
     if outcome_map['walk_to_poi'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
+        
         return True
 
     # terminate all running states if BAR finished
