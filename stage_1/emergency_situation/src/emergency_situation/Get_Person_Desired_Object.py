@@ -245,7 +245,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_return_Person',
                 text_to_say('I am preparing to go back to the person'),
-                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person'})
+                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person'})
             
             #Go to person
             smach.StateMachine.add(
