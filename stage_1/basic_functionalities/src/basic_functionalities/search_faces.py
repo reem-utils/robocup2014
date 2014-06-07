@@ -12,6 +12,7 @@ from navigation_states.nav_to_poi import nav_to_poi
 from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
 from face_states.recognize_face import recognize_face_concurrent
+from speech_states.say import text_to_say
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -38,6 +39,9 @@ class prepare_poi(smach.State):
 
     def execute(self, userdata):    
         
+        if userdata.num_iterations > 2 :
+            return 'aborted'
+        
         if userdata.num_iterations % 3 == 0:
             userdata.nav_to_poi_name = "point_room_one"
             rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
@@ -49,7 +53,7 @@ class prepare_poi(smach.State):
             rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
         
         userdata.num_iterations += 1
-
+        
         return 'succeeded'
  
 # gets called when ANY child state terminates
@@ -59,7 +63,7 @@ def child_term_cb(outcome_map):
     if outcome_map['walk_to_poi'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
         
-        return True
+        return False
 
     # terminate all running states if BAR finished
     if outcome_map['find_faces'] == 'succeeded':
@@ -75,10 +79,13 @@ def child_term_cb(outcome_map):
 
 def out_cb(outcome_map):
     if outcome_map['find_faces'] == 'succeeded':
+        rospy.logwarn('Out_CB = Find Faces Succeeded')
         return 'succeeded'	
     elif outcome_map['TimeOut'] == 'succeeded':
+        rospy.logwarn('Out_CB = TimeOut finished succeeded')
         return 'endTime'    
     else:
+        rospy.logwarn('Out_CB = Else!')
         return 'aborted'
 
 class SearchFacesSM(smach.StateMachine):
@@ -108,20 +115,25 @@ class SearchFacesSM(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['name', 'nav_to_poi_name', 'face'],
-                                     output_keys=['face', 'standard_error'])
+                                     output_keys=['face', 'standard_error', 'face_frame'])
 
         with self:
 
             self.userdata.num_iterations = 0
             self.userdata.face = None
-            self.userdata.wait_time = 15
+            self.userdata.wait_time = 5
             
             # We define the different points
             smach.StateMachine.add(
                 'prepare_poi',
                 prepare_poi(),
-                transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
+                transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
+            smach.StateMachine.add(
+                                   'Say_Searching',
+                                   text_to_say('Right Now I am searching faces'),
+                                   transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
+                                    'preempted': 'preempted'})
             
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
@@ -143,7 +155,11 @@ class SearchFacesSM(smach.StateMachine):
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
-                                transitions={'succeeded':'succeeded', 'aborted':'prepare_poi', 'endTime': 'aborted'})
+                                transitions={'succeeded':'succeeded', 'aborted':'Say_Changing_Poi', 'endTime': 'Say_Changing_Poi'})
 
                   
-           
+            smach.StateMachine.add(
+                                   'Say_Changing_Poi',
+                                   text_to_say('I am going to change my position so I can search for faces'),
+                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
+                                    'preempted': 'preempted'})

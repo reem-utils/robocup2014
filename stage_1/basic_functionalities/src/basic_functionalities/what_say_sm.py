@@ -15,6 +15,7 @@ import smach
 from speech_states.listen_to import ListenToSM
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.nav_to_coord import nav_to_coord
+from navigation_states.nav_to_coord_ud import nav_to_coord_ud
 from speech_states.say import text_to_say
 from search_faces import SearchFacesSM
 from navigation_states.get_current_robot_pose import get_current_robot_pose
@@ -40,8 +41,8 @@ OKGREEN = '\033[92m'
 class prepare_coord_person(smach.State):
     def __init__(self, distanceToHuman=0.3):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['face', 'nav_to_coord_goal'],
-                                output_keys=['standard_error', 'nav_to_coord_goal'])
+                                input_keys=['face', 'nav_to_coord_goal', 'face_frame'],
+                                output_keys=['standard_error', 'nav_to_coord_goal', 'nav_to_coord_frame'])
         self.distanceToHuman = distanceToHuman
         
     def execute(self, userdata):
@@ -50,7 +51,7 @@ class prepare_coord_person(smach.State):
         # TODO: We adapt the coordinates respect kinnect 
         new_pose.position.x = userdata.face.position.z
         new_pose.position.y = -userdata.face.position.x
-
+        
         unit_vector = normalize_vector(new_pose.position)
         position_distance = vector_magnitude(new_pose.position)
 
@@ -63,7 +64,7 @@ class prepare_coord_person(smach.State):
         alfa = math.atan2(new_pose.position.y, new_pose.position.x)
         
         userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
-        
+        userdata.nav_to_coord_frame = userdata.face_frame
         return 'succeeded'
 
 class prepear_repeat(smach.State):
@@ -214,13 +215,13 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'go_location',
                  nav_to_poi("find_me"),
-                 transitions={'succeeded': 'say_faces', 'aborted': 'aborted', 
+                 transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
                  'preempted': 'preempted'})    
              
-            smach.StateMachine.add(
-                 'say_faces',
-                 text_to_say("Searching for faces"),
-                 transitions={'succeeded': 'search_face', 'aborted': 'aborted'})
+#             smach.StateMachine.add(
+#                  'say_faces',
+#                  text_to_say("Searching for faces"),
+#                  transitions={'succeeded': 'search_face', 'aborted': 'aborted'})
             
             # Look for a face
             smach.StateMachine.add(
@@ -235,24 +236,25 @@ class WhatSaySM(smach.StateMachine):
                  prepare_coord_person(),
                  transitions={'succeeded': 'go_to_person', 'aborted': 'aborted', 
                  'preempted': 'preempted'})                    
-             
+            
+            
             smach.StateMachine.add(
                  'go_to_person',
-                 nav_to_coord('/base_link'),
-                 transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
+                 nav_to_coord_ud(),
+                 transitions={'succeeded': 'say_found', 'aborted': 'Say_person_not_reached', 
                  'preempted': 'preempted'})   
             smach.StateMachine.add(
-                                   'Say_person_not reached',
+                                   'Say_person_not_reached',
                                    text_to_say('I Found you, but cannot reach you, can you come to me please?'),
                                    transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(
                  'say_found',
-                 text_to_say("I found you!"),
+                 text_to_say("I have arrived to where you are."),
                  transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
-            # Ask for TC if we dont find him
+            # Ask for TC if we don't find him
             smach.StateMachine.add(
                  'ask_for_tc',
                  text_to_say("I can't find you. Can you come to me?"),

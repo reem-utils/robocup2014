@@ -21,11 +21,11 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-class proces_face(smach.State):
+class Process_face(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                              input_keys=['standard_error','faces','name','face'],
-                             output_keys=['standard_error','face'])
+                             output_keys=['standard_error','face', 'face_frame'])
 
     def execute(self, userdata):
         
@@ -37,6 +37,7 @@ class proces_face(smach.State):
                 if userdata.face:
                     userdata.face=userdata.face.pop()
                     userdata.standard_error="Recognize_face_Name OK"+userdata.standard_error
+                    userdata.face_frame = userdata.header.frame_id
                     return 'succeeded'
                 else :
                     userdata.standard_error="Recognize:= Any face whit that name"+userdata.standard_error
@@ -46,6 +47,7 @@ class proces_face(smach.State):
                 # i want to take the best face confidence    
                 userdata.faces.faces.sort(cmp=None, key=attrgetter('confidence'), reverse=True)
                 userdata.face=userdata.faces.faces[0]
+                userdata.face_frame = userdata.header.frame_id
                 userdata.standard_error="Recognize_face_Normal OK"+userdata.standard_error
                 return 'succeeded'
         else:
@@ -84,7 +86,7 @@ class recognize_face(smach.StateMachine):
     def __init__(self,minConfidence=90):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
-                                 output_keys=['standard_error','face'])
+                                 output_keys=['standard_error','face', 'face_frame'])
         
         with self:
 
@@ -100,7 +102,7 @@ class recognize_face(smach.StateMachine):
             # i filter a little bit
             smach.StateMachine.add(
                     'proces_face',
-                    proces_face(),
+                    Process_face(),
                     transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                     'preempted': 'preempted'})
             
@@ -113,6 +115,15 @@ class CancelNavigation(smach.StateMachine):
     def execute(self, userdata):
         self.face_pub= rospy.Publisher('/move_base/cancel', GoalID)
         self.face_pub.publish(GoalID())
+        return 'succeeded'
+
+class process_faces_from_topic(smach.StateMachine):
+    def __init__(self): 
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=['faces'], 
+                                 output_keys=[])
+    def execute(self, userdata):
+        
         return 'succeeded'
 
 class recognize_face_concurrent(smach.StateMachine): 
@@ -155,14 +166,14 @@ class recognize_face_concurrent(smach.StateMachine):
             smach.StateMachine.add(
                                 'detect_face',
                                 detect_face(minConfidence),
-                                transitions={'succeeded': 'Aborting_navigation', 'aborted': 'aborted', 
+                                transitions={'succeeded': 'Process_face', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
-             #Change succeeded:proces_face
+            #Change succeeded:proces_face
             
             # i filter a little bit
             smach.StateMachine.add(
-                    'proces_face',
-                    proces_face(),
+                    'Process_face',
+                    Process_face(),
                     transitions={'succeeded': 'Aborting_navigation', 'aborted': 'time_sleeper', 
                     'preempted': 'preempted'})
             
