@@ -14,6 +14,7 @@ from speech_states.say import text_to_say
 from pick_place_sm import PickPlaceSM
 from avoid_that_sm import Avoid_That
 from what_say_sm import WhatSaySM
+from manipulation_states.play_motion_sm import play_motion_sm
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -48,6 +49,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
+            smach.StateMachine.add(
+                'play_motion_state',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_start_basic_functionalities',
+                             'preempted':'say_start_basic_functionalities', 
+                             'aborted':'say_start_basic_functionalities'})   
             
             # Say Start basic Functionalities
             smach.StateMachine.add(
