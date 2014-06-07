@@ -79,6 +79,7 @@ class prepear_repeat(smach.State):
         return 'succeeded'
 
 class SelectAnswer(smach.State):
+    
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'None'], 
                                 input_keys=['asr_userSaid', 'asr_userSaid_tags'],
@@ -86,66 +87,22 @@ class SelectAnswer(smach.State):
         #self.tags = parserGrammar(GRAMMAR_NAME)
         
     def execute(self, userdata):        
-
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
-
-        info = [tag for tag in questionTags if tag.key == 'info']
-        country = [tag for tag in questionTags if tag.key == 'country']
-        
-        attr = [tag for tag in questionTags if tag.key == 'attr']
-        object = [tag for tag in questionTags if tag.key == 'object']
-        
-        attribute = [tag for tag in questionTags if tag.key == 'attribute']
-        nationality = [tag for tag in questionTags if tag.key == 'nationality']
-        
-        many = [tag for tag in questionTags if tag.key == 'many']
-        quantity = [tag for tag in questionTags if tag.key == 'quantity']
-        
-        much = [tag for tag in questionTags if tag.key == 'much']
-        price = [tag for tag in questionTags if tag.key == 'price']
-        #important to do add the .yalm before
-        question_params = rospy.get_param("/question_list/questions/what_say")
+        question_params = rospy.get_param("/question_list/questions/what_say_simple")
+        question_number = [tag for tag in questionTags if tag.key == 'questionumber']
+        rospy.loginfo("Question TAGS :: " + str(questionTags))
     
         for key,value in question_params.iteritems():
             print "Key: " + str(key)
             print "Value: " + str(value)
             
-            # Type info and country
-            if (info and info[0].value == value[2]) and (country and country[0].value == value[3]):
-                userdata.tts_text = "The answer is " + value[4]
+            if question_number[0].value == value[2]:
+                print "FOUND!"
+                userdata.tts_text = "The answer is " + value[3]
                 userdata.tts_wait_before_speaking = 0
                 userdata.standard_error=''
                 return 'succeeded'
-            
-            # Type attr and animal 
-            if (attr and attr[0].value == value[2]) and (object and object[0].value == value[3]):
-                userdata.tts_text = "The answer is " + value[4]
-                userdata.tts_wait_before_speaking = 0
-                userdata.standard_error=''
-                return 'succeeded'
-            
-            # Type many and quantity 
-            if (many and many[0].value == value[2]) and (quantity and quantity[0].value == value[3]):
-                userdata.tts_text = "The answer is " + value[4]
-                userdata.tts_wait_before_speaking = 0
-                userdata.standard_error=''
-                return 'succeeded'
-            
-            # Type attribute and nationality 
-            if (attribute and attribute[0].value == value[2]) and (nationality and nationality[0].value == value[3]):
-                userdata.tts_text = "The answer is " + value[4]
-                userdata.tts_wait_before_speaking = 0
-                userdata.standard_error=''
-                return 'succeeded'
-            
-            # Type attribute and nationality 
-            if (much and much[0].value == value[2]) and (price and price[0].value == value[3]):
-                userdata.tts_text = "The answer is " + value[4]
-                userdata.tts_wait_before_speaking = 0
-                userdata.standard_error=''
-                return 'succeeded'
-            
             
             # Process info -> value[2] and Process country -> value[3]
 #             if value[2] in userdata.asr_userSaid and value[3] in userdata.asr_userSaid:
