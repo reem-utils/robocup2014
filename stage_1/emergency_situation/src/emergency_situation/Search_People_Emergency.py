@@ -123,13 +123,13 @@ class Search_People_Emergency(smach.StateMachine):
             # Some dummy TTS stuff
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-            smach.StateMachine.add(
-                'Prepare_Say_Searching',
-                prepare_tts('Where are you? Give me signals, please.'),
-                transitions={'succeeded':'Say_Search', 'aborted':'Say_Search', 'preempted':'Say_Search'})
+#             smach.StateMachine.add(
+#                 'Prepare_Say_Searching',
+#                 prepare_tts('Where are you? Give me signals, please.'),
+#                 transitions={'succeeded':'Say_Search', 'aborted':'Say_Search', 'preempted':'Say_Search'})
             smach.StateMachine.add(
                 'Say_Search',
-                text_to_say(),
+                text_to_say('Where are you? Give me signals, please.'),
                 transitions={'succeeded':'Gesture_Recognition', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
 
             # Search for a Wave Gesture
@@ -160,7 +160,12 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_to_Wave',
                 nav_to_coord('/base_link'),
-                transitions={'succeeded':'Register_Position', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+                transitions={'succeeded':'Say_Arrive_to_Wave', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
+            
+            smach.StateMachine.add(
+                'Say_Arrive_to_Wave',
+                text_to_say("I'm here!"),
+                transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
             
             smach.StateMachine.add(
                 'Register_Position',

@@ -119,18 +119,19 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Arms_Home',
                 play_motion_sm(),
-                transitions={'succeeded':'Prepare_TTS_1', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_TTS_1'})
+                transitions={'succeeded':'Say_Ready', 'aborted':'Say_Ready', 'preempted':'Say_Ready'})
             
             #Prepare the data for the speech: language and time to wait
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.tts_lang = 'en_US'
-            smach.StateMachine.add(
-                'Prepare_TTS_1',
-                prepare_tts("Now I am going to enter the Room to help people in need."),
-                transitions={'succeeded':'Say_Ready'})
+#             # TOO: The next to states can be done in a single one
+#             smach.StateMachine.add(
+#                 'Prepare_TTS_1',
+#                 prepare_tts("Now I am going to enter the Room to help people in need."),
+#                 transitions={'succeeded':'Say_Ready'})
             smach.StateMachine.add(
                 'Say_Ready',
-                text_to_say(),
+                text_to_say('Now I am going to enter the Room to help people in need.'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
             # Pass the entry room
@@ -143,7 +144,7 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM('entry_door_exit'),
-                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Prepare_TTS_1', 'preempted':'Prepare_Poi_Emergency_1'})
+                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Prepare_Poi_Emergency_1'})
             smach.StateMachine.add(
                 'Say_Enter_Successful',
                 text_to_say('Successfully entering the room. Now I am going to the Emergency Room.'),
@@ -158,13 +159,17 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_to_emergency_room',
                 nav_to_poi(),
-                transitions={'succeeded':'Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
+                transitions={'succeeded':'Say_Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
             #  - person_location: PoseStamped/-->Pose<-- (?)
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
+            smach.StateMachine.add(
+                'Say_Search_Person',
+                text_to_say('Successfully entered the room. Now I am going to search for a person in an emergency situation.'),
+                transitions={'succeeded':'Search_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
             smach.StateMachine.add(
                 'Search_Person',
                 Search_People_Emergency(),
