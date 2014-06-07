@@ -31,7 +31,7 @@ class face_topic_reader_state(smach.State):
         self.subs=rospy.Subscriber(topic_name, FaceDetections, self.callback_topic)
         
 
-        while not self.msg_data and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
+        while len(self.msg_data.faces)==0 and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
             rospy.sleep(0.3)
             if self.preempt_requested():
                 return 'preempted'
@@ -41,12 +41,14 @@ class face_topic_reader_state(smach.State):
         if len(self.msg_data.faces) > 0 :
             userdata.topic_output_msg = copy.deepcopy(self.msg_data)
             userdata.standard_error = ''
+            rospy.logwarn('Face Topic Reader: Faces Detected')
             return 'succeeded'
         
         else :
             #time out
             userdata.standard_error = "Topic Reader : TimeOut Error"
             userdata.topic_output_msg = ''
+            rospy.logwarn('Face Topic Reader: Time Out Error')
             return 'aborted'
             
     def callback_topic(self,data):
@@ -85,3 +87,19 @@ class face_topic_reader(smach.StateMachine):
             smach.StateMachine.add('Face_topic_reader_state', 
                                    face_topic_reader_state(topic_time_out), 
                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
+            
+def main():
+    rospy.loginfo('Face Topic Reader')
+    rospy.init_node('face_topic_reader_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        smach.StateMachine.add(
+            'Face_Reader',
+            face_topic_reader(20),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
