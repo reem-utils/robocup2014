@@ -195,7 +195,12 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_To_Object_Place',
                 nav_to_poi('kitchen'),
-                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+                transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+            
+            smach.StateMachine.add(
+                'Say_got_to_Kitchen',
+                text_to_say('I am in the Kitchen, I am going to grasp fail ask person'),
+                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person'})
             
             self.userdata.time_grasp = 0.0
             smach.StateMachine.add('Grasping_with_timeout',
@@ -233,9 +238,15 @@ class Get_Person_Desired_Object(smach.StateMachine):
             
             
             smach.StateMachine.add(
-                                   'Rest_arm',
-                                   play_motion_sm('rest_object_right'),
-                                   transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                           'Rest_arm',
+                           play_motion_sm('rest_object_right'),
+                           transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+            
+            smach.StateMachine.add(
+                'Say_return_Person',
+                text_to_say('I am preparing to go back to the person'),
+                transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person'})
+            
             #Go to person
             smach.StateMachine.add(
                 'Prepare_Go_To_Person',

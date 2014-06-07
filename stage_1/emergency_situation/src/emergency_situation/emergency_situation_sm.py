@@ -201,9 +201,9 @@ class emergency_situation_sm(smach.StateMachine):
             #                           --> Manip/Grab 
             # 
             smach.StateMachine.add(
-                'Get_Person_Desired_Object',
-                Get_Person_Desired_Object(),
-                transitions={'succeeded':'Prepare_home', 'aborted':'Get_Person_Desired_Object', 'preempted':'Prepare_home'})
+                        'Get_Person_Desired_Object',
+                        Get_Person_Desired_Object(),
+                        transitions={'succeeded':'Prepare_home', 'aborted':'Get_Person_Desired_Object', 'preempted':'Prepare_home'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
@@ -215,6 +215,12 @@ class emergency_situation_sm(smach.StateMachine):
                                    'SetHome',
                                    play_motion_sm(),
                                    transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'SetHome', 'preempted':'SetHome'})
+            
+            smach.StateMachine.add(
+                'Say_return_Person',
+                text_to_say('I am going to the Entry Door'),
+                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door'})
+            
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
                 nav_to_poi('entry_door_init'),
@@ -224,15 +230,15 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Wait_for_Ambulance_Person',
                 DummyStateMachine(),
-                transitions={'succeeded':'Prepare_TTS_2', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+                transitions={'succeeded':'Say_Ambulance', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             
-            smach.StateMachine.add(
-                'Prepare_TTS_2',
-                prepare_tts("Please Follow Me, I will guide you to the emergency"),
-                transitions={'succeeded':'Say_Ambulance', 'aborted':'Say_Ambulance', 'preempted':'Say_Ambulance'})
+#             smach.StateMachine.add(
+#                 'Prepare_TTS_2',
+#                 prepare_tts("Please Follow Me, I will guide you to the emergency"),
+#                 transitions={'succeeded':'Say_Ambulance', 'aborted':'Say_Ambulance', 'preempted':'Say_Ambulance'})
             smach.StateMachine.add(
                 'Say_Ambulance',
-                text_to_say(),
+                text_to_say("Please Follow Me, I will guide you to the emergency"),
                 transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
             #TODO: Define the name of the room to enter (defined by the OC)
             #If Aborted (not supposed to), retry?
