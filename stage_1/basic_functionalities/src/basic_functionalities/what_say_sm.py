@@ -241,6 +241,10 @@ class WhatSaySM(smach.StateMachine):
                  nav_to_coord('/base_link'),
                  transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
                  'preempted': 'preempted'})   
+            smach.StateMachine.add(
+                                   'Say_person_not reached',
+                                   text_to_say('I Found you, but cannot reach you, can you come to me please?'),
+                                   transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(
