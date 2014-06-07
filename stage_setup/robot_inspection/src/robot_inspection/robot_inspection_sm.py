@@ -126,7 +126,7 @@ class RobotInspectionSM(smach.StateMachine):
             # Indicate that we are saving our position
             smach.StateMachine.add(
                 'say_save_position',
-                text_to_say("I've saved my position, please touch my button"),
+                text_to_say("You can press the emergency button whenever you want. I will wait for a minute, inspect me please."),
                 transitions= {'succeeded':'wait_time', 'aborted':'wait_time', 'preempted':'preempted'})
             
             # Test of robot 
@@ -138,13 +138,13 @@ class RobotInspectionSM(smach.StateMachine):
             # Indicate that we are ready
             smach.StateMachine.add(
                 'end_time_inspection',
-                text_to_say("Time finished"),
+                text_to_say("The minute is over."),
                 transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
             
             # Indicate that we are ready to go
             smach.StateMachine.add(
                 'say_end_time_inspection',
-                text_to_say("I suppose that, if someone had to stop me, already did it. Now I'm leaving"),
+                text_to_say("I hope you are happy with the inspection. I'll leave the room."),
                 transitions= {'succeeded':'set_robot_position', 'aborted':'set_robot_position', 'preempted':'preempted'})
             
             # Set position
@@ -165,7 +165,7 @@ class RobotInspectionSM(smach.StateMachine):
             # Indicate that we are ready to go
             smach.StateMachine.add(
                 'say_exit',
-                text_to_say("I arrived successfully to the exit, challenge complete"),
+                text_to_say("I arrived successfully to the exit location, Robot Inspection Test complete."),
                 transitions= {'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
 
                  

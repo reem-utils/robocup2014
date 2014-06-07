@@ -92,14 +92,16 @@ class SelectAnswer(smach.State):
         question_params = rospy.get_param("/question_list/questions/what_say_simple")
         question_number = [tag for tag in questionTags if tag.key == 'questionumber']
         rospy.loginfo("Question TAGS :: " + str(questionTags))
-    
+        rospy.loginfo("Question TAGS NUMBER:: " + str(question_number))
+        rospy.loginfo("Question TAGS NUMBER 0 :: " + str(question_number[0]))
+        
         for key,value in question_params.iteritems():
             print "Key: " + str(key)
             print "Value: " + str(value)
             
-            if question_number[0].value == value[2]:
+            if str(question_number[0].value) == str(value[2]):
                 print "FOUND!"
-                userdata.tts_text = "The answer is " + value[3]
+                userdata.tts_text = "The answer is " + str(value[3])
                 userdata.tts_wait_before_speaking = 0
                 userdata.standard_error=''
                 return 'succeeded'
@@ -204,7 +206,7 @@ class WhatSaySM(smach.StateMachine):
             # Enter room
             smach.StateMachine.add(
                  'say_what_did_you_say',
-                 text_to_say("I'm beginning the what did you say test,. I'm going to the place where ther referee should be"),
+                 text_to_say("I'm beginning the what did you say test,. I'm going to the place where the referee should be"),
                  #transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
                  transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
             
@@ -239,6 +241,10 @@ class WhatSaySM(smach.StateMachine):
                  nav_to_coord('/base_link'),
                  transitions={'succeeded': 'say_found', 'aborted': 'aborted', 
                  'preempted': 'preempted'})   
+            smach.StateMachine.add(
+                                   'Say_person_not reached',
+                                   text_to_say('I Found you, but cannot reach you, can you come to me please?'),
+                                   transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(
