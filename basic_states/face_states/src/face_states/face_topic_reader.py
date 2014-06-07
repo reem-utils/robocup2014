@@ -25,23 +25,25 @@ class face_topic_reader_state(smach.State):
         self.topic_name = topic_name
         self.topic_time_out = topic_time_out
         print 'Topic reader Face Init'
+        
     def execute(self, userdata):
         self.time_init=rospy.get_rostime()
-        self.msg_data=FaceDetections()
+        self.face_data=FaceDetections()
         self.subs=rospy.Subscriber(topic_name, FaceDetections, self.callback_topic)
         
 
-        while len(self.msg_data.faces)==0 and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
+        while  (len(self.face_data.faces) == 0) and  (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
             rospy.sleep(0.3)
             if self.preempt_requested():
                 return 'preempted'
 
         self.subs.unregister()
-
-        if len(self.msg_data.faces) > 0 :
-            userdata.topic_output_msg = copy.deepcopy(self.msg_data)
+        rospy.loginfo('Faces after Unregistering:: ' + str(self.face_data))
+        if len(self.face_data.faces) > 0 :
+            userdata.topic_output_msg = copy.deepcopy(self.face_data)
             userdata.standard_error = ''
             rospy.logwarn('Face Topic Reader: Faces Detected')
+            rospy.logwarn('Face Detected:: ' + str(self.face_data))
             return 'succeeded'
         
         else :
@@ -53,10 +55,10 @@ class face_topic_reader_state(smach.State):
             
     def callback_topic(self,data):
         #If Data is not empty
-        if data:
-            self.msg_data = data
-        
-
+        if len(data.faces)>0:
+            self.face_data = data
+    
+    
 class face_topic_reader(smach.StateMachine):
     """
     Executes a SM that reads a specified asr topic.
@@ -87,6 +89,7 @@ class face_topic_reader(smach.StateMachine):
             smach.StateMachine.add('Face_topic_reader_state', 
                                    face_topic_reader_state(topic_time_out), 
                                    transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
+            
             
 def main():
     rospy.loginfo('Face Topic Reader')
