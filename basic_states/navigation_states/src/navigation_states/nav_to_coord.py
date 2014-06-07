@@ -16,6 +16,7 @@ from smach_ros import SimpleActionState
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Quaternion
 from tf.transformations import quaternion_from_euler
+from speech_states.say import text_to_say
 
 # Constants
 NAVIGATION_TOPIC_NAME = '/move_base'
@@ -103,6 +104,24 @@ class nav_to_coord(smach.StateMachine):
                                                    input_keys=['standard_error'],
                                                    output_keys=['standard_error'],
                                                    result_cb=move_res_cb), 
-								transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+								transitions={'succeeded':'succeeded', 'aborted':'Aborting_text'})
             
+            smach.StateMachine.add('Aborting_text',
+                                   text_to_say('I cannot reach the coordinate location you specified'),
+                                   transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+def main():
+    rospy.loginfo('Go POi Node')
+    rospy.init_node('go_poi')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        sm.userdata.nav_to_coord_goal = [1.0,0.0,0.0]
+        smach.StateMachine.add(
+            'Go_TO_PI',
+            nav_to_coord(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
