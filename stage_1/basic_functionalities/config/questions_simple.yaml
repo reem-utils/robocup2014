@@ -1,7 +1,7 @@
 numberOfSubQuestions: 1
 questions:
   what_say_simple:
-    one_simple:   [what_say_simple, one,   1,   Brasilia]
+    one:   [what_say_simple, one,   1,   Brasilia]
     two:   [what_say_simple, two,   2,   Cheetah]
     three: [what_say_simple, three, 3,   "Green, Yellow, Blue and White"]
     four:  [what_say_simple, four,  4,   "201 millions"]
