@@ -2,19 +2,21 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Oct 22 12:00:00 2013
+Modified on Sat June 7 18:30:00 2014
 
 @author: Roger Boldú
+@coauthor: Chang Long Zhu Jin
 """
 
-
+import smach
+import rospy
 from pal_detection_msgs.msg import FaceDetections
 from pal_detection_msgs.srv import RecognizerRequest, Recognizer, RecognizerResponse
-import rospy
-from rospy.core import rospyinfo
-import smach
-from smach_ros import ServiceState
-from util_states.topic_reader import topic_reader
 
+from rospy.core import rospyinfo
+
+from smach_ros import ServiceState
+from face_states.face_topic_reader import face_topic_reader
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -70,7 +72,7 @@ class detect_face(smach.StateMachine):
                  
             smach.StateMachine.add(
                                 'Read_Topic',
-                                topic_reader('/pal_face/faces', FaceDetections, 60),
+                                face_topic_reader(60),
                                 remapping={'topic_output_msg': 'faces'},
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})

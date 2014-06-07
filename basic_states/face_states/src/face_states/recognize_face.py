@@ -9,6 +9,9 @@ Created on Tue Oct 22 12:00:00 2013
 import rospy
 import smach
 
+from smach_ros import SimpleActionState
+from actionlib_msgs.msg import GoalID
+
 from face_states.detect_faces import detect_face
 from operator import attrgetter
 from util_states.sleeper import Sleeper
@@ -102,7 +105,15 @@ class recognize_face(smach.StateMachine):
                     'preempted': 'preempted'})
             
 
-
+class CancelNavigation(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=[], 
+                                 output_keys=[])
+    def execute(self, userdata):
+        self.face_pub= rospy.Publisher('/move_base/cancel', GoalID)
+        self.face_pub.publish(GoalID())
+        return 'succeeded'
 
 class recognize_face_concurrent(smach.StateMachine): 
     """
@@ -144,16 +155,23 @@ class recognize_face_concurrent(smach.StateMachine):
             smach.StateMachine.add(
                                 'detect_face',
                                 detect_face(minConfidence),
-                                transitions={'succeeded': 'proces_face', 'aborted': 'aborted', 
+                                transitions={'succeeded': 'Aborting_navigation', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})
+             #Change succeeded:proces_face
             
             # i filter a little bit
             smach.StateMachine.add(
                     'proces_face',
                     proces_face(),
-                    transitions={'succeeded': 'succeeded', 'aborted': 'time_sleeper', 
+                    transitions={'succeeded': 'Aborting_navigation', 'aborted': 'time_sleeper', 
                     'preempted': 'preempted'})
             
+            smach.StateMachine.add(
+                                   'Aborting_navigation',
+                                   CancelNavigation(),
+                                   transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                                                'preempted': 'preempted'})
+                               
             smach.StateMachine.add(
                     'time_sleeper',
                     Sleeper(0.5),
