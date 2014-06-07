@@ -102,13 +102,13 @@ class Save_People_Emergency(smach.StateMachine):
             self.userdata.tts_wait_before_speaking = 0
 
             #It should be Speech Recognition: ListenTo(?)
-            smach.StateMachine.add(
-                'Prepare_Ask_Status',
-                prepare_tts('Are you Ok?'),
-                transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
+#             smach.StateMachine.add(
+#                 'Prepare_Ask_Status',
+#                 prepare_tts('Are you Ok?'),
+#                 transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
             smach.StateMachine.add(
                 'Ask_Status',
-                text_to_say(),
+                text_to_say('Are you Ok?'),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
             #TODO: Do we have to add an SayYesOrNoSM?
             # smach.StateMachine.add(
@@ -123,10 +123,10 @@ class Save_People_Emergency(smach.StateMachine):
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
+                transitions={'succeeded':'Say_Save', 'aborted':'aborted', 'preempted':'preempted'})
+             
+            smach.StateMachine.add(
+                'Say_Save',
+                text_to_say('Information Saved, p d f is left to do REMEMBER'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-#             
-#             smach.StateMachine.add(
-#                 'Say_Save',
-#                 text_to_say('Information Saved'),
-#                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

@@ -201,9 +201,9 @@ class emergency_situation_sm(smach.StateMachine):
             #                           --> Manip/Grab 
             # 
             smach.StateMachine.add(
-                'Get_Person_Desired_Object',
-                Get_Person_Desired_Object(),
-                transitions={'succeeded':'Prepare_home', 'aborted':'Get_Person_Desired_Object', 'preempted':'Prepare_home'})
+                        'Get_Person_Desired_Object',
+                        Get_Person_Desired_Object(),
+                        transitions={'succeeded':'Prepare_home', 'aborted':'Get_Person_Desired_Object', 'preempted':'Prepare_home'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
