@@ -29,6 +29,7 @@ from speech_states.activate_asr import ActivateASR
 from speech_states.deactivate_asr import DeactivateASR
 from speech_states.read_asr import ReadASR
 from manipulation_states.play_motion_sm import play_motion_sm
+from smach.user_data import Remapper
 # Constants
 NUMBER_OF_QUESTIONS = 3
 GRAMMAR_NAME = 'robocup/what_did_you_say_2'
@@ -41,14 +42,14 @@ OKGREEN = '\033[92m'
 class prepare_coord_person(smach.State):
     def __init__(self, distanceToHuman=0.3):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['face', 'nav_to_coord_goal', 'face_frame'],
+                                input_keys=['face', 'nav_to_coord_goal', 'face_frame','current_robot_yaw'],
                                 output_keys=['standard_error', 'nav_to_coord_goal', 'nav_to_coord_frame'])
         self.distanceToHuman = distanceToHuman
         
     def execute(self, userdata):
         
         new_pose = Pose()
-        # TODO: We adapt the coordinates respect kinnect 
+        # TODO: We adapt the coordinates respect Kinect 
         new_pose.position.x = userdata.face.position.z
         new_pose.position.y = -userdata.face.position.x
         
@@ -63,7 +64,10 @@ class prepare_coord_person(smach.State):
  
         alfa = math.atan2(new_pose.position.y, new_pose.position.x)
         
-        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        #userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        #userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, userdata.current_robot_yaw]
+        userdata.nav_to_coord_goal = [userdata.face.position.x,userdata.face.position.y, userdata.current_robot_yaw]
+        rospy.loginfo('FACE FRAME PREPARE COORD: ' + str(userdata.face_frame))
         userdata.nav_to_coord_frame = userdata.face_frame
         return 'succeeded'
 
@@ -227,10 +231,17 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'search_face',
                  SearchFacesSM(),
-                 transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc', 
-                 'preempted': 'preempted'})
+                 transitions={'succeeded': 'get_current_pose_yaw', 'aborted': 'ask_for_tc', 
+                 'preempted': 'preempted'},
+                  remapping={'face_frame':'face_frame'})
              
             # Go to the person - We assume that find person will return the position for the person
+            
+            smach.StateMachine.add(
+                                   'get_current_pose_yaw',
+                                   get_current_robot_pose(),
+                                   transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc', 
+                                                    'preempted': 'preempted'})
             smach.StateMachine.add(
                  'prepare_coord_person',
                  prepare_coord_person(),
