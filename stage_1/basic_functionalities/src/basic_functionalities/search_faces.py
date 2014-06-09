@@ -13,6 +13,8 @@ from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
 from face_states.recognize_face import recognize_face_concurrent
 from speech_states.say import text_to_say
+from manipulation_states.move_head_form import move_head_form
+
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -28,7 +30,7 @@ class DummyStateMachine(smach.State):
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
-        rospy.sleep(3)
+        rospy.sleep(1)
         return 'succeeded'
 
 class prepare_poi(smach.State):
@@ -56,6 +58,48 @@ class prepare_poi(smach.State):
         
         return 'succeeded'
  
+ 
+class Wait_search(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=[])
+
+    def execute(self, userdata):
+        if self.preempt_requested():
+            return 'preempted'
+        rospy.sleep(1.5)
+        return 'succeeded'
+
+class say_searching_faces(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=[])
+
+        with self:
+
+            smach.StateMachine.add('Wait_search_1', 
+                                   Wait_search(), 
+                                   transitions={'succeeded':'Say_search', 'preempted':'preempted'})
+            
+            smach.StateMachine.add('Say_search', 
+                                   text_to_say('I am Searching faces'), 
+                                   transitions={'succeeded':'Move_head_Left', 'aborted':'aborted'})
+            
+            smach.StateMachine.add('Move_head_Left',
+                                   move_head_form( head_left_right='mid_left', head_up_down='normal'),
+                                   transitions={'succeeded':'Wait_search_2', 'aborted':'aborted'})
+            
+            smach.StateMachine.add('Wait_search_2', 
+                                   Wait_search(), 
+                                   transitions={'succeeded':'Move_head_Right', 'preempted':'preempted'})
+            
+            smach.StateMachine.add('Move_head_Right',
+                                   move_head_form( head_left_right='mid_right', head_up_down='normal'),
+                                   transitions={'succeeded':'Wait_search_1', 'aborted':'aborted'})
+ 
+ 
 # gets called when ANY child state terminates
 def child_term_cb(outcome_map):
 
@@ -74,12 +118,14 @@ def child_term_cb(outcome_map):
         rospy.loginfo(OKGREEN + "TimeOut ends" + ENDC)
         return True
 
+
     # in all other case, just keep running, don't terminate anything
     return False
 
 def out_cb(outcome_map):
     if outcome_map['find_faces'] == 'succeeded':
         rospy.logwarn('Out_CB = Find Faces Succeeded')
+
         return 'succeeded'	
     elif outcome_map['TimeOut'] == 'succeeded':
         rospy.logwarn('Out_CB = TimeOut finished succeeded')
@@ -87,6 +133,10 @@ def out_cb(outcome_map):
     else:
         rospy.logwarn('Out_CB = Else!')
         return 'aborted'
+
+
+
+    
 
 class SearchFacesSM(smach.StateMachine):
     """
@@ -114,7 +164,7 @@ class SearchFacesSM(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                     input_keys=['name', 'nav_to_poi_name', 'face'],
+                                     input_keys=['name', 'nav_to_poi_name', 'face','face_frame'],
                                      output_keys=['face', 'standard_error', 'face_frame'])
 
         with self:
@@ -139,7 +189,7 @@ class SearchFacesSM(smach.StateMachine):
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
                                         input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
-                                        output_keys=['face', 'standard_error'],
+                                        output_keys=['face', 'standard_error', 'face_frame'],
                                         child_termination_cb = child_term_cb,
 					                    outcome_cb=out_cb)
             
@@ -152,6 +202,8 @@ class SearchFacesSM(smach.StateMachine):
                  
                 # Search for face
                 smach.Concurrence.add('find_faces', recognize_face_concurrent())
+                
+                smach.Concurrence.add('say_search_faces', say_searching_faces())
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
