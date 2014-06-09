@@ -30,6 +30,7 @@ from speech_states.deactivate_asr import DeactivateASR
 from speech_states.read_asr import ReadASR
 from manipulation_states.play_motion_sm import play_motion_sm
 from smach.user_data import Remapper
+from tf.transformations import quaternion_from_euler
 # Constants
 NUMBER_OF_QUESTIONS = 3
 GRAMMAR_NAME = 'robocup/what_did_you_say_2'
@@ -66,7 +67,8 @@ class prepare_coord_person(smach.State):
         
         #userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
         #userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, userdata.current_robot_yaw]
-        userdata.nav_to_coord_goal = [userdata.face.position.x,userdata.face.position.y, userdata.current_robot_yaw]
+        
+        userdata.nav_to_coord_goal = [userdata.face.position.x,userdata.face.position.y, userdata.face.position.z-0.4, math.radians(0),math.radians(0), math.radians(-90)]
         rospy.loginfo('FACE FRAME PREPARE COORD: ' + str(userdata.face_frame))
         userdata.nav_to_coord_frame = userdata.face_frame
         return 'succeeded'
@@ -231,12 +233,16 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                  'search_face',
                  SearchFacesSM(),
-                 transitions={'succeeded': 'get_current_pose_yaw', 'aborted': 'ask_for_tc', 
+                 transitions={'succeeded': 'Say_Found_Face', 'aborted': 'ask_for_tc', 
                  'preempted': 'preempted'},
                   remapping={'face_frame':'face_frame'})
              
             # Go to the person - We assume that find person will return the position for the person
-            
+            smach.StateMachine.add(
+                                   'Say_Found_Face',
+                                   text_to_say('Referee! I have found you at last. Now I am going to you, wait for me.'),
+                                   transitions={'succeeded': 'get_current_pose_yaw', 'aborted': 'Say_Found_Face', 
+                                                'preempted': 'preempted'})
             smach.StateMachine.add(
                                    'get_current_pose_yaw',
                                    get_current_robot_pose(),
@@ -262,7 +268,7 @@ class WhatSaySM(smach.StateMachine):
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(
                  'say_found',
-                 text_to_say("I have arrived to where you are."),
+                 text_to_say("I found you! I have arrived to where you are."),
                  transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
              
             # Ask for TC if we don't find him

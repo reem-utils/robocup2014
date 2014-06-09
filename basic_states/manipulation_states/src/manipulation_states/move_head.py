@@ -31,7 +31,10 @@ class prepare_move_joints_group(smach.State):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'])
     def execute(self, userdata):
         rospy.loginfo('Executing Move head')
+        if self.preempt_requested():
+            return 'preempted'
         rospy.sleep(1)
+        
         return 'succeeded'
 class create_move_head_goal(smach.State):
     def __init__(self):

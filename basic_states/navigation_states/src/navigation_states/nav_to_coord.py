@@ -91,6 +91,8 @@ class nav_to_coord(smach.StateMachine):
                     elif result_status == 5: # We havent got a rejected yet, maybe never happens
                         userdata.standard_error = "Rejected navigation goal (maybe the goal is outside of the map or in a obstacle?)"
                         rospy.loginfo(userdata.standard_error)
+                    elif result_status == 2:
+                        return 'preempted'
                     return 'aborted'
                 else:
                     userdata.standard_error = "OK"
@@ -104,10 +106,10 @@ class nav_to_coord(smach.StateMachine):
                                                    input_keys=['standard_error'],
                                                    output_keys=['standard_error'],
                                                    result_cb=move_res_cb), 
-								transitions={'succeeded':'succeeded', 'aborted':'Aborting_text'})
+								transitions={'succeeded':'succeeded', 'aborted':'Aborting_text', 'preempted':'preempted'})
             
             smach.StateMachine.add('Aborting_text',
-                                   text_to_say('I cannot reach the coordinate location you specified'),
+                                   text_to_say('I cannot reach the location, sorry'),
                                    transitions={'succeeded':'succeeded', 'aborted':'aborted'})
 def main():
     rospy.loginfo('Go POi Node')
