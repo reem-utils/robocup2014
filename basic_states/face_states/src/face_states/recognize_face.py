@@ -37,7 +37,9 @@ class Process_face(smach.State):
                 if userdata.face:
                     userdata.face=userdata.face.pop()
                     userdata.standard_error="Recognize_face_Name OK"+userdata.standard_error
-                    userdata.face_frame = userdata.header.frame_id
+                    userdata.face_frame = userdata.faces.header.frame_id
+                    rospy.loginfo('-- FRAME ID:: ' + userdata.faces.header.frame_id)
+                    self.request_preempt()
                     return 'succeeded'
                 else :
                     userdata.standard_error="Recognize:= Any face whit that name"+userdata.standard_error
@@ -47,8 +49,10 @@ class Process_face(smach.State):
                 # i want to take the best face confidence    
                 userdata.faces.faces.sort(cmp=None, key=attrgetter('confidence'), reverse=True)
                 userdata.face=userdata.faces.faces[0]
-                userdata.face_frame = userdata.header.frame_id
+                userdata.face_frame = userdata.faces.header.frame_id
+                rospy.loginfo('-- FRAME ID:: ' + userdata.faces.header.frame_id)
                 userdata.standard_error="Recognize_face_Normal OK"+userdata.standard_error
+                self.request_preempt()
                 return 'succeeded'
         else:
             userdata.standard_error="no faces available"+userdata.standard_error
@@ -156,7 +160,7 @@ class recognize_face_concurrent(smach.StateMachine):
     def __init__(self,minConfidence=90):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
-                                 output_keys=['standard_error','face'])
+                                 output_keys=['standard_error','face','face_frame'])
         
         with self:
 
