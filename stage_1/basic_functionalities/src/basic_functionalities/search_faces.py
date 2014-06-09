@@ -67,8 +67,11 @@ class Wait_search(smach.State):
 
     def execute(self, userdata):
         if self.preempt_requested():
+            rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in Wait_search State')
             return 'preempted'
+        
         rospy.sleep(1.5)
+        rospy.logwarn('PREEMPT NOT REQUESTED -- Returning Preempted in Wait_search State')
         return 'succeeded'
 
 class say_searching_faces(smach.StateMachine):
@@ -84,7 +87,7 @@ class say_searching_faces(smach.StateMachine):
                                    transitions={'succeeded':'Say_search', 'preempted':'preempted'})
             
             smach.StateMachine.add('Say_search', 
-                                   text_to_say('I am Searching faces'), 
+                                   text_to_say('I am looking for the referee'), 
                                    transitions={'succeeded':'Move_head_Left', 'aborted':'aborted'})
             
             smach.StateMachine.add('Move_head_Left',
@@ -97,9 +100,17 @@ class say_searching_faces(smach.StateMachine):
             
             smach.StateMachine.add('Move_head_Right',
                                    move_head_form( head_left_right='mid_right', head_up_down='normal'),
-                                   transitions={'succeeded':'Wait_search_1', 'aborted':'aborted'})
+                                   transitions={'succeeded':'Wait_search_3', 'aborted':'aborted'})
+            
+            smach.StateMachine.add('Wait_search_3', 
+                                   Wait_search(), 
+                                   transitions={'succeeded':'Move_head_Middle', 'preempted':'preempted'})
+            
+            smach.StateMachine.add('Move_head_Middle',
+                                   move_head_form( head_left_right='center', head_up_down='normal'),
+                                   transitions={'succeeded':'succeeded', 'aborted':'aborted'})
  
- 
+            
 # gets called when ANY child state terminates
 def child_term_cb(outcome_map):
 
@@ -117,7 +128,10 @@ def child_term_cb(outcome_map):
     if outcome_map['TimeOut'] == 'succeeded':
         rospy.loginfo(OKGREEN + "TimeOut ends" + ENDC)
         return True
-
+    
+    if outcome_map['say_search_faces'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Say and Move Head ends" + ENDC)
+        return True
 
     # in all other case, just keep running, don't terminate anything
     return False
@@ -181,7 +195,7 @@ class SearchFacesSM(smach.StateMachine):
                 'preempted': 'preempted'}) 
             smach.StateMachine.add(
                                    'Say_Searching',
-                                   text_to_say('Right Now I am searching faces'),
+                                   text_to_say('Right Now I am looking for you.'),
                                    transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
             
@@ -207,7 +221,10 @@ class SearchFacesSM(smach.StateMachine):
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
-                                transitions={'succeeded':'succeeded', 'aborted':'Say_Changing_Poi', 'endTime': 'Say_Changing_Poi'})
+                                transitions={'succeeded':'succeeded', 
+                                             'aborted':'Say_Changing_Poi', 
+                                             'endTime': 'Say_Changing_Poi',
+                                             'preempted':'Say_Changing_Poi'})
 
                   
             smach.StateMachine.add(
