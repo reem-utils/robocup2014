@@ -30,10 +30,12 @@ class createNavGoal(smach.State):
         self.frame_id = frame_id
         
     def execute(self, userdata):
+        self.frame_id = userdata.nav_to_coord_frame if userdata.nav_to_coord_goal else self.frame_id
+        
         nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
 									userdata.nav_to_coord_goal[1], 
 									userdata.nav_to_coord_goal[2])
-        self.frame_id = userdata.nav_to_coord_frame if userdata.nav_to_coord_goal else self.frame_id
+        
         userdata.navigation_goal = nav_goal
         return 'succeeded'
  
