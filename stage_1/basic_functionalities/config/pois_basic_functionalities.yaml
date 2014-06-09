@@ -11,8 +11,8 @@ poi:
     init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
     fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
 
-    init_find_me: [submap_0, init_find_me, -1.521, 7.646, 2]
-    find_me: [submap_0, find_me, -1.521, 7.646,  1]
+    init_find_me: [submap_0, init_find_me,-1.521, 7.646,  -0.620]
+    find_me: [submap_0, find_me, -1.521, 7.646,  -0.620]
 
     init_what_say: [submap_0, init_what_say,  -1.521, 7.646,  -0.620]
 
