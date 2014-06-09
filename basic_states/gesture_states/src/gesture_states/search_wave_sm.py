@@ -101,7 +101,7 @@ class Search_Wave_SM(smach.StateMachine):
                                                 'aborted':'aborted'})
             smach.StateMachine.add(
                 'Say_Searching',
-                text_to_say("I am searching, let's see"),
+                text_to_say("I am searching, let's see if I can find anyone waving."),
                 transitions={'succeeded':'wave_recognition', 'aborted':'wave_recognition', 'preempted':'wave_recognition'})
            
             smach.StateMachine.add(
