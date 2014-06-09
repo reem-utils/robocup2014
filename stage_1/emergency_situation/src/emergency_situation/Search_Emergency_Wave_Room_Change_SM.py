@@ -28,7 +28,7 @@ class Prepare_Data(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'], 
             input_keys=['possible_pois'],
-            output_keys=['possible_pois']) #todo: i have to delate de output_key
+            output_keys=['possible_pois'])
 
     def execute(self, userdata):
         aux_pois = rospy.get_param("/emergency_possible_pois/pois/emergency/")
@@ -58,7 +58,7 @@ class Select_Possible_Poi(smach.State):
         aux_possible = userdata.possible_pois.pop()
         
         userdata.nav_to_poi_name_possible = aux_possible
-        rospy.loginfo("Possible Poi:: " + str(aux_possible))
+        rospy.loginfo("Possible Location POI:: " + str(aux_possible))
         userdata.n_item = userdata.n_item + 1
         
         print "Length of List:: " + str(len(userdata.possible_pois))
@@ -66,7 +66,7 @@ class Select_Possible_Poi(smach.State):
         if len(userdata.possible_pois) == 0:
             return 'finished_searching'
         
-        rospy.loginfo("To Suceeded")
+        rospy.loginfo("To Succeeded")
         return 'succeeded'
 
 
@@ -84,8 +84,8 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
         None
     Output Keys:
         @key poi_location: location of the emergency room
-        @key wave_position 
-        @key wave_yaw_degree
+        @key wave_position: A PointStamped point referenced to /base_link
+        @key wave_yaw_degree: the yaw for the wave position
     No io_keys.
 
     Nothing must be taken into account to use this SM.
@@ -94,7 +94,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=[],
-                                    output_keys=['poi_location'])
+                                    output_keys=['poi_location', 'wave_position', 'wave_yaw_degree'])
 
 
         with self:           
@@ -103,9 +103,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.possible_pois = []
             self.userdata.n_item = 0
-            
-            
-            
+                        
             smach.StateMachine.add(
                 'Prepare_Data',
                 Prepare_Data(),
@@ -114,12 +112,19 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             smach.StateMachine.add(
                 'Search_Emergency',
                 Select_Possible_Poi(),
-                transitions={'succeeded':'Navigate_to_Room','finished_searching':'aborted'})
+                transitions={'succeeded':'Say_Go_to_Room','finished_searching':'aborted'})
+            
+            smach.StateMachine.add(
+                'Say_Go_to_Room',
+                text_to_say("Now I am going to the next room"),
+                transitions={'succeeded':'Navigate_to_Room','aborted':'aborted'})
+            
             smach.StateMachine.add(
                 'Navigate_to_Room',
                 nav_to_poi(),
                 remapping={'nav_to_poi_name':'nav_to_poi_name_possible'},
                 transitions={'succeeded': 'Search_Wave', 'aborted': 'Navigate_to_Room', 'preempted': 'preempted'})
+            
             smach.StateMachine.add(
                 'Search_Wave',
                 Search_Wave_SM(),
