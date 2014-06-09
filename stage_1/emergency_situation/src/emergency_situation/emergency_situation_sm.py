@@ -149,17 +149,17 @@ class emergency_situation_sm(smach.StateMachine):
                 'Say_Enter_Successful',
                 text_to_say('Successfully entering the room. Now I am going to the Emergency Room.'),
                 transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
-            # Go to the emergency location            
-            # TODO: Define the name of the room to enter (defined by the OC)
-            # If Aborted (not supposed to), retry?
-            smach.StateMachine.add(
-                'Prepare_Poi_Emergency_1',
-                prepare_poi_emergency('emergency_room'),
-                transitions={'succeeded':'Go_to_emergency_room'})
-            smach.StateMachine.add(
-                'Go_to_emergency_room',
-                nav_to_poi(),
-                transitions={'succeeded':'Say_Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
+
+#            The Location for the Emergency is not known --> Search for the emergency situation 
+
+#             smach.StateMachine.add(
+#                 'Prepare_Poi_Emergency_1',
+#                 prepare_poi_emergency('emergency_room'),
+#                 transitions={'succeeded':'Go_to_emergency_room'})
+#             smach.StateMachine.add(
+#                 'Go_to_emergency_room',
+#                 nav_to_poi(),
+#                 transitions={'succeeded':'Say_Search_Person', 'aborted':'Go_to_emergency_room', 'preempted':'Go_to_emergency_room'})
 
             # Userdata output keys:
             #  - person_location: PoseStamped/-->Pose<-- (?)
