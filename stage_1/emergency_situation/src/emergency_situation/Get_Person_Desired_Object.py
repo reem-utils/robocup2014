@@ -32,8 +32,6 @@ OKGREEN = '\033[92m'
 
 time_First = True
 
-import random
-
 class DummyStateMachine(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -256,7 +254,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
-                #DummyStateMachine(),
                 #nav_to_poi(),
                 nav_to_coord('/map'),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
@@ -271,12 +268,10 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
-                #DummyStateMachine(),
                 move_hands_form(hand_pose_name='pre_grasp', hand_side='right'),
                 transitions={'succeeded':'Give_Object_2', 'aborted':'Give_Object', 'preempted':'Give_Object'})
             smach.StateMachine.add(
                 'Give_Object_2',
-                #DummyStateMachine(),
                 move_hands_form(hand_pose_name='full_open', hand_side='right'),
                 transitions={'succeeded':'Say_Rescue_stay', 'aborted':'Give_Object_2', 'preempted':'Give_Object_2'})
             smach.StateMachine.add(
