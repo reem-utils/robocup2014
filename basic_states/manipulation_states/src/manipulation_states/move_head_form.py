@@ -47,7 +47,7 @@ class prepareData(smach.State):
             left_right = 0.0
 
         if self.head_ud == "down":
-            up_down = 1.0
+            up_down = 0.3
         elif self.head_ud == "normal":
             up_down = 0.1
             
