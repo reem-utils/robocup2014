@@ -12,7 +12,7 @@ import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
-from gesture_states.search_wave_sm import Search_Wave_SM
+from hri_states.search_wave_sm import Search_Wave_SM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -137,7 +137,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             
             smach.StateMachine.add(
                 'Search_Wave',
-                Search_Wave_SM(),
+                Search_Wave_SM(head_position='down',text_for_wave_searching='Where are you? I am trying to find and help you.'),
                 transitions={'succeeded':'Prepare_Output_Search', 'preempted':'preempted', 
                              'aborted':'aborted', 
                              'end_searching':'Search_Emergency'})
@@ -145,9 +145,8 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             smach.StateMachine.add(
                 'Prepare_Output_Search',
                 Prepare_output_search(),
-                transitions={'succeeded':'succeeded', 'preempted':'preempted', 
-                             'aborted':'aborted', 
-                             'end_searching':'Search_Emergency'})
+                transitions={'succeeded':'succeeded', 
+                             'aborted':'aborted'})
 
 def main():
     rospy.loginfo('Search Wave Detection Node')
