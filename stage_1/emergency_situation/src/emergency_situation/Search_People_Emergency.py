@@ -119,7 +119,7 @@ class Search_People_Emergency(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['person_location', 'person_location_coord'])
+                                    output_keys=['person_location', 'person_location_coord', 'poi_location'])
 
         with self:           
             self.userdata.emergency_location = []
@@ -141,7 +141,10 @@ class Search_People_Emergency(smach.StateMachine):
 #                 'Gesture_Recognition',
 #                 WaveDetection(),
 #                 transitions={'succeeded':'Say_Search','aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
-            
+            smach.StateMachine.add(
+                'Home_Play',
+                play_motion_sm('home'),
+                transitions={'succeeded':'Search_Person_Room_by_Room','aborted':'Search_Person_Room_by_Room'})
             smach.StateMachine.add(
                 'Search_Person_Room_by_Room',
                 Search_Emergency_Wave_Room_Change(),
