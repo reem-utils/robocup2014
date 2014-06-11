@@ -119,7 +119,7 @@ class Search_People_Emergency(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
-                                    output_keys=['person_location', 'person_location_coord'])
+                                    output_keys=['person_location', 'person_location_coord', 'poi_location'])
 
         with self:           
             self.userdata.emergency_location = []
@@ -141,7 +141,10 @@ class Search_People_Emergency(smach.StateMachine):
 #                 'Gesture_Recognition',
 #                 WaveDetection(),
 #                 transitions={'succeeded':'Say_Search','aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
-            
+            smach.StateMachine.add(
+                'Home_Play',
+                play_motion_sm('home'),
+                transitions={'succeeded':'Search_Person_Room_by_Room','aborted':'Search_Person_Room_by_Room'})
             smach.StateMachine.add(
                 'Search_Person_Room_by_Room',
                 Search_Emergency_Wave_Room_Change(),
@@ -155,7 +158,7 @@ class Search_People_Emergency(smach.StateMachine):
             
             smach.StateMachine.add(
                 'Say_Search',
-                text_to_say('Oh! I have found you at last. Let me help you.'),
+                text_to_say('Let me help you.'),
                 transitions={'succeeded':'Prepare_Go_To_Wave', 'aborted':'Prepare_Go_To_Wave', 'preempted':'Say_Search'})
             
             smach.StateMachine.add(
@@ -166,7 +169,7 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Go_to_Wave',
                 text_to_say("I'm coming!"),
-                transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
+                transitions={'succeeded':'Go_to_Wave', 'aborted':'Go_to_Wave', 'preempted':'Go_to_Wave'})
             
             #The frame_id is '/base_link' because the wave gesture is transformed into this frame, and originally was in xtion
             smach.StateMachine.add(
@@ -176,7 +179,7 @@ class Search_People_Emergency(smach.StateMachine):
             
             smach.StateMachine.add(
                 'Say_Arrive_to_Wave',
-                text_to_say("I have arrived! Such a tough job here."),
+                text_to_say("I have arrived! "),
                 transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
             
             smach.StateMachine.add(
@@ -188,4 +191,23 @@ class Search_People_Emergency(smach.StateMachine):
                 'TreatPoseForCoord',
                 PoseToArray(),
                 transitions={'succeeded':'succeeded', 'aborted':'Register_Position', 'preempted':'Register_Position'})
+            
+            
+            
+def main():
+    rospy.loginfo('Search Person Detection Node')
+    rospy.init_node('search_person_detection_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        smach.StateMachine.add(
+            'Search_Person_SM',
+            Search_People_Emergency(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
+
             

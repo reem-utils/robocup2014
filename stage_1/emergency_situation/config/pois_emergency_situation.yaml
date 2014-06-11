@@ -11,4 +11,7 @@ poi:
     kitchen_counter: [submap_0, kitchen_counter, -11.378, 11.094, -0.784]
     dinner_table: [submap_0, dinner_table,-13.752, 9.982,  -2.186]
     bookshelf: [submap_0, bookshelf,-6.219, 9.137, 0.795]
+    point_room_one: [submap_0, point_room_one, -0.758, 7.336, -0.128]
+    point_room_two: [submap_0, point_room_two, -0.877, 7.008, -0.662]
+    point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
 

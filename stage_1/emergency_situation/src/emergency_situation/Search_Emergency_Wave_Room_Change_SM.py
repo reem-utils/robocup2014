@@ -12,7 +12,7 @@ import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
-from gesture_states.search_wave_sm import Search_Wave_SM
+from hri_states.search_wave_sm import Search_Wave_SM
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -39,6 +39,16 @@ class Prepare_Data(smach.State):
         userdata.possible_pois = aux_pois.keys()
         
         rospy.sleep(1)
+        return 'succeeded'
+
+class Prepare_output_search(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded','aborted'],
+                             input_keys=['nav_to_poi_name_possible'],
+                             output_keys=['emergency_poi_name'])
+    def execute(self, userdata):
+        userdata.emergency_poi_name = userdata.nav_to_poi_name_possible
         return 'succeeded'
 
 class Select_Possible_Poi(smach.State):
@@ -94,7 +104,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=[],
-                                    output_keys=['poi_location', 'wave_position', 'wave_yaw_degree'])
+                                    output_keys=['emergency_poi_name', 'wave_position', 'wave_yaw_degree'])
 
 
         with self:           
@@ -127,9 +137,16 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             
             smach.StateMachine.add(
                 'Search_Wave',
-                Search_Wave_SM(),
-                transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted', 'end_searching':'Search_Emergency'})
-
+                Search_Wave_SM(head_position='down',text_for_wave_searching='Where are you? I am trying to find and help you.'),
+                transitions={'succeeded':'Prepare_Output_Search', 'preempted':'preempted', 
+                             'aborted':'aborted', 
+                             'end_searching':'Search_Emergency'})
+            
+            smach.StateMachine.add(
+                'Prepare_Output_Search',
+                Prepare_output_search(),
+                transitions={'succeeded':'succeeded', 
+                             'aborted':'aborted'})
 
 def main():
     rospy.loginfo('Search Wave Detection Node')

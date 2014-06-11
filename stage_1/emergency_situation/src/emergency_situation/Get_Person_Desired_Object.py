@@ -165,6 +165,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
+            
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
