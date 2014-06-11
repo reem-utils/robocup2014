@@ -136,7 +136,7 @@ class TransformGesture(smach.State):
 
 class WaveDetection(smach.StateMachine):
     """
-        GestureDetection - It is a State Machine that subscibes to the topic '/head_mount_xtion/gestures', using the topic_reader()
+        GestureDetection - It is a State Machine that subscribes to the topic '/head_mount_xtion/gestures', using the topic_reader()
         This Topic gives the 3D position of the wave gesture in the frame 'head_mount_xtion_depth_optical_frame', 
         so after reading the topic, a TF has to be calculated.
 
@@ -151,7 +151,7 @@ class WaveDetection(smach.StateMachine):
             None
 
     """
-    def __init__(self, time_for_wave=20.0):
+    def __init__(self, time_for_wave=5.0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                  input_keys=[],
                                  output_keys=['wave_position', 'wave_yaw_degree','standard_error'])

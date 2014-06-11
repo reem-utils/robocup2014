@@ -95,7 +95,7 @@ class Search_Wave_SM(smach.StateMachine):
                                                 'preempted': 'preempted', 'end_searching':'end_searching'})
             smach.StateMachine.add(
                                    'move_head',
-                                   move_head_form(head_up_down='normal'),
+                                   move_head_form(head_up_down=head_position),
                                    transitions={'succeeded': 'Say_Searching',
                                                 'preempted':'Say_Searching',
                                                 'aborted':'aborted'})

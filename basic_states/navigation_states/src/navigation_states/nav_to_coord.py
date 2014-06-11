@@ -83,8 +83,8 @@ class nav_to_coord(smach.StateMachine):
                                    transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
             
             def move_res_cb(userdata, result_status, result):
-
                 if result_status != 3: # 3 == SUCCEEDED
+                    rospy.logwarn('Error in NAV_TO_COORD: ' + str(result))
                     if result_status == 4: 
                         userdata.standard_error = "Aborted navigation goal (maybe we didn't get there?)"
                         rospy.loginfo(userdata.standard_error)
