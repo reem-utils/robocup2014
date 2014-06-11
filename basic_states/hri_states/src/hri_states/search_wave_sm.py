@@ -29,11 +29,12 @@ PUB_2_TOPIC = '/transformed_pose'
 NUMBER_OF_HEAD_POSES = 3
 
 class prepare_move_head(smach.State):
-    def __init__(self):
+    def __init__(self, head_position):
         rospy.loginfo("Entering loop_test")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end_searching'], 
                                 input_keys=['loop_iterations', 'head_left_right', 'head_up_down'],
                                 output_keys=['head_left_right', 'head_up_down', 'standard_error', 'loop_iterations'])
+        self.head_position = head_position
 
     def execute(self, userdata):
         
@@ -53,8 +54,8 @@ class prepare_move_head(smach.State):
             elif userdata.loop_iterations == 2:
                 userdata.head_left_right = 'mid_right'
 
-            
-            userdata.head_up_down = 'normal'
+            userdata.head_up_down = self.head_position if self.head_position else 'normal'
+
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
 
@@ -80,7 +81,7 @@ class Search_Wave_SM(smach.StateMachine):
             'end_searching' : No one is found, so searching is cancelled
 
     """
-    def __init__(self, head_position=None):
+    def __init__(self, head_position=None, text_for_wave_searching="I am looking for you."):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted', 'end_searching'],
                                  input_keys=[],
                                  output_keys=['wave_position', 'wave_yaw_degree','standard_error'])
@@ -91,7 +92,7 @@ class Search_Wave_SM(smach.StateMachine):
             self.userdata.standard_error = ''
             smach.StateMachine.add(
                                    'Move_head_prepare',
-                                   prepare_move_head(),
+                                   prepare_move_head(head_position),
                                     transitions={'succeeded': 'move_head', 'aborted': 'aborted', 
                                                 'preempted': 'preempted', 'end_searching':'end_searching'})
             smach.StateMachine.add(
@@ -102,7 +103,7 @@ class Search_Wave_SM(smach.StateMachine):
                                                 'aborted':'aborted'})
             smach.StateMachine.add(
                 'Say_Searching',
-                text_to_say("I am searching, let's see if I can find anyone waving, let's see, let's see."),
+                text_to_say(text_for_wave_searching),
                 transitions={'succeeded':'wave_recognition', 'aborted':'wave_recognition', 'preempted':'wave_recognition'})
            
             #Hard-coded maximum time in order to detect wave 
