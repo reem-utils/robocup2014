@@ -156,6 +156,7 @@ class WaveDetection(smach.StateMachine):
                                  input_keys=[],
                                  output_keys=['wave_position', 'wave_yaw_degree','standard_error'])
         with self:
+            self.userdata.standard_error = ''
             smach.StateMachine.add(
                 'Gesture_Topic_Reader',
                 topic_reader(topic_name=GESTURE_TOPIC, topic_type=Gesture, topic_time_out=time_for_wave, blocked=False),

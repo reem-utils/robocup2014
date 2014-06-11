@@ -88,6 +88,7 @@ class Search_Wave_SM(smach.StateMachine):
             self.userdata.loop_iterations = 0
             self.userdata.wave_position = None
             self.userdata.wave_yaw_degree = None
+            self.userdata.standard_error = ''
             smach.StateMachine.add(
                                    'Move_head_prepare',
                                    prepare_move_head(),
@@ -101,14 +102,20 @@ class Search_Wave_SM(smach.StateMachine):
                                                 'aborted':'aborted'})
             smach.StateMachine.add(
                 'Say_Searching',
-                text_to_say("I am searching, let's see if I can find anyone waving."),
+                text_to_say("I am searching, let's see if I can find anyone waving, let's see, let's see."),
                 transitions={'succeeded':'wave_recognition', 'aborted':'wave_recognition', 'preempted':'wave_recognition'})
            
+            #Hard-coded maximum time in order to detect wave 
             smach.StateMachine.add(
                 'wave_recognition',
-                WaveDetection(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'Move_head_prepare', 
+                WaveDetection(4.0),
+                transitions={'succeeded': 'Say_Found', 'aborted': 'Move_head_prepare', 
                 'preempted': 'preempted'}) 
+            
+            smach.StateMachine.add(
+                'Say_Found',
+                text_to_say("Oh! I have found you finally."),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
 
 

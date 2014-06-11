@@ -41,6 +41,16 @@ class Prepare_Data(smach.State):
         rospy.sleep(1)
         return 'succeeded'
 
+class Prepare_output_search(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded','aborted'],
+                             input_keys=['nav_to_poi_name_possible'],
+                             output_keys=['emergency_poi_name'])
+    def execute(self, userdata):
+        userdata.emergency_poi_name = userdata.nav_to_poi_name_possible
+        return 'succeeded'
+
 class Select_Possible_Poi(smach.State):
     """
     From the userdata, it selects a poi from the list, in order to get the robot to that location
@@ -94,7 +104,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=[],
-                                    output_keys=['poi_location', 'wave_position', 'wave_yaw_degree'])
+                                    output_keys=['emergency_poi_name', 'wave_position', 'wave_yaw_degree'])
 
 
         with self:           
@@ -128,8 +138,16 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             smach.StateMachine.add(
                 'Search_Wave',
                 Search_Wave_SM(),
-                transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted', 'end_searching':'Search_Emergency'})
-
+                transitions={'succeeded':'Prepare_Output_Search', 'preempted':'preempted', 
+                             'aborted':'aborted', 
+                             'end_searching':'Search_Emergency'})
+            
+            smach.StateMachine.add(
+                'Prepare_Output_Search',
+                Prepare_output_search(),
+                transitions={'succeeded':'succeeded', 'preempted':'preempted', 
+                             'aborted':'aborted', 
+                             'end_searching':'Search_Emergency'})
 
 def main():
     rospy.loginfo('Search Wave Detection Node')
