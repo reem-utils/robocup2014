@@ -60,7 +60,9 @@ class prepare_go_to_wave(smach.State):
                             input_keys=['wave_position','wave_yaw_degree', 'nav_to_coord_goal'],
                             output_keys=['standard_error', 'nav_to_coord_goal'])
     def execute(self, userdata):
-        userdata.nav_to_coord_goal = [userdata.wave_position.point.x, userdata.wave_position.point.y, 
+        #Substract 0.5 in each coordinate to let the robot be some point further than the wave detected Pose.
+        #It can be done nicer, and not harcoded
+        userdata.nav_to_coord_goal = [userdata.wave_position.point.x-0.5, userdata.wave_position.point.y-0.5, 
                                             userdata.wave_yaw_degree]
         
         #userdata.nav_to_coord_goal.y = userdata.gesture_detected.gesture_position.position.y
@@ -94,7 +96,7 @@ class Search_People_Emergency(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation's Search People SM.
     Pre: The robot has to be in the same room as the person.
-    It is a SuperStateMachine (contains submachines) with these functionalities (draft):
+    It is a SuperStateMachine (contains sub-machines) with these functionalities (draft):
     1. Wave detector
     2. Face detector
 
@@ -166,6 +168,7 @@ class Search_People_Emergency(smach.StateMachine):
                 text_to_say("I'm coming!"),
                 transitions={'succeeded':'Go_to_Wave', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
             
+            #The frame_id is '/base_link' because the wave gesture is transformed into this frame, and originally was in xtion
             smach.StateMachine.add(
                 'Go_to_Wave',
                 nav_to_coord('/base_link'),
@@ -173,7 +176,7 @@ class Search_People_Emergency(smach.StateMachine):
             
             smach.StateMachine.add(
                 'Say_Arrive_to_Wave',
-                text_to_say("I'm here!"),
+                text_to_say("I have arrived! Such a tough job here."),
                 transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
             
             smach.StateMachine.add(
