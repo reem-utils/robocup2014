@@ -137,18 +137,14 @@ class emergency_situation_sm(smach.StateMachine):
             # Pass the entry room
             # TODO: Define the poi for the output of the room 
             # Pre: The robot should be in front of the Arena door (maybe we should change this, depending on the conditions)
-            #smach.StateMachine.add(
-            #    'Prepare_Door_Out_Arena',
-            #    prepare_poi_emergency('entry_door_exit'),
-            #    transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM('entry_door_exit'),
                 transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Prepare_Poi_Emergency_1'})
             smach.StateMachine.add(
                 'Say_Enter_Successful',
-                text_to_say('Successfully entering the room. Now I am going to the Emergency Room.'),
-                transitions={'succeeded':'Prepare_Poi_Emergency_1', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
+                text_to_say('I have successfully entered the apartment. Now I am going to find and rescue the person in emergency.'),
+                transitions={'succeeded':'Search_Person', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
 
 #            The Location for the Emergency is not known --> Search for the emergency situation 
 
@@ -166,10 +162,10 @@ class emergency_situation_sm(smach.StateMachine):
             #   Another state will be needed (maybe) to remap
             # No need of face_recognition
             # What if person not found? Re-search?
-            smach.StateMachine.add(
-                'Say_Search_Person',
-                text_to_say('Successfully entered the room. Now I am going to search for a person in an emergency situation.'),
-                transitions={'succeeded':'Search_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
+#             smach.StateMachine.add(
+#                 'Say_Search_Person',
+#                 text_to_say('Successfully entered the room. Now I am going to search for a person in an emergency situation.'),
+#                 transitions={'succeeded':'Search_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
             smach.StateMachine.add(
                 'Search_Person',
                 Search_People_Emergency(),
