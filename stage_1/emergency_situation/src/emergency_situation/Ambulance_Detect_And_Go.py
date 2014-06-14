@@ -94,8 +94,8 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
             #What is Wait for Ambulance or People Mean? Person detection?
             smach.StateMachine.add(
                 'Wait_for_Ambulance_Person',
-                #Search_Ambulance_Face(),
-                Search_Face_Determined('Where are you ambulance?'),
+                Search_Ambulance_Face(),
+                #Search_Face_Determined('Where are you ambulance?'),
                 transitions={'succeeded':'Say_Ambulance', 'aborted':'Detect_Fail_Init', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                                    'Detect_Fail_Init',
