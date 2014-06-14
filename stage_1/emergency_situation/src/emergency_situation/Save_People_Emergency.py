@@ -100,35 +100,15 @@ class Save_People_Emergency(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-            smach.StateMachine.add(
-                'Prepare_Say_Rescue',
-                prepare_tts('I am going to rescue you!'),
-                transitions={'succeeded':'Say_Rescue', 'aborted':'Say_Rescue', 'preempted':'Say_Rescue'})
-            smach.StateMachine.add(
-                'Say_Rescue',
-                text_to_say(),
-                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
-
-            # TODO: instead of using nav_to_poi(), we'll be using nav_to_coord(), as we have the coordenates of the person in emergency
-            # It is done in the Search_People_Emergency SM
-#            smach.StateMachine.add(
-#                'Prepare_Go_To_Person',
-#                prepare_coord_person_emergency(),
-#                transitions={'succeeded':'Go_To_Person', 'aborted':'Go_To_Person', 'preempted':'Go_To_Person'})
-#            smach.StateMachine.add(
-#                'Go_To_Person',
-#                DummyStateMachine(),
-#                #nav_to_coord('\base_link'),
-#                transitions={'succeeded':'Prepare_Ask_Status', 'aborted':'Prepare_Ask_Status', 'preempted':'Prepare_Ask_Status'})
 
             #It should be Speech Recognition: ListenTo(?)
-            smach.StateMachine.add(
-                'Prepare_Ask_Status',
-                prepare_tts('Are you Ok?'),
-                transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
+#             smach.StateMachine.add(
+#                 'Prepare_Ask_Status',
+#                 prepare_tts('Are you Ok?'),
+#                 transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
             smach.StateMachine.add(
                 'Ask_Status',
-                text_to_say(),
+                text_to_say('Are you Ok?'),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
             #TODO: Do we have to add an SayYesOrNoSM?
             # smach.StateMachine.add(
@@ -143,10 +123,10 @@ class Save_People_Emergency(smach.StateMachine):
                 'Save_Info',
                 DummyStateMachine(),
                 #GeneratePDF_State(),
+                transitions={'succeeded':'Say_Save', 'aborted':'aborted', 'preempted':'preempted'})
+             
+            smach.StateMachine.add(
+                'Say_Save',
+                text_to_say('Information Saved, p d f is left to do REMEMBER'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-#             
-#             smach.StateMachine.add(
-#                 'Say_Save',
-#                 text_to_say('Information Saved'),
-#                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

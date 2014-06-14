@@ -1,7 +1,12 @@
 import roslib
 import string
+import rospy
 from translator import get_list
-def grammarFileReader(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/general.gram'):
+
+GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
+#GRAMATICA = 'robocup/minimals'#'robocup/general'
+
+def grammarFileReader(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/' + GRAMATICA + '.gram'):
     # Reads a grammar until it finds the desired wordset
     # Returns an array of the words wich mach the key given in wordset
     # Should accept wordset as string or list of strings
@@ -62,7 +67,7 @@ def grammarFileWriter(wordlist, path=''):
     ff.close()
     return 'ok'
 
-def grammarFileWriter2(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/robocup/general.gram'):
+def grammarFileWriter2(wordset, path='/mnt_flash/etc/interaction/sphinx/model/gram/en_US/' + GRAMATICA + '.gram'):
     # print 'aqui entra?'
     # if path == '':
     #     path = roslib.packages.get_pkg_dir('gpsrSoar') + '/src/gentest.gram'

@@ -182,8 +182,14 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                  'wait_for_door',
                  EnterRoomSM("party_room"),
-                 transitions={'succeeded': 'wave_recognition', 'aborted': 'aborted', 'preempted': 'preempted'}) 
+                 transitions={'succeeded': 'say_search_wave', 'aborted': 'aborted', 'preempted': 'preempted'}) 
                   
+            # Say Wave recognize
+            smach.StateMachine.add(
+                 'say_search_wave',
+                 text_to_say("I'm searching for people waving at me"),
+                 transitions={'succeeded': 'wave_recognition', 'aborted': 'wave_recognition'}) 
+            
             # Gesture recognition -> Is anyone waving?
             smach.StateMachine.add(
                 'wave_recognition',
@@ -198,6 +204,7 @@ class CocktailPartySM(smach.StateMachine):
                  transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'prepare_coord_wave'}) 
               
             # Prepare the goal to the person that is waving
+            # TODO: it goes a little far to the person... 
             smach.StateMachine.add(
                 'prepare_coord_wave',
                 prepare_coord_wave(),
@@ -225,6 +232,7 @@ class CocktailPartySM(smach.StateMachine):
                  transitions={'succeeded': 'learning_person', 'aborted': 'aborted'})
             
             # Learn Person -> Ask name + Face Recognition
+            # TODO: Set database
             smach.StateMachine.add(
                 'learning_person',
                 SaveFaceSM(),
@@ -253,16 +261,18 @@ class CocktailPartySM(smach.StateMachine):
                 'preempted': 'preempted'}) 
 
             # Search for object information - It says where the object is, go to it and start object recognition
+            # TODO: Change how to process object - it must go to storage room always
+            # TODO: Add some messages in search object
             smach.StateMachine.add(
                 'search_food_order',
                 SearchObjectSM(),
                 transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
-                'preempted': 'preemptprocess_orderprocess_ordered'}) 
+                'preempted': 'preempted'}) 
             
             # Say grasp object
             smach.StateMachine.add(
                 'say_grasp_order',
-                text_to_say("I'm going to grasp the object"),
+                text_to_say("I'm going to grasp it"),
                 transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
                 'preempted': 'preempted'}) 
             
@@ -355,9 +365,16 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'check_loop',
                 checkLoop(),
-                transitions={'succeeded': 'gesture_recognition', 'aborted': 'aborted', 
+                transitions={'succeeded': 'wave_recognition', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'leaving_arena'}) 
-
+            
+            # Say leaving the arena 
+            smach.StateMachine.add(
+                'say_leaving_arena',
+                text_to_say("I finished the cocktail party, I'm leaving the arena"),
+                transitions={'succeeded': 'Give_Object', 'aborted': 'Give_Object', 
+                'preempted': 'preempted'})             
+            
             # Leaving the arena  
             smach.StateMachine.add(
                 'leaving_arena',

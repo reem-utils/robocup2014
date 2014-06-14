@@ -22,10 +22,14 @@ grammarNames['persons'] = 'name'
 grammarNames['locations'] = 'location'
 grammarNames['items'] = 'item'
 grammarNames['categories'] = 'category'
+
+GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
+#GRAMATICA = 'robocup/minimals'#'robocup/general'
+
 try:
   per = GFR(wordset=grammarNames)
 except IOError:
-  PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/general.gram"
+  PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/" + GRAMATICA + ".gram"
   #PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"#"/src/gentest.gram"
   per = GFR(path=PATH, wordset=grammarNames)
 print per
@@ -118,7 +122,7 @@ def new_world(loc_list):  #generates a new world
 
 def ask_data(Type='LOCATIONS', objectName='coke'):    
     if TEST:
-        return 'fridge'
+        return 'lift'
     ad = askMissingInfoSM(Type=Type, objectName=objectName)
     #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
     #ad.userdata.dataType = Type
@@ -133,13 +137,14 @@ def ask_category(category):
         if category == "drink":
             return 'coke'
         if category == "food":
-            return 'tomato sauce'
+            return 'cookies'
         if category == "snack":
             return 'chocolate'
         if category == "cleaning":
             return 'deodorant'
         if category == "kitchenware":
             return 'spoon'
+    print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
     obj = ad.userdata._data['object_name']
@@ -150,17 +155,17 @@ def ask_category(category):
 def ask_category_loc(category):
     if TEST:
         if category == "table":
-            return 'hallway table'
+            return 'kitchen table'
         if category == "shelf":
-            return 'bar'
+            return 'bookshelf'
         if category == "appliance":
             return 'fridge'
         if category == "utensils":
             return 'plant'
         if category == "seat":
-            return 'sofa'
+            return 'armchair'
         if category == "seating":
-            return 'bench'
+            return 'armchair'
         if category == "door":
             return 'exit'
     ad = askCategoryLocSM(GRAMMAR_NAME = category) 

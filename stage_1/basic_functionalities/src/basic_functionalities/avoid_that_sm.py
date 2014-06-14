@@ -11,6 +11,7 @@ Created on Tue Oct 22 12:00:00 2013
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from speech_states.say import text_to_say
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -85,15 +86,27 @@ class Avoid_That(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_Avoid',
                 prepare_Avoid(),
-                transitions={'succeeded': 'go_to_poi', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_go_to_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
+            
+            # Announce going to a place
+            smach.StateMachine.add(
+                    'say_go_to_poi',
+                    text_to_say(text="I'm going to the Avoid That area."),
+                    transitions={'succeeded': 'go_to_poi'})
 
             # Go to the POI
             smach.StateMachine.add(
                 'go_to_poi',
                 nav_to_poi(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_get_to_poi', 'aborted': 'aborted', 
                 'preempted': 'preempted'})    
+            
+            # Announce arriving to a place
+            smach.StateMachine.add(
+                    'say_get_to_poi',
+                    text_to_say(text="I've arrived to the destination for Avoid That. The test Avoid That has finished successfully. Thank you."),
+                    transitions={'succeeded': 'succeeded'})
 
             # If its time to live, will return aborted, else it will tri again sending de same goal
             #smach.StateMachine.add(

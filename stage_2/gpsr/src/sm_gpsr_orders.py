@@ -21,7 +21,8 @@ from speech_states.ask_question import AskQuestionSM
 
 # import rospy
 SENTENCE_SAID = '/parsing/sentence' 
-TEST = True
+TEST = False
+SKILLS = True
 TEST_SENTENCE1 = "cat1Sentences/sentence"
 TEST_SENTENCE2 = "cat2Sentences/sentence"
 if TEST : 
@@ -30,7 +31,9 @@ if TEST :
 else: 
     NUM_LOOPS_TODO = 3
     NUM_LOOPS_I = 0
-GRAMATICA = 'robocup/general'
+    
+GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
+#GRAMATICA = 'robocup/minimals'#'robocup/general'
 
 class sent():
     def __init__(self, text):

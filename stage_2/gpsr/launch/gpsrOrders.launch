@@ -4,7 +4,11 @@
   <rosparam file="$(find gpsr)/config/parsing.yaml"
       command="load" ns="parsing" />
 
-<!-- load the configuration file -->
+<!-- load the paramaters file -->
+  <rosparam file="$(find gpsr)/config/robocup_params.yaml"
+      command="load" ns="robocup_params" />
+
+<!-- load the pois file -->
   <rosparam file="$(find gpsr)/config/pois_gpsr.yaml"
       command="load" ns="mmap" />
 

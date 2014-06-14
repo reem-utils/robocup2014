@@ -2,12 +2,12 @@
 
 grammar first;
 
-public <basic> = ( <yes> {obj.put("yes",$.$value);} ) | ( <no> {obj.put("no",$.$value);} )  {obj.put("external","1");}; 
+public <basic> = ( <yes> {obj.put("yes",$.$value);}  |  <no> {obj.put("no",$.$value);} ) | <garbage>;
 
-<yes> = yes | yeah | sure;
+<yes> = yes | yeah ;
 <no> = no;
 
-<garbage>  = <garbage2>;
+<garbage>  = <garbage1>;
 
 <garbage1> = _unk;
 <garbage2> = <garbage1> | (_unk _unk);

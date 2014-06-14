@@ -1,9 +1,17 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    emergency_room: [submap_0, emergency_room, 3.0, 3.0, 0]
-    entry_door_init: [submap_0, entry_door, -3.0, 0.0, 0]
-    entry_door_exit: [submap_0, entry_door_2, -3.0, 2, 0]
-    kitchen: [submap_0, kitchen, 5.0, 4.0, 0]
-
+    emergency_room: [submap_0, emergency_room,-3.349, 1.618,  2.498]
+    entry_door_init: [submap_0, entry_door_init, -3.349, 1.618, 2.498]
+    entry_door_exit: [submap_0, entry_door_exit, -5.744, 3.099,  2.560]
+    kitchen: [submap_0, kitchen,-11.937, 12.325, 0.917]
+    hallway: [submap_0, hallway, -10.005, 8.949, 0.936]
+    living_room: [submap_0, living_room, -7.298, 5.911,  -2.252]
+    working_desk: [submap_0, working_desk, -9.749, -0.581, 2.318]
+    kitchen_counter: [submap_0, kitchen_counter, -11.378, 11.094, -0.784]
+    dinner_table: [submap_0, dinner_table,-13.752, 9.982,  -2.186]
+    bookshelf: [submap_0, bookshelf,-6.219, 9.137, 0.795]
+    point_room_one: [submap_0, point_room_one, -0.758, 7.336, -0.128]
+    point_room_two: [submap_0, point_room_two, -0.877, 7.008, -0.662]
+    point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
 

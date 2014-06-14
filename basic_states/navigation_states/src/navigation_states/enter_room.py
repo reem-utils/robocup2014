@@ -17,6 +17,7 @@ import math
 from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_poi import nav_to_poi
 from manipulation_states.play_motion_sm import play_motion_sm
+from util_states.sleeper import Sleeper
 from sensor_msgs.msg import LaserScan
 from speech_states.say import text_to_say
  
@@ -139,15 +140,27 @@ class EnterRoomSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_open_door',
                 text_to_say("Can anyone open the door please?"),
+                transitions={'succeeded': 'sleep_state', 'aborted': 'sleep_state'})
+            
+            # Sleep time before speak
+            smach.StateMachine.add(
+                'sleep_state',
+                Sleeper(5),
                 transitions={'succeeded': 'check_can_pass', 'aborted': 'check_can_pass'})
             
             # Home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm('home', 10),
-                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room', 'preempted': 'succeeded'})
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_enter_room', 'aborted': 'say_enter_room', 'preempted': 'succeeded'})
             
             # We don't need to prepare the state, it takes the input_key directly
+            
+            # Robot announces it is going through the door
+            smach.StateMachine.add(
+                'say_enter_room',
+                text_to_say("I am going to enter the room"),
+                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room'})
 
             # Go to the poi in the other site of the door
             smach.StateMachine.add(

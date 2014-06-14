@@ -77,7 +77,7 @@ class SearchObjectSM(smach.StateMachine):
                                 'preempted': 'preempted'})
             
             # say that it goes to the poi
-            smach.StateMachine.add(
+            smach.StateMachine.add( 
                 'say_go_to_poi',
                 text_to_say("I'm going to take the object"),
                 transitions={'succeeded': 'go_to_object', 'aborted': 'aborted', 
@@ -101,6 +101,12 @@ class SearchObjectSM(smach.StateMachine):
             smach.StateMachine.add(
                 'object_detection',
                 recognize_object(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'get_object_info_sm'})
-
+                transitions={'succeeded': 'say_found_object', 'aborted': 'get_object_info_sm'})
+            
+            # Say found the object
+            smach.StateMachine.add(
+                'say_found_object',
+                text_to_say("I found the object"),
+                transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
+                'preempted': 'succeeded'}) 
 

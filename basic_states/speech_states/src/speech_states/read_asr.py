@@ -24,6 +24,7 @@ class Extraction_cb(smach.State):
     
     def execute(self, userdata):
        # rospy.loginfo("------------------------------------------------------------------extracting message from topic")
+        print('Executing READ ASR')
         userdata.asr_userSaid = userdata.topic_output_msg.recognized_utterance.text
         rospy.loginfo(userdata.topic_output_msg)
         userdata.asr_userSaid_tags = userdata.topic_output_msg.recognized_utterance.tags

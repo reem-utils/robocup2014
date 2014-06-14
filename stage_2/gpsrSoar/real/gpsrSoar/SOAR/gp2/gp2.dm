@@ -1,4 +1,4 @@
-124
+126
 SOAR_ID 0
 SOAR_ID 1
 SOAR_ID 2
@@ -123,7 +123,9 @@ ENUMERATION 120 1 deliver2
 INTEGER_RANGE 121 -2147483648 2147483647
 SOAR_ID 122
 ENUMERATION 123 1 follow
-147
+SOAR_ID 124
+ENUMERATION 125 1 guide
+149
 0 check-goal 118
 0 desired 106
 0 io 1
@@ -152,6 +154,7 @@ ENUMERATION 123 1 follow
 0 operator 115
 0 operator 119
 0 operator 122
+0 operator 124
 0 person 17
 0 robot 15
 0 superstate 6
@@ -271,3 +274,4 @@ ENUMERATION 123 1 follow
 115 withRob 15
 119 name 120
 122 name 123
+124 name 125

@@ -2,7 +2,9 @@
     <!-- Launch map pois for the basic functionalities test-->
 	<rosparam file="$(find basic_functionalities)/config/pois_basic_functionalities.yaml" command="load" ns="mmap" />
 
-
     <!-- Launch questions and answers for the basic functionalities test-->
 	<rosparam file="$(find basic_functionalities)/config/questions.yaml" command="load" ns="question_list" />
+	<rosparam file="$(find basic_functionalities)/config/questions_simple.yaml" command="load" ns="question_list" />
+    <!-- Launch the play motion actions -->
+	<include file="$(find manipulation_states)/launch/play_motion_params.launch"/>
 </launch>

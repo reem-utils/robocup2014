@@ -32,7 +32,8 @@ class prepareData(smach.State):
         if not self.text and not userdata.tts_text:
             rospy.logerr("Text isn't set")
             return 'aborted'
-        
+        if self.preempt_requested():
+            return 'preempted'
         #Priority in init
         userdata.tts_text = self.text if self.text else userdata.tts_text   
         #Priority in userdata
@@ -49,6 +50,7 @@ class createSayGoal(smach.State):
     
     # Create a SoundGoal with text, lang_id and wait_before_speaking. 
     def create_say_goal(self, tts_text, tts_wait_before_speaking, tts_lang):
+        
         rospy.loginfo(tts_text)
         say_goal = SoundGoal()
         say_goal.wait_before_speaking.secs = tts_wait_before_speaking 
@@ -59,6 +61,8 @@ class createSayGoal(smach.State):
         return say_goal
     
     def execute(self, userdata):
+        if self.preempt_requested():
+            return 'preempted'
                 
         say_goal = self.create_say_goal(userdata.tts_text, 
                                     userdata.tts_wait_before_speaking,
@@ -103,11 +107,11 @@ class text_to_say(smach.StateMachine):
             
             smach.StateMachine.add('PrepareData',
                                    prepareData(text, wait_before_speaking, lang),
-                                   transitions={'succeeded':'CreateSayGoal', 'aborted':'aborted'})
+                                   transitions={'succeeded':'CreateSayGoal', 'aborted':'aborted', 'preempted':'preempted'})
             
             smach.StateMachine.add('CreateSayGoal',
                                    createSayGoal(),
-                                   transitions={'succeeded':'RobotSay', 'aborted':'aborted'})        
+                                   transitions={'succeeded':'RobotSay', 'aborted':'aborted','preempted':'preempted'})        
             
             smach.StateMachine.add('RobotSay', 
                                 SimpleActionState(TTS_TOPIC_NAME,

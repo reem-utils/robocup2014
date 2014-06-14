@@ -1,6 +1,0 @@
-<launch>
-    <!-- Launch map pois for the cocktail party test-->
-        <rosparam file="$(find emergency_situation)/config/pois_emergency_situation_pal_office.yaml" command="load" ns="mmap" />
-
-	<include file="$(find manipulation_states)/launch/play_motion_params.launch"/>
-</launch>

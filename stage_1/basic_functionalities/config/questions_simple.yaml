@@ -1,0 +1,11 @@
+numberOfSubQuestions: 1
+questions:
+  what_say_simple:
+    one:   [what_say_simple, one,   1,   Brasilia]
+    two:   [what_say_simple, two,   2,   Cheetah]
+    three: [what_say_simple, three, 3,   "Green, Yellow, Blue and White"]
+    four:  [what_say_simple, four,  4,   "201 millions"]
+    five:  [what_say_simple, five,  5,   "5 real"]
+    six:   [what_say_simple, six,   6,   "19 teams"]
+    seven: [what_say_simple, seven, 7,   "Dilma Rousseff"]
+

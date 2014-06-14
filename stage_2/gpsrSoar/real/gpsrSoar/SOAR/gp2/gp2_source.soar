@@ -10,6 +10,7 @@ source deliver-toLoc.soar
 source deliver2.soar
 source follow.soar
 source grasp.soar
+source guide.soar
 source initialize-gp.soar
 source introduce-me.soar
 source memorize-person.soar

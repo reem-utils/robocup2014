@@ -21,6 +21,7 @@ bring bring_to
 give bring_to
 carry bring_to
 carry_to bring_to
+put bring_to
 retrieve bring_from
 retrieve_from bring_from
 bring_from bring_from
@@ -31,3 +32,4 @@ exit exit
 recognize recognize_person
 point_at point_at
 point point_at
+guide guide

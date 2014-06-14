@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launch the play motion actions -->
+	<include file="$(find manipulation_states)/launch/play_motion_params.launch"/>
+</launch>

@@ -8,6 +8,9 @@ import rospy
 GFR = grammarReader.grammarFileReader
 GFW = grammarReader.grammarFileWriter
 
+GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
+#GRAMATICA = 'robocup/minimals'#'robocup/general'
+
 def subtree(tree):
     for child in tree:
         if isinstance(child, nltk.Tree):
@@ -69,7 +72,7 @@ def parseSentence(sent = "go to the charger then go to the kitchen and exit the 
         per = GFR(wordset=grammarNames) 
         #print 'bla'        
     except IOError:        
-        PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/robocup/general.gram"
+        PATH = roslib.packages.get_pkg_dir("speech_states") + "/grammar/" + GRAMATICA + ".gram"
         #PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/src/general.gram"
         print 'estem carregan la gramatica del PC i no del robot!!'
         # print 'ble'

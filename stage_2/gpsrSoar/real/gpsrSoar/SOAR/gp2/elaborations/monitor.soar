@@ -108,7 +108,6 @@ sp {gp*monitor*operator-application*introduce-me
    (write (crlf) | INTRODUCE_MYSELF()|)
 }
 
-
 sp {gp*monitor*operator-application*follow
    (state <s> ^name gp
               ^operator <o>)
@@ -116,4 +115,13 @@ sp {gp*monitor*operator-application*follow
         ^toPers.id <p>)
 -->
    (write (crlf) | FOLLOW(| <p> |)|)
+}
+
+sp {gp*monitor*operator-application*navigate
+   (state <s> ^name gp
+              ^operator <o>)
+   (<o> ^name guide
+        ^toLoc.id <l>)
+-->
+   (write (crlf) | GUIDE(| <l> |)|)
 }

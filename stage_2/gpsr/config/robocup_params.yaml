@@ -1,36 +1,31 @@
-locations: ["bench", "hallway_table", "hanger", "umbrella_stand", "bar", "side_table", "kitchen_table", "kitchen_counter", "stove", "trash_bin", "cupboard", "sink", "fridge", "bed", "dresser", "sideboard", "bedside_table", "bookshelf", "pantry", "cabinet", "dinner_table", "couch_table", "arm_chair", "sofa", "tv_counter",  "plant", "exit", "referee", "kitchen"]
+locations: ["kitchen_table", "kitchen_counter", "kitchen", "hallway", "bookshelf", "living_room", "armchair", "pantry", "dinner_table", "working_desk", "lift", "entrance", "exit", "referee", "trash_bin"]
 
-items: ["deodorant", "tooth_paste", "cleaner", "fresh_discs", "fanta", "beer_can", "coke", "sponge", "seven_up", "chocolate_milk", "tomato_sauce", "energy_drink", "peanut_butter", "chicken_noodles", "orange_juice", "milk", "apple_juice", "veggie_noodles", "garlic_sauce", "chocolate", "cookies", "drops", "crackers", "marmalade", "cook book", "spoon"]
+items: ["coke", "coke_zero", "juice", "energy_drink", "aquarius", "fanta", "pringles", "beans_can", "cookies", "medicine", "mug", "cup"]
 
-persons: ["albert", "homer", "jordi", "karen", "ricardo", "referee", "Michael", "Christopher", "Matthew", "Joshua", "David", "James", "Daniel", "Robert", "John", "Joseph", "Jessica", "Jennifer", "Amanda", "Ashley", "Sarah", "Stephanie", "Melissa", "Nicole", "Elizabeth", "Heather", "person"]
+persons: [ "andrew", "charles", "george", "amanda", "hannah", "donald", "frank", "james", "samuel", "deborah", "michelle", "rebecca", "taylor", "paul", "edward", "referee", "person"]
 
-rooms: ["kitchen", "bedroom", "living room"]
+rooms: ["kitchen", "hallway", "living room"]
 
 room:
-    kitchen: ["kitchen table"]
-    living: ["sofa", "armchair", "bookshelf"]
+    kitchen: ["kitchen table", "kitchen counter"]
+    living: ["pantry", "armchair", "bookshelf", "dinner table"]
     bedroom: ["sideboard", "bed", "drawer"]
 
 
 location:
-    charger: ["soda"]
-    business: ["cheese", "beer"]
+    living room: ["soda"]
     kitchen: ["spoons", "glass"]
 
 
 it_category:
-        drink: ["beer bottle", "fanta", "beer can", "coke", "seven up", "chocolate milk", "energy drink", "orange juice", "milk", "apple juice"]
-        food: ["tomato sauce", "peanut butter", "chicken noodles", "marmalade", "veggie noodles", "garlic sauce "]
-        snack: ["chocolate", "cookies", "drops", "crackers"]
-        cleaning_stuff: ["deodorant", "tooth paste", "cleaner", "fresh discs", "sponge"]
-        kitchenware: ["cook book", "spoon"]
+        drink: ["coke", "coke zero", "juice", "energy drink", "aquarius", "fanta"]
+        food: ["pringles", "beans can", "cookies"]
+        utils: ["medicine", "mug", "cup"]
 
 loc_category:
-        table: ["hallway table", "side table", "kitchen table", "bedside table", "dinner table", "couch table"]
-        shelf: ["bar", "kitchen counter", "cupboard", "dresser", "sideboard", "bookshelf", "pantry", "cabinet "]
-        appliance: ["stove", "sink", "fridge", "tv counter"]
-        utensils: ["hanger", "umbrella stand", "trash bin", "plant"]
-        seat: ["bench", "bed", "arm chair", "sofa"]
-        seating: ["bench", "bed", "arm chair", "sofa"]
-        door: ["exit"]
+        table: ["kitchen table", "dinner table", "working desk"]
+        shelf: ["kitchen counter","bookshelf", "pantry"]
+        seat: ["armchair"]
+        seating: ["armchair"]
+        door: ["exit", "entrance"]
 

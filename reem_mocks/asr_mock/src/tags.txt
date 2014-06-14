@@ -1,5 +1,5 @@
-object=spoon
-location=fridge
+object=coke
+location=lift
 yes=yes
 name=cris
 objectA=coke
@@ -8,3 +8,4 @@ objectC=cookies
 location1=table one
 location2=table two
 action=goto
+word=follow me
