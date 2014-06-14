@@ -2,13 +2,14 @@
 '''
 Created on 08/03/2014
 
-@author: Sergi Xavier Ubach Pallàs
+@author: Sergi Xavier Ubach Pallas
 @email: sxubach@gmail.com
 
 '''
 import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
+from navigation_states.turn import turn
 from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
 from face_states.recognize_face import recognize_face_concurrent
@@ -34,31 +35,6 @@ class DummyStateMachine(smach.State):
         rospy.sleep(1)
         return 'succeeded'
 
-# class prepare_poi(smach.State):
-#     def __init__(self):
-#         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-#                                 input_keys=['num_iterations'],
-#                                 output_keys=['nav_to_poi_name', 'num_iterations', 'standard_error'])
-# 
-#     def execute(self, userdata):    
-#         
-#         if userdata.num_iterations > 2 :
-#             return 'aborted'
-#         
-#         if userdata.num_iterations % 3 == 0:
-#             userdata.nav_to_poi_name = "point_room_one"
-#             rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
-#         elif userdata.num_iterations % 3 == 1: 
-#             userdata.nav_to_poi_name = "point_room_two"
-#             rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
-#         else:
-#             userdata.nav_to_poi_name = "point_room_three"
-#             rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
-#         
-#         userdata.num_iterations += 1
-#         
-#         return 'succeeded'
- 
  
 class Wait_search(smach.State):
     def __init__(self):
@@ -71,7 +47,7 @@ class Wait_search(smach.State):
             rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in Wait_search State')
             return 'preempted'
         
-        rospy.sleep(1.5)
+        rospy.sleep(10)
         rospy.logwarn('PREEMPT NOT REQUESTED -- Returning Preempted in Wait_search State')
         return 'succeeded'
 
@@ -116,9 +92,8 @@ class say_searching_faces(smach.StateMachine):
 def child_term_cb(outcome_map):
 
     # terminate all running states if walk_to_poi finished with outcome succeeded
-    if outcome_map['walk_to_poi'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
-        
+    if outcome_map['turn'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Turn ends" + ENDC)        
         return False
 
     # terminate all running states if BAR finished
@@ -208,7 +183,7 @@ class SearchPersonSM(smach.StateMachine):
             
             with sm_conc:
                 # Go around the room 
-                smach.Concurrence.add('turn', turn())                  
+                smach.Concurrence.add('turn', turn(120,left))                  
           
                 # Move head
                 smach.Concurrence.add('TimeOut', TimeOut())
@@ -229,5 +204,5 @@ class SearchPersonSM(smach.StateMachine):
             smach.StateMachine.add(
                                    'Say_Changing_Poi',
                                    text_to_say('I am going to change my position so I can search for faces'),
-                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
