@@ -43,8 +43,8 @@ point_at(poi)               --> to finish, adding point functionality and finish
 --ask_name()
 follow(person)              --> follow me
 --introduce_me()
-learn_person(person)        --> face recognition
-recognize_person(person)    --> face recognition
+--learn_person(person)        --> face recognition
+--recognize_person(person)    --> face recognition
 
 '''
 
