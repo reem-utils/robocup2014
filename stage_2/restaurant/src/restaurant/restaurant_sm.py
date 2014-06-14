@@ -14,6 +14,7 @@ import math
 from navigation_states.nav_to_poi import nav_to_poi
 #from navigation_states.enter_room import EnterRoomSM
 from speech_states.ask_question import AskQuestionSM
+from speech_states.say import text_to_say
 from restaurant_guide_phase import restaurantGuide
 from restaurant_navigation import RestaurantNavigation
 from restaurant_order_phase import RestaurantOrder
@@ -74,7 +75,7 @@ class RestaurantSM(smach.StateMachine):
             
             # Must we say something to start? "I'm ready" or something
             # Must we wait for the spoken order? 
-            
+                    
             # Guide phase
             smach.StateMachine.add(
                 'guide_phase',
