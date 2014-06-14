@@ -35,12 +35,12 @@ class Prepare_Data(smach.State):
 
         auxi = aux_pois.values()
         sorted_params = sorted(auxi, key=operator.itemgetter(2))
-        
+        final_params = []
         for poi_aux in sorted_params:
             str(poi_aux).replace('_',' ')
-            userdata.possible_pois.append(poi_aux[1])
-        
-        userdata.possible_pois = aux_pois.keys()
+            final_params.append(poi_aux[1])
+        final_params.reverse()
+        userdata.possible_pois = final_params
         
         rospy.sleep(1)
         return 'succeeded'
@@ -70,6 +70,7 @@ class Select_Possible_Poi(smach.State):
         print "POIS:: ----- " + str(userdata.possible_pois)
         
         aux_possible = userdata.possible_pois.pop()
+        
         
         userdata.nav_to_poi_name_possible = aux_possible
         rospy.loginfo("Possible Location POI:: " + str(aux_possible))
