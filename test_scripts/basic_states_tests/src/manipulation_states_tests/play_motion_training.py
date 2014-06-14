@@ -33,7 +33,7 @@ def main():
     rospy.init_node('play_motion_training_node')
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.manip_motion_to_play = 'home'
+        sm.userdata.manip_motion_to_play = 'arms_t'
         sm.userdata.manip_time_to_play = 8.0
         smach.StateMachine.add(
             'play_motion_state',
