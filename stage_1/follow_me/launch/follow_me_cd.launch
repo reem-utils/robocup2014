@@ -1,0 +1,14 @@
+<launch>
+
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find follow_me)/launch/follow_me_params.launch" />
+
+    <!-- State Machine -->
+    <node 
+    	pkg ="follow_me"
+        type="check_dependences.py"
+        name="check_dependences"
+        output="screen">
+     </node>
+
+</launch>
