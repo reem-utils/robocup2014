@@ -55,6 +55,7 @@ catkin_python_setup()
  add_service_files(
    FILES
    NavigationGoBack.srv
+   NavigationGoForward.srv
 #   Service2.srv
  )
 
@@ -159,7 +160,6 @@ include_directories(
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
-
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
