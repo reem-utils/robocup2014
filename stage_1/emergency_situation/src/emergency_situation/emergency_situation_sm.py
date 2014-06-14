@@ -19,14 +19,11 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
 from emergency_situation.Save_People_Emergency import Save_People_Emergency
 from emergency_situation.Search_People_Emergency import Search_People_Emergency
-
-from geometry_msgs.msg import PoseStamped, Pose
+from emergency_situation.Ambulance_Detect_And_Go import Ambulance_Detect_And_Go
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-
-import random
 
 class DummyStateMachine(smach.State):
     def __init__(self):
@@ -73,6 +70,22 @@ class set_home_position(smach.State):
         userdata.manip_motion_to_play = 'home'
         userdata.manip_time_to_play = 4.0
         return 'succeeded'
+    
+
+# Class that prepare the value need for nav_to_poi
+class prepare_poi_person_emergency(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=['person_location_coord'], 
+            output_keys=['nav_to_coord_goal']) 
+    def execute(self,userdata):
+        rospy.loginfo('PersonLOcationCooordddddd :::::::: ' + str(userdata.person_location_coord))
+        userdata.nav_to_coord_goal = userdata.person_location_coord 
+
+        return 'succeeded'
+
+
+
 class emergency_situation_sm(smach.StateMachine):
     """
     Executes a SM that does the Emergency Situation.
@@ -131,7 +144,7 @@ class emergency_situation_sm(smach.StateMachine):
 #                 transitions={'succeeded':'Say_Ready'})
             smach.StateMachine.add(
                 'Say_Ready',
-                text_to_say('Now I am going to enter the Room to help people in need.'),
+                text_to_say('Emergency Situation Test is going to Start. Now I am going to enter the Room to help people in need.'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
             # Pass the entry room
@@ -140,11 +153,11 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM('entry_door_exit'),
-                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Prepare_Poi_Emergency_1'})
+                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Search_Person'})
             smach.StateMachine.add(
                 'Say_Enter_Successful',
                 text_to_say('I have successfully entered the apartment. Now I am going to find and rescue the person in emergency.'),
-                transitions={'succeeded':'Search_Person', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
+                transitions={'succeeded':'Search_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
 
 #            The Location for the Emergency is not known --> Search for the emergency situation 
 
@@ -204,51 +217,11 @@ class emergency_situation_sm(smach.StateMachine):
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
             smach.StateMachine.add(
-                                   'Prepare_home',
-                                   set_home_position(),
-                                   transitions={'succeeded':'SetHome', 'aborted':'SetHome', 'preempted':'SetHome'})
-            smach.StateMachine.add(
-                                   'SetHome',
-                                   play_motion_sm(),
-                                   transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'SetHome', 'preempted':'SetHome'})
+                                   'Ambulance_SM',
+                                   Ambulance_Detect_And_Go(),
+                                   transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
-            smach.StateMachine.add(
-                'Say_return_Person',
-                text_to_say('I am going to the Entry Door'),
-                transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door', 'aborted':'Go_to_Entry_Door'})
             
-            smach.StateMachine.add(
-                'Go_to_Entry_Door',
-                nav_to_poi('entry_door_init'),
-                transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
-
-            #What is Wait for Ambulance or People Mean? Person detection?
-            smach.StateMachine.add(
-                'Wait_for_Ambulance_Person',
-                DummyStateMachine(),
-                transitions={'succeeded':'Say_Ambulance', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
             
-#             smach.StateMachine.add(
-#                 'Prepare_TTS_2',
-#                 prepare_tts("Please Follow Me, I will guide you to the emergency"),
-#                 transitions={'succeeded':'Say_Ambulance', 'aborted':'Say_Ambulance', 'preempted':'Say_Ambulance'})
-            smach.StateMachine.add(
-                'Say_Ambulance',
-                text_to_say("Please Follow Me, I will guide you to the emergency"),
-                transitions={'succeeded':'Go_to_emergency_room_2', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
-            #TODO: Define the name of the room to enter (defined by the OC)
-            #If Aborted (not supposed to), retry?
-            smach.StateMachine.add(
-                'Go_to_emergency_room_2',
-                nav_to_poi('emergency_room'),
-                transitions={'succeeded':'Wait_state_emergency', 'aborted':'Go_to_emergency_room_2', 'preempted':'Go_to_emergency_room_2'})
-
-            smach.StateMachine.add(
-                'Wait_state_emergency',
-                DummyStateMachine(),
-                transitions={'succeeded':'Say_Finish', 'aborted':'Say_Finish', 'preempted':'Say_Finish'})
-
-            smach.StateMachine.add(
-                'Say_Finish',
-                text_to_say('Here is the Emergency. I helped to save a life.'),
-                transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+            
+            
