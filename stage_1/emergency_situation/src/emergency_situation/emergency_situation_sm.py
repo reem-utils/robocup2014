@@ -131,7 +131,7 @@ class emergency_situation_sm(smach.StateMachine):
 #                 transitions={'succeeded':'Say_Ready'})
             smach.StateMachine.add(
                 'Say_Ready',
-                text_to_say('Now I am going to enter the Room to help people in need.'),
+                text_to_say('Emergency Situation Test is going to Start. Now I am going to enter the Room to help people in need.'),
                 transitions={'succeeded':'Enter_Room_Arena', 'aborted':'Enter_Room_Arena', 'preempted':'Enter_Room_Arena'})
 
             # Pass the entry room
@@ -140,11 +140,11 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Enter_Room_Arena',
                 EnterRoomSM('entry_door_exit'),
-                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Prepare_Poi_Emergency_1'})
+                transitions={'succeeded':'Say_Enter_Successful', 'aborted':'Say_Ready', 'preempted':'Search_Person'})
             smach.StateMachine.add(
                 'Say_Enter_Successful',
                 text_to_say('I have successfully entered the apartment. Now I am going to find and rescue the person in emergency.'),
-                transitions={'succeeded':'Search_Person', 'aborted':'Prepare_Poi_Emergency_1', 'preempted':'Prepare_Poi_Emergency_1'})
+                transitions={'succeeded':'Search_Person', 'aborted':'Search_Person', 'preempted':'Search_Person'})
 
 #            The Location for the Emergency is not known --> Search for the emergency situation 
 
