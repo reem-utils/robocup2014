@@ -187,7 +187,7 @@ class CocktailPartySM(smach.StateMachine):
             # Say Wave recognize
             smach.StateMachine.add(
                  'say_search_wave',
-                 text_to_say("Searching for wave"),
+                 text_to_say("I'm searching for people waving at me"),
                  transitions={'succeeded': 'wave_recognition', 'aborted': 'wave_recognition'}) 
             
             # Gesture recognition -> Is anyone waving?
@@ -272,7 +272,7 @@ class CocktailPartySM(smach.StateMachine):
             # Say grasp object
             smach.StateMachine.add(
                 'say_grasp_order',
-                text_to_say("I'm going to grasp the object"),
+                text_to_say("I'm going to grasp it"),
                 transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
                 'preempted': 'preempted'}) 
             
@@ -367,7 +367,14 @@ class CocktailPartySM(smach.StateMachine):
                 checkLoop(),
                 transitions={'succeeded': 'wave_recognition', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'leaving_arena'}) 
-
+            
+            # Say leaving the arena 
+            smach.StateMachine.add(
+                'say_leaving_arena',
+                text_to_say("I finished the cocktail party, I'm leaving the arena"),
+                transitions={'succeeded': 'Give_Object', 'aborted': 'Give_Object', 
+                'preempted': 'preempted'})             
+            
             # Leaving the arena  
             smach.StateMachine.add(
                 'leaving_arena',
