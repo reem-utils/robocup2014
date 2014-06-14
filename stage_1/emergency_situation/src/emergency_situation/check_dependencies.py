@@ -20,11 +20,12 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/asr_event",
                     "/sonar_base",
                     "/move_base/goal",
-                    "/gesture_detection/gesture"
-                    "/play_motion/goal"
+                    "/gesture_detection/gesture",
+                    "/play_motion/goal",
+                    "/person/faceDetections"
                     ]
                     
-SERVICES_LIST_NAMES = ["/play_motion"]  # #################### Services #####################
+SERVICES_LIST_NAMES = []  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",
