@@ -65,8 +65,6 @@ class prepare_go_to_wave(smach.State):
         userdata.nav_to_coord_goal = [userdata.wave_position.point.x-0.5, userdata.wave_position.point.y-0.5, 
                                             userdata.wave_yaw_degree]
         
-        #userdata.nav_to_coord_goal.y = userdata.gesture_detected.gesture_position.position.y
-        #userdata.nav_to_coord_goal.yaw  = userdata.gesture_detected.gesture_position.orientation.w
         return 'succeeded'        
 
 class Analyze_Wave(smach.State):

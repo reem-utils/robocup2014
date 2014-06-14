@@ -2,7 +2,7 @@
 <launch>
 	<!-- load the Parameters configuration file -->
 	<!-- yaml files for navigation and object locations -->
-	<include file="$(find emergency_situation)/launch/emergency_situation_params_pal_office.launch"/>
+	<include file="$(find emergency_situation)/launch/emergency_situation_params.launch"/>
 
 	-->
 	<node pkg="emergency_situation"

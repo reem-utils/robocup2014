@@ -38,9 +38,8 @@ class DummyStateMachine(smach.State):
             input_keys=[]) 
 
     def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(3)
+        print "Dummy state just to change to other state" 
+        rospy.sleep(1)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
@@ -70,19 +69,22 @@ class Process_Tags(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=["asr_userSaid","asr_userSaid_tags"],
-                                output_keys=['object_to_grasp'])
+                                output_keys=['object_to_grasp','nav_to_poi_name'])
 
     def execute(self, userdata):
         if(userdata.asr_userSaid.find("water")):
             userdata.object_to_grasp = 'water'
+            userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("kit")):
             userdata.object_to_grasp = 'First Aid Kit'
+            userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("phone")):
             userdata.object_to_grasp = 'Cell phone'
+            userdata.nav_to_poi_name = 'working_desk'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         
@@ -193,7 +195,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
             smach.StateMachine.add(
                 'Go_To_Object_Place',
-                nav_to_poi('kitchen'),
+                nav_to_poi(),
                 transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             
             smach.StateMachine.add(
@@ -237,9 +239,9 @@ class Get_Person_Desired_Object(smach.StateMachine):
             
             
             smach.StateMachine.add(
-                           'Rest_arm',
-                           play_motion_sm('rest_object_right'),
-                           transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                'Rest_arm',
+                play_motion_sm('rest_object_right'),
+                transitions={'succeeded':'Say_return_Person', 'aborted':'Say_return_Person', 'preempted':'Say_return_Person'})
             
             smach.StateMachine.add(
                 'Say_return_Person',
@@ -255,17 +257,16 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
-                #nav_to_poi(),
                 nav_to_coord('/map'),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
                 'Say_Give_Object',
-                text_to_say('I am going to give you the Object you want.'),
+                text_to_say('I am going to give you the Object you asked.'),
                 transitions={'succeeded':'Give_object_arm', 'aborted':'Give_object_arm', 'preempted':'Give_object_arm'})
             smach.StateMachine.add(
-                                   'Give_object_arm',
-                                   play_motion_sm('give_object_right'),
-                                   transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+               'Give_object_arm',
+               play_motion_sm('give_object_right'),
+               transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
