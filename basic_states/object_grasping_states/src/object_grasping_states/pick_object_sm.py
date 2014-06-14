@@ -61,7 +61,7 @@ class pick_object_sm(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['object_detection'],
+                                    input_keys=['object_position'],
                                     output_keys=[])
         with self:
             smach.StateMachine.add("Prepare_data", 
