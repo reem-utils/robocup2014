@@ -2,7 +2,7 @@
 '''
 Created on 08/03/2014
 
-@author: Sergi Xavier Ubach Pallas
+@author: Sergi Xavier Ubach Pallàs
 @email: sxubach@gmail.com
 
 '''
@@ -17,6 +17,10 @@ from manipulation_states.move_head_form import move_head_form
 
 
 
+# Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
+ENDC = '\033[0m'
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
 
 class DummyStateMachine(smach.State):
     def __init__(self):
@@ -30,30 +34,30 @@ class DummyStateMachine(smach.State):
         rospy.sleep(1)
         return 'succeeded'
 
-class prepare_poi(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['num_iterations'],
-                                output_keys=['nav_to_poi_name', 'num_iterations', 'standard_error'])
-
-    def execute(self, userdata):    
-        
-        if userdata.num_iterations > 2 :
-            return 'aborted'
-        
-        if userdata.num_iterations % 3 == 0:
-            userdata.nav_to_poi_name = "point_room_one"
-            rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
-        elif userdata.num_iterations % 3 == 1: 
-            userdata.nav_to_poi_name = "point_room_two"
-            rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
-        else:
-            userdata.nav_to_poi_name = "point_room_three"
-            rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
-        
-        userdata.num_iterations += 1
-        
-        return 'succeeded'
+# class prepare_poi(smach.State):
+#     def __init__(self):
+#         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+#                                 input_keys=['num_iterations'],
+#                                 output_keys=['nav_to_poi_name', 'num_iterations', 'standard_error'])
+# 
+#     def execute(self, userdata):    
+#         
+#         if userdata.num_iterations > 2 :
+#             return 'aborted'
+#         
+#         if userdata.num_iterations % 3 == 0:
+#             userdata.nav_to_poi_name = "point_room_one"
+#             rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
+#         elif userdata.num_iterations % 3 == 1: 
+#             userdata.nav_to_poi_name = "point_room_two"
+#             rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
+#         else:
+#             userdata.nav_to_poi_name = "point_room_three"
+#             rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
+#         
+#         userdata.num_iterations += 1
+#         
+#         return 'succeeded'
  
  
 class Wait_search(smach.State):
@@ -182,8 +186,12 @@ class SearchPersonSM(smach.StateMachine):
             self.userdata.face = None
             self.userdata.wait_time = 5
             
-            # We define the different points
-
+#             # We define the different points
+#             smach.StateMachine.add(
+#                 'prepare_poi',
+#                 prepare_poi(),
+#                 transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
+#                 'preempted': 'preempted'}) 
             smach.StateMachine.add(
                                    'Say_Searching',
                                    text_to_say('Right Now I am looking for you.'),
@@ -193,7 +201,7 @@ class SearchPersonSM(smach.StateMachine):
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
-                                        input_keys=['name', 'face', 'wait_time'],
+                                        input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
                                         output_keys=['face', 'standard_error', 'face_frame'],
                                         child_termination_cb = child_term_cb,
                                         outcome_cb=out_cb)
@@ -221,5 +229,5 @@ class SearchPersonSM(smach.StateMachine):
             smach.StateMachine.add(
                                    'Say_Changing_Poi',
                                    text_to_say('I am going to change my position so I can search for faces'),
-                                   transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})

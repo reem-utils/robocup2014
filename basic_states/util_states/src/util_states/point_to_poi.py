@@ -14,6 +14,7 @@ from math import *
 from navigation_states.get_current_robot_pose import GetPoseSubscribe
 from navigation_states.nav_to_coord import nav_to_coord
 from manipulation_states.play_motion_sm import play_motion_sm
+from speech_states.say import text_to_say
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -93,8 +94,8 @@ class prepare_nav_to_coord(smach.State):
         
     def execute(self, userdata):
         userdata.nav_to_coord_goal = [0.0,0.0,0.0]
-        userdata.nav_to_coord_goal[0] = userdata.current_robot_pose.pose.position.x+1
-        userdata.nav_to_coord_goal[1] = userdata.current_robot_pose.pose.position.y+1
+        userdata.nav_to_coord_goal[0] = userdata.current_robot_pose.pose.position.x
+        userdata.nav_to_coord_goal[1] = userdata.current_robot_pose.pose.position.y
         userdata.nav_to_coord_goal[2] = userdata.desired_angle
         #print ("-----------------------------------------" + str(userdata.desired_angle) + "----------------------------")
         return "succeeded"
@@ -171,8 +172,18 @@ class point_to_poi(smach.StateMachine):
             # Point the coordenades
             smach.StateMachine.add('point_to_coord',
                play_motion_sm('point_forward'),
-               transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
+               transitions={'succeeded': 'Say_Pointing_Poi', 'aborted': 'aborted', 'preempted': 'preempted'})
+            
+            # Say pointing  
+            smach.StateMachine.add('Say_Pointing_Poi',
+                                   text_to_say('There, what I am pointing'),
+                                   transitions={'succeeded': 'home_position', 'aborted': 'aborted', 
+                                    'preempted': 'preempted'})
                 
+            # Return home position
+            smach.StateMachine.add('home_position',
+               play_motion_sm('home'),
+               transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
              
 
 
