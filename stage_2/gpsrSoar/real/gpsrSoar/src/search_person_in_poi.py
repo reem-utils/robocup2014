@@ -187,11 +187,7 @@ class SearchPersonSM(smach.StateMachine):
             self.userdata.wait_time = 5
             
             # We define the different points
-            smach.StateMachine.add(
-                'prepare_poi',
-                prepare_poi(),
-                transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
+
             smach.StateMachine.add(
                                    'Say_Searching',
                                    text_to_say('Right Now I am looking for you.'),
@@ -201,14 +197,14 @@ class SearchPersonSM(smach.StateMachine):
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
-                                        input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
+                                        input_keys=['name', 'face', 'wait_time'],
                                         output_keys=['face', 'standard_error', 'face_frame'],
                                         child_termination_cb = child_term_cb,
                                         outcome_cb=out_cb)
             
             with sm_conc:
                 # Go around the room 
-                smach.Concurrence.add('walk_to_poi', nav_to_poi())                  
+                smach.Concurrence.add('turn', turn())                  
           
                 # Move head
                 smach.Concurrence.add('TimeOut', TimeOut())
@@ -229,5 +225,5 @@ class SearchPersonSM(smach.StateMachine):
             smach.StateMachine.add(
                                    'Say_Changing_Poi',
                                    text_to_say('I am going to change my position so I can search for faces'),
-                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
