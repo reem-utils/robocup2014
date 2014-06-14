@@ -38,9 +38,8 @@ class DummyStateMachine(smach.State):
             input_keys=[]) 
 
     def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(3)
+        print "Dummy state just to change to other state" 
+        rospy.sleep(1)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
@@ -70,19 +69,22 @@ class Process_Tags(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=["asr_userSaid","asr_userSaid_tags"],
-                                output_keys=['object_to_grasp'])
+                                output_keys=['object_to_grasp','nav_to_poi_name'])
 
     def execute(self, userdata):
         if(userdata.asr_userSaid.find("water")):
             userdata.object_to_grasp = 'water'
+            userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("kit")):
             userdata.object_to_grasp = 'First Aid Kit'
+            userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("phone")):
             userdata.object_to_grasp = 'Cell phone'
+            userdata.nav_to_poi_name = 'working_desk'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         
@@ -193,7 +195,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
             smach.StateMachine.add(
                 'Go_To_Object_Place',
-                nav_to_poi('kitchen'),
+                nav_to_poi(),
                 transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
             
             smach.StateMachine.add(
@@ -255,7 +257,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
             #TODO: POI For Person in Emergency -- From SearchPeople SM - 
             smach.StateMachine.add(
                 'Go_To_Person',
-                #nav_to_poi(),
                 nav_to_coord('/map'),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
