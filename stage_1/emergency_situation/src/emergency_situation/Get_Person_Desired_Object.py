@@ -239,9 +239,9 @@ class Get_Person_Desired_Object(smach.StateMachine):
             
             
             smach.StateMachine.add(
-                           'Rest_arm',
-                           play_motion_sm('rest_object_right'),
-                           transitions={'succeeded':'Prepare_Go_To_Person', 'aborted':'Prepare_Go_To_Person', 'preempted':'Prepare_Go_To_Person'})
+                'Rest_arm',
+                play_motion_sm('rest_object_right'),
+                transitions={'succeeded':'Say_return_Person', 'aborted':'Say_return_Person', 'preempted':'Say_return_Person'})
             
             smach.StateMachine.add(
                 'Say_return_Person',
@@ -261,12 +261,12 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
             smach.StateMachine.add(
                 'Say_Give_Object',
-                text_to_say('I am going to give you the Object you want.'),
+                text_to_say('I am going to give you the Object you asked.'),
                 transitions={'succeeded':'Give_object_arm', 'aborted':'Give_object_arm', 'preempted':'Give_object_arm'})
             smach.StateMachine.add(
-                                   'Give_object_arm',
-                                   play_motion_sm('give_object_right'),
-                                   transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+               'Give_object_arm',
+               play_motion_sm('give_object_right'),
+               transitions={'succeeded':'Give_Object', 'aborted':'Give_Object', 'preempted':'Give_Object'})
             #Give the grabbed object to the person
             smach.StateMachine.add(
                 'Give_Object',
