@@ -246,20 +246,20 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                                    'get_current_pose_yaw',
                                    get_current_robot_pose(),
-                                   transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc', 
+                                   transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc',
                                                     'preempted': 'preempted'})
             smach.StateMachine.add(
                  'prepare_coord_person',
                  prepare_coord_person(),
-                 transitions={'succeeded': 'go_to_person', 'aborted': 'aborted', 
-                 'preempted': 'preempted'})                    
+                 transitions={'succeeded': 'go_to_person', 'aborted': 'aborted',
+                 'preempted': 'preempted'})
             
             
             smach.StateMachine.add(
                  'go_to_person',
                  nav_to_coord_ud(),
-                 transitions={'succeeded': 'say_found', 'aborted': 'Say_person_not_reached', 
-                 'preempted': 'preempted'})   
+                 transitions={'succeeded': 'say_found', 'aborted': 'Say_person_not_reached',
+                 'preempted': 'preempted'})
             smach.StateMachine.add(
                                    'Say_person_not_reached',
                                    text_to_say('I Found you, but cannot reach you, can you come to me please?'),

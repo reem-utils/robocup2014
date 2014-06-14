@@ -22,6 +22,7 @@ from navigation_states.nav_to_poi import nav_to_poi #navigation.move_to_room imp
 # from pal_smach_utils.navigation.follow_and_stop import FollowAndStop as FollowMeSM
 from face_states.learn_face import learn_face
 from face_states.recognize_face import recognize_face
+from search_person_in_poi import SearchPersonSM
 #from pal_smach_utils.utils.point_at import SMPointInFront as PointAtSM
 #TODO: grasping.sm_release import ReleaseObjectStateMachine as ReleaseSM
 #TODO: recognize_face import RecognizeFaceStateMachine as RecognizePersonSM
