@@ -20,8 +20,10 @@ from sm_gpsr_orders import TEST, SKILLS
 #TODO: search_object_with_confidence import SearchObjectWithConfidenceStateMachine as SearchObjSM
 from navigation_states.nav_to_poi import nav_to_poi #navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
 # from pal_smach_utils.navigation.follow_and_stop import FollowAndStop as FollowMeSM
-#TODO: learn_face import LearnFaceStateMachine as LearnPersonSM
-#from pal_smach_utils.utils.point_at import SMPointInFront as PointAtSM
+from face_states.learn_face import learn_face
+from face_states.recognize_face import recognize_face
+from search_person_in_poi import SearchPersonSM
+from util_states.point_to_poi import point_to_poi
 #TODO: grasping.sm_release import ReleaseObjectStateMachine as ReleaseSM
 #TODO: recognize_face import RecognizeFaceStateMachine as RecognizePersonSM
 #TODO: introduce_yourself import IntroduceYourselfStateMachine as IntroduceSM
@@ -42,8 +44,8 @@ point_at(poi)               --> to finish, adding point functionality and finish
 --ask_name()
 follow(person)              --> follow me
 --introduce_me()
-learn_person(person)        --> face recognition
-recognize_person(person)    --> face recognition
+--learn_person(person)        --> face recognition
+--recognize_person(person)    --> face recognition
 
 '''
 
@@ -140,7 +142,7 @@ def call_guide_to(loc_name,world):
     time.sleep(SLEEP_TIME)  
     return "succeeded" 
 
-def call_learn_person(pers): #TODO   #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
+def call_learn_person(pers): #TOTEST   #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
 
     tosay = "I'm going to learn the person in front of me, known as " + pers
     speak = speaker(tosay)
@@ -151,7 +153,10 @@ def call_learn_person(pers): #TODO   #Recorda que abans sempre busca una persona
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):       
-            tries = tries+1
+            tries = tries+1            
+            sm = learn_face()
+            sm.userdata.name = pers
+            out = sm.execute()     
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -168,6 +173,9 @@ def call_recognize_person(pers): #TODO  PersonName maybe?
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
+            sm = recognize_face()
+            sm.userdata.name = pers
+            out = sm.execute()     
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded" 
