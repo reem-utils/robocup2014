@@ -11,6 +11,9 @@ import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
+from object_grasping_states import pick_object_sm, place_object_sm
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
+from std_msgs.msg import Header
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -25,9 +28,32 @@ class DummyStateMachine(smach.State):
 
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
+   
         rospy.sleep(3)
         return 'succeeded'
+    
+class dummy_recognize(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=[], 
+            output_keys=['object_position','pose_to_place'])
+
+    def execute(self, userdata):
+        
+        userdata.object_position = PoseStamped()
+        userdata.object_position.header.frame_id = "base_link"
+        userdata.object_position.pose.position.x = 0.4
+        userdata.object_position.pose.position.z = 0.95
+        userdata.object_position.pose.orientation.w = 1.0
+        userdata.pose_to_place = PoseStamped()
+        userdata.pose_to_place.header.frame_id = "base_link"
+        userdata.pose_to_place.pose.position.x = 0.4
+        userdata.pose_to_place.pose.position.z = 0.95
+        userdata.pose_to_place.pose.orientation.w = 1.0
+        
+        rospy.sleep(3)
+        return 'succeeded'
+
 
 # Class that prepare the value need for nav_to_poi
 class prepare_location(smach.State):
@@ -102,7 +128,7 @@ class PickPlaceSM(smach.StateMachine):
             # Do object_recognition 
             smach.StateMachine.add(
                 'object_recognition',
-                DummyStateMachine(),
+                dummy_recognize(),
                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
                 'preempted': 'preempted'}) 
 
@@ -115,7 +141,7 @@ class PickPlaceSM(smach.StateMachine):
             # Grasp the object
             smach.StateMachine.add(
                 'grasp_object',
-                DummyStateMachine(),
+                pick_object_sm(),
                 transitions={'succeeded': 'say_go_second_location', 'aborted': 'say_go_second_location', 
                 'preempted': 'preempted'})     
 
@@ -142,7 +168,7 @@ class PickPlaceSM(smach.StateMachine):
             # Release the object
             smach.StateMachine.add(
                 'release_object',
-                DummyStateMachine(),
+                place_object_sm(),
                 transitions={'succeeded': 'say_end_pick_place', 'aborted': 'say_end_pick_place', 
                 'preempted': 'preempted'})    
 

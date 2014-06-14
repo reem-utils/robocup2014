@@ -5,27 +5,25 @@ import actionlib
 import smach
 from smach_ros import SimpleActionState
 
-
-from object_mock.msg import RecognizeAction, RecognizeResult, RecognizeGoal
-from object_recognition_msgs.msg import ObjectType, RecognizedObject
+from blort_msgs.msg import RecognizeAction, RecognizeGoal, RecognizeResult 
+from object_recognition_msgs.msg import ObjectType
 
 objectDetect_topic = '/blort_tracker/recognize_object'
-
 
 class Prepare_data(smach.State):
     def __init__(self, object_detect_name):
         smach.State.__init__(self, 
                              outcomes = ['succeeded', 'aborted'], 
-                             input_keys = ['object_detect_name'], 
+                             input_keys = ['object_name'], 
                              output_keys = ['object_name'])
         self.object_detect_name = object_detect_name
         
     def execute(self, userdata):
-        if not self.object_detect_name and not userdata.object_detect_name:
+        if not self.object_detect_name and not userdata.object_name:
             rospy.logerr("No Object to Detect")
             return 'aborted'
         
-        userdata.object_name = self.object_detect_name if self.object_detect_name else userdata.object_detect_name
+        userdata.object_name = self.object_detect_name if self.object_detect_name else userdata.object_name
         
         return 'succeeded'
 
@@ -50,7 +48,7 @@ class object_detect_sm(smach.StateMachine):
     def __init__(self, object_to_detect_name=None):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=[],
+                                    input_keys=['object_name'],
                                     output_keys=[])
         with self:
             smach.StateMachine.add('Prepare_data',

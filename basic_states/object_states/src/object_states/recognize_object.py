@@ -10,7 +10,7 @@ import rospy
 import smach
 
 from operator import attrgetter
-from object_grasping_states.detect_object_sm import detect_object
+from object_states.object_detect_sm import object_detect_sm
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -26,7 +26,6 @@ class proces_object(smach.State):
     def execute(self, userdata):
         
         rospy.logwarn(userdata.objects)
-        # first of all i look if it's some faces
         if userdata.objects.objects:
             # i look in what option we are, if we are looking for a name o no
             
@@ -88,7 +87,7 @@ class recognize_object(smach.StateMachine):
 
             smach.StateMachine.add(
                     'detect_object',
-                    detect_object(minConfidence),
+                    object_detect_sm(),
                     transitions={'succeeded': 'proces_object', 'aborted': 'aborted', 
                     'preempted': 'preempted'})
             
