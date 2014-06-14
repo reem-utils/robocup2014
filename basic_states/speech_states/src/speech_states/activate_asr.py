@@ -81,7 +81,7 @@ class ActivateASR(smach.StateMachine):
                     input_keys = ['grammar_name']),
                     transitions={'succeeded':'Sleeper', 'aborted': 'aborted', 'preempted': 'preempted'})
              
-            smach.StateMachine.add("Sleeper", Sleeper(3), 
+            smach.StateMachine.add("Sleeper", Sleeper(0.1), 
                                    transitions={'succeeded':'Activate_Asr', 'aborted': 'aborted'})
             # Call service state
             @smach.cb_interface(input_keys=['grammar_name'])

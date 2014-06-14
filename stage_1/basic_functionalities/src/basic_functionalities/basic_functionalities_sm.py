@@ -14,6 +14,7 @@ from speech_states.say import text_to_say
 from pick_place_sm import PickPlaceSM
 from avoid_that_sm import Avoid_That
 from what_say_sm import WhatSaySM
+from manipulation_states.play_motion_sm import play_motion_sm
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -48,12 +49,18 @@ class BasicFunctionalitiesSM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
+            smach.StateMachine.add(
+                'play_motion_state',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_start_basic_functionalities',
+                             'preempted':'say_start_basic_functionalities', 
+                             'aborted':'say_start_basic_functionalities'})   
             
             # Say Start basic Functionalities
             smach.StateMachine.add(
                  'say_start_basic_functionalities',
                  text_to_say("I'm ready to start Basic Functionalities"),
-                 transitions={'succeeded': 'say_going_pick_place', 'aborted': 'say_going_pick_place'}) 
+                 transitions={'succeeded': 'say_going_what_say', 'aborted': 'say_going_pick_place'}) 
             
             # Say Go Pick and Place
             smach.StateMachine.add(
@@ -78,7 +85,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Say Go Avoid that
             smach.StateMachine.add(
                  'say_going_avoid',
-                 text_to_say("I'm going to the Avoid that poi"),
+                 text_to_say("I'm going to the Avoid that Area"),
                  transitions={'succeeded': 'go_avoid_that', 'aborted': 'go_avoid_that'}) 
            
             # Go to avoid that
@@ -92,14 +99,14 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_avoid_that',
                 Avoid_That(),
-                transitions={'succeeded': 'go_what_did_you_say', 'aborted': 'go_what_did_you_say', 
+                transitions={'succeeded': 'succeeded', 'aborted': 'go_what_did_you_say', 
                 'preempted': 'preempted'}) 
             
             # Say Go What did you say 
             smach.StateMachine.add(
                  'say_going_what_say',
-                 text_to_say("I'm going to the What did you say poi"),
-                 transitions={'succeeded': 'go_pick_and_place', 'aborted': 'go_pick_and_place'}) 
+                 text_to_say("I'm going to the What did you say Location"),
+                 transitions={'succeeded': 'go_what_did_you_say', 'aborted': 'go_what_did_you_say'}) 
             
             # Go to what did you say
             smach.StateMachine.add(

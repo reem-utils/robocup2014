@@ -1,0 +1,12 @@
+numberOfPois: 1
+pois:
+  emergency:
+    point_room_one: [emergency, point_room_one, point_room_one]
+    point_room_two: [emergency, point_room_two, point_room_two]
+    point_room_three: [emergency, point_room_three, point_room_three]
+    living_room: [emergency, living_room, living_room]
+    kitchen: [emergency, kitchen, kitchen]
+    working_desk: [emergency, working_desk, working_desk]
+    kitchen_counter: [emergency, kitchen_counter, kitchen_counter]
+    dinner_table: [emergency, dinner_table, dinner_table]
+    bookshelf: [emergency, bookshelf, bookshelf]

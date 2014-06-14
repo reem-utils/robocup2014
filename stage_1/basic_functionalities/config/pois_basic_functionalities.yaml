@@ -1,8 +1,8 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    init_avoid_that: [submap_0, init_avoid_that, 0.921, -2.858, 0]
-    avoid_that: [submap_0, avoid_that, 0.921, -2.858, 0]
+    init_avoid_that: [submap_0, init_avoid_that, -3.349, 1.618, 2.498]
+    avoid_that: [submap_0, avoid_that, -7.298, 5.911,  -2.252]
 
     init_pick_and_place: [submap_0, init_pick_and_place, -2.0, -2.0, 0]
     pick_and_place: [submap_0, pick_and_place, -2.0, -2.0, 0]
@@ -11,12 +11,12 @@ poi:
     init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
     fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
 
-    init_find_me: [submap_0, init_find_me, -2.0, -2.0, 0]
-    find_me: [submap_0, find_me, -4.980, -6.084,  0.119]
+    init_find_me: [submap_0, init_find_me,-1.521, 7.646,  -0.620]
+    find_me: [submap_0, find_me, -1.521, 7.646,  -0.620]
 
-    init_what_say: [submap_0, init_what_say, -2.0, -2.0, 0]
+    init_what_say: [submap_0, init_what_say,  -1.521, 7.646,  -0.620]
 
-    point_room_one: [submap_0, point_room_one, -5.99, 5.77, 0.80]
-    point_room_two: [submap_0, point_room_two, -4.47, 7.63, 0]
-    point_room_three: [submap_0, point_room_three, -6.06, 7.39, 0.80]
+    point_room_one: [submap_0, point_room_one, -0.758, 7.336, -0.128]
+    point_room_two: [submap_0, point_room_two, -0.877, 7.008, -0.662]
+    point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
 

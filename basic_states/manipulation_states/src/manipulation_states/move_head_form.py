@@ -47,12 +47,13 @@ class prepareData(smach.State):
             left_right = 0.0
 
         if self.head_ud == "down":
-            up_down = 1.0
+            up_down = 0.3
         elif self.head_ud == "normal":
             up_down = 0.1
             
         userdata.move_head_pose = [left_right, up_down]
-        
+        if self.preempt_requested():
+            return 'preempted'
         return 'succeeded'
         
 class move_head_form(smach.StateMachine):
@@ -92,7 +93,7 @@ class move_head_form(smach.StateMachine):
         with self:
             smach.StateMachine.add('PrepareData', 
                                     prepareData(head_left_right,head_up_down),
-                                    transitions={'succeeded':'Move_head', 'aborted':'Move_head', 'preempted':'Move_head'})
+                                    transitions={'succeeded':'Move_head', 'aborted':'Move_head', 'preempted':'preempted'})
             smach.StateMachine.add('Move_head',
                                     move_head(),
                                     transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})

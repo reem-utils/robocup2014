@@ -38,11 +38,27 @@ class TimeOut(smach.State):
         userdata.wait_time = self.wait_time if self.wait_time else userdata.wait_time  
         
         time_now = rospy.Time.now()
-        time_check = time_now.secs - self.time_init.secs
-        
-        if (time_check > userdata.wait_time):
-            userdata.standard_error='Time has passed'
-            return 'succeeded'
-        else:
+
+        while (userdata.wait_time < (time_now.secs - self.time_init.secs)):
             userdata.standard_error="Time hasn't passed"
-            return 'aborted'
+            rospy.sleep(0.5)
+            
+            return 'preempted'
+        
+        rospy.logwarn('-- TimeOut: Time Has passed -- Time: ' + str(userdata.wait_time))
+        userdata.standard_error='Time has passed'
+        self.request_preempt()
+        return 'succeeded'
+        
+        
+    
+#         if (time_check > userdata.wait_time):
+#             userdata.standard_error='Time has passed'
+#             return 'succeeded'
+#         else:
+#             userdata.standard_error="Time hasn't passed"
+#             return 'aborted'
+        
+        
+        
+        

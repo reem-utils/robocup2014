@@ -92,7 +92,7 @@ class Avoid_That(smach.StateMachine):
             # Announce going to a place
             smach.StateMachine.add(
                     'say_go_to_poi',
-                    text_to_say(text="I'm going to my destiny"),
+                    text_to_say(text="I'm going to the Avoid That area."),
                     transitions={'succeeded': 'go_to_poi'})
 
             # Go to the POI
@@ -105,7 +105,7 @@ class Avoid_That(smach.StateMachine):
             # Announce arriving to a place
             smach.StateMachine.add(
                     'say_get_to_poi',
-                    text_to_say(text="I've arrived to my destiny"),
+                    text_to_say(text="I've arrived to the destination for Avoid That. The test Avoid That has finished successfully. Thank you."),
                     transitions={'succeeded': 'succeeded'})
 
             # If its time to live, will return aborted, else it will tri again sending de same goal

@@ -26,33 +26,38 @@ NAVIGATION_TOPIC_NAME = '/move_base'
 class createNavGoal(smach.State):
     def __init__(self, frame_id):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-							input_keys=['nav_to_coord_goal'], output_keys=['navigation_goal','standard_error'])
+							input_keys=['nav_to_coord_goal', 'nav_to_coord_frame'], output_keys=['navigation_goal','standard_error'])
         self.frame_id = frame_id
         
     def execute(self, userdata):
+        self.frame_id = userdata.nav_to_coord_frame if userdata.nav_to_coord_goal else self.frame_id
+        rospy.loginfo("Frame from -- nav_to_coord_ud -- :: " + self.frame_id)
         nav_goal = self.create_nav_goal(userdata.nav_to_coord_goal[0], 
 									userdata.nav_to_coord_goal[1], 
-									userdata.nav_to_coord_goal[2])
-
+									userdata.nav_to_coord_goal[2],
+                                    userdata.nav_to_coord_goal[3],
+                                    userdata.nav_to_coord_goal[4],
+                                    userdata.nav_to_coord_goal[5])
+        
         userdata.navigation_goal = nav_goal
         return 'succeeded'
  
-    def create_nav_goal(self, x, y, yaw):
+    def create_nav_goal(self, x, y, z, roll, pitch, yaw):
         """Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
         Returns a MoveBaseGoal"""
         mb_goal = MoveBaseGoal()
         mb_goal.target_pose.header.frame_id = self.frame_id # Note: the frame_id must be map
         mb_goal.target_pose.pose.position.x = x
         mb_goal.target_pose.pose.position.y = y
-        mb_goal.target_pose.pose.position.z = 0.0 # z must be 0.0 (no height in the map)
+        mb_goal.target_pose.pose.position.z = z # z must be 0.0 (no height in the map)
          
         # Orientation of the robot is expressed in the yaw value of euler angles
-        quat = quaternion_from_euler(0.0, 0.0, yaw) # roll, pitch, yaw
+        quat = quaternion_from_euler(roll, pitch, yaw) # roll, pitch, yaw
         mb_goal.target_pose.pose.orientation = Quaternion(*quat.tolist())
 
         return mb_goal
 
-class nav_to_coord(smach.StateMachine):
+class nav_to_coord_ud(smach.StateMachine):
     """
     Navigate to given map coords.
 
@@ -73,7 +78,7 @@ class nav_to_coord(smach.StateMachine):
         """
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                 input_keys=['nav_to_coord_goal'],
+                                 input_keys=['nav_to_coord_goal', 'nav_to_coord_frame'],
                                  output_keys=['standard_error'])
 
         with self: 
@@ -83,8 +88,8 @@ class nav_to_coord(smach.StateMachine):
                                    transitions={'succeeded':'MoveRobot', 'aborted':'aborted'})
             
             def move_res_cb(userdata, result_status, result):
+
                 if result_status != 3: # 3 == SUCCEEDED
-                    rospy.logwarn('Error in NAV_TO_COORD: ' + str(result))
                     if result_status == 4: 
                         userdata.standard_error = "Aborted navigation goal (maybe we didn't get there?)"
                         rospy.loginfo(userdata.standard_error)
@@ -109,7 +114,7 @@ class nav_to_coord(smach.StateMachine):
 								transitions={'succeeded':'succeeded', 'aborted':'Aborting_text', 'preempted':'preempted'})
             
             smach.StateMachine.add('Aborting_text',
-                                   text_to_say('I cannot reach the location, sorry'),
+                                   text_to_say('I cannot reach the location, sorry.'),
                                    transitions={'succeeded':'succeeded', 'aborted':'aborted'})
 def main():
     rospy.loginfo('Go POi Node')

@@ -14,9 +14,9 @@ public <basic> = ( <whatquest> | <howquest> | <whoquest>) | <garbage> ;
 
 <many> = many (<inhabitants> | <teams>);
 <inhabitants> = inhabitants are there in brazil {obj.put("questionumber","4");};
-<teams> = teams are participating in the at home contest this year {obj.put("questionumber","5");};
+<teams> = teams are participating in the at home contest this year {obj.put("questionumber","6");};
 
-<much> = much does a beer cost {obj.put("questionumber","6");};
+<much> = much does a beer cost {obj.put("questionumber","5");};
 
 <garbage>  = <garbage2>;
 
