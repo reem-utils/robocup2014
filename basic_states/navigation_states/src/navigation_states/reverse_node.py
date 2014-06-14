@@ -68,14 +68,14 @@ class navigation_back():
         if (req.meters<=MAXMETERS) :
             if (req.enable) :
                 
-		self.impacte=False
-       		self.time_out=False
-		self.sonar=[[MAXIM_INIT for y in xrange(NUM_MOSTRES)] for x in xrange(3)]
-        	self.num_sonar=3*[0]
-        	self.resultat=3*[MAXIM_INIT]
-		self.time_init= rospy.get_rostime()
-
-		self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)  
+                self.impacte=False
+                self.time_out=False
+                self.sonar=[[MAXIM_INIT for y in xrange(NUM_MOSTRES)] for x in xrange(3)]
+                self.num_sonar=3*[0]
+                self.resultat=3*[MAXIM_INIT]
+                self.time_init= rospy.get_rostime()
+                
+                self.ultra_subs=rospy.Subscriber("/sonar_base", Range, self.callback_Sonar)  
                 self.enable=True
                 self.meters=req.meters#number of meters that we have to do
                 self.Odometry_init=self.Odometry_actual
@@ -89,8 +89,8 @@ class navigation_back():
             
             if (self.time_out or self.impacte):
                 rospy.loginfo("ABORTING!!!")
-            	rospy.loginfo(str(self.resultat))
-           	rospy.loginfo(str(self.sonar))
+                rospy.loginfo(str(self.resultat))
+                rospy.loginfo(str(self.sonar))
                 if self.time_out :
                     rospy.loginfo("TIME OUT")
                 if self.impacte :
