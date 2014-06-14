@@ -32,7 +32,7 @@ sp {gp*apply*initialize-gp
    (<l14> ^id 14 ^pointed-at no)
       (<r> ^pointedAtLoc -1
            ^introduced no
-           ^locId 2
+           ^locId 13
            ^id 1
            ^obj1Id -1)
 
@@ -45,21 +45,22 @@ sp {gp*apply*initialize-gp
            ^id -1)
 
       (<pers1> ^followed no
-           ^memorized yes
-           ^locId 2
+           ^memorized no
+           ^locId 13
            ^obj1Id -1
            ^recognized no
            ^askedName no
            ^near no
            ^found no
-           ^id 16)
+           ^id 15)
 
-   (<d> ^name recognize-person
-        ^person <pp>
+   (<d> ^name point-at
+        ^location <ll>
         ^robot <rr>)
-   (<pp> ^recognized yes
-           ^near yes
-           ^id 16)
-   (<rr> ^id 1)
+   (<ll> ^id 2
+           ^pointed_at yes
+)
+   (<rr> ^pointedAtLoc 2
+         ^id 1)
 
 }

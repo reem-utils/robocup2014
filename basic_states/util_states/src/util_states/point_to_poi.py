@@ -11,8 +11,9 @@ Created on 22 Febreary 12:00:00 2013
 import rospy
 import smach
 from math import *
-from navigation_states import GetPoseSubscribe
+from navigation_states.get_current_robot_pose import GetPoseSubscribe
 from navigation_states.nav_to_coord import nav_to_coord
+from manipulation_states.play_motion_sm import play_motion_sm
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -78,34 +79,34 @@ class calculateYaw(smach.State):
          output_keys=['desired_angle'])
 
     def execute(self, userdata):
-        x = userdata.point_to_coord_goal[0] - userdata.current_robot_pose.position.x
-        y = userdata.point_to_coord_goal[1] - userdata.current_robot_pose.position.y
-        userdata.desired_angle = atan2(y/x)
+        x = userdata.point_to_coord_goal[0] - userdata.current_robot_pose.pose.position.x
+        y = userdata.point_to_coord_goal[1] - userdata.current_robot_pose.pose.position.y
+        userdata.desired_angle = atan2(y,x)
         return "succeeded"
 
 # In this state we will prepare the nav_to_coord_goal needed to turn the yaw we desire
 class prepare_nav_to_coord(smach.State):
     def __init__(self):
         smach.State.__init__(self,outcomes=['succeeded','aborted', 'preempted'],
-         input_keys=['current_robot_pose', 'desired_angle'],
+         input_keys=['current_robot_pose', 'desired_angle','nav_to_coord_goal'],
          output_keys=['nav_to_coord_goal'])
         
     def execute(self, userdata):
-        userdata.nav_to_coord_goal.x = userdata.current_robot_pose.position.x
-        userdata.nav_to_coord_goal.y = userdata.current_robot_pose.position.y
-        userdata.nav_to_coord_goal.yaw = userdata.desired_angle
+        userdata.nav_to_coord_goal = [0.0,0.0,0.0]
+        userdata.nav_to_coord_goal[0] = userdata.current_robot_pose.pose.position.x
+        userdata.nav_to_coord_goal[1] = userdata.current_robot_pose.pose.position.y
+        userdata.nav_to_coord_goal[2] = userdata.desired_angle
         return "succeeded"
         
         
-# In this state we will point in front of the robot
-class point_to_coord(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
-         input_keys=['point_to_poi_name'])
-
-    def execute(self, userdata):
-        #CHANG make this point forward
-        return "succeeded"
+# # In this state we will point in front of the robot
+# class point_to_coord(smach.State):
+#     def __init__(self):
+#         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
+#          input_keys=['point_to_poi_name'])
+# 
+#     def execute(self, userdata):
+#         return "succeeded"
         
 
 class point_to_poi(smach.StateMachine):
@@ -163,11 +164,11 @@ class point_to_poi(smach.StateMachine):
             # Turns
             smach.StateMachine.add('turn',
                nav_to_coord(),
-               transitions={'succeeded': 'mov_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
+               transitions={'succeeded': 'point_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
                 
             # Point the coordenades
             smach.StateMachine.add('point_to_coord',
-               point_to_coord(),
+               play_motion_sm('point_forward'),
                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
                 
              

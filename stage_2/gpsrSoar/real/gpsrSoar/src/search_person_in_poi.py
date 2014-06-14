@@ -2,7 +2,7 @@
 '''
 Created on 08/03/2014
 
-@author: Sergi Xavier Ubach Pallàs
+@author: Sergi Xavier Ubach Pallas
 @email: sxubach@gmail.com
 
 '''
@@ -17,10 +17,6 @@ from manipulation_states.move_head_form import move_head_form
 
 
 
-# Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
-ENDC = '\033[0m'
-FAIL = '\033[91m'
-OKGREEN = '\033[92m'
 
 class DummyStateMachine(smach.State):
     def __init__(self):
