@@ -19,7 +19,7 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
 from emergency_situation.Save_People_Emergency import Save_People_Emergency
 from emergency_situation.Search_People_Emergency import Search_People_Emergency
-from emergency_situation.search_ambulance import Search_Ambulance_Face
+from emergency_situation.search_ambulance import Search_Ambulance_Face, Search_Face_Determined
 from geometry_msgs.msg import PoseStamped, Pose
 from face_states.detect_faces import detect_face
 
@@ -75,7 +75,7 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
                                          input_keys=['person_location_coord'])
 
         with self:           
-            
+            self.userdata.name=""
             smach.StateMachine.add(
                                    'SetHome',
                                    play_motion_sm('home'),
@@ -95,6 +95,7 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
             smach.StateMachine.add(
                 'Wait_for_Ambulance_Person',
                 Search_Ambulance_Face(),
+                #Search_Face_Determined('Where are you ambulance?'),
                 transitions={'succeeded':'Say_Ambulance', 'aborted':'Detect_Fail_Init', 'preempted':'Go_to_Entry_Door'})
             smach.StateMachine.add(
                                    'Detect_Fail_Init',

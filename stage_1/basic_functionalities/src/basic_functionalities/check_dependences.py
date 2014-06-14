@@ -23,7 +23,8 @@ SERVICES_LIST_NAMES = []  # #################### Services #####################
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/play_motion",
                     "/move_base",
-                    "/sound"]
+                    "/sound",
+                    "/object_manipulation_server_dual_arms"]
 
 PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/init_pick_and_place",

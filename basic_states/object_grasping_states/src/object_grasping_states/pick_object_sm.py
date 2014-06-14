@@ -18,7 +18,7 @@ from object_recognition_msgs.msg import ObjectType, RecognizedObject, Recognized
 
 OPERATION_PICK = 1
 OPERATION_PLACE = 2
-OBJECT_MANIPULATION_TOPIC = '/object_manipulation_server'
+OBJECT_MANIPULATION_TOPIC = '/object_manipulation_server_dual_arms'
 GROUP_NAME = 'right_arm_torso'
 
 
@@ -48,7 +48,7 @@ class Prepare_Pick_Goal(smach.State):
         
     def execute(self, userdata):
         goal_to_send = ObjectManipulationGoal()
-        goal_to_send.operation = goal_to_send.goal.PICK
+        goal_to_send.operation = ObjectManipulationGoal.PICK
         goal_to_send.group = GROUP_NAME
         
         goal_to_send.target_pose = userdata.object_pick_position
@@ -58,15 +58,15 @@ class Prepare_Pick_Goal(smach.State):
         return 'succeeded'        
 
 class pick_object_sm(smach.StateMachine):
-    def __init__(self):
+    def __init__(self, object=''):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['object_position'],
                                     output_keys=[])
         with self:
             smach.StateMachine.add("Prepare_data", 
-                                   Prepare_data(), 
-                                   transitions={'succeeded':'succeeded','aborted':'aborted'})
+                                   Prepare_data(object), 
+                                   transitions={'succeeded':'Pick_Object_Goal','aborted':'aborted'})
             
             smach.StateMachine.add('Pick_Object_Goal',
                                    Prepare_Pick_Goal(),
