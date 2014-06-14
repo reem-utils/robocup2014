@@ -1,16 +1,12 @@
 #JSGF V1.0;
 
-/**
- * Robot grammar;
- */
-
-grammar robot;
+grammar listenword;
 
 public <command> = <word> | <garbage>;
 
 
 
-<word> = follow me | exit;
+<word> = move | stop;
 
 <garbage>  = <garbage2>;
 <garbage1> = _unk;
