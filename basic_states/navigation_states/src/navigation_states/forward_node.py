@@ -16,10 +16,10 @@ from geometry_msgs.msg import Pose
 from util_states.math_utils import *
 from navigation_states.srv._NavigationGoForward import NavigationGoForward
 
-MAXMETERS=3 # this is the maximum numer of meters that can move the robot forward
+MAXMETERS=2 # this is the maximum numer of meters that can move the robot forward
 MAXTIME=15 # numer maxim of time that the robot can be going forward
-MINDIST=0.30
-SPEED_X=0.3 # that is a forward speed
+MINDIST=0.15
+SPEED_X=0.1 # that is a forward speed
 MAXIM_INIT=200 # it'a a initialitzation value, it have to be bigger than ultraSounds Range
 NUM_MOSTRES=3
 
@@ -29,13 +29,13 @@ OKGREEN = '\033[92m'
 
 '''
 @this is a navigation
-@The maximum value of Distance is 3 meters
+@The maximum value of Distance is 2 meters
 @It have a time out of 15 seconds
-@Becareful!! this don't have navigation control!!
-@It loock the 3 back ultrasound and control if the distance is les than 30cm (is not a fast detection)
+@Be careful!! this doesn't have navigation control!!
+@It looks the 3 last ultrasound data and controls if the distance is less than 0.15 (its not a fast detection)
 '''
 
-class navigation_back():
+class navigation_forward():
     
     def __init__(self):
         rospy.loginfo("Initializing reverse")
@@ -76,8 +76,6 @@ class navigation_back():
             
             if (self.time_out):
                 rospy.loginfo("ABORTING!!!")
-                rospy.loginfo(str(self.resultat))
-                rospy.loginfo(str(self.sonar))
                 if self.time_out :
                     rospy.loginfo("TIME OUT")
                 return "ABORTED"
@@ -97,7 +95,9 @@ class navigation_back():
         position_navigate.position.y=self.Odometry_actual.pose.pose.position.y-self.Odometry_init.pose.pose.position.y
         
         unit_vector = normalize_vector(position_navigate.position)
+        #print "unit vector: " + str(unit_vector)
         position_distance = vector_magnitude(position_navigate.position)
+        #print "position_distance: " + str(position_distance)
         
         if (position_distance<self.meters) :
             self.movment=False
@@ -150,7 +150,7 @@ class navigation_back():
                     self.pub_stop()
                     self.enable=False
                     
-                rospy.sleep(0.01)
+                rospy.sleep(0.002)
             else :
                 rospy.sleep(3)
     def bucle(self):
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     rospy.init_node('navigation_forward_service')
     rospy.sleep(1)
     rospy.loginfo("navigation_forward_srv")
-    navigation = navigation_back()
+    navigation = navigation_forward()
     navigation.bucle()
     
     
