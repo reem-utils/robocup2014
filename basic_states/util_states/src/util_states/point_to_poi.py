@@ -93,9 +93,10 @@ class prepare_nav_to_coord(smach.State):
         
     def execute(self, userdata):
         userdata.nav_to_coord_goal = [0.0,0.0,0.0]
-        userdata.nav_to_coord_goal[0] = userdata.current_robot_pose.pose.position.x
-        userdata.nav_to_coord_goal[1] = userdata.current_robot_pose.pose.position.y
+        userdata.nav_to_coord_goal[0] = userdata.current_robot_pose.pose.position.x+1
+        userdata.nav_to_coord_goal[1] = userdata.current_robot_pose.pose.position.y+1
         userdata.nav_to_coord_goal[2] = userdata.desired_angle
+        #print ("-----------------------------------------" + str(userdata.desired_angle) + "----------------------------")
         return "succeeded"
         
         
@@ -134,23 +135,24 @@ class point_to_poi(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
+            print "POINT TO POI IN-SELF"
             self.userdata.standard_error=''
             self.userdata.point_to_coord_goal=[0.0,0.0,0.0]
 
             smach.StateMachine.add('PrepareData',
                prepareData(poi_name),
                transitions={'succeeded':'translate_coord', 'aborted':'aborted'})
-
+ 
             # We transform the poi to coordenades
             smach.StateMachine.add('translate_coord',
                translate_coord(),
                transitions={'succeeded': 'get_pose', 'aborted': 'aborted', 'preempted': 'preempted'})
-
+ 
             # We get current coodenades of robot in userdata 'current_robot_pose', 'current_robot_yaw', 'pose_current'
             smach.StateMachine.add('get_pose',
                GetPoseSubscribe(),
                transitions={'succeeded': 'get_yaw', 'aborted': 'aborted', 'preempted': 'preempted'})
-
+ 
             # We get current coodenades of robot in userdata 'current_robot_pose', 'current_robot_yaw', 'pose_current'
             smach.StateMachine.add('get_yaw',
                calculateYaw(), #output ['desired_angle']
@@ -164,7 +166,7 @@ class point_to_poi(smach.StateMachine):
             # Turns
             smach.StateMachine.add('turn',
                nav_to_coord(),
-               transitions={'succeeded': 'point_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
+               transitions={'succeeded': 'point_to_coord', 'aborted': 'aborted', 'preempted': 'preempted'})
                 
             # Point the coordenades
             smach.StateMachine.add('point_to_coord',

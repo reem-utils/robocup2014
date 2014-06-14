@@ -54,13 +54,9 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 15)
 
-   (<d> ^name point-at
-        ^location <ll>
+   (<d> ^name go-to
         ^robot <rr>)
-   (<ll> ^id 2
-           ^pointed_at yes
-)
-   (<rr> ^pointedAtLoc 2
+   (<rr> ^locId 2
          ^id 1)
 
 }
