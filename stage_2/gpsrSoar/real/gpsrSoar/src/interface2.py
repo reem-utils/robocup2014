@@ -274,7 +274,7 @@ def call_grasp(obj): #TODO #adding grasping
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_find_person(person_name): #TODO 
+def call_find_person(person_name): #TOTEST
 
     tosay = "I'm going to search for the person known as " + person_name
     speak = speaker(tosay)
@@ -286,9 +286,8 @@ def call_find_person(person_name): #TODO
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
-            '''
-            what did you say, provably going to return succeeded always
-            '''
+            sm = SearchPersonSM()
+            out = sm.execute()
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
