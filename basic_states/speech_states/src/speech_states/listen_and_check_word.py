@@ -23,12 +23,12 @@ class checkData(smach.State):
         
     def execute(self, userdata):
 
-        #word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'word']
-        
-        #if word and word[0].value == userdata.word_to_listen:
         if self.preempt_requested():
-           return 'preempted'
-        if userdata.asr_userSaid == userdata.word_to_listen:
+            return 'preempted'
+       
+        word = [tag for tag in userdata.asr_userSaid_tags if tag.key == 'action']
+        
+        if word and word[0].value == userdata.word_to_listen:
             rospy.loginfo("Match!")
             return 'succeeded'
         else:
@@ -37,11 +37,12 @@ class checkData(smach.State):
            
 class prepareData(smach.State):
     
-    def __init__(self, word):
+    def __init__(self, word, grammar):
         
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                            input_keys=['word_to_listen'], output_keys=['word_to_listen'])
+                            input_keys=['word_to_listen','grammar_name'], output_keys=['word_to_listen', 'grammar_name'])
         self.word = word
+        self.grammar = grammar
         
     def execute(self, userdata):
         
@@ -49,8 +50,13 @@ class prepareData(smach.State):
             rospy.logerr("Word isn't set")
             return 'aborted'
                 
+        if not self.grammar and not userdata.grammar_name:
+            rospy.logerr("Grammar isn't set")
+            return 'aborted'
+        
         #Priority in init
         userdata.word_to_listen = self.word if self.word else userdata.word_to_listen
+        userdata.grammar_name = self.grammar if self.grammar else userdata.grammar_name
  
         return 'succeeded'
     
@@ -64,17 +70,17 @@ class ListenWordSM(smach.StateMachine):
 
     """
     
-    def __init__(self, word=None):
+    def __init__(self, word=None, gram_name=None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                    input_keys=['word_to_listen'],
+                    input_keys=['word_to_listen', 'grammar_name'],
                     output_keys=[])
         
         with self:
             self.userdata.listen_word = None
-            self.userdata.grammar_name = "robocup/listenword"
+            self.userdata.grammar_name = None
     
             smach.StateMachine.add('PrepareData',
-                    prepareData(word),
+                    prepareData(word, gram_name),
                     transitions={'succeeded':'listen_word', 'aborted':'aborted'})
              
             # Listen the word
@@ -100,17 +106,17 @@ class ListenWordSM_Concurrent(smach.StateMachine):
 
     """
     
-    def __init__(self, word=None):
+    def __init__(self, word=None, gram=''):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                    input_keys=['word_to_listen'],
+                    input_keys=['word_to_listen', 'grammar_name'],
                     output_keys=[])
         
         with self:
             self.userdata.listen_word = None
-            self.userdata.grammar_name = "robocup/listenword"
+            self.userdata.grammar_name = None
     
             smach.StateMachine.add('PrepareData',
-                    prepareData(word),
+                    prepareData(word, gram),
                     transitions={'succeeded':'listen_word', 'aborted':'aborted'})
              
             # Listen the word
