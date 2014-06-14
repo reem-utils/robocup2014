@@ -19,8 +19,9 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from emergency_situation.Get_Person_Desired_Object import Get_Person_Desired_Object
 from emergency_situation.Save_People_Emergency import Save_People_Emergency
 from emergency_situation.Search_People_Emergency import Search_People_Emergency
-
+from emergency_situation.search_ambulance import Search_Ambulance_Face
 from geometry_msgs.msg import PoseStamped, Pose
+from face_states.detect_faces import detect_face
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -93,9 +94,16 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
             #What is Wait for Ambulance or People Mean? Person detection?
             smach.StateMachine.add(
                 'Wait_for_Ambulance_Person',
-                DummyStateMachine(),
-                transitions={'succeeded':'Say_Ambulance', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
-            
+                Search_Ambulance_Face(),
+                transitions={'succeeded':'Say_Ambulance', 'aborted':'Detect_Fail_Init', 'preempted':'Go_to_Entry_Door'})
+            smach.StateMachine.add(
+                                   'Detect_Fail_Init',
+                                   play_motion_sm('home'),
+                                   transitions={'succeeded':'Detect_Fail_Execute', 'aborted':'Detect_Fail_Execute', 'preempted':'Detect_Fail_Execute'})
+            smach.StateMachine.add(
+                 'Detect_Fail_Execute',
+                 detect_face(),
+                 transitions={'succeeded': 'Say_Ambulance', 'aborted': 'Say_Ambulance'})
             smach.StateMachine.add(
                 'Say_Ambulance',
                 text_to_say("Thank you for arriving as fast as possible. Please Follow Me, I will guide you to the emergency"),
@@ -121,3 +129,20 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
                 'Say_Finish',
                 text_to_say('Here is the person that is in an emergency situation, please proceed. I helped to save a life.'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+            
+
+def main():
+    rospy.loginfo('Detect_Ambulance')
+    rospy.init_node('Detect_Ambulance_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        smach.StateMachine.add(
+            'Detect_Ambulance',
+            Ambulance_Detect_And_Go(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
