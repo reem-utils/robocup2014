@@ -223,5 +223,4 @@ class emergency_situation_sm(smach.StateMachine):
             
             
             
-            
-            
+        
