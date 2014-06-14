@@ -10,7 +10,9 @@ Created on 22 Febreary 12:00:00 2013
 
 import rospy
 import smach
+from math import *
 from navigation_states import GetPoseSubscribe
+from navigation_states.nav_to_coord import nav_to_coord
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -76,10 +78,24 @@ class calculateYaw(smach.State):
          output_keys=['desired_angle'])
 
     def execute(self, userdata):
-        dif_cord.x = userdata.point_to_coord_goal[0] - userdata.current_robot_pose.position.x
-        dif_cord.y = userdata.point_to_coord_goal[1] - userdata.current_robot_pose.position.y
-        userdata.desired_angle = atan2(dif_cord.y/dif_cord.x)
+        x = userdata.point_to_coord_goal[0] - userdata.current_robot_pose.position.x
+        y = userdata.point_to_coord_goal[1] - userdata.current_robot_pose.position.y
+        userdata.desired_angle = atan2(y/x)
         return "succeeded"
+
+# In this state we will prepare the nav_to_coord_goal needed to turn the yaw we desire
+class prepare_nav_to_coord(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['succeeded','aborted', 'preempted'],
+         input_keys=['current_robot_pose', 'desired_angle'],
+         output_keys=['nav_to_coord_goal'])
+        
+    def execute(self, userdata):
+        userdata.nav_to_coord_goal.x = userdata.current_robot_pose.position.x
+        userdata.nav_to_coord_goal.y = userdata.current_robot_pose.position.y
+        userdata.nav_to_coord_goal.yaw = userdata.desired_angle
+        return "succeeded"
+        
         
 # In this state we will point in front of the robot
 class point_to_coord(smach.State):
@@ -127,26 +143,31 @@ class point_to_poi(smach.StateMachine):
             # We transform the poi to coordenades
             smach.StateMachine.add('translate_coord',
                translate_coord(),
-               transitions={'succeeded': 'get_pose', 'aborted': 'aborted', 'preempted': 'aborted'})
+               transitions={'succeeded': 'get_pose', 'aborted': 'aborted', 'preempted': 'preempted'})
 
             # We get current coodenades of robot in userdata 'current_robot_pose', 'current_robot_yaw', 'pose_current'
             smach.StateMachine.add('get_pose',
                GetPoseSubscribe(),
-               transitions={'succeeded': 'get_yaw', 'aborted': 'aborted', 'preempted': 'aborted'})
+               transitions={'succeeded': 'get_yaw', 'aborted': 'aborted', 'preempted': 'preempted'})
 
             # We get current coodenades of robot in userdata 'current_robot_pose', 'current_robot_yaw', 'pose_current'
             smach.StateMachine.add('get_yaw',
                calculateYaw(), #output ['desired_angle']
-               transitions={'succeeded': 'turn', 'aborted': 'aborted', 'preempted': 'aborted'})
+               transitions={'succeeded': 'prepareNav', 'aborted': 'aborted', 'preempted': 'preempted'})
                 
-            # Turn to face poi
+            # Prepares to turn
+            smach.StateMachine.add('prepareNav',
+               prepare_nav_to_coord(),
+               transitions={'succeeded': 'turn', 'aborted': 'aborted', 'preempted': 'preempted'})
+                
+            # Turns
             smach.StateMachine.add('turn',
-               turn(), #TODO: Roger is making the turn function
-               transitions={'succeeded': 'point_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
+               nav_to_coord(),
+               transitions={'succeeded': 'mov_to_coord', 'aborted': 'aborted', 'preempted': 'aborted'})
                 
             # Point the coordenades
             smach.StateMachine.add('point_to_coord',
-               point_to_coord(), #TODO: move_it
+               point_to_coord(),
                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
                 
              
