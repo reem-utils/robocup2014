@@ -6,8 +6,7 @@ play_motion:
         arm_left_7_joint, arm_right_1_joint, arm_right_2_joint, arm_right_3_joint,
         arm_right_4_joint, arm_right_5_joint, arm_right_6_joint, arm_right_7_joint]
       points:
-      - positions: [0.0, 0.0, 0.0, 0.0,  0.815245227448, -0.026420762167, -0.179071179507, 0.71860655435, -2.02628430326, 0.10187787862, 2.05610067465, 0.0, 0.0,
-          0.0, 0.0, 0.0, 0.0, 0.0]
+      - positions: [0.0, 0.0 , 0.0, 0.0,  0.972689815514, -0.0288976078494, -0.531131843476, 0.865018583808, 1.49714088306, 0.0795887419769, -1.33779128938,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
         time_from_start: 0.0
       meta:
         name: Pointing
