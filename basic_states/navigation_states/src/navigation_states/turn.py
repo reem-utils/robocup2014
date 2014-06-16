@@ -65,7 +65,7 @@ class turn(smach.StateMachine):
     def __init__(self, yawPlus = 0,direction = "left"):
 
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                input_keys=['yaw_plus'],
+                                input_keys=[],
                                 output_keys=['standard_error'])
 
 

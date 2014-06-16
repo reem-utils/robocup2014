@@ -286,7 +286,7 @@ def call_find_person(person_name): #TOTEST
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
-            sm = SearchPersonSM()
+            sm = SearchPersonSM(person_name)
             out = sm.execute()
     #############################################################################
     time.sleep(SLEEP_TIME)
