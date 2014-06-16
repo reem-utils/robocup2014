@@ -18,13 +18,17 @@ def child_term_cb(outcome_map):
     if outcome_map['TimeOut'] == 'succeeded':
         rospy.loginfo('TimeOut finished')
         return True
-    
+    if outcome_map['Sleep'] == 'succeeded':
+        rospy.loginfo('Sleeper Finished')
+        return True
     #By default, just keep running
     return False
     
 def out_cb(outcome_map):
     if outcome_map['TimeOut'] == 'succeeded':
         return 'succeeded'   
+    elif outcome_map['Sleep'] == 'succeeded':
+        return 'succeeded'
     else:
         return 'aborted'
     
@@ -52,9 +56,9 @@ def main():
                                     child_termination_cb = child_term_cb,
                                     outcome_cb=out_cb)
         with sm_conc: 
-            smach.Concurrence.add('Sleep', Sleeper(5))
+            smach.Concurrence.add('Sleep', Sleeper(20))
             
-            smach.Concurrence.add('TimeOut', TimeOut(15))
+            smach.Concurrence.add('TimeOut', TimeOut(5))
         
         smach.StateMachine.add(
             'Concurrence',
