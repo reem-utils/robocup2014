@@ -6,6 +6,8 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
+IMAGE_TOPIC = "/stereo/left/image" #It has to be changed to xtion!
+
 class image_converter:
     def __init__(self):
         
@@ -13,7 +15,7 @@ class image_converter:
 
         cv2.namedWindow("Image window", 1)
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/stereo/left/image",Image,self.callback)
+        self.image_sub = rospy.Subscriber(IMAGE_TOPIC,Image,self.callback)
 
     def callback(self,data):
         try:
