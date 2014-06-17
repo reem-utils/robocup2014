@@ -7,6 +7,7 @@ import rospy
 import actionlib
 import sys
 import select
+import math
 
 from geometry_msgs.msg import Twist
 from get_current_robot_pose import get_current_robot_pose
@@ -16,19 +17,19 @@ from geometry_msgs.msg import Pose
 from util_states.math_utils import *
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 
-SPEED_X=0.1 # that is a forward speed
-MAXTIME=30
+SPEED_X=0.3 # that is a forward speed
+MAXTIME=15
+MARGE=0.035 # 2 grados de error
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
 '''
-@this is a navigation
-@The maximum value of Distance is 2 meters
+@this is a navigation turn
+@The maximum value of turn is 180 degree and -180 degree
 @It have a time out of 15 seconds
 @Be careful!! this doesn't have navigation control!!
-@It looks the 3 last ultrasound data and controls if the distance is less than 0.15 (its not a fast detection)
 '''
 
 class navigation_turn():
@@ -61,15 +62,35 @@ class navigation_turn():
                 self.time_out=False
                 self.time_init= rospy.get_rostime()
                 self.enable=True
-                self.degree=req.degree#number of meters that we have to do
                 self.Odometry_init=self.Odometry_actual 
-                rospy.sleep(0.5)
-                if self.degree>0 :
-                    self.speed=SPEED_X
-                else :
+                
+                self.radians=math.radians(req.degree)
+                self.degree=req.degree
+                
+                roll, pitch, yaw = euler_from_quaternion([self.Odometry_init.pose.pose.orientation.x,self.Odometry_init.pose.pose.orientation.y,
+                        self.Odometry_init.pose.pose.orientation.z,
+                        self.Odometry_init.pose.pose.orientation.w])
+                if req.degree>0 :
                     self.speed=-SPEED_X
-                self.run()
+                    self.yaw_final=yaw-self.radians
+                else :
+                    self.yaw_final=yaw-self.radians
+                    self.speed=+SPEED_X
+                    
+                    
+                    
+                self.radians=self.yaw_final
+                if self.radians>math.pi :
+                    self.radians=-(math.pi-self.radians+math.pi)
+                if self.radians<-math.pi :
+                    self.radians= math.pi-(abs(self.radians)-math.pi)
+                    
+                if self.radians>(-math.pi) and self.radians<(math.pi) :
+                    self.run()
+                else :
+                    return "error impossible to arrive"
             else :
+                rospy.loginfo("harcode stop")
                 self.enable=False
                 self.pub_stop()
             
@@ -90,11 +111,12 @@ class navigation_turn():
         self.Odometry_actual=data
         
     def proces_odometry(self):
+        
         position_navigate=Pose()
-        position_navigate.orientation.x=self.Odometry_actual.pose.pose.orientation.x-self.Odometry_init.pose.pose.orientation.x
-        position_navigate.orientation.y=self.Odometry_actual.pose.pose.orientation.y-self.Odometry_init.pose.pose.orientation.y
-        position_navigate.orientation.z=self.Odometry_actual.pose.pose.orientation.z-self.Odometry_init.pose.pose.orientation.z
-        position_navigate.orientation.w=self.Odometry_actual.pose.pose.orientation.w-self.Odometry_init.pose.pose.orientation.w
+        position_navigate.orientation.x=self.Odometry_actual.pose.pose.orientation.x
+        position_navigate.orientation.y=self.Odometry_actual.pose.pose.orientation.y
+        position_navigate.orientation.z=self.Odometry_actual.pose.pose.orientation.z
+        position_navigate.orientation.w=self.Odometry_actual.pose.pose.orientation.w
         
         
         
@@ -102,11 +124,11 @@ class navigation_turn():
                                 position_navigate.orientation.z,
                                 position_navigate.orientation.w])
     
-        
-        if (yaw<self.degree) :
-            self.movment=False
-        else :
+        if (yaw<self.radians+MARGE and yaw>self.radians-MARGE) :
+           
             self.movment=True
+        else :
+            self.movment=False
             
     def pub_move(self):
         msg=Twist()
@@ -156,6 +178,7 @@ class navigation_turn():
                     
                 rospy.sleep(0.002)
             else :
+                
                 rospy.sleep(3)
     def bucle(self):
         while not rospy.is_shutdown():
