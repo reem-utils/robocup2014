@@ -19,7 +19,7 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 
 SPEED_X=0.3 # that is a forward speed
 MAXTIME=15
-MARGE=0.035 # 2 grados de error
+MARGE=0.017 # 2 grados de error
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -86,6 +86,7 @@ class navigation_turn():
                     self.radians= math.pi-(abs(self.radians)-math.pi)
                     
                 if self.radians>(-math.pi) and self.radians<(math.pi) :
+                    rospy.loginfo("eps new order")
                     self.run()
                 else :
                     return "error impossible to arrive"
