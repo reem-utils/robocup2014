@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+
+"""
+@date: June 17 2014
+@author: Chang Long Zhu Jin
+@email: changlongzj@gmail.com
+"""
+import roslib
 import sys
 import rospy
 import cv2
@@ -7,7 +14,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
 IMAGE_TOPIC = "/stereo/left/image" #It has to be changed to xtion!
-
+cv_image_final = None
+PKG_PATH = roslib.packages.get_pkg_dir('emergency_situation')
 class image_converter:
     def __init__(self):
         
@@ -26,8 +34,11 @@ class image_converter:
         (rows,cols,channels) = cv_image.shape
         if cols > 60 and rows > 60 :
             cv2.circle(cv_image, (50,50), 10, 255)
-
+        
+        
+        
         cv2.imshow("Image window", cv_image)
+        cv_image_final = cv_image
         cv2.waitKey(3)
 
         try:
@@ -44,6 +55,8 @@ def main(args):
         rospy.spin()
     except KeyboardInterrupt:
         print "Shutting down"
+    
+    cv2.imwrite(PKG_PATH+"/config/camera_image.png", cv_image_final)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
