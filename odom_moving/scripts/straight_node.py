@@ -83,11 +83,6 @@ class navigation_straight():
                 self.enable = True
                 self.meters = req.meters  # Number of meters that we have to move
                 self.init_odom = self.curr_odom
-                if REAL_ROBOT:
-                    dis_goal = DisableGoal()
-                    dis_goal.duration = MAXTIME + 5.0
-                    self.speed_limit_as.send_goal(dis_goal)
-                    self.speed_limit_as.wait_for_result(rospy.Duration(0.05)) # don't block here
                 self.run()
                 rospy.loginfo("Finished moving!")
                 return StraightResponse()
