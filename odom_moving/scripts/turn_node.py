@@ -27,7 +27,7 @@ TURN_SRV = '/turn_nav'
 # This node parameters
 MAXDEGREES = 180.0
 MAXTIME = 15.0
-SPEED_Z_ROT = 0.1
+SPEED_Z_ROT = 0.15
 PUBLICATION_CMD_VEL_HZ = 20
 
 # Functions borrowed from math_utils.py from Siegfried Gevatter
@@ -82,9 +82,11 @@ class navigation_turn():
                 self.time_init = rospy.get_rostime()
                 self.enable = True
                 self.degrees = req.degrees  # Number of degrees to rotate
-                self.turnOdom(math.radians(req.degrees))
-                rospy.loginfo("Finished moving!")
-                return TurnResponse()
+                if self.turnOdom(math.radians(req.degrees)):
+                    rospy.loginfo("Finished moving!")
+                    return TurnResponse()
+                else:
+                    return "Timeout"
             else:
                 self.enable=False
                 self.pub_stop()
@@ -158,9 +160,9 @@ class navigation_turn():
             except:
                 rospy.logerr("Transform exception")
         
-            print "start_yaw : " + str(start_yaw)    
+            #print "start_yaw : " + str(start_yaw)    
             roll, pitch, curr_yaw = euler_from_quaternion(curr_rot)
-            print "curr_yaw : " + str(curr_yaw)
+            #print "curr_yaw : " + str(curr_yaw)
             
             if last_yaw == None:
                 last_yaw = curr_yaw
@@ -194,6 +196,7 @@ class navigation_turn():
 #             print "target_yaw: " + str(radians)
             if abs(relative_yaw) > abs(radians):
                 done = True
+                rospy.loginfo("We turned: " + str(math.degrees(relative_yaw)) + " from the " + str(math.degrees(radians * -1)) + " requested")
             if done:
                 return True
         return False
