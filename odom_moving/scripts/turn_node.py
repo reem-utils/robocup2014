@@ -19,10 +19,6 @@ import math
 import copy
 import numpy as np
 
-REAL_ROBOT = False
-if REAL_ROBOT:
-    from speed_limit.msg import DisableAction, DisableGoal
-
 # We have safety in this node as we are using (implicitly) speed_limit to limit how fast
 # we can move near any obstacle perceived by the sensors
 CMD_VEL_TOPIC = '/key_vel'  # '/mobile_base_controller/cmd_vel'
@@ -52,7 +48,7 @@ def normalize_vector(vec):
 
 
 class navigation_turn():
-    """Class to provide moving striaght by odometry"""
+    """Class to provide moving turning by odometry"""
     
     def __init__(self):
         rospy.loginfo("Initializing publisher to: '" + CMD_VEL_TOPIC + "'")
@@ -64,7 +60,7 @@ class navigation_turn():
         rospy.loginfo("Setting turn service: '" + TURN_SRV + "'")
         self.nav_srv = rospy.Service(TURN_SRV, Turn, self.nav_turn_srv)
         self.init_vars()
-        rospy.loginfo("Forward service up and running!")
+        rospy.loginfo("Turn service up and running!")
         
         
         
@@ -86,11 +82,6 @@ class navigation_turn():
                 self.time_init = rospy.get_rostime()
                 self.enable = True
                 self.degrees = req.degrees  # Number of degrees to rotate
-                if REAL_ROBOT:
-                    dis_goal = DisableGoal()
-                    dis_goal.duration = MAXTIME + 5.0
-                    self.speed_limit_as.send_goal(dis_goal)
-                    self.speed_limit_as.wait_for_result(rospy.Duration(0.05)) # don't block here
                 self.turnOdom(math.radians(req.degrees))
                 rospy.loginfo("Finished moving!")
                 return TurnResponse()
@@ -178,6 +169,10 @@ class navigation_turn():
                     if (cmp(last_yaw, 0.0) == 1) and (cmp(curr_yaw, 0.0) == -1):
                         # if the sign of last_yaw and curr_yaw is not the same means
                         # that we overflowed over pi so must fix that
+                        # This means that rotating clockwise we go
+                        # -pi ... 0.0 ... pi
+                        #       ------>
+                        # So a jump from pi to -pi will happen
                         print "Overflowed!"
                         curr_yaw = 2 * math.pi + curr_yaw
                     else:
@@ -185,6 +180,10 @@ class navigation_turn():
                 else:
                     if (cmp(last_yaw, 0.0) == -1) and (cmp(curr_yaw, 0.0) == 1):
                         # same comparisson than up but for the other way around
+                        # This means that rotating counter clockwise we go
+                        # -pi ... 0.0 ... pi
+                        #       <------
+                        # So a jump from -pi to pi will happen
                         print "Underflowed!"
                         curr_yaw = - 2 * math.pi + curr_yaw
                     else:
@@ -193,7 +192,6 @@ class navigation_turn():
             relative_yaw = start_yaw - curr_yaw
 #             print "relative yaw: " + str(relative_yaw)
 #             print "target_yaw: " + str(radians)
-            
             if abs(relative_yaw) > abs(radians):
                 done = True
             if done:
@@ -203,7 +201,7 @@ class navigation_turn():
 
         
 if __name__ == '__main__':
-    rospy.init_node('navigation_straight_service')
+    rospy.init_node('navigation_turn_service')
     rospy.sleep(1)
     navigation = navigation_turn()
     #navigation.turnOdom(-1.57 / 2.0)

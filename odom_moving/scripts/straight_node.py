@@ -16,9 +16,6 @@ from actionlib.simple_action_client import SimpleActionClient
 import math
 import copy
 
-REAL_ROBOT = False
-if REAL_ROBOT:
-    from speed_limit.msg import DisableAction, DisableGoal
 
 # We have safety in this node as we are using (implicitly) speed_limit to limit how fast
 # we can move near any obstacle perceived by the sensors
@@ -61,11 +58,6 @@ class navigation_straight():
         
         rospy.loginfo("Subscribing to: '" + ODOM_TOPIC + "'")
         self.odom_subs = rospy.Subscriber(ODOM_TOPIC, Odometry, self.odom_cb)
-        
-        if REAL_ROBOT:
-            rospy.loginfo("Connecting to speed limit disable AS: '" + SPEED_LIMIT_AS + "'" )
-            self.speed_limit_as = SimpleActionClient(SPEED_LIMIT_AS, DisableAction)
-            self.speed_limit_as.wait_for_server()
             
         rospy.loginfo("Setting forward service: '" + STRAIGHT_SRV + "'")
         self.nav_srv = rospy.Service(STRAIGHT_SRV, Straight, self.nav_straight_srv)
