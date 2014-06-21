@@ -1,0 +1,5 @@
+<launch>
+	<!-- Nodes that are services to move by odometry -->
+	<node pkg="odom_moving" type="straight_node.py" name="straight_node"/>
+	<node pkg="odom_moving" type="turn_node.py" name="turn_node"/>
+</launch>
