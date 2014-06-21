@@ -24,6 +24,9 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
+SENTENCE_STOP='wait here'
+SENTENCE_GO='ok go'
+
 class BasicFunctionalitiesSM(smach.StateMachine):
     """
     Executes a SM that does the basic functionalities.
@@ -75,12 +78,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Go to pick and place
             smach.StateMachine.add(
                 'go_pick_and_place',
-                Go_Poi_Listen_Word('init_pick_and_place', 'stop', 'robocup/listenword'),
-                #Go_Poi_Listen_Word('point_room_one', 'stop', 'robocup/listenword'),
-                #transitions={'succeeded': 'say_going_avoid', 'aborted': 'wait_pick_and_place', 
-                #'preempted': 'preempted'})    
-                transitions={'succeeded':'do_pick_and_place', 'aborted': 'wait_pick_and_place', 
-                'preempted': 'preempted'})
+                #Go_Poi_Listen_Word('init_pick_and_place', 'stop', 'robocup/listenword'),
+                Go_Poi_Listen_Word('point_room_one', SENTENCE_STOP),
+                transitions={'succeeded': 'say_going_avoid', 'aborted': 'confirm_stop_pick_place', 
+                'preempted': 'preempted'})    
+                #transitions={'succeeded':'do_pick_and_place', 'aborted': 'confirm_stop_pick_place', 
+                #'preempted': 'preempted'})
                 
             # The robot wait for "move" to move to the poi
             smach.StateMachine.add(
@@ -91,7 +94,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             
             smach.StateMachine.add(
                 'wait_pick_and_place',
-                ListenWordSM_Concurrent('move', 'robocup/listenword'),
+                ListenWordSM_Concurrent(SENTENCE_GO),
                 transitions={'succeeded': 'confirm_move_pick_place', 'aborted': 'wait_pick_and_place', 
                 'preempted': 'preempted'})   
             
@@ -116,12 +119,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Go to avoid that
             smach.StateMachine.add(
                 'go_avoid_that',
-                Go_Poi_Listen_Word('init_avoid_that', 'stop', 'robocup/listenword'),
-                #Go_Poi_Listen_Word('point_room_two', 'stop', 'robocup/listenword'),
-                #transitions={'succeeded': 'say_going_what_say', 'aborted': 'confirm_stop_avoid_that', 
-                #'preempted': 'preempted'})    
-                transitions={'succeeded': 'do_avoid_that', 'aborted': 'wait_avoid_that', 
-                'preempted': 'preempted'})
+                #Go_Poi_Listen_Word('init_avoid_that', 'stop', 'robocup/listenword'),
+                Go_Poi_Listen_Word('point_room_two', SENTENCE_STOP),
+                transitions={'succeeded': 'say_going_what_say', 'aborted': 'confirm_stop_avoid_that', 
+                'preempted': 'preempted'})    
+                #transitions={'succeeded': 'do_avoid_that', 'aborted': 'confirm_stop_avoid_that', 
+                #'preempted': 'preempted'})
                   
             # The robot wait for "move" to move to the poi
             smach.StateMachine.add(
@@ -132,7 +135,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                         
             smach.StateMachine.add(
                 'wait_avoid_that',
-                ListenWordSM_Concurrent('move', 'robocup/listenword'),
+                ListenWordSM_Concurrent(SENTENCE_GO),
                 transitions={'succeeded': 'confirm_move_avoid_that', 'aborted': 'wait_avoid_that', 
                 'preempted': 'preempted'})
             
@@ -158,12 +161,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Go to what did you say
             smach.StateMachine.add(
                 'go_what_did_you_say',
-                Go_Poi_Listen_Word('init_what_say', 'stop', 'robocup/listenword'),
-                #Go_Poi_Listen_Word('point_room_three', 'stop', 'robocup/listenword'),
-                #transitions={'succeeded': 'say_finish_basic_functionalities', 'aborted': 'confirm_stop_what_say', 
-                #'preempted': 'preempted'})    
-                transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'wait_what_did_you_say', 
-                'preempted': 'preempted'})   
+                #Go_Poi_Listen_Word('init_what_say', 'stop', 'robocup/listenword'),
+                Go_Poi_Listen_Word('point_room_three', SENTENCE_STOP),
+                transitions={'succeeded': 'say_finish_basic_functionalities', 'aborted': 'confirm_stop_what_say', 
+                'preempted': 'preempted'})    
+                #transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'confirm_stop_what_say', 
+                #'preempted': 'preempted'})   
          
             # The robot wait for "move" to move to the poi
             smach.StateMachine.add(
@@ -174,7 +177,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             
             smach.StateMachine.add(
                 'wait_what_did_you_say',
-                ListenWordSM_Concurrent('move', 'robocup/listenword'),
+                ListenWordSM_Concurrent(SENTENCE_GO),
                 transitions={'succeeded': 'confirm_move_what_say', 'aborted': 'wait_what_did_you_say', 
                 'preempted': 'preempted'})
             

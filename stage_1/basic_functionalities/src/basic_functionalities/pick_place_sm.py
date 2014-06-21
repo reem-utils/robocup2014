@@ -44,15 +44,15 @@ class dummy_recognize(smach.State):
         
         userdata.object_position = PoseStamped()
         userdata.object_position.header.frame_id = "base_link"
-        userdata.object_position.pose.position.x = 0.4
-        userdata.object_position.pose.position.z = 0.95
+        userdata.object_position.pose.position.x = 0.5
+        userdata.object_position.pose.position.z = 1.0
         userdata.object_position.pose.orientation.w = 1.0
         userdata.pose_to_place = PoseStamped()
         userdata.pose_to_place.header.frame_id = "base_link"
         userdata.pose_to_place.pose.position.x = 0.4
         userdata.pose_to_place.pose.position.z = 0.95
         userdata.pose_to_place.pose.orientation.w = 1.0
-        userdata.nav_to_poi_name='pick_and_place'
+        userdata.nav_to_poi_name='waste_bin'
          
         rospy.sleep(5)
         return 'succeeded'
@@ -95,6 +95,9 @@ class PickPlaceSM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=''
+            self.userdata.tts_lang = ''
+            self.userdata.tts_wait_before_speak = ''
+            self.userdata.tts_text = ''
             
             # Say start Pick and Place
             smach.StateMachine.add(
@@ -172,21 +175,8 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'release_object',
                 place_object_sm(),
-                transitions={'succeeded': 'say_go_end_position', 'aborted': 'say_release_obj', 
-                'preempted': 'preempted'})    
-            
-            # Say go to end position
-            smach.StateMachine.add(
-                 'say_go_end_position',
-                 text_to_say("Moving to a safer position"),
-                 transitions={'succeeded': 'go_end_location', 'aborted': 'go_end_location'})
-            
-            # Go to the end poi
-            smach.StateMachine.add(
-                'go_end_location',
-                nav_to_poi(),
-                transitions={'succeeded': 'play_motion_state', 'aborted': 'say_go_end_position', 
-                'preempted': 'preempted'})   
+                transitions={'succeeded': 'play_motion_state', 'aborted': 'say_release_obj', 
+                'preempted': 'preempted'})     
                         
             # Home position
             smach.StateMachine.add(

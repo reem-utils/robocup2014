@@ -20,7 +20,7 @@ from face_states.ask_name_learn_face import SaveFaceSM
 from face_states.detect_faces import detect_face
 from gesture_states.gesture_recognition import GestureRecognition 
 from gesture_states.wave_detection_sm import WaveDetection
-from object_grasping_states.search_object import SearchObjectSM
+from object_states.search_object import SearchObjectSM
 from util_states.math_utils import normalize_vector, vector_magnitude
 from geometry_msgs.msg import Pose
 from speech_states.parser_grammar import parserGrammar
@@ -30,6 +30,9 @@ from manipulation_states.move_hands_form import move_hands_form
 from manipulation_states.ask_give_object_grasping import ask_give_object_grasping
 from util_states.sleeper import Sleeper
 from manipulation_states.give_object import give_object
+from object_grasping_states.pick_object_sm import pick_object_sm
+from object_grasping_states.place_object_sm import place_object_sm
+from geometry_msgs.msg import PoseStamped
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -50,6 +53,29 @@ class DummyStateMachine(smach.State):
 
         rospy.sleep(3)
         return 'succeeded'
+
+class dummy_recognize(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=['object_position','pose_to_place'], 
+            output_keys=['object_position','pose_to_place'])
+
+    def execute(self, userdata):
+        
+        userdata.object_position = PoseStamped()
+        userdata.object_position.header.frame_id = "base_link"
+        userdata.object_position.pose.position.x = 1.0
+        userdata.object_position.pose.position.z = 1.0
+        userdata.object_position.pose.orientation.w = 1.0
+        userdata.pose_to_place = PoseStamped()
+        userdata.pose_to_place.header.frame_id = "base_link"
+        userdata.pose_to_place.pose.position.x = 0.4
+        userdata.pose_to_place.pose.position.z = 0.95
+        userdata.pose_to_place.pose.orientation.w = 1.0
+         
+        rospy.sleep(5)
+        return 'succeeded'
+
 
 class prepare_ask_person_back(smach.State):
     def __init__(self):
@@ -96,6 +122,30 @@ class process_order(smach.State):
          
         return 'aborted'
 
+class change_did_pick(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=["did_pick"],
+                                output_keys=["did_pick"])
+        
+    def execute(self, userdata):
+    
+        userdata.did_pick = False
+        return 'succeeded'
+         
+class check_place_give(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=["did_pick"],
+                                output_keys=[])
+        
+    def execute(self, userdata):
+    
+        if userdata.did_pick:
+            return 'succeeded'
+         
+        return 'aborted'
+    
 class prepare_coord_order(smach.State):
     def __init__(self, distanceToHuman=0.3):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -130,7 +180,7 @@ class checkLoop(smach.State):
         rospy.loginfo("Entering loop_test")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
                                 input_keys=['loop_iterations'],
-                                output_keys=['standard_error', 'loop_iterations'])
+                                output_keys=['standard_error', 'loop_iterations', "did_pick"])
 
     def execute(self, userdata):
         
@@ -139,6 +189,7 @@ class checkLoop(smach.State):
         else:
             rospy.loginfo(userdata.loop_iterations)
             userdata.standard_error='OK'
+            userdata.did_pick = True
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
 
@@ -169,6 +220,7 @@ class CocktailPartySM(smach.StateMachine):
             self.userdata.gesture_name = ''
             self.userdata.object_name = ""
             self.userdata.manip_time_to_play = 4
+            self.userdata.did_pick = True
             
             # Must we say something to start? "I'm ready" or something
             # Must we wait for the spoken order? 
@@ -257,18 +309,29 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_got_it',
                 text_to_say("I got it!"),
-                transitions={'succeeded': 'search_food_order', 'aborted': 'ask_order', 
-                'preempted': 'preempted'}) 
-
-            # Search for object information - It says where the object is, go to it and start object recognition
-            # TODO: Change how to process object - it must go to storage room always
-            # TODO: Add some messages in search object
-            smach.StateMachine.add(
-                'search_food_order',
-                SearchObjectSM(),
-                transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
+                transitions={'succeeded': 'go_to_storage', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
             
+            # Go to the storage_room
+            smach.StateMachine.add(
+                'go_to_storage',
+                nav_to_poi("storage_room"),
+                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'go_to_storage', 
+                'preempted': 'preempted'}) 
+            
+            # Say start object recognition
+            smach.StateMachine.add(
+                 'say_start_obj_recognition',
+                 text_to_say("I'm going to start the Object recognition"),
+                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
+             
+            # Do object_recognition 
+            smach.StateMachine.add(
+                'object_recognition',
+                dummy_recognize(),
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
+                'preempted': 'preempted'}) 
+ 
             # Say grasp object
             smach.StateMachine.add(
                 'say_grasp_order',
@@ -279,8 +342,8 @@ class CocktailPartySM(smach.StateMachine):
             # Grasp Object
             smach.StateMachine.add(
                 'grasp_food_order',
-                DummyStateMachine(),
-                transitions={'succeeded': 'Grasp_fail_Ask_Person', 'aborted': 'aborted', 
+                pick_object_sm(),
+                transitions={'succeeded': 'go_to_party', 'aborted': 'Grasp_fail_Ask_Person', 
                 'preempted': 'preempted'}) 
 
             # Ask for grasp object
@@ -295,6 +358,11 @@ class CocktailPartySM(smach.StateMachine):
                  play_motion_sm('rest_object_right'),
                  transitions={'succeeded':'go_to_party', 'aborted':'go_to_party', 'preempted':'go_to_party'})
       
+            smach.StateMachine.add(
+                 'change_did_pick',
+                 change_did_pick(),
+                 transitions={'succeeded':'go_to_party', 'aborted':'go_to_party', 'preempted':'go_to_party'})
+            
             # Go to the party room
             smach.StateMachine.add(
                 'go_to_party',
@@ -356,6 +424,19 @@ class CocktailPartySM(smach.StateMachine):
                 transitions={'succeeded': 'Give_Object', 'aborted': 'Give_Object', 
                 'preempted': 'preempted'}) 
             
+            # Check if we pick or ask the drink
+            smach.StateMachine.add(
+                'check_place_give',
+                check_place_give(),
+                transitions={'succeeded':'Place_Object', 'aborted':'Give_Object', 'preempted':'check_place_give'})
+            
+            # Place if we pick the drink
+            smach.StateMachine.add(
+                'Place_Object',
+                place_object_sm(),
+                transitions={'succeeded':'check_loop', 'aborted':'Place_Object', 'preempted':'Place_Object'})
+            
+            # Give if we ask for drink 
             smach.StateMachine.add(
                 'Give_Object',
                 give_object(),

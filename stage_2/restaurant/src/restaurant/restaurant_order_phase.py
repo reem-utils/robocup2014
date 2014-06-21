@@ -290,3 +290,10 @@ class RestaurantOrder(smach.StateMachine):
                 'preempted': 'preempted'}) 
             
 
+            # Search for object information - It says where the object is, go to it and start object recognition -> RESTAURANT
+            # TODO: Add some messages in search object
+#             smach.StateMachine.add(
+#                 'search_food_order',
+#                 SearchObjectSM(),
+#                 transitions={'succeeded': 'go_to_storage', 'aborted': 'go_to_storage', 
+#                 'preempted': 'preempted'}) 

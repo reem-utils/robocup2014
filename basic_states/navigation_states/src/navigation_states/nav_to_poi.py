@@ -116,6 +116,21 @@ class nav_to_poi(smach.StateMachine):
                 
              
 
+def main():
+    rospy.loginfo('Go POi Node')
+    rospy.init_node('go_poi')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        smach.StateMachine.add(
+            'Go_TO_PI',
+            nav_to_poi('kitchen'),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
 
 
 
