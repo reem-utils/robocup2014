@@ -13,7 +13,7 @@ OKGREEN = '\033[92m'
 
 
 from speech_states.say import text_to_say
-from speech_states.listen_and_check_word import ListenWordSM
+from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from follow_learn import LearnPerson
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
@@ -43,10 +43,10 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.in_learn_person=1
             smach.StateMachine.add('INTRO',
                                    text_to_say(START_FRASE),
-                                   transitions={'succeeded': 'Listen','aborted':'aborted'})
+                                   transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER','aborted':'aborted'})
 
             smach.StateMachine.add('Listen',
-                                   ListenWordSM("follow me"),
+                                   ListenWordSM_Concurrent("follow me"),
                                    transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
                                                 'aborted': 'Listen'})
           

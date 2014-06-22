@@ -19,7 +19,7 @@ from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_coord_concurrent import nav_to_coord_concurrent
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
-from follow_me.msg import personArray,person
+from pipol_tracker_pkg.msg import personArray,person
 from speech_states.say import text_to_say
 
 ENDC = '\033[0m'
@@ -63,23 +63,27 @@ class init_var(smach.State):
 class filter_and_process(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['find_it','not_find','occluded','preempted'],
-                             input_keys=['tracking_msg','in_learn_person'],
+                             input_keys=['tracking_msg','in_learn_person', 'tracking_msg_filtered'],
                              output_keys=['tracking_msg_filtered','in_learn_person'])
     def execute(self, userdata):
         find=False
 
         if self.preempt_requested():
             return 'preempted'
-        
+    
         for user in userdata.tracking_msg.peopleSet :
-            if userdata.in_learn_person == user.targetId :
-                    userdata.tracking_msg_filtered=user
-                    find=True
-
+            print OKGREEN  + "userdata.in_learn_person.targetId == user.targetId:" + ENDC
+            print "if " + str( userdata.in_learn_person.targetId) + " == " + str( user.targetId)
+            if userdata.in_learn_person.targetId == user.targetId :
+                print FAIL + "*************** userdata.in_learn_person.targetId == user.targetId HAPPENED" + ENDC
+                userdata.tracking_msg_filtered=user
+                find=True
+                    
+        
         if find :
+            rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
-            if user.status<3 or user.status==5:
-                
+            if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
                 return 'occluded'
             else :
                 return 'find_it'
@@ -263,7 +267,7 @@ class FollowOperator(smach.StateMachine):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
-            input_keys=[])
+            input_keys=['in_learn_person'])
 
         
 
@@ -271,7 +275,7 @@ class FollowOperator(smach.StateMachine):
             self.userdata.old_status=0
             self.userdata.feadback=0 # that means that we don't have feadback
             self.userdata.standard_error='OK'
-            self.userdata.in_learn_person=1
+            #self.userdata.in_learn_person=1
             self.userdata.word_to_listen=None
             
             self.userdata.tts_wait_before_speaking=0
@@ -285,7 +289,7 @@ class FollowOperator(smach.StateMachine):
                                                'preempted':'preempted'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
-                                   topic_reader(topic_name='/people_tracker_node/peopleSet',
+                                   topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
                                                 'aborted':'READ_TRACKER_TOPIC',
@@ -312,7 +316,7 @@ class FollowOperator(smach.StateMachine):
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
                        no_follow(),
-                       transitions={'lost': 'lost','preempted':'preempted'})
+                       transitions={'lost': 'READ_TRACKER_TOPIC','preempted':'preempted'})
            
             smach.StateMachine.add('CALCULATE_GOAL',
                        calculate_goal(distToHuman),
