@@ -65,7 +65,7 @@ class follow_me_1st(smach.StateMachine):
         Follow
         CHECK_ELEVATOR
     """
-    def __init__(self, distToHuman=0.5):
+    def __init__(self, distToHuman=0.4):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted',
                                                     'aborted','operator_say_out'],
                                     input_keys=['in_learn_person'])
@@ -94,7 +94,7 @@ class follow_me_1st(smach.StateMachine):
                                 look_for_elevator())
                                 # here i have to listen if they say me to get out of the lift
                 sm.add('LISTEN_OPERATOR_FOR_EXIT_SENTENCE',
-                                ListenWordSM_Concurrent("exit"))
+                                ListenWordSM_Concurrent("exit elevator"))
                 
             
             smach.StateMachine.add('FOLLOW_AND_CHECKING', sm,

@@ -46,9 +46,9 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   tracker_people.msg
-   personArray.msg
-   person.msg
+   #tracker_people.msg
+  # personArray.msg
+  # person.msg
    check_elevator.msg  
  #Message2.msg
  )

@@ -21,11 +21,11 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/check_elevator/elevator_status",
                     "/sonar_base",
                     "/move_base/goal",
-                    "/people_tracker_node/peopleSet",
+                    "/pipol_tracker_node/peopleSet",
                     "/sonar_base","/scan_filtered","/amcl_pose",
                     ]
                     
-SERVICES_LIST_NAMES = ["/check_elevator","/reverse"]  # #################### Services #####################
+SERVICES_LIST_NAMES = ["/check_elevator/enable","/reverse"]  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",

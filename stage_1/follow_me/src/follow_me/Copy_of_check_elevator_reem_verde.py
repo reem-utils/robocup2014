@@ -111,7 +111,7 @@ class checkElevator():
                             self.ultra[1]=True
  
          
-        if (data.header.frame_id=='/base_sonar_10_link' or data.header.frame_id=='base_sonar_10_link'):
+        if (data.header.frame_id=='/base_sonar_08_link' or data.header.frame_id=='base_sonar_08_link'):
                             self.ultraSound[2]=data
                             self.ultra[2]=True
         
@@ -158,7 +158,7 @@ class checkElevator():
     def proces_ultra_sound(self):
         rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
         self.nUltra=0
-        if (self.ultra_sound_ready):
+        if (not self.ultra_sound_ready):
             self.ultra_status=False
         else :
            
@@ -176,11 +176,14 @@ class checkElevator():
                 #Rigth
             if self.ultraSound[3].range<RIGTH_DISTANCE :
                 self.nUltra=self.nUltra+1
-                
-            if self.ultra_door :
+            
+            if self.nUltra==4 :
                 self.ultra_status=True
             else :
-                self.ultra_status=False         
+                self.ultra_status=False
+                #rospy.loginfo(OKGREEN+str(self.ultraSound)+ENDC)
+                
+                        
                 
             
          
