@@ -33,20 +33,21 @@ LOST=3
 OKI=4
 
 
-FREQ_FIND=1 # publish a 2 HZ only if i send a goal
+FREQ_FIND=0.2 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
-DISTANCE_HUMAN=0.2
+#DISTANCE_HUMAN=0.2
 
 TIME_SPEACK_OCLUDED=5
-TIME_OCLUDED_SAY="o!! it's a long time that you are ocluded, thont lift whit not me"
+TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, don't leave without me"
 
 TIME_SPEACK_OK=15
-TIME_OK_SAY="whe are going good"
+TIME_OK_SAY="we are doing fine"
 
-TIME_NEAR_SAY="why you are not moving???"
+TIME_NEAR_SAY="why aren't you moving?"
 TIME_SPEACK_NEAR=15
 
+LOST_SENTENCE = "I'm sorry, I lost you"
 
 class init_var(smach.State):
     def __init__(self):
@@ -72,16 +73,16 @@ class filter_and_process(smach.State):
             return 'preempted'
     
         for user in userdata.tracking_msg.peopleSet :
-            print OKGREEN  + "userdata.in_learn_person.targetId == user.targetId:" + ENDC
-            print "if " + str( userdata.in_learn_person.targetId) + " == " + str( user.targetId)
+           # print OKGREEN  + "userdata.in_learn_person.targetId == user.targetId:" + ENDC
+           # print "if " + str( userdata.in_learn_person.targetId) + " == " + str( user.targetId)
             if userdata.in_learn_person.targetId == user.targetId :
-                print FAIL + "*************** userdata.in_learn_person.targetId == user.targetId HAPPENED" + ENDC
+            #    print FAIL + "*************** userdata.in_learn_person.targetId == user.targetId HAPPENED" + ENDC
                 userdata.tracking_msg_filtered=user
                 find=True
                     
         
         if find :
-            rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
+            #rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
             if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
                 return 'occluded'
@@ -127,7 +128,7 @@ class calculate_goal(smach.State):
 
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-        self.distanceToHuman=DISTANCE_HUMAN
+        #self.distanceToHuman=DISTANCE_HUMAN
         #Calculating vectors for the position indicated
         new_pose = Pose()
         
@@ -147,7 +148,7 @@ We want that if the person comes closer, the robot stays in the place.
 Thats why we make desired distance zero if person too close.
 """
 
-        distance_des = 0.3 #TODO: I DON? UNDERSTAND allwas it will be a movment
+        distance_des = 0.0 #TODO: I DON? UNDERSTAND allwas it will be a movment
         
         if position_distance >= self.distanceToHuman: 
             distance_des = position_distance - self.distanceToHuman
@@ -157,7 +158,7 @@ Thats why we make desired distance zero if person too close.
         else:
             rospy.loginfo(OKGREEN+" Person too close => not moving, just rotate"+ENDC)
             userdata.feadback=NEAR
-            rospy.logwarn("----neu feadback NEAR:  "+str(userdata.feadback))
+            rospy.logwarn("----neu feedback NEAR:  "+str(userdata.feadback))
         #atan2 will return a value inside (-Pi, +Pi) so we can compute the correct quadrant
         
         alfa = math.atan2(new_pose.position.y, new_pose.position.x)
@@ -172,7 +173,7 @@ Thats why we make desired distance zero if person too close.
         rospy.loginfo(' Degrees that REEM will rotate : ' + str(alfa_degree))
 
  
-        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        userdata.nav_to_coord_goal = [dist_vector.x, dist_vector.y, alfa]
                 
         if self.preempt_requested():
             return 'preempted'
@@ -263,7 +264,7 @@ class FollowOperator(smach.StateMachine):
     '''
     #Its an infinite loop track_Operator
 
-    def __init__(self, distToHuman=0.9,time_occluded=30):
+    def __init__(self, distToHuman=0.4,time_occluded=30):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
@@ -315,8 +316,8 @@ class FollowOperator(smach.StateMachine):
             
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
-                       no_follow(),
-                       transitions={'lost': 'READ_TRACKER_TOPIC','preempted':'preempted'})
+                       text_to_say(LOST_SENTENCE),
+                       transitions={'succeeded': 'lost','preempted':'preempted', 'aborted':'lost'})
            
             smach.StateMachine.add('CALCULATE_GOAL',
                        calculate_goal(distToHuman),

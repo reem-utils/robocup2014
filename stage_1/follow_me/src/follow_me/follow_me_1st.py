@@ -65,7 +65,7 @@ class follow_me_1st(smach.StateMachine):
         Follow
         CHECK_ELEVATOR
     """
-    def __init__(self, distToHuman=0.5):
+    def __init__(self, distToHuman=0.4):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted',
                                                     'aborted','operator_say_out'],
                                     input_keys=['in_learn_person'])

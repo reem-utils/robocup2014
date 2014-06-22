@@ -20,7 +20,7 @@ from util_states.topic_reader import topic_reader
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
 TIME_TO_SPECK=15 # this are secons
-SAY_GO_MIDLE="Please can you put in in the midel, i don't have a good vision of you"
+SAY_GO_MIDLE="Please come in front of me"
 
 
 # It's only becouse i can't import the file... i can't understand
@@ -92,7 +92,7 @@ class LearnPerson(smach.StateMachine):
 
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'SAY_LIFTIME',
+                                   transitions={'succeeded': 'READ_TRACKER_TOPIC',
                                                 'aborted': 'SAY_LIFTIME'})
             smach.StateMachine.add('SAY_LIFTIME',
                                    text_to_say(SAY_GO_MIDLE),
@@ -102,13 +102,13 @@ class LearnPerson(smach.StateMachine):
             smach.StateMachine.add('CONTROL_TIME',
                                    control_time(),
                                    transitions={'succeeded': 'READ_TRACKER_TOPIC',
-                                                'lif_time': 'INIT_VAR'})
+                                                'lif_time': 'SAY_LIFTIME'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
                                    topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'SELECT_ID',
-                                                'aborted':'INIT_VAR',
+                                                'aborted':'SAY_LIFTIME',
                                                 'preempted':'preempted'},
                                    remapping={'topic_output_msg': 'tracking_msg'})
 
