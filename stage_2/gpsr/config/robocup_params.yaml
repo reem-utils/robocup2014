@@ -29,3 +29,10 @@ loc_category:
         seating: ["armchair"]
         door: ["exit", "entrance"]
 
+kitchen_table_high: 1
+dinner_table_high: 1
+working_desk_high: 1
+
+
+
+
