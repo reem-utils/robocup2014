@@ -43,7 +43,7 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.in_learn_person=1
             smach.StateMachine.add('INTRO',
                                    text_to_say(START_FRASE),
-                                   transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER','aborted':'aborted'})
+                                   transitions={'succeeded': 'Listen','aborted':'INTRO'})
 
             smach.StateMachine.add('Listen',
                                    ListenWordSM_Concurrent("follow me"),

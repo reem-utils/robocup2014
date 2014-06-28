@@ -40,7 +40,7 @@ class navigation_back():
     def __init__(self):
         rospy.loginfo("Initializing reverse")
         
-        self.nav_pub= rospy.Publisher('/mobile_base_controller/cmd_vel', Twist)
+        self.nav_pub= rospy.Publisher('/key_vel', Twist)
         self.nav_srv = rospy.Service('/reverse',NavigationGoBack, self.nav_back_srv)
         self.odom_subs = rospy.Subscriber("/mobile_base_controller/odom", Odometry, self.check_Odometry)
         self.init_var()

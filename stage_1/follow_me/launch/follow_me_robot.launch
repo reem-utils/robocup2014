@@ -5,7 +5,7 @@
 	
 
 	<node pkg="follow_me"
-	      type="check_elevator.py"
+	      type="check_elevator_verde.py"
 	      name="CheckElevator_node">
 	
 	</node>
