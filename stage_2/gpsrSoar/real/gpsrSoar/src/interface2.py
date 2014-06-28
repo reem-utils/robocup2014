@@ -36,7 +36,9 @@ SKILLS TODO:
 -bring_to(person)            --> grasping -- TO TEST
 -bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
 find_object(object)         --> object detection --Faked
+-        faliable    --> not found
 --find_person(person)
+--        faliable    --> not found
 --point_at(poi) 
 --ask_name()
 follow(person)              --> follow me
@@ -117,6 +119,21 @@ def call_go_to(loc_name,world):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             out = sm.execute()     
+            
+            
+        if out=='aborted':
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN REACHING ' + loc_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -136,6 +153,15 @@ def call_guide_to(loc_name,world):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             sm.execute()
+            
+            
+        if out=='aborted':
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN REACHING ' + loc_name)
+            time.sleep(SLEEP_TIME)            
+            return "aborted"
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -251,13 +277,29 @@ def call_find_object(object_name): #TODO
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):      
-            #
+            ###
+            out = 'succeeded'
             object_position.header.frame_id = "base_link"
             object_position.pose.position.x = 0.5
             object_position.pose.position.z = 1.0
             object_position.pose.orientation.w = 1.0 
-            
+            ###
             tries = tries+1
+            
+            
+        if out=='aborted':
+            tosay = "I couldn't find the " + object_name + " you asked for. It isn't here. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN FINDING ' + object_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I couldn't find the " + object_name + " you asked for. It isn't there. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -290,10 +332,25 @@ def call_find_person(person_name): #TOTEST
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<1):       
             tries = tries+1
             sm = SearchPersonSM(person_name)
             out = sm.execute()
+            
+            
+        if out=='aborted':
+            tosay = "I couldn't find the person known as " + person_name + ". He isn't here. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN FINDING '+person_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I couldn't find the person known as " + person_name + ". He isn't there. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -552,7 +609,8 @@ def main(world):
                 print "SM return: %s \n\n" % (out) 
                 if out=="succeeded": 
                     command.AddStatusComplete()
-                
+                elif out=="aborted":
+                    command.AddStatusError()
                 else:
                     print "gpsrSoar interface: unknown ERROR"
                     exit(1)

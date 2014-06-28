@@ -29,24 +29,28 @@ OKGREEN = '\033[92m'
 class save_robot_position(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['pose_current'],
-                                output_keys=['nav_to_coord_goal'])
+                                input_keys=['current_robot_pose'],
+                                output_keys=['pose_current'])
 
 
     def execute(self, userdata):
-        
+        userdata.pose_current = userdata.current_robot_pose
+        rospy.loginfo(userdata.current_robot_pose)
         return 'succeeded'
     
 class set_robot_position(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['pose_current'],
-                                output_keys=['nav_to_coord_goal'])
+                                output_keys=[])
 
 
     def execute(self, userdata):
+        p = PoseWithCovarianceStamped()
+        p.pose = userdata.pose_current
+        rospy.loginfo(userdata.pose_current)
         self.initialpose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
-        self.initialpose_pub.publish(userdata.pose_current)
+        self.initialpose_pub.publish(p)
         return 'succeeded'
     
 class RobotInspectionSM(smach.StateMachine):
@@ -94,7 +98,7 @@ class RobotInspectionSM(smach.StateMachine):
                 'preempted': 'preempted'})    
           
             # Robot presentation: Little talk + wave gesture
-            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave", 10)]
+            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave", 10, True)]
             STATE_NAMES = ["say_presentation", "salute_wave"]
             outcome_map = {'succeeded': {"say_presentation": 'succeeded', "salute_wave": 'succeeded'}}
         
@@ -106,7 +110,7 @@ class RobotInspectionSM(smach.StateMachine):
             # Home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm('home'),
+                play_motion_sm(motion='home', skip_planning=True),
                 transitions={'succeeded': 'get_actual_pos', 'aborted': 'home_position', 'preempted': 'succeeded'})
            
             # Calculate the actual position
