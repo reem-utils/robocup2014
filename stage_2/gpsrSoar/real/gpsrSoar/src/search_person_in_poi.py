@@ -16,6 +16,7 @@ from face_states.recognize_face import recognize_face_concurrent
 from speech_states.say import text_to_say
 from manipulation_states.move_head_form import move_head_form
 from navigation_states.srv import *
+from httplib2 import Response
 
 
 
@@ -43,11 +44,7 @@ class Wait_search(smach.State):
             input_keys=[], 
             output_keys=[])
 
-    def execute(self, userdata):
-        if self.preempt_requested():
-            rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in Wait_search State')
-            return 'preempted'
-        
+    def execute(self, userdata):        
         rospy.sleep(1.5)
         rospy.logwarn('PREEMPT NOT REQUESTED -- Returning succeeded in Wait_search State')
         return 'succeeded'
@@ -60,10 +57,18 @@ class turn(smach.StateMachine):
             input_keys=[])
         
         self.angle= angle
+        self.iterations = 0
 
         with self:
             
             self.userdata.angle = self.angle
+            
+            def iterator(userdata, response):
+                self.iterations = self.iterations + 1
+                rospy.logwarn("ITERATIONS = " + str(self.iterations))
+                if self.iterations > 2:
+                    return 'preempted'
+                return 'succeeded'
                     
             def nav_turn_start(userdata, request):
                 turn_request = NavigationTurnRequest()
@@ -74,7 +79,8 @@ class turn(smach.StateMachine):
             smach.StateMachine.add('turn',
                                    ServiceState('/turn',
                                                 NavigationTurn,
-                                                request_cb = nav_turn_start),
+                                                request_cb = nav_turn_start,
+                                                response_cb = iterator),
                                    transitions={'succeeded':'succeeded','aborted' : 'turn','preempted':'preempted'})      
             
 
@@ -125,17 +131,20 @@ def child_term_cb(outcome_map):
     # terminate all running states if turn finished with outcome succeeded
     if outcome_map['turn'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Turn ends" + ENDC)
-        if outcome_map['say_search_faces'] != 'succeeded':        
-            return False
+#         if outcome_map['say_search_faces'] != 'succeeded':        
+#             return False
+    if outcome_map['turn'] == 'preempted':
+        rospy.loginfo(OKGREEN + "Turn ends" + ENDC)
+        return True
 
     # terminate all running states if BAR finished
     if outcome_map['find_faces'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
         return True
     
-    if outcome_map['TimeOut'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "TimeOut ends" + ENDC)
-        return True
+#     if outcome_map['TimeOut'] == 'succeeded':
+#         rospy.loginfo(OKGREEN + "TimeOut ends" + ENDC)
+#         return True
     
     if outcome_map['say_search_faces'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Say and Move Head ends" + ENDC)
@@ -145,13 +154,18 @@ def child_term_cb(outcome_map):
     return False
 
 def out_cb(outcome_map):
-    if outcome_map['find_faces'] == 'succeeded':
+    if outcome_map['find_faces'] == 'succeeded' :
         rospy.logwarn('Out_CB = Find Faces Succeeded')
-
         return 'succeeded'    
-    elif outcome_map['TimeOut'] == 'succeeded':
-        rospy.logwarn('Out_CB = TimeOut finished succeeded')
-        return 'endTime'    
+    
+    if outcome_map['turn'] == 'preempted':
+        rospy.logwarn('Out_CB = Find Faces Failed')
+        return 'aborted'    
+#     elif outcome_map['TimeOut'] == 'succeeded':
+#         rospy.logwarn('Out_CB = TimeOut finished succeeded')
+#         return 'endTime'  
+    elif outcome_map['say_search_faces'] == 'succeeded':
+        return 'preempted'
     else:
         rospy.logwarn('Out_CB = Else!')
         return 'aborted'
@@ -186,7 +200,7 @@ class SearchPersonSM(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['face','face_frame'],
                                      output_keys=['face', 'standard_error', 'face_frame'])
-
+        
         with self:
             self.userdata.name = person_name
             self.userdata.num_iterations = 0
@@ -195,7 +209,7 @@ class SearchPersonSM(smach.StateMachine):
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.tts_text = ''
             self.userdata.tts_lang = 'en_US'
-            
+                        
 
             smach.StateMachine.add(
                                    'Say_Searching',
@@ -216,7 +230,7 @@ class SearchPersonSM(smach.StateMachine):
                 smach.Concurrence.add('turn', turn(120))
           
                 # Move head
-                smach.Concurrence.add('TimeOut', TimeOut(1000))
+                #smach.Concurrence.add('TimeOut', TimeOut(1000))
                  
                 # Search for face
                 smach.Concurrence.add('find_faces', recognize_face_concurrent())
@@ -226,8 +240,8 @@ class SearchPersonSM(smach.StateMachine):
             
             smach.StateMachine.add('Concurrence', sm_conc, 
                                 transitions={'succeeded':'succeeded', 
-                                             'aborted':'Say_Changing_Poi', 
-                                             'endTime': 'Say_Changing_Poi',
+                                             'aborted':'aborted', 
+                                             'endTime': 'aborted',
                                              'preempted':'Say_Changing_Poi'})
 
                   
