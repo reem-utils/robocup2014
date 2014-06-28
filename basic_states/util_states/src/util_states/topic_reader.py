@@ -40,7 +40,7 @@ class topic_reader_state(smach.State):
                     return 'preempted'
                 return 'aborted'
         else :
-            self.subs=rospy.Subscriber(self.topic_name,self.topic_type, self.callback_topic)
+            self.subs=rospy.Subscriber(self.topic_name,self.topic_type, self.callback_topic, queue_size=1)
             
             while not self.received_msg and (rospy.get_rostime().secs - self.time_init.secs) < self.topic_time_out:
                 rospy.sleep(0.5)

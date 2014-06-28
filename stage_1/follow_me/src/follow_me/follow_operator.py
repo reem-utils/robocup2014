@@ -19,8 +19,14 @@ from navigation_states.nav_to_coord import nav_to_coord
 from navigation_states.nav_to_coord_concurrent import nav_to_coord_concurrent
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
-from follow_me.msg import personArray,person
+from pipol_tracker_pkg.msg import personArray,person
 from speech_states.say import text_to_say
+from tornado.options import define
+from follow_me_learn_random import LearnPersonRandom
+
+
+
+
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -33,20 +39,21 @@ LOST=3
 OKI=4
 
 
-FREQ_FIND=1 # publish a 2 HZ only if i send a goal
+FREQ_FIND=0.5 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
-DISTANCE_HUMAN=0.2
+DISTANCE_HUMAN=0.6
 
 TIME_SPEACK_OCLUDED=5
-TIME_OCLUDED_SAY="o!! it's a long time that you are ocluded, thont lift whit not me"
+TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, do not  leave without me"
 
 TIME_SPEACK_OK=15
-TIME_OK_SAY="whe are going good"
+TIME_OK_SAY="nice to follow you "
 
-TIME_NEAR_SAY="why you are not moving???"
+TIME_NEAR_SAY="why you do not move?"
 TIME_SPEACK_NEAR=15
 
+LOST_SENTENCE = "O you are going so fast, i start been losed  "
 
 class init_var(smach.State):
     def __init__(self):
@@ -63,23 +70,27 @@ class init_var(smach.State):
 class filter_and_process(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['find_it','not_find','occluded','preempted'],
-                             input_keys=['tracking_msg','in_learn_person'],
+                             input_keys=['tracking_msg','in_learn_person', 'tracking_msg_filtered'],
                              output_keys=['tracking_msg_filtered','in_learn_person'])
     def execute(self, userdata):
         find=False
 
         if self.preempt_requested():
             return 'preempted'
-        
+    
         for user in userdata.tracking_msg.peopleSet :
-            if userdata.in_learn_person == user.targetId :
-                    userdata.tracking_msg_filtered=user
-                    find=True
-
+           # print OKGREEN  + "userdata.in_learn_person.targetId == user.targetId:" + ENDC
+           # print "if " + str( userdata.in_learn_person.targetId) + " == " + str( user.targetId)
+            if userdata.in_learn_person.targetId == user.targetId :
+            #    print FAIL + "*************** userdata.in_learn_person.targetId == user.targetId HAPPENED" + ENDC
+                userdata.tracking_msg_filtered=user
+                find=True
+                    
+        
         if find :
+            #rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
-            if user.status<3 or user.status==5:
-                
+            if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
                 return 'occluded'
             else :
                 return 'find_it'
@@ -108,7 +119,7 @@ class occluded_person(smach.State):
     def execute(self, userdata):
             userdata.feadback=OCLUDED
             rospy.loginfo("i'm in dummy occluded")
-            rospy.sleep(FREQ_NOT_FIND)
+            #rospy.sleep(FREQ_NOT_FIND)
             if self.preempt_requested():
                 return 'preempted'
             return 'occluded'
@@ -143,7 +154,7 @@ We want that if the person comes closer, the robot stays in the place.
 Thats why we make desired distance zero if person too close.
 """
 
-        distance_des = 0.3 #TODO: I DON? UNDERSTAND allwas it will be a movment
+        distance_des = 0.0 #TODO: I DON? UNDERSTAND allwas it will be a movment
         
         if position_distance >= self.distanceToHuman: 
             distance_des = position_distance - self.distanceToHuman
@@ -153,7 +164,7 @@ Thats why we make desired distance zero if person too close.
         else:
             rospy.loginfo(OKGREEN+" Person too close => not moving, just rotate"+ENDC)
             userdata.feadback=NEAR
-            rospy.logwarn("----neu feadback NEAR:  "+str(userdata.feadback))
+            rospy.logwarn("----neu feedback NEAR:  "+str(userdata.feadback))
         #atan2 will return a value inside (-Pi, +Pi) so we can compute the correct quadrant
         
         alfa = math.atan2(new_pose.position.y, new_pose.position.x)
@@ -168,7 +179,7 @@ Thats why we make desired distance zero if person too close.
         rospy.loginfo(' Degrees that REEM will rotate : ' + str(alfa_degree))
 
  
-        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        userdata.nav_to_coord_goal = [dist_vector.x, dist_vector.y, alfa]
                 
         if self.preempt_requested():
             return 'preempted'
@@ -259,11 +270,11 @@ class FollowOperator(smach.StateMachine):
     '''
     #Its an infinite loop track_Operator
 
-    def __init__(self, distToHuman=0.9,time_occluded=30):
+    def __init__(self, distToHuman=0.4,time_occluded=30,feedback=True):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
-            input_keys=[])
+            input_keys=['in_learn_person'])
 
         
 
@@ -271,7 +282,7 @@ class FollowOperator(smach.StateMachine):
             self.userdata.old_status=0
             self.userdata.feadback=0 # that means that we don't have feadback
             self.userdata.standard_error='OK'
-            self.userdata.in_learn_person=1
+            #self.userdata.in_learn_person=1
             self.userdata.word_to_listen=None
             
             self.userdata.tts_wait_before_speaking=0
@@ -285,7 +296,7 @@ class FollowOperator(smach.StateMachine):
                                                'preempted':'preempted'})
 
             smach.StateMachine.add('READ_TRACKER_TOPIC',
-                                   topic_reader(topic_name='/people_tracker_node/peopleSet',
+                                   topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'FILTER_AND_PROCESS',
                                                 'aborted':'READ_TRACKER_TOPIC',
@@ -298,22 +309,27 @@ class FollowOperator(smach.StateMachine):
             smach.StateMachine.add('FILTER_AND_PROCESS',
                                    filter_and_process(),
                                    transitions={'find_it': 'CALCULATE_GOAL',
-                                                'occluded':'OCCLUDED_PERSON',
+                                                'occluded':'OCCLUDED_PERSON', 
                                                 'not_find': 'I_DONT_KNOW',
                                                 'preempted':'preempted'})
             
             # this state now it's dummy, maybe we will like to do something if it's to long time
             smach.StateMachine.add('OCCLUDED_PERSON',
                        occluded_person(),
-                       transitions={'occluded': 'DEBUG',
+                       transitions={'occluded': 'CALCULATE_GOAL', # TODO avans i havia 'occluded':'DEBUG'
                                     'succeeded':'CALCULATE_GOAL',
                                     'preempted':'preempted'})
             
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
-                       no_follow(),
-                       transitions={'lost': 'lost','preempted':'preempted'})
-           
+                       text_to_say(LOST_SENTENCE),
+                       transitions={'succeeded': 'LEARN_RANDOM','preempted':'preempted', 'aborted':'LEARN_RANDOM'})
+            
+            smach.StateMachine.add('LEARN_RANDOM',
+                                   LearnPersonRandom(),
+                                   transitions={'succeeded':'DEBUG','preempted':'preempted','aborted':'lost'})
+            
+
             smach.StateMachine.add('CALCULATE_GOAL',
                        calculate_goal(distToHuman),
                        transitions={'succeeded': 'SEND_GOAL',
@@ -326,7 +342,13 @@ class FollowOperator(smach.StateMachine):
             
             smach.StateMachine.add('FREQ_SENDING',
                        freq_goal(),
-                       transitions={'succeeded':'DEBUG','preempted':'preempted'})
+                       transitions={'succeeded':'DEBUG','preempted':'preempted'}) # todo before transitions={'succeeded':'DEBUG','preempted':'preempted'})
+
+            # it have to desaper 
+            smach.StateMachine.add('DEBUG',
+                       debug(),
+                       transitions={'succeeded': 'CREATE_FEADBACK','preempted':'preempted'})    
+
             
             smach.StateMachine.add('CREATE_FEADBACK',
                        feadback(),
@@ -337,7 +359,4 @@ class FollowOperator(smach.StateMachine):
                        transitions={'succeeded':'READ_TRACKER_TOPIC','aborted':'SAY_FEADBACK',
                                     'preempted':'preempted'})
             
-            # it have to desaper 
-            smach.StateMachine.add('DEBUG',
-                       debug(),
-                       transitions={'succeeded': 'CREATE_FEADBACK','preempted':'preempted'})                       
+                   

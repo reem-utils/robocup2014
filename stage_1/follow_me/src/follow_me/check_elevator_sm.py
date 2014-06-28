@@ -217,7 +217,8 @@ class look_for_elevator_door(smach.StateMachine):
             
             smach.StateMachine.add('READ_AUX',
                                    read_topic(),
-                                   transitions={'succeeded': 'CHECK_DOOR_STATUS', 'preempted':'preempted'})            
+                                   transitions={'succeeded': 'CHECK_DOOR_STATUS', 'preempted':'preempted','aborted':'READ_AUX'})    
+       
             smach.StateMachine.add('CHECK_DOOR_STATUS',
                                    check_door_status(),
                                    transitions={'DOOR': 'RESET_COUNT',

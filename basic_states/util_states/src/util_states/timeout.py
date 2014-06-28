@@ -37,8 +37,6 @@ class TimeOut(smach.State):
         #Priority in init
         userdata.wait_time = self.wait_time if self.wait_time else userdata.wait_time  
         
-        time_now = rospy.Time.now()
-        
         #while (userdata.wait_time < (time_now.secs - self.time_init.secs)):            
         while not (userdata.wait_time < (rospy.Time.now().secs - self.time_init.secs)):
             userdata.standard_error="Time hasn't passed"

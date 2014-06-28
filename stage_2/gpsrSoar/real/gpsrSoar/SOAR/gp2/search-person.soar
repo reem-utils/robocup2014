@@ -72,3 +72,32 @@ sp {gp*apply*search-person*remove-search-person
 }
 
 
+
+
+
+
+
+
+
+
+sp {gp*apply*fail-search-person*remove-search-person
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^person <p>)
+   (<op> ^name search-person
+         ^persToSearch <pop>
+          ^toLoc <rloc>)
+  
+   (<rloc> ^id <rlocid>)
+   (<pop> ^id <popid>)
+   (<p> ^id <popid>
+        ^locId <plocid>
+        ^near no)
+   
+   (<out> ^search-person <st>)
+   (<st> ^status error)
+-->
+
+   (<out> ^search-person <st> -)
+   (<out> ^achieved.true 1)
+}

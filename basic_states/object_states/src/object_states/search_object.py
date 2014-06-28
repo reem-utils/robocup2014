@@ -14,8 +14,8 @@ import math
 
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
-from object_grasping_states.recognize_object import recognize_object
-from object_grasping_states.get_object_information import GetObjectInfoSM
+from object_states.recognize_object import recognize_object
+from object_states.get_object_information import GetObjectInfoSM
 
 class prepareData(smach.State):
     

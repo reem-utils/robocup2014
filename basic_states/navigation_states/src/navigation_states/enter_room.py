@@ -20,7 +20,9 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.sleeper import Sleeper
 from sensor_msgs.msg import LaserScan
 from speech_states.say import text_to_say
- 
+from speed_limit.msg import DisableActionGoal
+from odom_moving.srv import Straight, StraightRequest
+
  
 class prepareData(smach.State):
     
@@ -40,6 +42,33 @@ class prepareData(smach.State):
         userdata.nav_to_poi_name = self.poi_name if self.poi_name else userdata.nav_to_poi_name   
         
         return 'succeeded'
+
+class pass_door(smach.State):
+    
+    def __init__(self):
+        
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                            input_keys=[], output_keys=[])
+        self.publisher = rospy.Publisher('/speed_limit/disable/goal', DisableActionGoal)
+        self.straight = rospy.ServiceProxy('/straight_nav', Straight)
+        
+    def execute(self, userdata):
+                     
+        # Deactivate the speed limit
+
+        g = DisableActionGoal()
+        g.goal.duration = 15.0
+        self.publisher.publish(g)
+        # Send goal to odom_nav
+
+        self.straight.wait_for_service()
+        sr = StraightRequest()
+        sr.enable = True
+        sr.meters = 2.0
+        self.straight.call(sr)
+        
+        return 'succeeded'
+
 
 class check_door_status(smach.State):
     def __init__(self):
@@ -112,6 +141,7 @@ class EnterRoomSM(smach.StateMachine):
             self.userdata.tts_lang = None
             self.userdata.manip_motion_to_play = None
             self.userdata.manip_time_to_play = None
+            self.userdata.skip_planning = False
         
             smach.StateMachine.add('PrepareData',
                prepareData(poi_name),
@@ -160,12 +190,19 @@ class EnterRoomSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_enter_room',
                 text_to_say("I am going to enter the room"),
-                transitions={'succeeded': 'enter_room', 'aborted': 'enter_room'})
+                transitions={'succeeded': 'pass_door', 'aborted': 'pass_door'})
 
+            #We pass the door
+            smach.StateMachine.add(
+                'pass_door',
+                pass_door(),
+                transitions={'succeeded': 'enter_room', 'aborted': 'pass_door', 'preempted': 'preempted'})
+            
             # Go to the poi in the other site of the door
             smach.StateMachine.add(
                 'enter_room',
                 nav_to_poi(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'enter_room', 'preempted': 'preempted'})
 
+  
 

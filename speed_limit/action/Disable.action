@@ -1,0 +1,10 @@
+# This action is intended to disable speed_limit
+# for a set amount of seconds.
+# When disabled, speed_limit will directly forward
+# velocity commands untouched
+
+
+float32 duration # [s] for how long to disable speed_limit
+
+---
+---

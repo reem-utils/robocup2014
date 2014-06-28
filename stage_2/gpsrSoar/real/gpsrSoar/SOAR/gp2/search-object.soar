@@ -85,5 +85,35 @@ sp {gp*elaborate*find*object
         ^object.id <it>)
 -->
    (<s> ^operator <op1> >
-        ^operator <op2> -)}
+        ^operator <op2> -)
+}
          
+
+
+
+
+
+
+sp {gp*apply*fail-search-object*remove-search-object
+   (state <s> ^operator <op>
+              ^io.output-link <out>
+              ^object <obj>)
+   (<op> ^name search-object
+         ^objToSearch <pobj>
+         ^toLoc <rloc>)
+   
+   (<rloc> ^id <rlocid>)
+   (<pobj> ^id <idobj>)
+   (<obj> ^locId <objlocid>
+          ^id <idobj>)
+
+   
+   (<out> ^search-object <st>)
+   (<st> ^status error)
+-->
+
+   (<out> ^search-object <st> -)
+   (<out> ^achieved.true 1)
+}
+
+

@@ -5,21 +5,11 @@
 	
 
 	<node pkg="follow_me"
-	      type="check_elevator.py"
-	      name="CheckElevator_node">
+	      type="follow_me_launcher.py"
+	      name="follow_me">
 	
 	</node>
-	<node pkg="navigation_states"
-	      type="reverse_node.py"
-	      name="NavigationBack_node">
-	</node>
 	
-	<!-- fake moke-->
-	<node pkg="person_detection"
-	      type="follow_me_mock_faces.py"
-	      name="Follow_me_Service_node">
-  	      
-	</node>
  
 
 </launch>

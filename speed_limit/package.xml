@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>speed_limit</name>
+  <version>0.1.0</version>
+  <description>Filter velocity commands to avoid collisions with obstacles.</description>
+
+  <maintainer email="paul.mathieu@pal-robotics.com">Paul Mathieu</maintainer>
+  <author email="paul.mathieu@pal-robotics.com">Paul Mathieu</author>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+</package>

@@ -24,7 +24,7 @@ def main():
         
         smach.StateMachine.add(
             'nav_poi_test',
-            nav_to_poi("point_room_one"),
+            nav_to_poi("kitchen"),
             transitions={'succeeded': 'succeeded','aborted' : 'aborted'})
         
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
