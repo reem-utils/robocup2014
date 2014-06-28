@@ -23,14 +23,14 @@ from math import radians, degrees
 class createPlayMotionGoal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
-                             input_keys=['manip_motion_to_play'],
+                             input_keys=['manip_motion_to_play','skip_planning'],
                              output_keys=['play_motion_sm_goal'])
 
     def execute(self, userdata):
         play_goal = PlayMotionGoal()
         play_goal.motion_name = userdata.manip_motion_to_play
         #play_goal.reach_time.secs = userdata.manip_time_to_play
-        play_goal.skip_planning = False
+        play_goal.skip_planning = userdata.skip_planning
         userdata.play_motion_sm_goal = play_goal
         
         return 'succeeded'   
@@ -38,12 +38,14 @@ class createPlayMotionGoal(smach.State):
 
 class prepareData(smach.State):
     
-    def __init__(self, motion, time=4.0):
+    def __init__(self, motion, time=4.0, skip_planning=False):
         
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                            input_keys=['manip_motion_to_play'], output_keys=['manip_motion_to_play'])
+                            input_keys=['manip_motion_to_play','skip_planning'], 
+                            output_keys=['manip_motion_to_play','skip_planning'])
         self.motion = motion
         self.time = time
+        self.skip = skip_planning
         
     def execute(self, userdata):
            
@@ -51,9 +53,13 @@ class prepareData(smach.State):
             rospy.logerr("Motion isn't set")
             return 'aborted'
         
+        if not self.skip and not userdata.skip_planning:
+            rospy.logerr("Skip_planning isn't set")
+            return 'aborted'
+                
         #Priority in init
         userdata.manip_motion_to_play = self.motion if self.motion else userdata.manip_motion_to_play   
-       
+        userdata.skip_planning = self.skip if self.skip else userdata.skip_planning
         return 'succeeded'
     
 class play_motion_sm(smach.StateMachine):
@@ -77,16 +83,16 @@ class play_motion_sm(smach.StateMachine):
     
         Nothing must be taken into account to use this SM.
     """
-    def __init__(self, motion = None, time = None):
+    def __init__(self, motion = None, time = None, skip_planning=False):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['manip_motion_to_play'],
+                                    input_keys=['manip_motion_to_play','skip_planning'],
                                     output_keys=['standard_error'])
         rospy.loginfo('Play Motion StateMachine')
         with self:
             
             #Prepare Play Motion Goal    
             smach.StateMachine.add('PrepareData',
-                                   prepareData(motion, time),
+                                   prepareData(motion, time, skip_planning),
                                    transitions={'succeeded':'Prepare_play_motion_goal', 'aborted':'aborted'})
             
             smach.StateMachine.add('Prepare_play_motion_goal',

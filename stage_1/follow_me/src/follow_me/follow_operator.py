@@ -21,6 +21,12 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
 from pipol_tracker_pkg.msg import personArray,person
 from speech_states.say import text_to_say
+from tornado.options import define
+from follow_me_learn_random import LearnPersonRandom
+
+
+
+
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -33,21 +39,21 @@ LOST=3
 OKI=4
 
 
-FREQ_FIND=0.2 # publish a 2 HZ only if i send a goal
+FREQ_FIND=0.5 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
-#DISTANCE_HUMAN=0.2
+DISTANCE_HUMAN=0.6
 
 TIME_SPEACK_OCLUDED=5
-TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, don't leave without me"
+TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, do not  leave without me"
 
 TIME_SPEACK_OK=15
-TIME_OK_SAY="we are doing fine"
+TIME_OK_SAY="nice to follow you "
 
-TIME_NEAR_SAY="why aren't you moving?"
+TIME_NEAR_SAY="why you do not move?"
 TIME_SPEACK_NEAR=15
 
-LOST_SENTENCE = "I'm sorry, I lost you"
+LOST_SENTENCE = "O you are going so fast, i start been losed  "
 
 class init_var(smach.State):
     def __init__(self):
@@ -113,7 +119,7 @@ class occluded_person(smach.State):
     def execute(self, userdata):
             userdata.feadback=OCLUDED
             rospy.loginfo("i'm in dummy occluded")
-            rospy.sleep(FREQ_NOT_FIND)
+            #rospy.sleep(FREQ_NOT_FIND)
             if self.preempt_requested():
                 return 'preempted'
             return 'occluded'
@@ -128,7 +134,7 @@ class calculate_goal(smach.State):
 
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-        #self.distanceToHuman=DISTANCE_HUMAN
+        self.distanceToHuman=DISTANCE_HUMAN
         #Calculating vectors for the position indicated
         new_pose = Pose()
         
@@ -264,7 +270,7 @@ class FollowOperator(smach.StateMachine):
     '''
     #Its an infinite loop track_Operator
 
-    def __init__(self, distToHuman=0.4,time_occluded=30):
+    def __init__(self, distToHuman=0.4,time_occluded=30,feedback=True):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
@@ -303,22 +309,27 @@ class FollowOperator(smach.StateMachine):
             smach.StateMachine.add('FILTER_AND_PROCESS',
                                    filter_and_process(),
                                    transitions={'find_it': 'CALCULATE_GOAL',
-                                                'occluded':'OCCLUDED_PERSON',
+                                                'occluded':'OCCLUDED_PERSON', 
                                                 'not_find': 'I_DONT_KNOW',
                                                 'preempted':'preempted'})
             
             # this state now it's dummy, maybe we will like to do something if it's to long time
             smach.StateMachine.add('OCCLUDED_PERSON',
                        occluded_person(),
-                       transitions={'occluded': 'DEBUG',
+                       transitions={'occluded': 'CALCULATE_GOAL', # TODO avans i havia 'occluded':'DEBUG'
                                     'succeeded':'CALCULATE_GOAL',
                                     'preempted':'preempted'})
             
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
                        text_to_say(LOST_SENTENCE),
-                       transitions={'succeeded': 'lost','preempted':'preempted', 'aborted':'lost'})
-           
+                       transitions={'succeeded': 'LEARN_RANDOM','preempted':'preempted', 'aborted':'LEARN_RANDOM'})
+            
+            smach.StateMachine.add('LEARN_RANDOM',
+                                   LearnPersonRandom(),
+                                   transitions={'succeeded':'DEBUG','preempted':'preempted','aborted':'lost'})
+            
+
             smach.StateMachine.add('CALCULATE_GOAL',
                        calculate_goal(distToHuman),
                        transitions={'succeeded': 'SEND_GOAL',
@@ -331,7 +342,13 @@ class FollowOperator(smach.StateMachine):
             
             smach.StateMachine.add('FREQ_SENDING',
                        freq_goal(),
-                       transitions={'succeeded':'DEBUG','preempted':'preempted'})
+                       transitions={'succeeded':'DEBUG','preempted':'preempted'}) # todo before transitions={'succeeded':'DEBUG','preempted':'preempted'})
+
+            # it have to desaper 
+            smach.StateMachine.add('DEBUG',
+                       debug(),
+                       transitions={'succeeded': 'CREATE_FEADBACK','preempted':'preempted'})    
+
             
             smach.StateMachine.add('CREATE_FEADBACK',
                        feadback(),
@@ -342,7 +359,4 @@ class FollowOperator(smach.StateMachine):
                        transitions={'succeeded':'READ_TRACKER_TOPIC','aborted':'SAY_FEADBACK',
                                     'preempted':'preempted'})
             
-            # it have to desaper 
-            smach.StateMachine.add('DEBUG',
-                       debug(),
-                       transitions={'succeeded': 'CREATE_FEADBACK','preempted':'preempted'})                       
+                   

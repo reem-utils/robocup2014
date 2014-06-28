@@ -2,7 +2,7 @@ ASR_LOOP: True
 ASR_ON: "False"
 GRAMATICA: "robocup/general"
 
-sentence: "find me"
+sentence: "bring me a coke"
 sentence0: "retrieve the coke from the sofa, and leave the apartment"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
