@@ -36,7 +36,7 @@ class GetPoseSubscribe(smach.State):
 								pose_current.pose.pose.orientation.w])
 			userdata.standard_error = "OK"
 			userdata.pose_current = pose_current
-			
+			rospy.loginfo("Robot Pose: [" + str(pose_current.pose) +"] + YAW: [" + str(userdata.current_robot_yaw)+ "]")
 			return 'succeeded'
 		except rospy.ROSException:
 			userdata.standard_error = "get_current_robot_pose : Time_out getting /amcl_pose"
@@ -74,7 +74,19 @@ class get_current_robot_pose(smach.StateMachine):
 			
 			
 			
-			
-			
-			
-			
+
+def main():
+	rospy.loginfo('Current Pose Node')
+	rospy.init_node('current_pose_node')
+	sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+	with sm:
+		smach.StateMachine.add(
+            'gesture_state',
+            get_current_robot_pose(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+	sm.execute()
+	rospy.spin()
+
+if __name__=='__main__':
+	main()

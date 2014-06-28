@@ -13,7 +13,7 @@ OKGREEN = '\033[92m'
 
 
 from speech_states.say import text_to_say
-from speech_states.listen_and_check_word import ListenWordSM
+from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from follow_learn import LearnPerson
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
@@ -21,8 +21,8 @@ from follow_learn import LearnPerson
 
 FOLLOW_GRAMMAR_NAME = 'robocup/followme'
 
-START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Please come a bit closer if you are too far, then Please stay still while I learn how you are."
-LEARNED_PERSON_FRASE = "OK,  i  am ready to  follow you!"
+START_FOLLOW_FRASE = "Ok, I'll follow you wherever you want. Stay in front of me while I learn how you look like."
+LEARNED_PERSON_FRASE = "OK,  I  am ready to  follow you!"
 START_FRASE="Hello, my name is REEM! What do you want me to do today?"
 
 
@@ -43,10 +43,10 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.in_learn_person=1
             smach.StateMachine.add('INTRO',
                                    text_to_say(START_FRASE),
-                                   transitions={'succeeded': 'Listen','aborted':'aborted'})
+                                   transitions={'succeeded': 'Listen','aborted':'INTRO'})
 
             smach.StateMachine.add('Listen',
-                                   ListenWordSM("follow me"),
+                                   ListenWordSM_Concurrent("follow me"),
                                    transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
                                                 'aborted': 'Listen'})
           

@@ -25,15 +25,6 @@ ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-class DummyStateMachine(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'])
-
-    def execute(self, userdata):
-        print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
-
-        rospy.sleep(1)
-        return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_emergency(smach.State):
@@ -50,27 +41,6 @@ class prepare_poi_emergency(smach.State):
 
         return 'succeeded'
 
-class prepare_tts(smach.State):
-    def __init__(self, tts_text_phrase):
-        smach.State.__init__(self, 
-            outcomes=['succeeded','aborted', 'preempted'], 
-            output_keys=['tts_text']) 
-        self.tts_text_phrase_in = tts_text_phrase
-    def execute(self, userdata):
-        userdata.tts_text = self.tts_text_phrase_in
-
-        return 'succeeded'
-
-class set_home_position(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, 
-            outcomes=['succeeded','aborted', 'preempted'], 
-            output_keys=['manip_motion_to_play','manip_time_to_play']) 
-    def execute(self, userdata):
-        userdata.manip_motion_to_play = 'home'
-        userdata.manip_time_to_play = 4.0
-        return 'succeeded'
-    
 
 # Class that prepare the value need for nav_to_poi
 class prepare_poi_person_emergency(smach.State):
@@ -137,11 +107,7 @@ class emergency_situation_sm(smach.StateMachine):
             #Prepare the data for the speech: language and time to wait
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.tts_lang = 'en_US'
-#             # TOO: The next to states can be done in a single one
-#             smach.StateMachine.add(
-#                 'Prepare_TTS_1',
-#                 prepare_tts("Now I am going to enter the Room to help people in need."),
-#                 transitions={'succeeded':'Say_Ready'})
+
             smach.StateMachine.add(
                 'Say_Ready',
                 text_to_say('Emergency Situation Test is going to Start. Now I am going to enter the Room to help people in need.'),
@@ -212,7 +178,7 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                         'Get_Person_Desired_Object',
                         Get_Person_Desired_Object(),
-                        transitions={'succeeded':'Prepare_home', 'aborted':'Get_Person_Desired_Object', 'preempted':'Prepare_home'})
+                        transitions={'succeeded':'Ambulance_SM', 'aborted':'Get_Person_Desired_Object', 'preempted':'Ambulance_SM'})
 
             #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
@@ -223,5 +189,4 @@ class emergency_situation_sm(smach.StateMachine):
             
             
             
-            
-            
+        

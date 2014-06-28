@@ -13,6 +13,7 @@ import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
 from hri_states.search_wave_sm import Search_Wave_SM
+from manipulation_states.move_head_form import move_head_form
 import operator
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -35,12 +36,12 @@ class Prepare_Data(smach.State):
 
         auxi = aux_pois.values()
         sorted_params = sorted(auxi, key=operator.itemgetter(2))
-        
+        final_params = []
         for poi_aux in sorted_params:
             str(poi_aux).replace('_',' ')
-            userdata.possible_pois.append(poi_aux[1])
-        
-        userdata.possible_pois = aux_pois.keys()
+            final_params.append(poi_aux[1])
+        final_params.reverse()
+        userdata.possible_pois = final_params
         
         rospy.sleep(1)
         return 'succeeded'
@@ -70,6 +71,7 @@ class Select_Possible_Poi(smach.State):
         print "POIS:: ----- " + str(userdata.possible_pois)
         
         aux_possible = userdata.possible_pois.pop()
+        
         
         userdata.nav_to_poi_name_possible = aux_possible
         rospy.loginfo("Possible Location POI:: " + str(aux_possible))
@@ -142,9 +144,20 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
             smach.StateMachine.add(
                 'Search_Wave',
                 Search_Wave_SM(head_position='down',text_for_wave_searching='Where are you? I am trying to find and help you.'),
-                transitions={'succeeded':'Prepare_Output_Search', 'preempted':'preempted', 
+                transitions={'succeeded':'Normal_head_Out', 'preempted':'preempted', 
                              'aborted':'aborted', 
-                             'end_searching':'Search_Emergency'})
+                             'end_searching':'Normal_head'})
+            
+            smach.StateMachine.add(
+                                   'Normal_head_Out',
+                                   move_head_form(head_left_right='center', head_up_down='normal'),
+                                   transitions={'succeeded':'Prepare_Output_Search', 'preempted':'Prepare_Output_Search', 
+                                                'aborted':'Prepare_Output_Search'})
+            smach.StateMachine.add(
+                                   'Normal_head',
+                                   move_head_form(head_left_right='center', head_up_down='normal'),
+                                   transitions={'succeeded':'Search_Emergency', 'preempted':'Search_Emergency', 
+                                                'aborted':'Search_Emergency'})
             
             smach.StateMachine.add(
                 'Prepare_Output_Search',

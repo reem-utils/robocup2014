@@ -18,6 +18,7 @@ from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 from smach_ros.simple_action_state import SimpleActionState
 from manipulation_states.move_head import move_head
+from manipulation_states.move_head_form import move_head_form
 
 
 def main():
@@ -25,10 +26,15 @@ def main():
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:
-        sm.userdata.move_head_pose = [0.1, 1]        
+        #sm.userdata.move_head_pose = [-1, 0.1]
+        #sm.userdata.move_head_pose = [-0.5, 0.1] Mid Right
+        #sm.userdata.move_head_pose = [0.5, 0.1] Mid Left
+        #sm.userdata.move_head_pose = [1, 0.1] Total Left
+        #sm.userdata.move_head_pose = [0.1, 1] Head Down 
+        #sm.userdata.move_head_pose = [0.0, 0.1] Head Normal front
         smach.StateMachine.add(
-            'dummy_state',
-            move_head(),
+            'move_head',
+            move_head_form('mid_right', 'normal'),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
         
 
@@ -36,4 +42,5 @@ def main():
     rospy.spin()
 
 if __name__=='__main__':
+    rospy.init_node('move_head_node')
     main()

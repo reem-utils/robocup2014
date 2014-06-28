@@ -39,7 +39,7 @@ class pick_place_error(smach.State):
         return 'aborted'
 
 def main():
-    rospy.init_node('pick_place_test')
+    rospy.init_node('pick_place_node')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 

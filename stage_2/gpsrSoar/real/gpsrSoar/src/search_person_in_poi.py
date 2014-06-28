@@ -2,13 +2,13 @@
 '''
 Created on 08/03/2014
 
-@author: Sergi Xavier Ubach Pallàs
+@author: Sergi Xavier Ubach Pallas
 @email: sxubach@gmail.com
 
 '''
 import rospy
 import smach
-from navigation_states.nav_to_poi import nav_to_poi
+from navigation_states.turn import turn
 from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
 from face_states.recognize_face import recognize_face_concurrent
@@ -34,31 +34,6 @@ class DummyStateMachine(smach.State):
         rospy.sleep(1)
         return 'succeeded'
 
-# class prepare_poi(smach.State):
-#     def __init__(self):
-#         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-#                                 input_keys=['num_iterations'],
-#                                 output_keys=['nav_to_poi_name', 'num_iterations', 'standard_error'])
-# 
-#     def execute(self, userdata):    
-#         
-#         if userdata.num_iterations > 2 :
-#             return 'aborted'
-#         
-#         if userdata.num_iterations % 3 == 0:
-#             userdata.nav_to_poi_name = "point_room_one"
-#             rospy.loginfo(OKGREEN + "Point_room_one" + ENDC)
-#         elif userdata.num_iterations % 3 == 1: 
-#             userdata.nav_to_poi_name = "point_room_two"
-#             rospy.loginfo(OKGREEN + "Point_room_two" + ENDC)
-#         else:
-#             userdata.nav_to_poi_name = "point_room_three"
-#             rospy.loginfo(OKGREEN + "Point_room_three" + ENDC)
-#         
-#         userdata.num_iterations += 1
-#         
-#         return 'succeeded'
- 
  
 class Wait_search(smach.State):
     def __init__(self):
@@ -72,7 +47,7 @@ class Wait_search(smach.State):
             return 'preempted'
         
         rospy.sleep(1.5)
-        rospy.logwarn('PREEMPT NOT REQUESTED -- Returning Preempted in Wait_search State')
+        rospy.logwarn('PREEMPT NOT REQUESTED -- Returning succeeded in Wait_search State')
         return 'succeeded'
 
 class say_searching_faces(smach.StateMachine):
@@ -82,6 +57,10 @@ class say_searching_faces(smach.StateMachine):
             output_keys=[])
 
         with self:
+            
+            self.userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_text = ''
+            self.userdata.tts_lang = 'en_US'
 
             smach.StateMachine.add('Wait_search_1', 
                                    Wait_search(), 
@@ -115,11 +94,11 @@ class say_searching_faces(smach.StateMachine):
 # gets called when ANY child state terminates
 def child_term_cb(outcome_map):
 
-    # terminate all running states if walk_to_poi finished with outcome succeeded
-    if outcome_map['walk_to_poi'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
-        
-        return False
+    # terminate all running states if turn finished with outcome succeeded
+    if outcome_map['turn'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Turn ends" + ENDC)
+        if outcome_map['say_search_faces'] != 'succeeded':        
+            return False
 
     # terminate all running states if BAR finished
     if outcome_map['find_faces'] == 'succeeded':
@@ -175,23 +154,21 @@ class SearchPersonSM(smach.StateMachine):
     No io_keys.
 
     """
-    def __init__(self):
+    def __init__(self,person_name):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                     input_keys=['name','face','face_frame'],
+                                     input_keys=['face','face_frame'],
                                      output_keys=['face', 'standard_error', 'face_frame'])
 
         with self:
-
+            self.userdata.name = person_name
             self.userdata.num_iterations = 0
             self.userdata.face = None
-            self.userdata.wait_time = 5
+            self.userdata.wait_time = 50
+            self.userdata.tts_wait_before_speaking = 0
+            self.userdata.tts_text = ''
+            self.userdata.tts_lang = 'en_US'
             
-#             # We define the different points
-#             smach.StateMachine.add(
-#                 'prepare_poi',
-#                 prepare_poi(),
-#                 transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
-#                 'preempted': 'preempted'}) 
+
             smach.StateMachine.add(
                                    'Say_Searching',
                                    text_to_say('Right Now I am looking for you.'),
@@ -201,17 +178,17 @@ class SearchPersonSM(smach.StateMachine):
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
-                                        input_keys=['name', 'nav_to_poi_name', 'face', 'wait_time'],
+                                        input_keys=['name', 'face', 'wait_time'],
                                         output_keys=['face', 'standard_error', 'face_frame'],
                                         child_termination_cb = child_term_cb,
                                         outcome_cb=out_cb)
             
             with sm_conc:
                 # Go around the room 
-                smach.Concurrence.add('turn', turn())                  
+                smach.Concurrence.add('turn', turn(120,'left'))
           
                 # Move head
-                smach.Concurrence.add('TimeOut', TimeOut())
+                smach.Concurrence.add('TimeOut', TimeOut(1000))
                  
                 # Search for face
                 smach.Concurrence.add('find_faces', recognize_face_concurrent())
@@ -226,8 +203,9 @@ class SearchPersonSM(smach.StateMachine):
                                              'preempted':'Say_Changing_Poi'})
 
                   
-            smach.StateMachine.add(
-                                   'Say_Changing_Poi',
+            smach.StateMachine.add('Say_Changing_Poi',
                                    text_to_say('I am going to change my position so I can search for faces'),
-                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
+            
+            

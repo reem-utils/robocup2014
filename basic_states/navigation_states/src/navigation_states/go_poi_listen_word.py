@@ -18,14 +18,13 @@ OKGREEN = '\033[92m'
 # 
 class prepareData(smach.State):
     
-    def __init__(self, poi_name, listen_word, gram_name):
+    def __init__(self, poi_name, listen_word):
         
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                            input_keys=['nav_to_poi_name', 'word_to_listen', 'grammar_name'], 
-                            output_keys=['nav_to_poi_name', 'word_to_listen', 'grammar_name'])
+                            input_keys=['nav_to_poi_name', 'keyword_name'], 
+                            output_keys=['nav_to_poi_name', 'keyword_name'])
         self.poi_name = poi_name
         self.listen_word = listen_word
-        self.gram_name = gram_name
         
     def execute(self, userdata):
            
@@ -33,18 +32,13 @@ class prepareData(smach.State):
             rospy.logerr("Poi_name isn't set")
             return 'aborted'
 
-        if not self.listen_word and not userdata.word_to_listen:
-            rospy.logerr("listen_word isn't set")
+        if not self.listen_word and not userdata.keyword_name:
+            rospy.logerr("keyword_name isn't set")
             return 'aborted'
 
-        if not self.gram_name and not userdata.grammar_name:
-            rospy.logerr("gram_name isn't set")
-            return 'aborted'
-                
         #Priority in init
         userdata.nav_to_poi_name = self.poi_name if self.poi_name else userdata.nav_to_poi_name   
-        userdata.word_to_listen = self.listen_word if self.listen_word else userdata.word_to_listen 
-        userdata.grammar_name = self.gram_name if self.gram_name else userdata.grammar_name
+        userdata.keyword_name = self.listen_word if self.listen_word else userdata.keyword_name 
         
         return 'succeeded'
     
@@ -78,26 +72,26 @@ class Go_Poi_Listen_Word(smach.StateMachine):
     Executes a SM that goes to a poi and while it's going,
     the robot can wait for a listen command.  
     """
-    def __init__(self, poi='', word='', gram=''):
+    def __init__(self, poi='', word=''):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted',
                                                     'aborted'],
-                                    input_keys=['nav_to_poi_name','word_to_listen', 'grammar_name'])
+                                    input_keys=['nav_to_poi_name','keyword_name'])
         
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
-            self.userdata.word_to_listen=None
+            self.userdata.keyword_name=None
             self.userdata.nav_to_poi_name = None
             self.userdata.grammar_name = None
             
             smach.StateMachine.add('PrepareData',
-               prepareData(poi, word, gram),
+               prepareData(poi, word),
                transitions={'succeeded':'go_and_listen', 'aborted':'aborted'})
             
             sm=smach.Concurrence(outcomes=['NAV','LISTEN','preempted'],
                                     default_outcome='NAV',input_keys=["nav_to_poi_name",
-                                                                           'word_to_listen', 'grammar_name'],
+                                                                           'keyword_name'],
                                     child_termination_cb = child_term_cb,
                                     outcome_cb=out_cb_follow,output_keys=[])
             
@@ -105,7 +99,7 @@ class Go_Poi_Listen_Word(smach.StateMachine):
     
                 smach.Concurrence.add('go_to_poi', nav_to_poi())
 
-                smach.Concurrence.add('listen_word', ListenWordSM_Concurrent())
+                smach.Concurrence.add('listen_word', ListenWordSM_Concurrent(word))
             
 
                 

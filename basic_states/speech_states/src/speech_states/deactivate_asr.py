@@ -29,8 +29,7 @@ class prepareData(smach.State):
             return 'aborted'
         
         #Priority in init
-        userdata.grammar_name = self.grammar if self.grammar else userdata.grammar_name   
-        print "URAAAAAAAAAAAAAANIIIIIIIIUUUUUUUUUUUUUUUUUUUUMMMMMMMMMMMMMMMMMMMMMMMMMM!!!"
+        userdata.grammar_name = self.grammar if self.grammar else userdata.grammar_name
         return 'succeeded'
     
 
