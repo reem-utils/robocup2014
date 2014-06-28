@@ -189,7 +189,9 @@ class follow_me_3rd(smach.StateMachine):
                                    transitions={'succeeded':'TRACK_OPERATOR','aborted':'aborted','preempted':'preempted'})  
             
             
-            smach.StateMachine.add('TRACK_OPERATOR',FollowOperator(),transitions={'succeeded':'succeeded',
+            smach.StateMachine.add('TRACK_OPERATOR',
+                                   FollowOperator(learn_if_lost=False),
+                                   transitions={'succeeded':'succeeded',
                                                'lost':'LOST_CREATE_GOAL','preempted':'preempted'})
             
             

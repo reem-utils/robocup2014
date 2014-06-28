@@ -39,21 +39,21 @@ LOST=3
 OKI=4
 
 
-FREQ_FIND=0.5 # publish a 2 HZ only if i send a goal
+FREQ_FIND=1 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
-DISTANCE_HUMAN=0.6
+DISTANCE_HUMAN=1
 
 TIME_SPEACK_OCLUDED=5
-TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, do not  leave without me"
+TIME_OCLUDED_SAY="o!! you have been occluded for a while, do not leave without me"
 
 TIME_SPEACK_OK=15
-TIME_OK_SAY="nice to follow you "
+TIME_OK_SAY="nice to follow you"
 
-TIME_NEAR_SAY="why you do not move?"
+TIME_NEAR_SAY="why are you not moving?"
 TIME_SPEACK_NEAR=15
 
-LOST_SENTENCE = "O you are going so fast, i start been losed  "
+LOST_SENTENCE = "O you are going so fast, I'm losing you"
 
 class init_var(smach.State):
     def __init__(self):
@@ -134,7 +134,7 @@ class calculate_goal(smach.State):
 
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-        self.distanceToHuman=DISTANCE_HUMAN
+        #self.distanceToHuman=DISTANCE_HUMAN
         #Calculating vectors for the position indicated
         new_pose = Pose()
         
@@ -189,18 +189,21 @@ Thats why we make desired distance zero if person too close.
         
         # it will send the cord
 class freq_goal(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted'],
+    def __init__(self,feedback):
+        smach.State.__init__(self, outcomes=['feedback','no_feedback'],
                              input_keys=['nav_goal_msg'],
                              output_keys=['nav_goal_msg'])
-    
+        self.feedback=feedback
     def execute(self, userdata):
             
             if self.preempt_requested():
                 return 'preempted'
             rospy.loginfo("i'm in dummy send_goal state")
             rospy.sleep(FREQ_FIND)
-            return 'succeeded'
+            if self.feedback :
+                return 'feedback'
+            else :
+                return 'no_feedback'
         
 
 #TODO: i have to print all the "boxes" look the last year document
@@ -213,6 +216,18 @@ class debug(smach.State):
             rospy.loginfo("i'm in dummy debug state")
             return 'succeeded'
 
+class Check_Learn_random(smach.State):
+    def __init__(self,learn_if_lost):
+        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'],
+                             input_keys=['nav_goal_msg',
+                                         'tracking_msg_filtered','tracking_msg'])
+        self.learn_if_lost=learn_if_lost
+    def execute(self, userdata):
+        if self.learn_if_lost :
+            return 'succeeded' # i have to follow
+        else :
+            return 'aborted'
+        
 class feadback(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['liftime','no_liftime'],
@@ -270,14 +285,15 @@ class FollowOperator(smach.StateMachine):
     '''
     #Its an infinite loop track_Operator
 
-    def __init__(self, distToHuman=0.4,time_occluded=30,feedback=True):
+    def __init__(self, distToHuman=0.4,feedback=True,learn_if_lost=True):
         smach.StateMachine.__init__(
             self,
             outcomes=['succeeded', 'lost','preempted'],
             input_keys=['in_learn_person'])
 
         
-
+        self.feedback=feedback
+        self.lear_if_lost=learn_if_lost
         with self:
             self.userdata.old_status=0
             self.userdata.feadback=0 # that means that we don't have feadback
@@ -323,11 +339,17 @@ class FollowOperator(smach.StateMachine):
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
                        text_to_say(LOST_SENTENCE),
-                       transitions={'succeeded': 'LEARN_RANDOM','preempted':'preempted', 'aborted':'LEARN_RANDOM'})
+                       transitions={'succeeded': 'Check_Learn_random','preempted':'preempted', 'aborted':'Check_Learn_random'})
+    
+                        # this state now it's dummy, maybe we will like to do something before throw in the towel
+            smach.StateMachine.add('Check_Learn_random',
+                       Check_Learn_random(self.learn_if_lost),
+                       transitions={'succeeded': 'LEARN_RANDOM','preempted':'preempted', 'aborted':'lost'})
             
             smach.StateMachine.add('LEARN_RANDOM',
                                    LearnPersonRandom(),
-                                   transitions={'succeeded':'DEBUG','preempted':'preempted','aborted':'lost'})
+                                   transitions={'succeeded':'READ_TRACKER_TOPIC',
+                                                'preempted':'preempted','aborted':'lost'})
             
 
             smach.StateMachine.add('CALCULATE_GOAL',
@@ -340,9 +362,10 @@ class FollowOperator(smach.StateMachine):
                        transitions={'succeeded':'FREQ_SENDING', 
                                     'aborted':'DEBUG','preempted':'preempted'})
             
+            # it look if we want a feedback or not
             smach.StateMachine.add('FREQ_SENDING',
-                       freq_goal(),
-                       transitions={'succeeded':'DEBUG','preempted':'preempted'}) # todo before transitions={'succeeded':'DEBUG','preempted':'preempted'})
+                       freq_goal(self.feedback),
+                       transitions={'no_feedback':'READ_TRACKER_TOPIC','feedback':'DEBUG'}) # todo before transitions={'succeeded':'DEBUG','preempted':'preempted'})
 
             # it have to desaper 
             smach.StateMachine.add('DEBUG',

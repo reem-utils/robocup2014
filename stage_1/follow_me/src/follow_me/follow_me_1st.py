@@ -65,7 +65,7 @@ class follow_me_1st(smach.StateMachine):
         Follow
         CHECK_ELEVATOR
     """
-    def __init__(self, distToHuman=0.4):
+    def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted',
                                                     'aborted','operator_say_out'],
                                     input_keys=['in_learn_person'])
@@ -86,7 +86,7 @@ class follow_me_1st(smach.StateMachine):
             with sm:
     
                 smach.Concurrence.add('FOLLOW_OPERATOR',
-                                FollowOperator(distToHuman))
+                                FollowOperator(distToHuman=0.4))
                 #This it will return if it's in the elevator, and if it's in the elevator
                 # it have to say: i'm in the elevator
                 # it have to sent a goal in a less distance of the operator
