@@ -5,13 +5,9 @@
 	
 
 	<node pkg="follow_me"
-	      type="check_elevator_verde.py"
-	      name="CheckElevator_node">
+	      type="follow_me_launcher.py"
+	      name="follow_me">
 	
-	</node>
-	<node pkg="navigation_states"
-	      type="reverse_node.py"
-	      name="NavigationBack_node">
 	</node>
 	
  

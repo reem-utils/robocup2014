@@ -33,10 +33,10 @@ LOST=3
 OKI=4
 
 
-FREQ_FIND=0.2 # publish a 2 HZ only if i send a goal
+FREQ_FIND=0.5 # publish a 2 HZ only if i send a goal
 FREQ_NOT_FIND=0.1 #freq if i'm occluded or lost
 MOVE_BASE_TOPIC_GOAL = "/move_base/goal"
-#DISTANCE_HUMAN=0.2
+DISTANCE_HUMAN=0.6
 
 TIME_SPEACK_OCLUDED=5
 TIME_OCLUDED_SAY="o!! it's a long time that you are occluded, don't leave without me"
@@ -128,7 +128,7 @@ class calculate_goal(smach.State):
 
         self.distanceToHuman=distanceToHuman
     def execute(self, userdata):
-        #self.distanceToHuman=DISTANCE_HUMAN
+        self.distanceToHuman=DISTANCE_HUMAN
         #Calculating vectors for the position indicated
         new_pose = Pose()
         

@@ -19,7 +19,8 @@ from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
-TIME_TO_SPECK=15 # this are secons
+X_CALIBRATION=1.5
+TIME_TO_SPECK=5 # this are secons
 SAY_GO_MIDLE="Please come in front of me"
 
 
@@ -36,15 +37,24 @@ class select_ID(smach.State):
         person_detect=userdata.tracking_msg
         per_aux=person()
         #per_follow=[]
+        minx=X_CALIBRATION
+        found =False
 
         for person_aux in person_detect.peopleSet :
             if (-Y_CALIBRARTION<person_aux.y<Y_CALIBRARTION) and (person_aux.targetStatus & person.VISUALLY_CONFIRMED):
-                userdata.in_learn_person=person_aux
+                
+                if person_aux.x<minx :
+                    minx=person_aux.x
+                    userdata.in_learn_person=person_aux
+                    found=True
                 rospy.loginfo(OKGREEN+"i have learned the person whit  ID  :  " 
                               + str(userdata.in_learn_person)+ENDC)
-                return 'succeeded'
-                break
-                rospy.logerr("ITS impossible to fins id  :  " 
+                
+                
+        
+        if found :
+            return 'succeeded'
+        rospy.logerr("ITS impossible to fins id  :  " 
                               + str(person_aux))
         
         userdata.in_learn_person=None
@@ -67,11 +77,12 @@ class control_time(smach.State):
 
     def __init__(self): 
         smach.State.__init__(self, input_keys=['time_init'],
-                             output_keys=[],
+                             output_keys=['time_init'],
                              outcomes=['succeeded','lif_time'])
 
     def execute(self, userdata):
         if (rospy.get_rostime().secs-userdata.time_init.secs)>TIME_TO_SPECK :
+            userdata.time_init.secs=rospy.get_rostime().secs
             return 'lif_time'
         return 'succeeded'
         
@@ -104,14 +115,20 @@ class LearnPerson(smach.StateMachine):
                                    transitions={'succeeded': 'READ_TRACKER_TOPIC',
                                                 'lif_time': 'SAY_LIFTIME'})
 
+#TODO:: aborted->CONTROL_TIME
             smach.StateMachine.add('READ_TRACKER_TOPIC',
                                    topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'SELECT_ID',
-                                                'aborted':'SAY_LIFTIME',
+                                                'aborted':'TODO',
                                                 'preempted':'preempted'},
                                    remapping={'topic_output_msg': 'tracking_msg'})
-
+           
+            
+            smach.StateMachine.add('TODO',
+                                   text_to_say("fock you i have a strange problem"),
+                                   transitions={'succeeded': 'CONTROL_TIME',
+                                                'aborted': 'SAY_LIFTIME'})
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
                                    select_ID(),

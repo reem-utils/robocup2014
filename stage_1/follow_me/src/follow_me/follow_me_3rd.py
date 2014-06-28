@@ -17,6 +17,7 @@ from navigation_states.srv import NavigationGoBack, NavigationGoBackRequest, Nav
 from smach_ros import ServiceState
 from navigation_states.nav_to_coord_concurrent import nav_to_coord_concurrent
 from follow_me.srv import EnableCheckElevatorRequest, EnableCheckElevator, EnableCheckElevatorResponse
+from follow_me.follow_learn import LearnPerson
 
 SAY_COME_NEAR="CAN YOU APROACH A LITTLE BIT"
 SAY_LETS_GO="OK LETS GO AGAIN"
@@ -75,7 +76,7 @@ class create_nav_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
     def execute(self,userdata):
-        rospy.loginfo("i'm creating a a realy far goal, becouse i lost the operator")
+        rospy.loginfo("i'm creating a a realy far goal, because i lost the operator")
         return 'succeeded'
     
 
@@ -177,7 +178,7 @@ class follow_me_3rd(smach.StateMachine):
             
             #hear i will learn the peron another time
             smach.StateMachine.add('LEARN_AGAIN',
-                                   learn_again(),
+                                   LearnPerson(),
                                    transitions={'succeeded':'SAY_LETS_GO',
                                                 'aborted':'SAY_COME_NEAR','preempted':'preempted'})
             
