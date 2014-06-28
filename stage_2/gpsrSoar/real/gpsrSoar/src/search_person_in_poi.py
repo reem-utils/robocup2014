@@ -8,12 +8,14 @@ Created on 08/03/2014
 '''
 import rospy
 import smach
-from navigation_states.turn import turn
+from smach_ros import ServiceState
+#from navigation_states.turn import turn
 from manipulation_states.move_head import move_head
 from util_states.timeout import TimeOut
 from face_states.recognize_face import recognize_face_concurrent
 from speech_states.say import text_to_say
 from manipulation_states.move_head_form import move_head_form
+from navigation_states.srv import *
 
 
 
@@ -49,6 +51,32 @@ class Wait_search(smach.State):
         rospy.sleep(1.5)
         rospy.logwarn('PREEMPT NOT REQUESTED -- Returning succeeded in Wait_search State')
         return 'succeeded'
+    
+class turn(smach.StateMachine):
+    def __init__(self, angle = 120):
+        smach.StateMachine.__init__(
+            self,
+            outcomes=['succeeded', 'preempted','aborted'],
+            input_keys=[])
+        
+        self.angle= angle
+
+        with self:
+            
+            self.userdata.angle = self.angle
+                    
+            def nav_turn_start(userdata, request):
+                turn_request = NavigationTurnRequest()
+                turn_request.degree = self.angle
+                turn_request.enable = True
+                return turn_request
+            
+            smach.StateMachine.add('turn',
+                                   ServiceState('/turn',
+                                                NavigationTurn,
+                                                request_cb = nav_turn_start),
+                                   transitions={'succeeded':'succeeded','aborted' : 'turn','preempted':'preempted'})      
+            
 
 class say_searching_faces(smach.StateMachine):
     def __init__(self):
@@ -185,7 +213,7 @@ class SearchPersonSM(smach.StateMachine):
             
             with sm_conc:
                 # Go around the room 
-                smach.Concurrence.add('turn', turn(120,'left'))
+                smach.Concurrence.add('turn', turn(120))
           
                 # Move head
                 smach.Concurrence.add('TimeOut', TimeOut(1000))
