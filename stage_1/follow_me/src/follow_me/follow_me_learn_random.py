@@ -19,11 +19,11 @@ from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
-X_CALIBRATION=1.5
-TIME_TO_SPECK=5 # this are secons
-SAY_GO_MIDLE="Please come in front of me"
+X_CALIBRATION=2.3
+TIME_WAIT=0.1 # this are secons
 
 
+NEW_PERSON="A you are here, lets go"
 # It's only becouse i can't import the file... i can't understand
 class select_ID(smach.State):
 
@@ -41,14 +41,12 @@ class select_ID(smach.State):
         found =False
 
         for person_aux in person_detect.peopleSet :
-            if (-Y_CALIBRARTION<person_aux.y<Y_CALIBRARTION) and (person_aux.targetStatus & person.VISUALLY_CONFIRMED):
+            if (-Y_CALIBRARTION<person_aux.y<Y_CALIBRARTION) and ((person_aux.targetStatus & person.VISUALLY_CONFIRMED) or (person_aux.targetStatus & person.OCCLUDDED)):
                 
                 if person_aux.x<minx :
                     minx=person_aux.x
                     userdata.in_learn_person=person_aux
                     found=True
-
-                
                 
         
         if found :
@@ -70,25 +68,15 @@ class init_var(smach.State):
     def execute(self, userdata):
         userdata.time_init=rospy.get_rostime()
         return 'succeeded'
+class wait_time(smach.State):
     
-
-    
-class control_time(smach.State):
-
-    def __init__(self): 
-        smach.State.__init__(self, input_keys=['time_init'],
-                             output_keys=['time_init'],
-                             outcomes=['succeeded','lif_time'])
-
-    def execute(self, userdata):
-        if (rospy.get_rostime().secs-userdata.time_init.secs)>TIME_TO_SPECK :
-            userdata.time_init.secs=rospy.get_rostime().secs
-            return 'lif_time'
+    def __init__(self):
+        smach.State.__init__(self,input_keys=[],output_keys=[],outcomes=['succeeded','aborted', 'preempted'])
+    def execute(self,userdata):
+        rospy.sleep(TIME_WAIT)
         return 'succeeded'
-        
 
-
-class LearnPerson(smach.StateMachine):
+class LearnPersonRandom(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
@@ -103,38 +91,32 @@ class LearnPerson(smach.StateMachine):
 
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'READ_TRACKER_TOPIC',
-                                                'aborted': 'SAY_LIFTIME'})
-            smach.StateMachine.add('SAY_LIFTIME',
-                                   text_to_say(SAY_GO_MIDLE),
-                                   transitions={'succeeded': 'CONTROL_TIME',
-                                                'aborted': 'SAY_LIFTIME'})
-
-            smach.StateMachine.add('CONTROL_TIME',
-                                   control_time(),
-                                   transitions={'succeeded': 'READ_TRACKER_TOPIC',
-                                                'lif_time': 'SAY_LIFTIME'})
+                                   transitions={'succeeded': 'WAIT_TIME',
+                                                'aborted': 'WAIT_TIME'})
+            
+            smach.StateMachine.add('WAIT_TIME',
+                       wait_time(),
+                       transitions={'succeeded': 'READ_TRACKER_TOPIC',
+                                    'aborted': 'READ_TRACKER_TOPIC'})
 
 #TODO:: aborted->CONTROL_TIME
             smach.StateMachine.add('READ_TRACKER_TOPIC',
                                    topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'SELECT_ID',
-                                                'aborted':'TODO',
+                                                'aborted':'aborted',
                                                 'preempted':'preempted'},
                                    remapping={'topic_output_msg': 'tracking_msg'})
            
             
-            smach.StateMachine.add('TODO',
-                                   text_to_say("fock you i have a strange problem"),
-                                   transitions={'succeeded': 'CONTROL_TIME',
-                                                'aborted': 'SAY_LIFTIME'})
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
                                    select_ID(),
-                                   transitions={'succeeded': 'STOP_LEARNING',
-                                                'aborted': 'CONTROL_TIME'})
+                                   transitions={'succeeded': 'NEW_PERSON',
+                                                'aborted': 'WAIT_TIME'})
+            
+            
+            smach.StateMachine.add('NEW_PERSON',
+                       text_to_say(NEW_PERSON),
+                       transitions={'succeeded': 'succeeded','preempted':'succeeded', 'aborted':'succeeded'})
 
-            smach.StateMachine.add('STOP_LEARNING',
-                                   text_to_say("OK i have finsished"),
-                                   transitions={'succeeded': 'succeeded','aborted':'STOP_LEARNING'})

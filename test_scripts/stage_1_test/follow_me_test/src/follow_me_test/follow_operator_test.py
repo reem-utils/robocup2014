@@ -13,6 +13,7 @@ import smach_ros
 
 from speech_states.say import text_to_say
 from follow_me.follow_operator import FollowOperator
+from follow_me.follow_learn import LearnPerson
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -49,6 +50,10 @@ def main():
         smach.StateMachine.add(
             'prepare_msg',
             prepare_msg(),
+            transitions={'succeeded':'learn_operator','aborted' : 'aborted','preempted':'preempted'})
+        smach.StateMachine.add(
+            'learn_operator',
+            LearnPerson(),
             transitions={'succeeded':'follow_operator','aborted' : 'aborted','preempted':'preempted'})
         # it call the drop_face state
         smach.StateMachine.add(
