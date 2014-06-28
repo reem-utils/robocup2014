@@ -15,14 +15,17 @@ from util_states.colors import Colors
 TOPIC_LIST_NAMES = [  # Topics and Actions
                     ##################### Topics #####################
                     "/amcl_pose",
-                    "/scan_filtered"]
+                    "/scan_filtered",
+                    "/emergency_stop_state"]
 
-SERVICES_LIST_NAMES = []  # #################### Services #####################
+SERVICES_LIST_NAMES = [ # #################### Services #####################
+                       "/straight_nav"]
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/play_motion",
                     "/move_base",
-                    "/sound"]
+                    "/sound",
+                    "/speed_limit"]
 
 PARAMS_LIST_NAMES = [  # #################### Params #####################
                      "/mmap/poi/submap_0/intermediate",
