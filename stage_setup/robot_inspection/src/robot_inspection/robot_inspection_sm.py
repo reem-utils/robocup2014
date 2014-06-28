@@ -19,14 +19,12 @@ from util_states.sleeper import Sleeper
 from util_states.state_concurrence import ConcurrenceRobocup
 from manipulation_states.play_motion_sm import play_motion_sm
 from geometry_msgs.msg import PoseWithCovarianceStamped 
-
+from do_inspection import DoInspection
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-
-import random
 
 class save_robot_position(smach.State):
     def __init__(self):
@@ -127,20 +125,20 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_save_position',
                 text_to_say("You can press the emergency button whenever you want. I will wait for a minute, inspect me please."),
-                transitions= {'succeeded':'wait_time', 'aborted':'wait_time', 'preempted':'preempted'})
+                transitions= {'succeeded':'do_inspection', 'aborted':'do_inspection', 'preempted':'preempted'})
             
             # Test of robot 
             smach.StateMachine.add(
-                 'wait_time',
-                 Sleeper(20),
-                 transitions={'succeeded': 'end_time_inspection', 'aborted': 'end_time_inspection'})
+                 'do_inspection',
+                 DoInspection(),
+                 transitions={'succeeded': 'say_end_time_inspection', 'aborted': 'say_end_time_inspection'})
 
             # Indicate that we are ready
-            smach.StateMachine.add(
-                'end_time_inspection',
-                text_to_say("The minute is over."),
-                transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
-            
+#             smach.StateMachine.add(
+#                 'end_time_inspection',
+#                 text_to_say("The minute is over."),
+#                 transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
+#             
             # Indicate that we are ready to go
             smach.StateMachine.add(
                 'say_end_time_inspection',
