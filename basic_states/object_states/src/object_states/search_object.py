@@ -10,6 +10,7 @@
 
 import rospy
 import smach
+import smach_ros
 import math
 
 from navigation_states.nav_to_poi import nav_to_poi
@@ -35,7 +36,19 @@ class prepareData(smach.State):
         userdata.object_name = self.object_name if self.object_name else userdata.object_name   
         
         return 'succeeded'               
-
+class analyze_object_data(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded', 'aborted', 'preempted'],
+                             input_keys=['object_position'],
+                             output_keys=['object_position'])
+    def execute(self, userdata):
+        if userdata.object_position.z == 0.476659206266:
+            return 'aborted'
+        else:
+            userdata.object_position.z = userdata.object_position.z + 0.1
+            return 'succeeded' 
+    
 class SearchObjectSM(smach.StateMachine):
     """
     Executes a SM that search for object. 
@@ -61,7 +74,7 @@ class SearchObjectSM(smach.StateMachine):
     def __init__(self, object_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['object_name'],
-                    output_keys=['standard_error', 'objectd'])
+                    output_keys=['standard_error', 'object_position'])
 
         with self:
         
@@ -76,14 +89,14 @@ class SearchObjectSM(smach.StateMachine):
                                 'aborted': 'aborted',
                                 'preempted': 'preempted'})
             
-            # say that it goes to the poi
+            # say that it goes to the POI indicated in the previous SM
             smach.StateMachine.add( 
                 'say_go_to_poi',
                 text_to_say("I'm going to take the object"),
                 transitions={'succeeded': 'go_to_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-            # Go to poi where the object can stay
+            # Go to poi where the object stays
             smach.StateMachine.add(
                 'go_to_object',
                 nav_to_poi(),
@@ -101,7 +114,12 @@ class SearchObjectSM(smach.StateMachine):
             smach.StateMachine.add(
                 'object_detection',
                 recognize_object(),
-                transitions={'succeeded': 'say_found_object', 'aborted': 'get_object_info_sm'})
+                transitions={'succeeded': 'analyze_object_data', 'aborted': 'get_object_info_sm'})
+            
+            smach.StateMachine.add(
+                'analyze_object_data',
+                analyze_object_data(),
+                transitions={'succeeded': 'say_found_object', 'aborted': 'object_detection'})
             
             # Say found the object
             smach.StateMachine.add(
@@ -110,3 +128,25 @@ class SearchObjectSM(smach.StateMachine):
                 transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
                 'preempted': 'succeeded'}) 
 
+def main():
+    rospy.init_node('search_object_node')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+ 
+    with sm:
+        smach.StateMachine.add('Search_Object',
+                            SearchObjectSM(),
+                            transitions={
+                            'succeeded': 'succeeded', 'aborted': 'aborted'})
+ 
+    sis = smach_ros.IntrospectionServer(
+        'robocup_instrospection', sm, '/SM_ROOT')
+    sis.start()
+ 
+    sm.execute()
+ 
+    rospy.spin()
+    sis.stop()
+ 
+if __name__ == '__main__':
+    main()

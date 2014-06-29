@@ -23,7 +23,14 @@ from manipulation_states.ask_give_object_grasping import ask_give_object_graspin
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
 from manipulation_states.grasp_time_out import grasping_with_timeout
+
+from object_grasping_states import place_object_sm
+from object_states.search_object import SearchObjectSM
+from object_grasping_states.object_detection_and_grasping_sm import object_detection_and_grasping_sm
+
 import time
+from rocon_app_manager_msgs.msg._Remapping import Remapping
+from cv2 import remap
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -72,18 +79,22 @@ class Process_Tags(smach.State):
                                 output_keys=['object_to_grasp','nav_to_poi_name'])
 
     def execute(self, userdata):
+        #TODO: Object_to_grasp: return to normal items, 'Barritas' is just for testing purposes
         if(userdata.asr_userSaid.find("water")):
-            userdata.object_to_grasp = 'water'
+            #userdata.object_to_grasp = 'water'
+            userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("kit")):
-            userdata.object_to_grasp = 'First Aid Kit'
+            #userdata.object_to_grasp = 'First Aid Kit'
+            userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("phone")):
-            userdata.object_to_grasp = 'Cell phone'
+            #userdata.object_to_grasp = 'Cell phone'
+            userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'working_desk'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
@@ -111,6 +122,28 @@ class Time_State(smach.State):
         else:
             return 'preempted' 
         
+
+class Fail_Detection_Grasping(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded','aborted', 'preempted'],
+                             input_keys=['object_failed'],
+                             output_keys=['object_failed'])
+    def execute(self, userdata):
+        userdata.object_failed = True
+        return 'succeeded'
+
+class Select_Grasp_Next_State(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['state_succeeded', 'state_failed', 'preempted'],
+                             input_keys=['object_failed'])
+    def execute(self, userdata):
+        if userdata.object_failed:
+            return 'state_failed'
+        else:
+            return 'state_succeeded'
+            
 
 def child_term_cb(outcome_map):
     if outcome_map['Time_State'] == 'time_out':
@@ -162,12 +195,18 @@ class Get_Person_Desired_Object(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     input_keys=['person_location', 'person_location_coord'])
+        
+        pose_place = PoseStamped()
+        pose_place.header.frame_id = '/base_link'
+        pose_place.pose.position.x = 0.0
+        pose_place.pose.position.y = 0.0
+        pose_place.pose.position.z = 1.0
 
         with self:           
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-            
+            self.userdata.object_failed = False
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
@@ -188,50 +227,45 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Process_Tags',
                 Process_Tags(),
-                transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
-            smach.StateMachine.add(
-                'Say_go_Kitchen',
-                text_to_say('I am Going to the Kitchen for an object, Stay Here until I give you the object'),
-                transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
-            smach.StateMachine.add(
-                'Go_To_Object_Place',
-                nav_to_poi(),
-                transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+                #transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
+                transitions={'succeeded':'Search_Object', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             
             smach.StateMachine.add(
-                'Say_got_to_Kitchen',
-                text_to_say('I am in the Kitchen, I am going to grasp fail ask person'),
-                transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person'})
+                'Search_Object',
+                object_detection_and_grasping_sm(),
+                transitions={'succeeded':'Say_return_Person', 
+                             'fail_object_detection':'Grasp_failed_prepare', 
+                             'fail_object_grasping':'Grasp_failed_prepare',
+                             'aborted':'aborted',
+                             'preempted':'preempted'},
+                remapping = {'object_name':'object_to_grasp'})
             
-            self.userdata.time_grasp = 0.0
-            smach.StateMachine.add('Grasping_with_timeout',
-                                   grasping_with_timeout(),
-                                   transitions={'succeeded':'Prepare_Go_To_Person', 'time_out':'Grasp_fail_Ask_Person'})
-#             sm_conc = smach.Concurrence(outcomes=['succeeded', 'time_out'],
-#                                         default_outcome='succeeded',
-#                                         input_keys=['object_to_grasp, time_grasp'],
-#                                         child_termination_cb = child_term_cb,
-#                                         outcome_cb = out_cb)
-# 
-#             with sm_conc:
-#                 sm_conc.add(
-#                     'Find_and_grab_object',
-#                     #Find_and_grab_object(),
-#                     DummyStateMachine())
-#                 sm_conc.add(
-#                             'Time_State',
-#                             Time_State())
-#                 
-#             smach.StateMachine.add('GRASP_CONCURRENCE',
-#                                    sm_conc,
-#                                    transitions={'succeeded':'Prepare_Go_To_Person',
-#                                                 'time_out':'Grasp_fail_Ask_Person'})
-            #Find Object + Grab Object SM
+            smach.StateMachine.add(
+                'Grasp_failed_prepare',
+                Fail_Detection_Grasping(),
+                transitions={'succeeded':'Grasp_fail_Ask_Person'})
+            
+            # TODO: Saying to where to robot is heading.
 #             smach.StateMachine.add(
-#                 'Find_and_grab_object',
-#                 #Find_and_grab_object(),
-#                 DummyStateMachine(),
-#                 transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+#                 'Say_go_Place',
+#                 text_to_say('I am Going to the Kitchen for an object, Stay Here until I give you the object'),
+#                 transitions={'succeeded':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place', 'aborted':'Go_To_Object_Place'})
+#             smach.StateMachine.add(
+#                 'Go_To_Object_Place',
+#                 nav_to_poi(),
+#                 transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
+#             ñ
+#             smach.StateMachine.add(
+#                 'Say_got_to_Kitchen',
+#                 text_to_say('I am in the Kitchen, I am going to grasp fail ask person'),
+#                 transitions={'succeeded':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person', 'aborted':'Grasp_fail_Ask_Person'})
+#             
+#             self.userdata.time_grasp = 0.0
+#             smach.StateMachine.add('Grasping_with_timeout',
+#                                    grasping_with_timeout(),
+#                                    transitions={'succeeded':'Prepare_Go_To_Person', 'time_out':'Grasp_fail_Ask_Person'})
+            
+            
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
                 ask_give_object_grasping(),
@@ -259,10 +293,26 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 'Go_To_Person',
                 nav_to_coord('/map'),
                 transitions={'succeeded':'Say_Give_Object', 'aborted':'Say_Give_Object', 'preempted':'Say_Give_Object'})
+                       
             smach.StateMachine.add(
                 'Say_Give_Object',
                 text_to_say('I am going to give you the Object you asked.'),
-                transitions={'succeeded':'Give_object_arm', 'aborted':'Give_object_arm', 'preempted':'Give_object_arm'})
+                transitions={'succeeded':'Select_next_state_grasping', 
+                             'aborted':'Select_next_state_grasping', 
+                             'preempted':'Select_next_state_grasping'})
+            
+            smach.StateMachine.add(
+                'Select_next_state_grasping',
+                Select_Grasp_Next_State(),
+                transitions={'state_failed':'Give_object_arm', 'state_succeeded':'Give_object_both'})
+            
+            smach.StateMachine.add(
+                'Give_object_both',
+                place_object_sm(pose_place),
+                transitions={'succeeded':'Say_Rescue_stay',
+                             'aborted':'Say_Rescue_stay',
+                             'preempted':'preempted'})
+            
             smach.StateMachine.add(
                'Give_object_arm',
                play_motion_sm('give_object_right'),
