@@ -54,7 +54,8 @@ class obtain_info(smach.State):
             prob = 0.0
             
             pois = rospy.get_param("/mmap/object/" + object_class)
-            from object_grasping_states.recognize_object import recognize_object
+            #from object_grasping_states.recognize_object import recognize_object
+            from object_states.recognize_object import recognize_object
 
             for key, value in pois.iteritems():
          
