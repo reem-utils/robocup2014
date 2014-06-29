@@ -79,7 +79,7 @@ class recognize_object(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self,minConfidence=90):
+    def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['object_name'], 
                                  output_keys=['standard_error','object_position'])
