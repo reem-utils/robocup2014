@@ -36,7 +36,9 @@ class image_converter:
                 cv2.imwrite(PKG_PATH+"/config/camera_image.png", cv_image)
         except CvBridgeError, e:
             print e
-# 
+        #Unregistering from the TOPIC
+        self.image_sub.unregister()
+         
 #         (rows,cols,channels) = cv_image.shape
 #         if cols > 60 and rows > 60 :
 #             cv2.circle(cv_image, (50,50), 10, 255)
@@ -68,3 +70,5 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
+    
+    
