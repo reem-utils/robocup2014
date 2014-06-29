@@ -15,3 +15,15 @@ poi:
     point_room_two: [submap_0, point_room_two, -0.877, 7.008, -0.662]
     point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
 
+object:
+  information:
+    coke: [information, coke, beverage]
+    pringles: [information, pringles, snack]
+    water: [information, water, beverage]
+  beverage:
+    storage_room: [beverage, kitchen_counter, 0.90]
+    party_room: [beverage, dinner_table, 0.00]
+
+  snack:
+    storage_room: [snack, kitchen_counter, 0.90]
+    party_room: [snack, dinner_table, 0.00]
