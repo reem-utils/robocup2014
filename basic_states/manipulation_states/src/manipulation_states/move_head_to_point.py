@@ -52,6 +52,8 @@ class prepare_move_head(smach.State):
             look_goal.pointing_axis.y = 0.0
             look_goal.pointing_axis.z = 0.0
         
+        look_goal.min_duration.secs = 1.0
+        
         rospy.loginfo('Sending this goal: ' + str(look_goal))
         
         userdata.point_goal = look_goal
