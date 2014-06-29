@@ -74,15 +74,9 @@ class move_head_to_point(smach.StateMachine):
         @key standard_error: Error 
     
     Input keys:
-
-
-    @Usage:
-        sm.userdata.move_head_pose = [0.1, 1]        
-        smach.StateMachine.add(
-            'dummy_state',
-            move_head(),
-            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
-        
+        @key target_frame_id: the frame_id in which the Point Specified is based. Example: 'base_link', 'stereo_link'.
+        @key target_point: the Point [x, y, z] for the robot to look at.
+       
     """
     def __init__(self, point_to_look=None, frame_id=None):
         smach.StateMachine.__init__(self, 
