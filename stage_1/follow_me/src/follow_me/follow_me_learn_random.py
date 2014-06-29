@@ -57,6 +57,22 @@ class select_ID(smach.State):
         
         userdata.in_learn_person=None
         return 'aborted'
+    
+    
+    
+    
+class check_feedback(smach.State):
+
+    def __init__(self,feedback=True): 
+        smach.State.__init__(self, input_keys=[],
+                             output_keys=[],
+                             outcomes=['succeeded','aborted', 'preempted'])
+        self.feedback=feedback
+    def execute(self, userdata):
+        if self.feedback :
+            return 'succeeded'
+        else :
+            return 'aborted'
 
 class init_var(smach.State):
 
@@ -77,10 +93,10 @@ class wait_time(smach.State):
         return 'succeeded'
 
 class LearnPersonRandom(smach.StateMachine):
-    def __init__(self):
+    def __init__(self,feedback=True):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
-
+        self.feedback=feedback
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
@@ -115,6 +131,10 @@ class LearnPersonRandom(smach.StateMachine):
                                    transitions={'succeeded': 'NEW_PERSON',
                                                 'aborted': 'WAIT_TIME'})
             
+            
+            smach.StateMachine.add('CHECK_FEEDBACK',
+                       check_feedback(self.feedback),
+                       transitions={'succeeded': 'NEW_PERSON','preempted':'succeeded', 'aborted':'succeeded'})
             
             smach.StateMachine.add('NEW_PERSON',
                        text_to_say(NEW_PERSON),

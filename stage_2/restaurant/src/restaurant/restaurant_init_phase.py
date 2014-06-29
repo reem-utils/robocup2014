@@ -13,6 +13,7 @@ OKGREEN = '\033[92m'
 
 
 from speech_states.say import text_to_say
+from follow_me.follow_learn import LearnPerson
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
@@ -22,17 +23,6 @@ START_FRASE="Hello, my name is REEM! I am here to learn about this restaurant  ,
 LETS_GO="OK, i am ready to start learning"
 
 
-class LearnPerson(smach.State):
-
-    def __init__(self): 
-        smach.State.__init__(self, input_keys=[],
-                             output_keys=['in_learn_person'],
-                             outcomes=['succeeded','aborted', 'preempted'])
-
-    def execute(self, userdata):
-        userdata.in_learn_person=1 # TODO change that for a real one
-        rospy.sleep(4)
-        return 'succeeded'
 
 
 class restaurantInit(smach.StateMachine):
