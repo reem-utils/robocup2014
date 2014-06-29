@@ -17,21 +17,24 @@ from speech_states.say import text_to_say
 from speech_states.listen_and_check_word import ListenWordSM
 from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
+from face_states.new_database_and_learn import new_database_and_learn
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
 X_CALIBRATION=1.5
 TIME_TO_SPECK=5 # this are secons
 SAY_GO_MIDLE="Please come in front of me"
+SAY_FINISH= "OK, i have finished"
+SAY_LEARN="I'm enrolling your face"
 
 
 # It's only becouse i can't import the file... i can't understand
 class select_ID(smach.State):
 
-    def __init__(self): 
+    def __init__(self,learn_face): 
         smach.State.__init__(self, input_keys=['tracking_msg','in_learn_person'],
                              output_keys=['in_learn_person'],
-                             outcomes=['succeeded','aborted', 'preempted'])
-
+                             outcomes=['succeeded','aborted', 'preempted','learn_face'])
+        self.learn_face=learn_face
     def execute(self, userdata):
         userdata.in_learn_person=None
         person_detect=userdata.tracking_msg
@@ -54,7 +57,10 @@ class select_ID(smach.State):
         if found :
             rospy.loginfo(OKGREEN+"i have learned the person whit  ID  :  " 
                               + str(userdata.in_learn_person)+ENDC)
-            return 'succeeded'
+            if (self.learn_face) :
+                return 'learn_face'
+            else :
+                return 'succeeded'
 
         
         userdata.in_learn_person=None
@@ -89,10 +95,16 @@ class control_time(smach.State):
 
 
 class LearnPerson(smach.StateMachine):
-    def __init__(self):
+    '''
+       
+       Learn Person is a state that will get a ID of the person who have near, if it's in the interest area.
+   
+       The person have to be visual confirmed and the action service of learn face confirm the face
+   '''
+    def __init__(self,learn_face=False):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
-
+        self.learn_face=learn_face
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
@@ -120,21 +132,29 @@ class LearnPerson(smach.StateMachine):
                                    topic_reader(topic_name='/pipol_tracker_node/peopleSet',
                                                 topic_type=personArray,topic_time_out=60),
                                    transitions={'succeeded':'SELECT_ID',
-                                                'aborted':'TODO',
+                                                'aborted':'READ_TRACKER_TOPIC',
                                                 'preempted':'preempted'},
                                    remapping={'topic_output_msg': 'tracking_msg'})
            
             
-            smach.StateMachine.add('TODO',
-                                   text_to_say("fock you i have a strange problem"),
-                                   transitions={'succeeded': 'CONTROL_TIME',
-                                                'aborted': 'SAY_LIFTIME'})
+           
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
-                                   select_ID(),
+                                   select_ID(self.learn_face),
+                                   transitions={'succeeded': 'STOP_LEARNING',
+                                                'aborted': 'CONTROL_TIME','learn_face':'FACE_SAY'})
+            
+            smach.StateMachine.add('FACE_SAY',
+                                   text_to_say(SAY_LEARN),
+                                   transitions={'succeeded': 'LEARN_FACE','aborted':'LEARN_FACE'})
+                        # it learns the person that we have to follow
+            smach.StateMachine.add('LEARN_FACE',
+                                   new_database_and_learn(learning_time=2, minConfidence=80, 
+                                                          name_face="following", name_database="follow"),
                                    transitions={'succeeded': 'STOP_LEARNING',
                                                 'aborted': 'CONTROL_TIME'})
+            
 
             smach.StateMachine.add('STOP_LEARNING',
-                                   text_to_say("OK i have finsished"),
+                                   text_to_say(SAY_FINISH),
                                    transitions={'succeeded': 'succeeded','aborted':'STOP_LEARNING'})

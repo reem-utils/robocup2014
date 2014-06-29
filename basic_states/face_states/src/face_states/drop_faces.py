@@ -30,7 +30,6 @@ class drop_faces(smach.StateMachine):
     Required parameters : 
     No parameters.
 
-    Optional parameters: learning_time, by default is 5 seconds
 
     input keys: name, it's the name of the dataBaser
                 purgeAll, “False” parameter means that we do not want to empty the database. Set to “True” in

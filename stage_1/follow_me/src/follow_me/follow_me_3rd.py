@@ -23,10 +23,12 @@ from hri_states.search_wave_sm import Search_Wave_SM
 from geometry_msgs.msg import Pose, PoseStamped, Quaternion, Point
 from util_states.math_utils import *
 from util_states.topic_reader import topic_reader
+from manipulation_states.move_head_form import move_head_form
 
 SAY_COME_NEAR="CAN YOU APROACH A LITTLE BIT"
 SAY_LETS_GO="OK LETS GO AGAIN"
 SAY_GO_AGAIN="OK LETS GO AGAIN"
+SAY_CROSSING="OK i'm sending a crazy goal"
 
 METERSBACK=3
 
@@ -211,6 +213,8 @@ class follow_me_3rd(smach.StateMachine):
             self.userdata.standar_error="ok"
             self.userdata.word_to_listen=None
             self.userdata.in_learn_person=person()
+            self.userdata.head_left_right=None
+            self.userdata.head_up_down=None
             self.userdata.in_learn_person.targetId=1
             print "HEY, THIS IS self.userdata.in_learn_person: " + str(self.userdata.in_learn_person)
             
@@ -272,7 +276,7 @@ class follow_me_3rd(smach.StateMachine):
             
             #hear i will learn the peron another time
             smach.StateMachine.add('LEARN_AGAIN',
-                                   LearnPerson(),
+                                   LearnPerson(learn_face=False),
                                    transitions={'succeeded':'SAY_LETS_GO',
                                                 'aborted':'SAY_COME_NEAR','preempted':'preempted'})
             
@@ -284,7 +288,7 @@ class follow_me_3rd(smach.StateMachine):
             
             
             smach.StateMachine.add('TRACK_OPERATOR',
-                                   FollowOperator(learn_if_lost=False),
+                                   FollowOperator(learn_if_lost=False,feedback=True),
                                    transitions={'succeeded':'succeeded',
                                                'lost':'LOST_CREATE_GOAL','preempted':'preempted'})
             
@@ -321,15 +325,24 @@ class follow_me_3rd(smach.StateMachine):
         
             smach.StateMachine.add('SEARCH_OPERATOR_GESTURE_2',
                                    Search_Wave_SM(),
-                                   transitions={'succeeded':'CREATE_GESTURE_NAV_GOAL',
+                                   transitions={'succeeded':'DEFAULT_POSITION',
                                                'aborted':'SEARCH_OPERATOR_GESTURE_2','preempted':'preempted', 'end_searching':'SEARCH_OPERATOR_GESTURE_2'})
+            
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'CREATE_GESTURE_NAV_GOAL','aborted':'CREATE_GESTURE_NAV_GOAL'})
+            
             smach.StateMachine.add('CREATE_GESTURE_NAV_GOAL',
                                    create_nav_gesture_goal(),
-                                   transitions={'succeeded':'GO_TO_GESTURE',
+                                   transitions={'succeeded':'SAY_CROSSING',
                                                'aborted':'aborted','preempted':'preempted'})
 
 
-
+            smach.StateMachine.add('SAY_CROSSING',
+                                   text_to_say(SAY_CROSSING),
+                                   transitions={'succeeded':'GO_TO_GESTURE',
+                                               'aborted':'GO_TO_GESTURE','preempted':'preempted'}) 
             #if the navigation goal it's impossible it will be heare allways 
             smach.StateMachine.add('GO_TO_GESTURE',
                                    nav_to_coord('/base_link'),
@@ -338,7 +351,7 @@ class follow_me_3rd(smach.StateMachine):
             
             #when i'm whit the person i have to look if it's the person
             smach.StateMachine.add('RECOGNIZE_PERSON',
-                                   LearnPerson(),
+                                   LearnPerson(learn_face=False),
                                    transitions={'succeeded':'SAY_GO_AGAIN',
                                                'aborted':'aborted','preempted':'preempted'})               
             
@@ -351,7 +364,7 @@ class follow_me_3rd(smach.StateMachine):
             
             # hear i finish the state
             smach.StateMachine.add('FOLLOW_AGAIN',
-                       FollowOperator(),
+                       FollowOperator(feedback=True, learn_if_lost=True),
                        transitions={'succeeded':'succeeded',
                                    'lost':'aborted','preempted':'preempted'}) 
             

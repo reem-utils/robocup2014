@@ -15,8 +15,10 @@ OKGREEN = '\033[92m'
 
 from speech_states.say import text_to_say
 from speech_states.listen_and_check_word import ListenWordSM
+from speech_states.say_with_enable import say_with_enable
 from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
+
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
 X_CALIBRATION=2.3
@@ -60,19 +62,6 @@ class select_ID(smach.State):
     
     
     
-    
-class check_feedback(smach.State):
-
-    def __init__(self,feedback=True): 
-        smach.State.__init__(self, input_keys=[],
-                             output_keys=[],
-                             outcomes=['succeeded','aborted', 'preempted'])
-        self.feedback=feedback
-    def execute(self, userdata):
-        if self.feedback :
-            return 'succeeded'
-        else :
-            return 'aborted'
 
 class init_var(smach.State):
 
@@ -131,12 +120,7 @@ class LearnPersonRandom(smach.StateMachine):
                                    transitions={'succeeded': 'NEW_PERSON',
                                                 'aborted': 'WAIT_TIME'})
             
-            
-            smach.StateMachine.add('CHECK_FEEDBACK',
-                       check_feedback(self.feedback),
-                       transitions={'succeeded': 'NEW_PERSON','preempted':'succeeded', 'aborted':'succeeded'})
-            
             smach.StateMachine.add('NEW_PERSON',
-                       text_to_say(NEW_PERSON),
+                       say_with_enable(text=NEW_PERSON,enable=self.feedback),
                        transitions={'succeeded': 'succeeded','preempted':'succeeded', 'aborted':'succeeded'})
 

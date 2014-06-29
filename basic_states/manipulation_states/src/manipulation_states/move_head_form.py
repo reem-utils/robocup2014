@@ -51,7 +51,7 @@ class prepareData(smach.State):
         elif self.head_ud == "normal":
             up_down = 0.1
         elif self.head_ud == "up":
-            up_down = -0.2
+            up_down = -0.1
             
         userdata.move_head_pose = [left_right, up_down]
         if self.preempt_requested():
@@ -70,6 +70,7 @@ class move_head_form(smach.StateMachine):
         - "center" : The robot is looking at the center
         - "down" : The robot is looking down
         - "normal" : The robot is looking at the normal inclination
+        - "up" :
     Parameters:
         @param: head_left_right:
             "total_left", "mid_left", "total_right", "mid_right", "center"
@@ -93,6 +94,8 @@ class move_head_form(smach.StateMachine):
                                     input_keys=['head_left_right', 'head_up_down'],
                                     output_keys=['move_head_pose'])
         with self:
+            self.userdata.head_left_right=None
+            self.userdata.head_up_down=None
             smach.StateMachine.add('PrepareData', 
                                     prepareData(head_left_right,head_up_down),
                                     transitions={'succeeded':'Move_head', 'aborted':'Move_head', 'preempted':'preempted'})

@@ -83,11 +83,11 @@ class RestaurantSM(smach.StateMachine):
                 transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-            # Go to ordering location
+            # Go to ordering location, i thinc it will not be necessary
             smach.StateMachine.add(
                 'start_restaurant',
                 nav_to_poi('ordering'),
-                transitions={'succeeded': 'ask_order', 'aborted': 'aborted', 
+                transitions={'succeeded': 'ask_order', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
                         
             # Ask for order
