@@ -93,6 +93,7 @@ class FollowMe(smach.StateMachine):
                        transitions={'succeeded': 'FOLLOW_ME_2nd','aborted':'aborted'})
             
             
+            # im looking for go out of the lift
             smach.StateMachine.add('FOLLOW_ME_2nd',
                                    follow_me_2nd(),
                                    transitions={'succeeded': 'FOLLOW_ME_3rd', 'aborted':'aborted'})

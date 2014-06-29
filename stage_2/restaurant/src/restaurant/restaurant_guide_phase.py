@@ -53,18 +53,6 @@ class init_var(smach.State):
         userdata.standard_error="Dummy"
         return 'succeeded'
      
-
-
-    
-
-class learn_person(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded',
-                                    'aborted','preempted'],output_keys=['in_learn_person'])
-    def execute(self,userdata):
-        rospy.loginfo("im learning a person")
-        userdata.in_learn_person=1
-        return 'succeeded'
              
         
 def child_term_cb(outcome_map):
@@ -145,7 +133,7 @@ class restaurantGuide(smach.StateMachine):
             with sm:
                 # it follow the person for long time
                 sm.add('FOLLOW_ME',
-                                FollowOperator())
+                                FollowOperator(distToHuman=0.4, feedback=False, learn_if_lost=True))
                 # here it have to listen and put pois in the map
                 sm.add('LISTEN_OPERATOR_RESTAURANT',
                                 ListenOperator())
