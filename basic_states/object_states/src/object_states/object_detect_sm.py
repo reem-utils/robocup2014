@@ -4,6 +4,7 @@ import rospy
 import actionlib
 import smach
 from smach_ros import SimpleActionState
+import smach_ros
 
 from blort_msgs.msg import RecognizeAction, RecognizeGoal, RecognizeResult 
 from object_recognition_msgs.msg import ObjectType
@@ -49,7 +50,7 @@ class object_detect_sm(smach.StateMachine):
         smach.StateMachine.__init__(self, 
                                     outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['object_name'],
-                                    output_keys=[])
+                                    output_keys=['object_pose'])
         with self:
             smach.StateMachine.add('Prepare_data',
                                    Prepare_data(object_to_detect_name),
@@ -57,10 +58,40 @@ class object_detect_sm(smach.StateMachine):
             smach.StateMachine.add('Prepare_goal',
                                    prepare_object_detection_goal(),
                                    transitions={'succeeded':'Object_detect'})
+            
+            def object_detect_result_cb(self, object_detect_result, status):
+                print ('Object Detected: ' + str(object_detect_result))
+                self.object_pose = object_detect_result
+                
             smach.StateMachine.add('Object_detect', 
                                 SimpleActionState(objectDetect_topic,
                                                    RecognizeAction,
+                                                   result_cb=object_detect_result_cb,
                                                    goal_key='object_detection_goal',
-                                                   input_keys=['standard_error'],
                                                    output_keys=['standard_error']), 
                                 transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+            
+            
+def main():
+    rospy.init_node('search_object_node')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+ 
+    with sm:
+        sm.userdata.object_name = 'Barritas' 
+        
+        smach.StateMachine.add('Search_Object',
+                            object_detect_sm(),
+                            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
+ 
+    sis = smach_ros.IntrospectionServer(
+        'robocup_instrospection', sm, '/SM_ROOT')
+    sis.start()
+ 
+    sm.execute()
+ 
+    rospy.spin()
+    sis.stop()
+ 
+if __name__ == '__main__':
+    main()

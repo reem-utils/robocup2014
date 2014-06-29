@@ -293,7 +293,8 @@ class FollowOperator(smach.StateMachine):
 
         
         self.feedback=feedback
-        self.lear_if_lost=learn_if_lost
+        
+        self.learn_if_lost=learn_if_lost
         with self:
             self.userdata.old_status=0
             self.userdata.feadback=0 # that means that we don't have feadback
@@ -347,7 +348,7 @@ class FollowOperator(smach.StateMachine):
                        transitions={'succeeded': 'LEARN_RANDOM','preempted':'preempted', 'aborted':'lost'})
             
             smach.StateMachine.add('LEARN_RANDOM',
-                                   LearnPersonRandom(),
+                                   LearnPersonRandom(self.feedback),
                                    transitions={'succeeded':'READ_TRACKER_TOPIC',
                                                 'preempted':'preempted','aborted':'lost'})
             

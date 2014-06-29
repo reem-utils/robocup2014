@@ -10,6 +10,7 @@
 
 import rospy
 import smach
+import smach_ros
 import math
 
 from navigation_states.nav_to_poi import nav_to_poi
@@ -61,7 +62,7 @@ class SearchObjectSM(smach.StateMachine):
     def __init__(self, object_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['object_name'],
-                    output_keys=['standard_error', 'objectd'])
+                    output_keys=['standard_error', 'object_pose'])
 
         with self:
         
@@ -110,3 +111,25 @@ class SearchObjectSM(smach.StateMachine):
                 transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
                 'preempted': 'succeeded'}) 
 
+def main():
+    rospy.init_node('search_object_node')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+ 
+    with sm:
+        smach.StateMachine.add('Search_Object',
+                            SearchObjectSM(),
+                            transitions={
+                            'succeeded': 'succeeded', 'aborted': 'aborted'})
+ 
+    sis = smach_ros.IntrospectionServer(
+        'robocup_instrospection', sm, '/SM_ROOT')
+    sis.start()
+ 
+    sm.execute()
+ 
+    rospy.spin()
+    sis.stop()
+ 
+if __name__ == '__main__':
+    main()

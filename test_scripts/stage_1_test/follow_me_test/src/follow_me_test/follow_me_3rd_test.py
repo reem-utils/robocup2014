@@ -43,7 +43,6 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'aborted','preempted'])
     with sm:
         sm.userdata.standard_error='OK'
-        sm.userdata.in_learn_person="HELLO"
         # it prepare the name and the function for drope
         smach.StateMachine.add(
             'prepare_msg',
