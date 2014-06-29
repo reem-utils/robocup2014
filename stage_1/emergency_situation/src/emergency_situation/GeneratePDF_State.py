@@ -41,7 +41,7 @@ RESOLUTION = rospy.get_param("/emergency_situation/resolution")
 IMAGE_NAME = rospy.get_param("/emergency_situation/image")
 IMAGE_ORIGIN = rospy.get_param("/emergency_situation/origin")
 IMAGE_ORIGIN = [0, 0]
-IMAGE_NAME = "subMap_1.pgm"
+IMAGE_NAME = "subMap_0.pgm"
 
 
 class GeneratePDF_State(smach.State):
