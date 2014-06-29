@@ -7,6 +7,7 @@ from smach_ros import SimpleActionState
 import smach_ros
 
 from blort_msgs.msg import RecognizeAction, RecognizeGoal, RecognizeResult 
+
 from object_recognition_msgs.msg import ObjectType
 
 objectDetect_topic = '/blort_tracker/recognize_object'
@@ -36,7 +37,7 @@ class prepare_object_detection_goal(smach.State):
                              output_keys = ['object_detection_goal'])
     def execute(self, userdata):
         userdata.object_detection_goal = RecognizeGoal()
-        userdata.object_detection_goal.refine_pose_time = 2.0
+        userdata.object_detection_goal.refine_pose_time = 4.0
         object_to_detect_type = ObjectType()
         object_to_detect_type.key = userdata.object_name
         userdata.object_detection_goal.objects.append(object_to_detect_type)
@@ -59,16 +60,17 @@ class object_detect_sm(smach.StateMachine):
                                    prepare_object_detection_goal(),
                                    transitions={'succeeded':'Object_detect'})
             
-            def object_detect_result_cb(self, object_detect_result, status):
+            def object_detect_result_cb(self, status, object_detect_result):
                 print ('Object Detected: ' + str(object_detect_result))
                 self.object_pose = object_detect_result
+                return 'succeeded'
                 
             smach.StateMachine.add('Object_detect', 
                                 SimpleActionState(objectDetect_topic,
                                                    RecognizeAction,
                                                    result_cb=object_detect_result_cb,
                                                    goal_key='object_detection_goal',
-                                                   output_keys=['standard_error']), 
+                                                   output_keys=['object_pose','standard_error']), 
                                 transitions={'succeeded':'succeeded', 'aborted':'aborted'})
             
             
@@ -90,7 +92,7 @@ def main():
  
     sm.execute()
  
-    rospy.spin()
+    #rospy.spin()
     sis.stop()
  
 if __name__ == '__main__':
