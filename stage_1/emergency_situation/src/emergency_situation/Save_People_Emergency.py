@@ -36,7 +36,7 @@ class DummyStateMachine(smach.State):
     def execute(self, userdata):
         print "Dummy state just to change to other state"  # Don't use prints, use rospy.logXXXX
 
-        rospy.sleep(1)
+        rospy.sleep(3)
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
