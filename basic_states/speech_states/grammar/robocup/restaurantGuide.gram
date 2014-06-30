@@ -2,27 +2,20 @@
 
 grammar restaurantGuide;
 
-public <basic> = (<locations> | finish ) | <garbage> {obj.put("external","1");}; 
+public <basic> = (<locations> | end guide ) | <garbage> {obj.put("external","1");};
 
 
-<locations>= here at your <class> {obj.put("class",$.$value);} you have <objects> {obj.put("objects",$.$value);};
+<locations>= here at your <direction> {obj.put("direction",$.$value);} you have <objects> {obj.put("objects",$.$value);};
 
-<<<<<<< HEAD
-<class> = (beverage | snacks | drinks);
-<direction> = (right | left | back | front);
-=======
 
-<objects> = beverage | snacks | drinks;
+<objects> = beverage | snacks | drinks | table one | table two | table three;
 <direction> = right | left | back | front;
->>>>>>> master
 
-<garbage>  = <garbage1>;
+<garbage> = <garbage1>;
 
 <garbage1> = _unk;
 <garbage2> = <garbage1> | (_unk _unk);
 <garbage3> = <garbage2> | (_unk _unk _unk);
 <garbage4> = <garbage3> | (_unk _unk _unk _unk);
 <garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
-
-
 
