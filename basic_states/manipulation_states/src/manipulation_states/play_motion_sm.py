@@ -48,7 +48,7 @@ class prepareData(smach.State):
         self.skip = skip_planning
         
     def execute(self, userdata):
-           
+        
         if not self.motion and not userdata.manip_motion_to_play:
             rospy.logerr("Motion isn't set")
             return 'aborted'
@@ -89,7 +89,7 @@ class play_motion_sm(smach.StateMachine):
                                     output_keys=['standard_error'])
         rospy.loginfo('Play Motion StateMachine')
         with self:
-            
+            self.userdata.skip_planning=False   
             #Prepare Play Motion Goal    
             smach.StateMachine.add('PrepareData',
                                    prepareData(motion, time, skip_planning),
