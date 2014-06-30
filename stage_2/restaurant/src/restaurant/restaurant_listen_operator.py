@@ -104,7 +104,8 @@ class proces_Tags(smach.State):
        
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"i'm looking what tags are"+ENDC)
+        listTags = userdata.asr_userSaid_tags
+        rospy.loginfo(OKGREEN+"i'm looking what tags are    "+ str(listTags) +ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
         #rospy.loginfo(OKGREEN+"TAGS: "+str(self.tags)+ENDC)
         #rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
@@ -114,13 +115,15 @@ class proces_Tags(smach.State):
             rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
         
-        listTags = userdata.asr_userSaid_tags
+        
          
         #Process tags
-        userdata.object_array = []
+       # userdata.object_array = []
+   
         locationValue = [tag for tag in listTags if tag.key == 'direction']
         objectValue = [tag for tag in listTags if tag.key == 'class']
-     
+        
+        
         if objectValue and locationValue:
             userdata.objectOrientation = locationValue[0].value
             userdata.objectName = objectValue[0].value

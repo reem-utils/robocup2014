@@ -42,7 +42,7 @@ class restaurantInit(smach.StateMachine):
 
             # it learns the person that we have to follow
             smach.StateMachine.add('Learn',
-                                   LearnPerson(),
+                                   LearnPerson(learn_face=True),
                                    transitions={'succeeded': 'SM_STOP_LEARNING',
                                                 'aborted': 'aborted'})
 
