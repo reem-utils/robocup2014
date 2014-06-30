@@ -17,7 +17,7 @@ import smach_ros
 from smach_ros.simple_action_state import SimpleActionState
 
 from object_states.search_object import SearchObjectSM
-from object_grasping_state.pick_object_sm import pick_object_sm
+from object_grasping_states.pick_object_sm import pick_object_sm
 
 import time
 
@@ -61,4 +61,31 @@ class object_detection_and_grasping_sm(smach.StateMachine):
                                    transitions={'succeeded':'succeeded',
                                                 'aborted':'fail_object_grasping',
                                                 'preempted':'preempted'})
+            
+def main():
+    rospy.init_node('Detect_and_Grasp_node')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted', 'fail_object_grasping','fail_object_detection'])
+ 
+    with sm:
+        sm.userdata.object_name = "Barritas"
+        smach.StateMachine.add('Detect_and_Grasp',
+                            object_detection_and_grasping_sm(),
+                            transitions={
+                                         'succeeded': 'succeeded', 
+                                         'aborted': 'aborted', 
+                                         'fail_object_grasping':'fail_object_grasping',
+                                         'fail_object_detection':'fail_object_detection'})
+ 
+    sis = smach_ros.IntrospectionServer(
+        'robocup_instrospection', sm, '/SM_ROOT')
+    sis.start()
+ 
+    sm.execute()
+ 
+    rospy.spin()
+    sis.stop()
+ 
+if __name__ == '__main__':
+    main()
             

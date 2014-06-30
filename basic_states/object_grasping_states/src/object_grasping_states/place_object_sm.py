@@ -80,5 +80,6 @@ class place_object_sm(smach.StateMachine):
                                                    output_keys=['standard_error']), 
                                 transitions={'succeeded':'succeeded', 'aborted':'aborted'})
             
+            
 
                 

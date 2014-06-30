@@ -15,6 +15,7 @@ from smach_ros import SimpleActionState, ServiceState
 
 from reem_tabletop_grasping.msg import ObjectManipulationAction, ObjectManipulationActionGoal,ObjectManipulationActionResult, ObjectManipulationGoal
 from object_recognition_msgs.msg import ObjectType, RecognizedObject, RecognizedObjectArray
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
 OPERATION_PICK = 1
 OPERATION_PLACE = 2
@@ -34,9 +35,15 @@ class Prepare_data(smach.State):
         if not self.object_position and not userdata.object_position:
             rospy.logerr("No Object to Detect")
             return 'aborted'
-        #Object Position is a PoseStamped
-        userdata.object_pick_position = self.object_position if self.object_position else userdata.object_position
-                
+        #Object Position is a PoseStamped --> Deprecated
+        #userdata.object_pick_position = self.object_position if self.object_position else userdata.object_position
+        
+        #Need to transform object_position (PoseWithCovarianceStamped) to object_pick_position (PoseStamped)
+        object_covariance = self.object_position if self.object_position else userdata.object_position
+        object_stamped = PoseStamped()
+        object_stamped.header = object_covariance.header
+        object_stamped.pose = object_covariance.pose.pose
+        userdata.object_pick_position = object_stamped
         return 'succeeded'
 
 class Prepare_Pick_Goal(smach.State):
@@ -54,7 +61,7 @@ class Prepare_Pick_Goal(smach.State):
         goal_to_send.target_pose = userdata.object_pick_position
         
         userdata.object_manipulation_goal = goal_to_send
-        
+        print "Data to Send to Pick Object final --> " + str(goal_to_send)
         return 'succeeded'        
 
 class pick_object_sm(smach.StateMachine):
