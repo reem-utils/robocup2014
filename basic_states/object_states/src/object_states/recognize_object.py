@@ -36,7 +36,11 @@ class process_object(smach.State):
         
         if userdata.object_pose.recognized_objects.objects:            
             #Object_correct would be of type RecognizedObject
-            object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if objectd.type.key==userdata.object_name]
+            if type(userdata.object_name) is list:
+                object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if (objectd.type.key in userdata.object_name)]
+            elif type(userdata.object_name) is str:
+                object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if objectd.type.key==userdata.object_name]
+            
             if object_correct:
                 object_aux = object_correct.pop()
                 userdata.object_position = object_aux.pose #PoseWithCovarianceStamped
@@ -66,11 +70,12 @@ class recognize_object(smach.StateMachine):
     No parameters.
 
     Optional parameters:
-            object_name, of the person that you are looking for, it will return
-                        aborted if can't find 
+            @param object_name, of the person that you are looking for, it will return
+                        aborted if can't find:
 
     input keys:
-            object_name, it's optional of the person we are looking for, it can be the name or ""
+            @key object_name, it's optional of the person we are looking for, it can be the name (string) or a list of strings
+            
     output keys:
             standard_error: inform what is the problem
             object_position, is a message that have ObjectDetection, 
