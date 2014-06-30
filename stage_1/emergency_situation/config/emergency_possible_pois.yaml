@@ -5,9 +5,9 @@ pois:
     point_room_two: [emergency, point_room_two, 7,point_room_two]
     point_room_three: [emergency, point_room_three, 8,point_room_three]
     living_room: [emergency, living_room, 2,living_room]
-    kitchen: [emergency, kitchen, 1,kitchen]
+    kitchen: [emergency, kitchen, 9,kitchen]
     working_desk: [emergency, working_desk, 3,working_desk]
     kitchen_counter: [emergency, kitchen_counter, 9,kitchen_counter]
     dinner_table: [emergency, dinner_table, 4,dinner_table]
     bookshelf: [emergency, bookshelf, 5,bookshelf]
-
+    hallway: [emergency, hallway, 1, hallway]
