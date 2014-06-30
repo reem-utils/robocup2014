@@ -43,10 +43,10 @@ class analyze_object_data(smach.State):
                              input_keys=['object_position'],
                              output_keys=['object_position'])
     def execute(self, userdata):
-        if userdata.object_position.z == 0.476659206266:
+        if userdata.object_position.pose.pose.position.z == 0.476659206266:
             return 'aborted'
         else:
-            userdata.object_position.z = userdata.object_position.z + 0.1
+            userdata.object_position.pose.pose.position.z = userdata.object_position.pose.pose.position.z + 0.1
             return 'succeeded' 
     
 class SearchObjectSM(smach.StateMachine):
@@ -122,6 +122,7 @@ class SearchObjectSM(smach.StateMachine):
                 transitions={'succeeded': 'say_found_object', 'aborted': 'object_detection'})
             
             # Say found the object
+            #TODO: Tell x, y, z of the object
             smach.StateMachine.add(
                 'say_found_object',
                 text_to_say("I found the object"),

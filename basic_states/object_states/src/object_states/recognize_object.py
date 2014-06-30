@@ -34,9 +34,9 @@ class process_object(smach.State):
     def execute(self, userdata):
         object_correct = []
         
-        if userdata.object_pose.objects:            
+        if userdata.object_pose.recognized_objects.objects:            
             #Object_correct would be of type RecognizedObject
-            object_correct = [objectd for objectd in userdata.object_pose.objects if objectd.type.key==userdata.object_name]
+            object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if objectd.type.key==userdata.object_name]
             if object_correct:
                 object_aux = object_correct.pop()
                 userdata.object_position = object_aux.pose #PoseWithCovarianceStamped
@@ -85,6 +85,7 @@ class recognize_object(smach.StateMachine):
                                  output_keys=['standard_error','object_position'])
         
         with self:
+            self.userdata.standard_error = ''
             smach.StateMachine.add(
                                    'Look_down',
                                    move_head_form(head_left_right="center", head_up_down="down"),
