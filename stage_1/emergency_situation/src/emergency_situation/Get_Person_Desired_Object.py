@@ -217,7 +217,8 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
-                                   transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
+                                   #transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
+                                   transitions={'succeeded':'Dummy_Listen_ASR', 'aborted': 'Dummy_Listen_ASR', 'preempted':'Dummy_Listen_ASR'})
             # Ask for the object to bring to the person
             # Output: 
             #   - string 'userSaid'

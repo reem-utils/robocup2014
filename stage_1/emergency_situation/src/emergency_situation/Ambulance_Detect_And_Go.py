@@ -79,7 +79,9 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
             smach.StateMachine.add(
                                    'SetHome',
                                    play_motion_sm('home'),
-                                   transitions={'succeeded':'Go_to_Entry_Door', 'aborted':'SetHome', 'preempted':'SetHome'})
+                                   transitions={'succeeded':'Say_return_Person', 
+                                                'aborted':'Say_return_Person', 
+                                                'preempted':'Say_return_Person'})
             
             smach.StateMachine.add(
                 'Say_return_Person',
