@@ -6,9 +6,14 @@ poi:
 object:
   information:
     coke: [information, coke, drinks]
+    wine: [information, wine, drinks]
     fanta: [information, fanta, drinks]
     beer: [information, beer, drinks]
     water: [information, water, drinks]
-    cookies: [information, cookies, snacks]
+    cookies: [information, cookies, drinks]
+    red bull: [information, red bull, drinks]
+    juice: [information, juice, drinks]
+    matches: [information, matches, snacks]
+    noodles: [information, noodles, snacks]
 
 
