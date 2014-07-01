@@ -84,22 +84,26 @@ class Process_Tags(smach.State):
     def execute(self, userdata):
         #TODO: Object_to_grasp: return to normal items, 'Barritas' is just for testing purposes
         if(userdata.asr_userSaid.find("water")):
-            #userdata.object_to_grasp = 'water'
-            userdata.object_to_grasp = 'Barritas'
+            userdata.object_to_grasp = 'water'
+            #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("kit")):
-            #userdata.object_to_grasp = 'First Aid Kit'
-            userdata.object_to_grasp = 'Barritas'
+            userdata.object_to_grasp = 'First Aid Kit'
+            #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         elif(userdata.asr_userSaid.find("phone")):
-            #userdata.object_to_grasp = 'Cell phone'
-            userdata.object_to_grasp = 'Barritas'
+            userdata.object_to_grasp = 'Cell phone'
+            #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'working_desk'
             rospy.loginfo(userdata.asr_userSaid)
+            return 'succeeded'
+        elif userdata.asr_userSaid.find("pringles"):
+            userdata.object_to_grasp = 'Pringles'
+            userdata.nav_to_poi_name = 'kitchen_counter'
             return 'succeeded'
         elif userdata.asr_userSaid.find("Barritas"):
             userdata.object_to_grasp = 'Barritas'
@@ -217,8 +221,9 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
-                                   #transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
-                                   transitions={'succeeded':'Dummy_Listen_ASR', 'aborted': 'Dummy_Listen_ASR', 'preempted':'Dummy_Listen_ASR'})
+                                    #transitions={'succeeded':'Dummy_Listen_ASR', 'aborted': 'Dummy_Listen_ASR', 'preempted':'Dummy_Listen_ASR'})
+                                   transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
+                                  
             # Ask for the object to bring to the person
             # Output: 
             #   - string 'userSaid'
@@ -244,7 +249,6 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                 'Process_Tags',
                 Process_Tags(),
-                #transitions={'succeeded':'Say_go_Kitchen', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
                 transitions={'succeeded':'Search_Object', 'aborted':'Ask_Question', 'aborted':'Ask_Question'})
             
             smach.StateMachine.add(
@@ -271,7 +275,7 @@ class Get_Person_Desired_Object(smach.StateMachine):
 #                 'Go_To_Object_Place',
 #                 nav_to_poi(),
 #                 transitions={'succeeded':'Say_got_to_Kitchen', 'aborted':'Grasp_fail_Ask_Person', 'preempted':'Grasp_fail_Ask_Person'})
-#             ñ
+
 #             smach.StateMachine.add(
 #                 'Say_got_to_Kitchen',
 #                 text_to_say('I am in the Kitchen, I am going to grasp fail ask person'),

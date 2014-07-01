@@ -6,7 +6,7 @@ public <basic> = (  (<bringcmd> [<person>] {obj.put("person",$.$value)} [the | a
 
 <bringcmd> = ((bring) {obj.put("action","bring");});
 <person> = me ;
-<objects> = water | first aid kit | first aid | kit | cell | phone | cell phone;
+<objects> = water | first aid kit | first aid | kit | cell | phone | cell phone | pringles;
 
 <garbage>  = <garbage2>;
 
