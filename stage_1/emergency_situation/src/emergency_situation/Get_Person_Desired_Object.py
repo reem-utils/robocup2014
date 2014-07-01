@@ -24,9 +24,9 @@ from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped
 from manipulation_states.grasp_time_out import grasping_with_timeout
 
-from object_grasping_states import place_object_sm
+from object_grasping_states.place_object_sm import place_object_sm
 from object_states.search_object import SearchObjectSM
-from object_grasping_states.object_detection_and_grasping_sm import object_detection_and_grasping_sm
+from object_grasping_states.object_detection_and_grasping import object_detection_and_grasping_sm
 
 import time
 from rocon_app_manager_msgs.msg._Remapping import Remapping
@@ -41,12 +41,15 @@ time_First = True
 
 class DummyStateMachine(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=[]) 
+        smach.State.__init__(self, 
+                             outcomes=['succeeded','aborted', 'preempted'], 
+                             input_keys=[],
+                             output_keys=['object_to_grasp']) 
 
     def execute(self, userdata):
         print "Dummy state just to change to other state" 
-        rospy.sleep(1)
+        rospy.sleep(4)
+        userdata.object_to_grasp = 'Barritas'
         return 'succeeded'
 
 # Class that prepare the value need for nav_to_poi
@@ -96,6 +99,10 @@ class Process_Tags(smach.State):
             #userdata.object_to_grasp = 'Cell phone'
             userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'working_desk'
+            rospy.loginfo(userdata.asr_userSaid)
+            return 'succeeded'
+        elif userdata.asr_userSaid.find("Barritas"):
+            userdata.object_to_grasp = 'Barritas'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
         
@@ -210,12 +217,22 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
-                                   transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
+                                   #transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
+                                   transitions={'succeeded':'Dummy_Listen_ASR', 'aborted': 'Dummy_Listen_ASR', 'preempted':'Dummy_Listen_ASR'})
             # Ask for the object to bring to the person
             # Output: 
             #   - string 'userSaid'
             #   - actiontag[] 'asr_userSaid_tags'
             # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
+            smach.StateMachine.add(
+                                   'Dummy_Listen_ASR',
+                                   DummyStateMachine(),
+                                   transitions={'succeeded':'ASR_OK'})
+            smach.StateMachine.add(
+                                   'ASR_OK',
+                                   text_to_say(text='Ok, now I am going to get you Barritas'),
+                                    transitions={'succeeded':'Search_Object'})
+            
             smach.StateMachine.add(
                 'Listen_Question',
                 ListenToSM(grammar='robocup/emergency'),

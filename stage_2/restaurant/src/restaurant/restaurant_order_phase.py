@@ -12,7 +12,7 @@ import smach
 
 from navigation_states.nav_to_poi import nav_to_poi
 #from navigation_states.enter_room import EnterRoomSM
-from object_grasping_states.recognize_object import recognize_object
+from object_states.recognize_object import recognize_object
 from speech_states.listen_to import ListenToSM
 from speech_states.say_yes_or_no import SayYesOrNoSM
 from speech_states.say import text_to_say

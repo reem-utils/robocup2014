@@ -13,7 +13,7 @@ import math
 
 from navigation_states.nav_to_poi import nav_to_poi
 #from navigation_states.enter_room import EnterRoomSM
-from object_grasping_states.recognize_object import recognize_object
+from object_states.recognize_object import recognize_object
 from speech_states.say import text_to_say
 
 # Constants

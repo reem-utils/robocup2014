@@ -98,7 +98,7 @@ class emergency_situation_sm(smach.StateMachine):
             # Put the arms at the 'Home' position, in order improve the security
             # We prepare the information to go to the init door
             self.userdata.manip_motion_to_play = 'home'
-            self.userdata.manip_time_to_play = 4.0
+            self.userdata.skip_planning = False
             smach.StateMachine.add(
                 'Arms_Home',
                 play_motion_sm(),

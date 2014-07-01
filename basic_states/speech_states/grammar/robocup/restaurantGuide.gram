@@ -4,7 +4,6 @@ grammar restaurantGuide;
 
 public <basic> = (<locations> | end guide ) | <garbage> {obj.put("external","1");};
 
-
 <locations>= here at your <direction> {obj.put("direction",$.$value);} you have <objects> {obj.put("objects",$.$value);};
 
 

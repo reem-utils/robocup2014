@@ -99,7 +99,7 @@ class restaurantGuide(smach.StateMachine):
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'LEARN_INIT',
+                                   transitions={'succeeded': 'CHANGE_STATE_MAP',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             def navigation_MAP_cb(userdata,request):
@@ -113,7 +113,7 @@ class restaurantGuide(smach.StateMachine):
                 return update
             
             smach.StateMachine.add('CHANGE_STATE_MAP',
-                                    ServiceState('pal_navigation_sm',Acknowledgment,
+                                    ServiceState('/pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_MAP_cb ),
                                     transitions = {'succeeded': 'LEARN_INIT',
                                                     'aborted':'CHANGE_STATE_MAP'})
@@ -133,7 +133,7 @@ class restaurantGuide(smach.StateMachine):
             with sm:
                 # it follow the person for long time
                 sm.add('FOLLOW_ME',
-                                FollowOperator(distToHuman=0.4, feedback=False, learn_if_lost=True))
+                                FollowOperator(distToHuman=0.4, feedback=True, learn_if_lost=True))
                 # here it have to listen and put pois in the map
                 sm.add('LISTEN_OPERATOR_RESTAURANT',
                                 ListenOperator())
@@ -144,7 +144,7 @@ class restaurantGuide(smach.StateMachine):
             
             
             smach.StateMachine.add('CHANGE_STATE_STOP',
-                                    ServiceState('pal_navigation_sm',Acknowledgment,
+                                    ServiceState('/pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_LOC_cb ),
                                     transitions = {'succeeded': 'FINISH',
                                                    'aborted':'CHANGE_STATE_STOP'})
