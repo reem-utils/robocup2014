@@ -36,13 +36,23 @@ class prepare_object_detection_goal(smach.State):
                              input_keys = ['object_detection_goal','object_name'], 
                              output_keys = ['object_detection_goal'])
     def execute(self, userdata):
+        
         userdata.object_detection_goal = RecognizeGoal()
         userdata.object_detection_goal.refine_pose_time = 4.0
-        object_to_detect_type = ObjectType()
-        object_to_detect_type.key = userdata.object_name
-        userdata.object_detection_goal.objects.append(object_to_detect_type)
         
-        rospy.loginfo("Goal that is sending:: " + str(userdata.object_detection_goal))
+        if type(userdata.object_name) is str:
+            object_to_detect_type = ObjectType()
+            object_to_detect_type.key = userdata.object_name
+            userdata.object_detection_goal.objects.append(object_to_detect_type)
+        
+            rospy.loginfo("Goal that is sending:: " + str(userdata.object_detection_goal))
+        
+        elif type(userdata.object_name) is list:
+            for o_name in userdata.object_name:
+                object_to_detect_type = ObjectType()
+                object_to_detect_type.key = o_name
+                userdata.object_detection_goal.objects.append(object_to_detect_type)
+       
         
         return 'succeeded'
 
