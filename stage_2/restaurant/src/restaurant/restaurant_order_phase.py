@@ -57,9 +57,10 @@ class process_restaurant_order(smach.State):
         
         for key,value in objList.iteritems():
             if value[1] == objectName:
+                print value[2]
                 className = value[2]
                 break    
-                        
+        print "----------------------------- i have found the type of object is : "+str (className)                
         return className
     
     def execute(self, userdata):

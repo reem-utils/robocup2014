@@ -80,7 +80,7 @@ class RestaurantSM(smach.StateMachine):
             smach.StateMachine.add(
                 'guide_phase',
                 restaurantGuide(),
-                transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
+                transitions={'succeeded': 'ask_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
             # Go to ordering location, i thinc it will not be necessary
