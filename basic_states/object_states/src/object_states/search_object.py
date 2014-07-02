@@ -17,6 +17,9 @@ from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
 from object_states.recognize_object import recognize_object
 from object_states.get_object_information import GetObjectInfoSM
+from hmac import trans_36
+
+NUMBER_MAXIMUM_REDETECTIONS = 2
 
 class prepareData(smach.State):
     
@@ -43,12 +46,41 @@ class analyze_object_data(smach.State):
                              input_keys=['object_position'],
                              output_keys=['object_position'])
     def execute(self, userdata):
-        if userdata.object_position.pose.pose.position.z == 0.476659206266:
+        if (userdata.object_position.pose.pose.position.z == 0.476659206266) or (math.isnan(userdata.object_position.pose.pose.orientation.x)):    
             return 'aborted'
         else:
             userdata.object_position.pose.pose.position.z = userdata.object_position.pose.pose.position.z + 0.1
             return 'succeeded' 
-    
+
+class fail_object_detection_check(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded', 'aborted'],
+                             input_keys=['number_search_object'],
+                             output_keys=['number_search_object'])
+    def execute(self, userdata):
+        if userdata.number_search_object < NUMBER_MAXIMUM_REDETECTIONS:
+            userdata.number_search_object = userdata.number_search_object + 1
+            return 'succeeded'
+        else:
+            userdata.number_search_object = 0
+            return 'aborted'
+
+
+class fail_object_detection_check_poi(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded', 'aborted'],
+                             input_keys=['object_location_number'],
+                             output_keys=['object_location_number'])
+    def execute(self, userdata):
+        if userdata.object_location_number > 0:
+            userdata.object_location_number = userdata.object_location_number - 1
+            return 'succeeded'
+        else:
+            userdata.number_search_object = 2
+            return 'aborted'
+
 class SearchObjectSM(smach.StateMachine):
     """
     Executes a SM that search for object. 
@@ -77,7 +109,9 @@ class SearchObjectSM(smach.StateMachine):
                     output_keys=['standard_error', 'object_position'])
 
         with self:
-        
+            self.userdata.number_search_object = 0
+            #self.userdata.number_search_object_POI = 0
+            
             smach.StateMachine.add('PrepareData',
                prepareData(object_name),
                transitions={'succeeded':'get_object_info_sm', 'aborted':'aborted'})
@@ -128,6 +162,24 @@ class SearchObjectSM(smach.StateMachine):
                 text_to_say("I found the object"),
                 transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
                 'preempted': 'succeeded'}) 
+            
+            smach.StateMachine.add(
+                'fail_object_detection',
+                fail_object_detection_check(),
+                transitions={'aborted':'fail_object_detection_poi',
+                             'succeeded':'say_re_detect'})
+            smach.StateMachine.add(
+                'say_re_detect',
+                text_to_say('I am trying again to recognize the object you asked'),
+                transitions={'succeeded':'object_detection', 'aborted':'aborted'})
+            smach.StateMachine.add(
+                'fail_object_detection_poi',
+                fail_object_detection_check_poi(),
+                transitions={'succeeded':'say_re_go', 'aborted':'aborted'})
+            smach.StateMachine.add(
+                'say_re_go',
+                text_to_say("I am going to another place to see if the object I am looking is there"),
+                transitions={'succeeded':'go_to_object', 'aborted':'aborted'})
 
 def main():
     rospy.init_node('search_object_node')
