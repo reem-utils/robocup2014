@@ -43,10 +43,10 @@ class object_detection_and_grasping_sm(smach.StateMachine):
                                               'fail_object_detection',
                                               'fail_object_grasping'], 
                                     input_keys=['object_name', 'time_out_grasp'],
-                                    output_keys=['standard_error'])
+                                    output_keys=['standard_error', 'object_detected_name'])
         
         with self:
-
+            self.userdata.object_detected_name = ''
             smach.StateMachine.add('Search_Object',
                                    SearchObjectSM(),
                                    transitions={'succeeded':'Grasp_object', 
