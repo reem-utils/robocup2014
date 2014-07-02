@@ -152,7 +152,7 @@ class text_to_say(smach.StateMachine):
     """
 
                     
-    def __init__(self, text=None, text_cb=None, wait_before_speaking=0, lang='en_US',wait=True):
+    def __init__(self, text=None, text_cb=None, wait_before_speaking=0, lang='en_US', wait=True):
         """
            Constructor for text_to_say.
 
@@ -164,7 +164,7 @@ class text_to_say(smach.StateMachine):
         """
 
         #Initialization of the SMACH State machine
-        self.say_pub= rospy.Publisher('/sound/goal', SoundActionGoal)
+        self.say_pub= rospy.Publisher('/sound/goal', SoundActionGoal, latch=True) # We need to latch it so it always speaks
         
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                  input_keys=['tts_text', 'tts_wait_before_speaking', 'tts_lang'],
