@@ -29,8 +29,7 @@ from object_states.search_object import SearchObjectSM
 from object_grasping_states.object_detection_and_grasping import object_detection_and_grasping_sm
 
 import time
-from rocon_app_manager_msgs.msg._Remapping import Remapping
-from cv2 import remap
+
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -82,38 +81,48 @@ class Process_Tags(smach.State):
                                 output_keys=['object_to_grasp','nav_to_poi_name'])
 
     def execute(self, userdata):
-        #TODO: Object_to_grasp: return to normal items, 'Barritas' is just for testing purposes
-        if(userdata.asr_userSaid.find("water")):
-            userdata.object_to_grasp = 'water'
+
+        user_tags = userdata.asr_userSaid_tags
+        object_to_bring = [tag for tag in user_tags if tag.key == 'object']
+        
+        rospy.loginfo("--------> ASR USER TAGS::::: " + str(object_to_bring) + "--->")
+        
+        
+        
+        #if(userdata.asr_userSaid.find("water")):
+        if "water" in object_to_bring[0].value:
+            
+            userdata.object_to_grasp = 'Fater'
             #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
-            rospy.loginfo(userdata.asr_userSaid)
+            rospy.loginfo("IF - WATER" + str(userdata.asr_userSaid))
             return 'succeeded'
-        elif(userdata.asr_userSaid.find("kit")):
+        #elif(userdata.asr_userSaid.find("kit")):
+        elif "first aid kit" in object_to_bring[0].value:
             userdata.object_to_grasp = 'First Aid Kit'
             #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'kitchen'
-            rospy.loginfo(userdata.asr_userSaid)
+            rospy.loginfo("IF - FIRST_AID_KIT" + str(userdata.asr_userSaid))
             return 'succeeded'
-        elif(userdata.asr_userSaid.find("phone")):
+        #elif(userdata.asr_userSaid.find("phone")):
+        elif "phone" in object_to_bring[0].value:
             userdata.object_to_grasp = 'Cell phone'
             #userdata.object_to_grasp = 'Barritas'
             userdata.nav_to_poi_name = 'working_desk'
-            rospy.loginfo(userdata.asr_userSaid)
+            rospy.loginfo("IF - CELL PHONE" + str(userdata.asr_userSaid))
             return 'succeeded'
-        elif userdata.asr_userSaid.find("pringles"):
+        #elif userdata.asr_userSaid.find("pringles"):
+        elif "pringles" in object_to_bring[0].value:
             userdata.object_to_grasp = 'Pringles'
             userdata.nav_to_poi_name = 'kitchen_counter'
+            rospy.loginfo("IF - Pringles" + str(userdata.asr_userSaid))
             return 'succeeded'
-        elif userdata.asr_userSaid.find("Barritas"):
+        #elif userdata.asr_userSaid.find("Barritas"):
+        elif object_to_bring == "Barritas":
             userdata.object_to_grasp = 'Barritas'
             rospy.loginfo(userdata.asr_userSaid)
             return 'succeeded'
-        
-#         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
-#         if tags:
-#             name = tags[0].value
-#             userdata.object_to_grasp = name
+
         return 'aborted'
 
 class Time_State(smach.State):
@@ -218,6 +227,8 @@ class Get_Person_Desired_Object(smach.StateMachine):
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
             self.userdata.object_failed = False
+            self.userdata.object_name = None
+            
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
@@ -353,4 +364,18 @@ class Get_Person_Desired_Object(smach.StateMachine):
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'aborted':'preempted'})
 
 
+def main():
+    rospy.loginfo('Get_person_desired')
+    rospy.init_node('Get_person_desired_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    with sm:      
+        smach.StateMachine.add(
+            'Get_person_desired',
+            Get_Person_Desired_Object(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()
