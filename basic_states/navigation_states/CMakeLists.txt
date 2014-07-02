@@ -57,6 +57,7 @@ catkin_python_setup()
    NavigationGoBack.srv
    NavigationGoForward.srv
    NavigationTurn.srv
+   NavigationGoTable.srv
 #   Service2.srv
  )
 
