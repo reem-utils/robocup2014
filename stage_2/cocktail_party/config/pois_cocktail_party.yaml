@@ -11,9 +11,10 @@ object:
     pringles: [information, pringles, snack]
 
   beverage:
-    storage_room: [beverage, storage_room, 0.90]
-    party_room: [beverage, party_room, 0.00]
+    kitchen_counter: [beverage, kitchen_counter, 0.90]
+    dinner_table: [beverage, dinner_table, 0.00]
 
   snack:
-    storage_room: [snack, storage_room, 0.90]
-    party_room: [snack, party_room, 0.00]
+    kitchen_counter: [beverage, kitchen_counter, 0.90]
+    dinner_table: [beverage, dinner_table, 0.00]
+
