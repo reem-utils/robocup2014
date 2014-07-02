@@ -35,7 +35,7 @@ class obtain_info(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
          input_keys=['object_name', 'object_location'], 
-         output_keys=['object_location','standard_error'])
+         output_keys=['object_location','standard_error', 'object_location_number'])
 
     def execute(self, userdata):
       
@@ -56,7 +56,9 @@ class obtain_info(smach.State):
             pois = rospy.get_param("/mmap/object/" + object_class)
             #from object_grasping_states.recognize_object import recognize_object
             from object_states.recognize_object import recognize_object
-
+            
+            userdata.object_location_number = len(pois)
+            
             for key, value in pois.iteritems():
          
                 if prob < value[2]:
@@ -100,7 +102,7 @@ class GetObjectInfoSM(smach.StateMachine):
     def __init__(self, object_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['object_name'],
-                    output_keys=['standard_error', 'object_location'])
+                    output_keys=['object_location_number','standard_error', 'object_location'])
 
         with self:        
         

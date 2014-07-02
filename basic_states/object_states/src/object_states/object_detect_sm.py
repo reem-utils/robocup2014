@@ -11,6 +11,7 @@ from blort_msgs.msg import RecognizeAction, RecognizeGoal, RecognizeResult
 from object_recognition_msgs.msg import ObjectType
 
 objectDetect_topic = '/blort_tracker/recognize_object'
+objectDetect_Time = 6.0
 
 class Prepare_data(smach.State):
     def __init__(self, object_detect_name):
@@ -38,7 +39,7 @@ class prepare_object_detection_goal(smach.State):
     def execute(self, userdata):
         
         userdata.object_detection_goal = RecognizeGoal()
-        userdata.object_detection_goal.refine_pose_time = 4.0
+        userdata.object_detection_goal.refine_pose_time = objectDetect_Time
         
         if type(userdata.object_name) is str:
             object_to_detect_type = ObjectType()
