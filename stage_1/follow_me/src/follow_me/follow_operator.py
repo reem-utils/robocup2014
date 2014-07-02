@@ -344,7 +344,7 @@ class FollowOperator(smach.StateMachine):
             
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
-                       say_with_enable(text=LOST_SENTENCE, enable=self.feedback),
+                       say_with_enable(text=LOST_SENTENCE, enable=self.feedback,wait=False),
                        transitions={'succeeded': 'Check_Learn_random','preempted':'preempted', 'aborted':'Check_Learn_random'})
     
                         # this state now it's dummy, maybe we will like to do something before throw in the towel
@@ -382,7 +382,7 @@ class FollowOperator(smach.StateMachine):
                        transitions={'liftime':'SAY_FEADBACK','no_liftime':'READ_TRACKER_TOPIC'})
             
             smach.StateMachine.add('SAY_FEADBACK',
-                       text_to_say(),
+                       text_to_say(wait=False),
                        transitions={'succeeded':'READ_TRACKER_TOPIC','aborted':'SAY_FEADBACK',
                                     'preempted':'preempted'})
             
