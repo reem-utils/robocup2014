@@ -16,6 +16,7 @@ from object_grasping_states.place_object_sm import place_object_sm
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 from std_msgs.msg import Header
 from manipulation_states.play_motion_sm import play_motion_sm
+from object_grasping_states.object_detection_and_grasping import object_detection_and_grasping_sm
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -61,13 +62,38 @@ class dummy_recognize(smach.State):
 # Class that prepare the value need for nav_to_poi
 class prepare_location(smach.State):
     def __init__(self):
-         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
     def execute(self,userdata):
         userdata.nav_to_poi_name='pick_and_place'
         return 'succeeded'
+
+class process_place_location(smach.State):
+    """"
+        Getting the POI name of the "Place" location.
+    """
+    
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes = ['succeeded', 'aborted', 'preempted'], 
+                             input_keys = ['object_detected_name'], 
+                             output_keys = ['nav_to_poi_name'])
+    def execute(self, userdata):
+        objectList = rospy.get_param("mmap/object/information")
+        foundObject= False
+        for key,value in objectList.iteritems():
+            if value[1] == userdata.object_detected_name:
+                object_class = value[3]
+                foundObject = True  
+                break    
+        if foundObject:
+            pois = rospy.get_param("/mmap/object/" + object_class)
+            userdata.nav_to_poi_name = pois.values().pop()[1]
+            return 'succeeded'
+        
+        return 'aborted'
 
 class PickPlaceSM(smach.StateMachine):
     """
@@ -128,28 +154,43 @@ class PickPlaceSM(smach.StateMachine):
             # Say start object recognition
             smach.StateMachine.add(
                  'say_start_obj_recognition',
-                 text_to_say("I'm going to start the Object recognition"),
+                 text_to_say("I'm going to start the Object recognition process."),
                  transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
              
-            # Do object_recognition 
+            #TODO: Now only the 'succeed' is considered... Should the failure considered also!
             smach.StateMachine.add(
-                'object_recognition',
-                dummy_recognize(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
-                'preempted': 'preempted'}) 
- 
-            # Say grasp object
+                'Object_Recognition_and_Grasping',
+                object_detection_and_grasping_sm(),
+                transitions={'succeeded': 'say_go_second_location', 
+                             'aborted': 'aborted', 
+                             'fail_object_grasping':'fail_object_grasping',
+                             'fail_object_detection':'fail_object_detection'})
+            
             smach.StateMachine.add(
-                 'say_grasp_object',
-                 text_to_say("I'm going to grasp the object"),
-                 transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
-             
-            # Grasp the object
-            smach.StateMachine.add(
-                'grasp_object',
-                pick_object_sm(),
-                transitions={'succeeded': 'say_go_second_location', 'aborted': 'say_grasp_object', 
-                'preempted': 'preempted'})     
+                'Process_Place_location',
+                process_place_location(),
+                transitions={'succeeded':'say_go_second_location',
+                             'aborted':'aborted'})
+
+#             # Do object_recognition 
+#             smach.StateMachine.add(
+#                 'object_recognition',
+#                 dummy_recognize(),
+#                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
+#                 'preempted': 'preempted'}) 
+#  
+#             # Say grasp object
+#             smach.StateMachine.add(
+#                  'say_grasp_object',
+#                  text_to_say("I'm going to grasp the object"),
+#                  transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
+#              
+#             # Grasp the object
+#             smach.StateMachine.add(
+#                 'grasp_object',
+#                 pick_object_sm(),
+#                 transitions={'succeeded': 'say_go_second_location', 'aborted': 'say_grasp_object', 
+#                 'preempted': 'preempted'})     
  
             # Say go to second location
             smach.StateMachine.add(

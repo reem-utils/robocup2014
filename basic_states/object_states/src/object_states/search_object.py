@@ -106,7 +106,7 @@ class SearchObjectSM(smach.StateMachine):
     def __init__(self, object_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['object_name'],
-                    output_keys=['standard_error', 'object_position'])
+                    output_keys=['standard_error', 'object_position', 'object_detected_name'])
 
         with self:
             self.userdata.number_search_object = 0

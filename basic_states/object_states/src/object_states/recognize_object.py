@@ -29,7 +29,7 @@ class process_object(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                              input_keys=['standard_error','object_name', 'object_pose'],
-                             output_keys=['standard_error','object_position'])
+                             output_keys=['standard_error','object_position', 'object_detected_name'])
 
     def execute(self, userdata):
         object_correct = []
@@ -44,8 +44,9 @@ class process_object(smach.State):
             if object_correct:
                 object_aux = object_correct.pop()
                 userdata.object_position = object_aux.pose #PoseWithCovarianceStamped
-                
+                userdata.object_detected_name = object_aux.type.key
                 userdata.standard_error="Recognize_object OK" + userdata.standard_error
+                
                 return 'succeeded'
             else :
                 userdata.standard_error="No Object with that identifier " + userdata.standard_error
@@ -87,7 +88,7 @@ class recognize_object(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['object_name'], 
-                                 output_keys=['standard_error','object_position'])
+                                 output_keys=['standard_error','object_position','object_detected_name'])
         
         with self:
             self.userdata.standard_error = ''

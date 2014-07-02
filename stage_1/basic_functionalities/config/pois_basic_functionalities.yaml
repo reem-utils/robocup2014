@@ -16,7 +16,30 @@ poi:
 
     init_what_say: [submap_0, init_what_say,  -1.521, 7.646,  -0.620]
 
-    point_room_one: [submap_0, point_room_one, -0.758, 7.336, -0.128]
-    point_room_two: [submap_0, point_room_two, -0.877, 7.008, -0.662]
+    entry_door_init: [submap_0, entry_door_init, 3.705, -0.694, 0.06]
+    entry_door_exit: [submap_0, entry_door_exit,7.017, -0.472, 0.051]
+    kitchen: [submap_0, kitchen,17.686, -1.135, -1.620]
+    hallway: [submap_0, hallway, 14.910, -1.393, -1.603]
+    living_room: [submap_0, living_room, 9.955, -1.491,  -0.966]
+    working_desk: [submap_0, working_desk, 10.320, -8.315,  -1.459]
+    kitchen_counter: [submap_0, kitchen_counter,10.320, -8.315,  -1.459]
+    dinner_table: [submap_0, dinner_table, 10.320, -8.315,  -1.459]
+    bookshelf: [submap_0, bookshelf, 9.079, -6.977, -0.065]
+    point_room_one: [submap_0, point_room_one, 7.910, 6.254, 0.709]
+    point_room_two: [submap_0, point_room_two, 8.476, 5.305, -0.767]
     point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
+
+object:
+  information:
+    Coke: [information, Coke, pick_and_place, beverage]
+    Pringles: [information, Pringles, pick_and_place,snack]
+
+  beverage:
+    kitchen_counter: [beverage, kitchen_counter, 0.90]
+
+  snack:
+    dinner_table: [snack, dinner_table, 0.90]
+  
+  pick_and_place:
+    pick_and_place: [pick_and_place, pick_and_place, 1]
 
