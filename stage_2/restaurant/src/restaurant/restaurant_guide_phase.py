@@ -21,7 +21,7 @@ RESTAURANT_guide.PY
 """
 
 
-SAY_FINISH_FOLLOWING= "OK, now we can start ordering 33"
+SAY_FINISH_FOLLOWING= "OK, i have finish learning"
 SAY_LETS_GO=" i'M READY, WHEN YOU WANT WE CAN START"
 
 import roslib
@@ -133,7 +133,7 @@ class restaurantGuide(smach.StateMachine):
             with sm:
                 # it follow the person for long time
                 sm.add('FOLLOW_ME',
-                                FollowOperator(distToHuman=0.4, feedback=True, learn_if_lost=True))
+                                FollowOperator(distToHuman=0.4, feedback=False, learn_if_lost=True))
                 # here it have to listen and put pois in the map
                 sm.add('LISTEN_OPERATOR_RESTAURANT',
                                 ListenOperator())

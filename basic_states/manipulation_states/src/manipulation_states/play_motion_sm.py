@@ -53,9 +53,9 @@ class prepareData(smach.State):
             rospy.logerr("Motion isn't set")
             return 'aborted'
         
-        if not self.skip and not userdata.skip_planning:
-            rospy.logerr("Skip_planning isn't set")
-            return 'aborted'
+#         if not self.skip and not userdata.skip_planning:
+#             rospy.logerr("Skip_planning isn't set")
+#             return 'aborted'
                 
         #Priority in init
         userdata.manip_motion_to_play = self.motion if self.motion else userdata.manip_motion_to_play   

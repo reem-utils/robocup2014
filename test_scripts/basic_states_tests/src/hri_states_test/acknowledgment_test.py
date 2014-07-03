@@ -18,7 +18,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
 
     with sm:
-
+	sm.userdata.Skip_planning=False
         smach.StateMachine.add(
             'acknowledgment',
             acknowledgment(type_movement="yes", tts_text="OK, i'm ready, do you wan't to be my friend"),

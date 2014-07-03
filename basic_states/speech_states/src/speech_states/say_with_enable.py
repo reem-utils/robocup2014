@@ -41,7 +41,7 @@ class say_with_enable(smach.StateMachine):
     """
 
                     
-    def __init__(self, text=None, text_cb=None, wait_before_speaking=0, lang='en_US',enable=True):
+    def __init__(self, text=None, text_cb=None, wait_before_speaking=0, lang='en_US',enable=True,wait=True):
         """
            Constructor for text_to_say.
 
@@ -58,6 +58,7 @@ class say_with_enable(smach.StateMachine):
         
         self.text=text
         self.enable=enable
+        self.wait=wait
         with self: 
             
             self.userdata.tts_wait_before_speaking=0
@@ -69,6 +70,6 @@ class say_with_enable(smach.StateMachine):
                                    transitions={'succeeded':'CreateSayGoal', 'aborted':'succeeded', 'preempted':'preempted'})
             
             smach.StateMachine.add('CreateSayGoal',
-                                   text_to_say(self.text),
+                                   text_to_say(self.text,wait=self.wait),
                                    transitions={'succeeded':'succeeded', 'aborted':'aborted','preempted':'preempted'})        
 

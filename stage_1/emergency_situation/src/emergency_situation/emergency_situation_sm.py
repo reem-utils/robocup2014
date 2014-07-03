@@ -185,8 +185,11 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                                    'Ambulance_SM',
                                    Ambulance_Detect_And_Go(),
+                                   transitions={'succeeded':'Final_State', 'aborted':'aborted', 'preempted':'preempted'})
+            
+            smach.StateMachine.add(
+                                   'Final_State',
+                                   text_to_say('Emergency Situation Test 2014 Finished Successfully.'),
                                    transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
-            
-            
             
         

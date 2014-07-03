@@ -21,7 +21,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
 from pipol_tracker_pkg.msg import personArray,person
 from speech_states.say import text_to_say
-from tornado.options import define
+#from tornado.options import define
 from follow_me_learn_random import LearnPersonRandom
 from speech_states.say_with_enable import say_with_enable
 
@@ -344,7 +344,7 @@ class FollowOperator(smach.StateMachine):
             
             # this state now it's dummy, maybe we will like to do something before throw in the towel
             smach.StateMachine.add('I_DONT_KNOW',
-                       say_with_enable(text=LOST_SENTENCE, enable=self.feedback),
+                       say_with_enable(text=LOST_SENTENCE, enable=self.feedback,wait=False),
                        transitions={'succeeded': 'Check_Learn_random','preempted':'preempted', 'aborted':'Check_Learn_random'})
     
                         # this state now it's dummy, maybe we will like to do something before throw in the towel
@@ -382,7 +382,7 @@ class FollowOperator(smach.StateMachine):
                        transitions={'liftime':'SAY_FEADBACK','no_liftime':'READ_TRACKER_TOPIC'})
             
             smach.StateMachine.add('SAY_FEADBACK',
-                       text_to_say(),
+                       text_to_say(wait=False),
                        transitions={'succeeded':'READ_TRACKER_TOPIC','aborted':'SAY_FEADBACK',
                                     'preempted':'preempted'})
             

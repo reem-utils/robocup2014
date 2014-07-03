@@ -14,6 +14,8 @@ OKGREEN = '\033[92m'
 
 from speech_states.say import text_to_say
 from follow_me.follow_learn import LearnPerson
+from manipulation_states.move_head_form import move_head_form
+from hri_states.acknowledgment import acknowledgment
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
@@ -36,8 +38,13 @@ class restaurantInit(smach.StateMachine):
             self.userdata.tts_lang=None
             self.userdata.standard_error='OK'
             self.userdata.in_learn_person=1
+            self.userdata.type_movment = 'home'
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'INTRO','aborted':'INTRO'})
             smach.StateMachine.add('INTRO',
-                                   text_to_say(START_FRASE),
+                                   acknowledgment(type_movement='home', tts_text=START_FRASE),
                                    transitions={'succeeded': 'Learn','aborted':'aborted'})
 
             # it learns the person that we have to follow

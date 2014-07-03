@@ -16,6 +16,7 @@ from speech_states.say import text_to_say
 from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from follow_learn import LearnPerson
 from manipulation_states.move_head_form import move_head_form
+from hri_states.acknowledgment import acknowledgment
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 

@@ -5,6 +5,7 @@
 import rospy
 import smach
 import math
+import smach_ros
 
 
 
@@ -21,6 +22,11 @@ from roslaunch.loader import rosparam
 from speech_states.parser_grammar import parserGrammar
 from hri_states.acknowledgment import acknowledgment
 
+
+
+
+INITIAL_POI_NAME="/mmap/poi/submap_0/"
+
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
@@ -36,7 +42,7 @@ and creating new pois of the places that are needed for
 process the order
 '''
 
-GRAMMAR_NAME="robocup/restaurantGuide"
+GRAMMAR_NAME="robocup/create_pois"
 
 
 
@@ -71,15 +77,6 @@ class save_point(smach.State):
         aux.pose.position.y
         yaw=userdata.current_robot_yaw
         rospy.loginfo(OKGREEN+"I Have a new point"+ENDC)
-        if (userdata.objectOrientation== 'right') :
-            yaw=yaw+(math.pi/2)
-        if (userdata.objectOrientation== 'left'):
-            yaw=yaw-(math.pi/2)
-        if (userdata.objectOrientation== 'back'):
-            yaw=yaw-math.pi
-        if (userdata.objectOrientation=='front'):
-            yaw=yaw
-        
         
         
         
@@ -87,8 +84,7 @@ class save_point(smach.State):
                aux.pose.position.y,yaw]
         
         rospy.loginfo(OKGREEN+str(value)+ENDC)
-        rospy.set_param("/mmap/poi/submap_0/"+str(userdata.objectName),value)
-        #"/restaurant/submap_0/"+str(userdata.objectName)
+        rospy.set_param(INITIAL_POI_NAME+str(userdata.objectName),value)
         return 'succeeded'
     
     
@@ -119,62 +115,21 @@ class proces_Tags(smach.State):
          
         #Process tags
        # userdata.object_array = []
-        locationValue=None
         objectValue=None
-        locationValue = [tag for tag in listTags if tag.key == 'direction']
+    
         objectValue = [tag for tag in listTags if tag.key == 'objects']
         
         
-        if objectValue and locationValue:
-            userdata.objectOrientation = locationValue[0].value
+        if objectValue :
             userdata.objectName = objectValue[0].value
             return 'new_position'  
         else:
             rospy.logerr("Object or Location not set")
             return 'aborted'  
               
-        #objectValue =          self.tags[0][1]
-        #locationValue = self.tags[1][1]
-        #objectsRecognized=None
-        #locationRecognized=None
-        #phrase = []
-        
-#         phrase = userdata.asr_userSaid.split()
-#         rospy.logwarn(str(objectValue))
-#         rospy.logwarn(str(locationValue))
-#         rospy.logerr(phrase)
-#         locationWord=False
-#         objectWord=False
-#               
-#         for word in phrase:
-#             
-#             if not locationWord:
-#                 for element in locationValue:
-#                     if element == word:
-#                         locationRecognized=element
-#                         locationWord = True
-#                         break
-#                     
-#             if not objectWord:
-#                 rospy.logwarn(str(word))
-#                 for element in objectValue:
-#                     if element == word:
-#                         objectsRecognized = element
-#                         objectWord = True
-#                         break
-#                     
-#             if objectWord and locationWord :
-#                 userdata.objectName=objectsRecognized
-#                 userdata.objectOrientation=locationRecognized
-#                 return 'new_position'
-#         
-#         if not objectWord or objectsRecognized :
-#             return 'aborted'
-#       
-#         return 'aborted'
-        
 
-class ListenOperator(smach.StateMachine):
+
+class create_pois(smach.StateMachine):
 
 
 
@@ -249,7 +204,34 @@ class ListenOperator(smach.StateMachine):
         
             
             
-            
+
+
+def main():
+    rospy.init_node('restaurant_create_pois')
+    
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    
+    with sm:
+        
+        smach.StateMachine.add(
+            'create_pois',
+            create_pois(),
+            transitions={'succeeded': 'succeeded','aborted': 'aborted'})
+    
+
+
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+    sis = smach_ros.IntrospectionServer('create_pois', sm, '/create_pos')
+    sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+    sis.stop()
+
+
+if __name__ == '__main__':
+    main()            
             
             
             

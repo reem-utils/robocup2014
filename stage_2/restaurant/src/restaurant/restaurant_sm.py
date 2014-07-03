@@ -12,6 +12,8 @@ import smach
 import math
 
 from navigation_states.nav_to_poi import nav_to_poi
+from navigation_states.nav_to_poi_say import nav_to_poi_say
+
 #from navigation_states.enter_room import EnterRoomSM
 from speech_states.ask_question import AskQuestionSM
 from speech_states.say import text_to_say
@@ -76,17 +78,17 @@ class RestaurantSM(smach.StateMachine):
             # Must we say something to start? "I'm ready" or something
             # Must we wait for the spoken order? 
                     
-            # Guide phase
+           # Guide phase
             smach.StateMachine.add(
-                'guide_phase',
-                restaurantGuide(),
-                transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
-                'preempted': 'preempted'}) 
+                 'guide_phase',
+                 restaurantGuide(),
+                 transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
+                 'preempted': 'preempted'}) 
             
             # Go to ordering location, i thinc it will not be necessary
             smach.StateMachine.add(
                 'start_restaurant',
-                nav_to_poi('ordering'),
+                nav_to_poi_say(tts="i am going to the ordering poi",poi_name='ordering'),
                 transitions={'succeeded': 'ask_order', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
                         
