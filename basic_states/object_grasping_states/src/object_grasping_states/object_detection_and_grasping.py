@@ -27,7 +27,6 @@ class prepare_grasp(smach.State):
                              outcomes=['succeeded', 'aborted'],
                              input_keys=['object_position'],
                              output_keys=['object_position'])
-        
     def execute(self, userdata):
         userdata.object_position = userdata.object_position
         return 'succeeded'
