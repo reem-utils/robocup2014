@@ -26,6 +26,10 @@ final_frame_id = 'base_link'
 PUB_1_TOPIC = '/given_pose'
 PUB_2_TOPIC = '/transformed_pose'
 
+ENDC = '\033[0m'
+FAIL = '\033[91m'
+OKGREEN = '\033[92m'
+
 NUMBER_OF_HEAD_POSES = 3
 
 class prepare_move_head(smach.State):
@@ -59,6 +63,49 @@ class prepare_move_head(smach.State):
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
 
+# gets called when ANY child state terminates
+def child_term_cb(outcome_map):
+   
+    if outcome_map['wave_recognition']:
+        rospy.loginfo(OKGREEN + "wave_recognition ends" + ENDC)
+        return True
+    
+#     if outcome_map['move_head'] == 'succeeded':
+#         rospy.loginfo(OKGREEN + "move_head ends" + ENDC)
+#         
+#         return False
+# 
+#     # terminate all running states if BAR finished
+#     if outcome_map['Say_Searching'] == 'succeeded':
+#         rospy.loginfo(OKGREEN + "Say_searching ends" + ENDC)
+#         return False
+    
+    rospy.loginfo('----> FALSE_TERM_CB')
+    
+    # in all other case, just keep running, don't terminate anything
+    return False
+
+def out_cb(outcome_map):
+    if outcome_map['wave_recognition'] == 'succeeded':
+        rospy.logwarn('Out_CB = Wave_Recognition succeeded') 
+        return 'face_detected'
+    
+    elif outcome_map['wave_recognition'] == 'aborted':
+        rospy.logwarn('Out_CB = Wave_Recognition succeeded') 
+        return 'aborted'
+    
+    elif outcome_map['move_head'] == 'succeeded':
+        rospy.logwarn('Out_CB = Find Faces Succeeded')
+        return 'aborted'    
+    
+    elif outcome_map['Say_Searching'] == 'succeeded':
+        rospy.logwarn('Out_CB = TimeOut finished succeeded')
+        return 'aborted'   
+    
+    else:
+        rospy.logwarn('Out_CB = Else!')
+        return 'aborted'
+
 class Search_Wave_SM(smach.StateMachine):
     """
         Search_Wave_SM: This SM searches for any 'wave' gesture around a room, 
@@ -90,28 +137,56 @@ class Search_Wave_SM(smach.StateMachine):
             self.userdata.wave_position = None
             self.userdata.wave_yaw_degree = None
             self.userdata.standard_error = ''
+            
+            
+            
             smach.StateMachine.add(
                                    'Move_head_prepare',
                                    prepare_move_head(head_position),
-                                    transitions={'succeeded': 'move_head', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
                                                 'preempted': 'preempted', 'end_searching':'end_searching'})
-            smach.StateMachine.add(
-                                   'move_head',
-                                   move_head_form(head_up_down=head_position),
-                                   transitions={'succeeded': 'Say_Searching',
-                                                'preempted':'Say_Searching',
-                                                'aborted':'aborted'})
-            smach.StateMachine.add(
-                'Say_Searching',
-                text_to_say(text_for_wave_searching),
-                transitions={'succeeded':'wave_recognition', 'aborted':'wave_recognition', 'preempted':'wave_recognition'})
-           
+            
+            sm_conc = smach.Concurrence(outcomes = ['succeeded', 'aborted', 'preempted', 'face_detected'], 
+                                        default_outcome = 'succeeded', 
+                                        input_keys = ['head_left_right', 
+                                                      'head_up_down'], 
+                                        output_keys = ['wave_position', 'wave_yaw_degree'],
+                                        child_termination_cb = child_term_cb,
+                                        outcome_cb=out_cb)
+            with sm_conc:
+#                 sm_conc.StateMachine.add(
+#                                        'move_head',
+#                                        move_head_form(head_up_down=head_position),
+#                                        transitions={'succeeded': 'Say_Searching',
+#                                                     'preempted':'Say_Searching',
+#                                                     'aborted':'aborted'})
+#                 sm_conc.StateMachine.add(
+#                     'Say_Searching',
+#                     text_to_say(text_for_wave_searching, wait = False),
+#                     transitions={'succeeded':'wave_recognition', 'aborted':'wave_recognition', 'preempted':'wave_recognition'})
+                sm_conc.add(
+                            'move_head',
+                            move_head_form(head_up_down=head_position))
+                sm_conc.add(
+                            'Say_Searching',
+                            text_to_say(text_for_wave_searching, wait = False))
+                sm_conc.add(
+                            'wave_recognition',
+                            WaveDetection(8.0)) 
+            
+            smach.StateMachine.add('Concurrence',
+                                   sm_conc,
+                                   transitions={'succeeded':'Say_Found', 
+                                                'aborted':'Move_head_prepare',
+                                                'preempted':'preempted',
+                                                'face_detected':'Say_Found'})
+               
             #Hard-coded maximum time in order to detect wave 
-            smach.StateMachine.add(
-                'wave_recognition',
-                WaveDetection(4.0),
-                transitions={'succeeded': 'Say_Found', 'aborted': 'Move_head_prepare', 
-                'preempted': 'preempted'}) 
+#             smach.StateMachine.add(
+#                 'wave_recognition',
+#                 WaveDetection(4.0),
+#                 transitions={'succeeded': 'Say_Found', 'aborted': 'Move_head_prepare', 
+#                 'preempted': 'preempted'}) 
             
             smach.StateMachine.add(
                 'Say_Found',
