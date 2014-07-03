@@ -37,11 +37,11 @@ SKILLS TODO:
 -bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
 find_object(object)         --> object detection --Faked
 -        faliable    --> not found
---find_person(person)
+--find_person(person)        --> TO TEST
 --        faliable    --> not found
 --point_at(poi) 
 --ask_name()
-follow(person)              --> follow me
+-follow(person)              --> follow me --TO ASK ROGER
 --introduce_me()
 --learn_person(person)        --> face recognition
 --recognize_person(person)    --> face recognition
@@ -235,38 +235,19 @@ def call_follow(pers): #TODO
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
+            
+            sm = follow_learn()    #to finish, test and include
+            sm.execute()             
+            
+            sm2 = follow_operator()    #to finish, test and include
+            sm2.execute()    
+            sm2.userdata.in_learn_person = sm.userdata.in_learn_person
             #follow me
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_find_object(object_name): #TODO 
-    '''
-    out = aborted
-    tries = 0
-    while(out==aborted and tries<3):
-        print "SM : find_object %s" % (object_name)
-        tosay = "I'm going to search for "+object_name
-        speak = SpeakActionState(text=tosay)    
-        speak.execute(ud=None)
-        sm = SearchObjSM()
-        sm.userdata.object_to_search_for = object_name
-        sm.execute()
-        for i in range(len(sm.userdata.object_found.object_list)):
-            try:
-                sm.userdata.object_found.object_list[i].name == object_name
-                return succeeded
-            except IndexError:
-                tries = tries+1
-    
-    
-    
-    if (out == aborted):
-        tosayn = "Here it should be the " + object_name + " but I can't see it"
-        speakn = SpeakActionState(text=tosayn)    
-        speakn.execute(ud=None)
-    return succeeded
-    '''
     
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
