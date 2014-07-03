@@ -21,7 +21,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from util_states.topic_reader import topic_reader
 from pipol_tracker_pkg.msg import personArray,person
 from speech_states.say import text_to_say
-from tornado.options import define
+#from tornado.options import define
 from follow_me_learn_random import LearnPersonRandom
 from speech_states.say_with_enable import say_with_enable
 
