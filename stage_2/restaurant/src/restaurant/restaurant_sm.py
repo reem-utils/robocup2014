@@ -78,12 +78,12 @@ class RestaurantSM(smach.StateMachine):
             # Must we say something to start? "I'm ready" or something
             # Must we wait for the spoken order? 
                     
-            # Guide phase
-#             smach.StateMachine.add(
-#                  'guide_phase',
-#                  restaurantGuide(),
-#                  transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
-#                  'preempted': 'preempted'}) 
+           # Guide phase
+            smach.StateMachine.add(
+                 'guide_phase',
+                 restaurantGuide(),
+                 transitions={'succeeded': 'start_restaurant', 'aborted': 'aborted', 
+                 'preempted': 'preempted'}) 
             
             # Go to ordering location, i thinc it will not be necessary
             smach.StateMachine.add(
