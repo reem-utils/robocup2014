@@ -10,6 +10,7 @@
 
 import rospy
 import smach
+import operator
 
 class prepareData(smach.State):
     
@@ -35,7 +36,7 @@ class obtain_info(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'],
          input_keys=['object_name', 'object_location'], 
-         output_keys=['object_location','standard_error', 'object_location_number'])
+         output_keys=['object_location','standard_error', 'object_location_number','object_location_array'])
 
     def execute(self, userdata):
       
@@ -58,13 +59,19 @@ class obtain_info(smach.State):
             from object_states.recognize_object import recognize_object
             
             userdata.object_location_number = len(pois)
-            
+            loc_array = []
             for key, value in pois.iteritems():
-         
+                loc_array.append([value[2],value[1]])
+                
                 if prob < value[2]:
                     userdata.object_location = value[1]
                     prob = value[2]
-                    
+            aux = sorted(loc_array, key=operator.itemgetter(2))
+            aux2 = []
+            for locc, val in aux:
+                aux2 = locc
+            userdata.object_location_array = aux2
+            
             if prob == 0.0:
                 userdata.standard_error= "Can't find a location"
                 rospy.logerr("Can't find a location for " + objectName)
@@ -102,7 +109,7 @@ class GetObjectInfoSM(smach.StateMachine):
     def __init__(self, object_name = None):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['object_name'],
-                    output_keys=['object_location_number','standard_error', 'object_location'])
+                    output_keys=['object_location_number','standard_error', 'object_location', 'object_location_array'])
 
         with self:        
         

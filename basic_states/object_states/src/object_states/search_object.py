@@ -18,8 +18,13 @@ from speech_states.say import text_to_say
 from object_states.recognize_object import recognize_object
 from object_states.get_object_information import GetObjectInfoSM
 from hmac import trans_36
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 NUMBER_MAXIMUM_REDETECTIONS = 2
+
+OBJECT_FAIL_X = 0.80
+OBJECT_FAIL_Y = 0.0
+OBJECT_FAIL_Z = 0.0
 
 class prepareData(smach.State):
     
@@ -81,6 +86,46 @@ class fail_object_detection_check_poi(smach.State):
             userdata.number_search_object = 2
             return 'aborted'
 
+class prepare_next_poi(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded','aborted'],
+                             input_keys=['nav_first_pass', 'object_location_array'],
+                             output_keys=['object_location_array', 'nav_first_pass', 'nav_to_poi_name'])
+    def execute(self, userdata):
+        if len(userdata.object_location_array) >= 1:
+            userdata.nav_to_poi_name = userdata.object_location_array.pop()
+        else:
+            return 'aborted'
+        if userdata.nav_first_pass:
+            userdata.nav_first_pass = False
+            if len(userdata.object_location_array) >= 1:
+                userdata.nav_to_poi_name = userdata.object_location_array.pop()
+        
+        return 'succeeded'
+class pick_anything_prepare(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,
+                             outcomes=['succeeded', 'aborted'],
+                             input_keys=['object_name'],
+                             output_keys=['object_detected_name', 'object_position'])
+    def execute(self, userdata):
+        if type(userdata.object_name) is str:
+            userdata.object_detected_name = userdata.object_name
+        else:
+            userdata.object_detected_name = userdata.object_name.pop()
+        
+        #Sending PoseWithCovarianceStamped
+        obj_cov = PoseWithCovarianceStamped()
+        obj_cov.pose.pose.position.x = OBJECT_FAIL_X
+        obj_cov.pose.pose.position.Y = OBJECT_FAIL_Y
+        obj_cov.pose.pose.position.Z = OBJECT_FAIL_Z
+        obj_cov.header.frame_id = 'base_link'
+        userdata.object_position = obj_cov
+        
+        return 'succeeded'
+        
+        
 class SearchObjectSM(smach.StateMachine):
     """
     Executes a SM that search for object. 
@@ -111,6 +156,7 @@ class SearchObjectSM(smach.StateMachine):
         with self:
             self.userdata.number_search_object = 0
             #self.userdata.number_search_object_POI = 0
+            self.userdata.nav_first_pass = True
             
             smach.StateMachine.add('PrepareData',
                prepareData(object_name),
@@ -148,7 +194,8 @@ class SearchObjectSM(smach.StateMachine):
             smach.StateMachine.add(
                 'object_detection',
                 recognize_object(),
-                transitions={'succeeded': 'analyze_object_data', 'aborted': 'get_object_info_sm'})
+                #transitions={'succeeded': 'analyze_object_data', 'aborted': 'get_object_info_sm'})
+                transitions={'succeeded':'analyze_object_data', 'aborted':'fail_object_detection'})
             
             smach.StateMachine.add(
                 'analyze_object_data',
@@ -170,8 +217,10 @@ class SearchObjectSM(smach.StateMachine):
                              'succeeded':'say_re_detect'})
             smach.StateMachine.add(
                 'say_re_detect',
-                text_to_say('I am trying again to recognize the object you asked'),
+                text_to_say('I am trying again to detect the object you asked'),
                 transitions={'succeeded':'object_detection', 'aborted':'aborted'})
+            
+            
             smach.StateMachine.add(
                 'fail_object_detection_poi',
                 fail_object_detection_check_poi(),
@@ -179,7 +228,15 @@ class SearchObjectSM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_re_go',
                 text_to_say("I am going to another place to see if the object I am looking is there"),
-                transitions={'succeeded':'go_to_object', 'aborted':'aborted'})
+                transitions={'succeeded':'Prepare_next_poi', 'aborted':'aborted'})
+            smach.StateMachine.add(
+                'Prepare_next_poi',
+                prepare_next_poi(),
+                transitions={'succeeded':'go_to_object', 'aborted':'pick_anything_prepare'})
+            smach.StateMachine.add(
+                'pick_anything_prepare',
+                pick_anything_prepare(),
+                transitions={'succeeded':'succeeded', 'aborted':'aborted'})
 
 def main():
     rospy.init_node('search_object_node')
@@ -188,7 +245,7 @@ def main():
  
     with sm:
         smach.StateMachine.add('Search_Object',
-                            SearchObjectSM(),
+                            SearchObjectSM('Barritas'),
                             transitions={
                             'succeeded': 'succeeded', 'aborted': 'aborted'})
  
