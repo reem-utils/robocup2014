@@ -51,6 +51,7 @@ class createNavGoal(smach.State):
         """Create a MoveBaseGoal with x, y position and yaw rotation (in radians).
         Returns a MoveBaseGoal"""
         mb_goal = PoseStamped()
+        #mb_goal.header.stamp = rospy.get_rostime()
         mb_goal.header.frame_id = self.frame_id # Note: the frame_id must be map
         mb_goal.pose.position.x = x
         mb_goal.pose.position.y = y
@@ -85,7 +86,7 @@ class nav_to_coord_concurrent(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                  input_keys=['nav_to_coord_goal'],
                                  output_keys=['standard_error'])
-        self.coord_pub= rospy.Publisher('/move_base_simple/goal', PoseStamped)
+        self.coord_pub= rospy.Publisher('/move_base_simple/goal', PoseStamped, latch=True)
         with self: 
             self.userdata.standard_error='OK'
             smach.StateMachine.add('CreateNavGoal',
