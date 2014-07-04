@@ -27,7 +27,7 @@ def main():
         sm.userdata.grammar_name = None
 
         smach.StateMachine.add('ListenRepeatTest',
-            ListenRepeatSM("robocup/restaurantGuide"),
+            ListenRepeatSM("robocup/what_did_you_say_2"),
             transitions={'succeeded': 'ListenRepeatTest', 'aborted': 'ListenRepeatTest'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
