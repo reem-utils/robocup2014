@@ -27,7 +27,7 @@ sentence7: "Go to the bar, ask the person name, and recognize him"
 
 notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram
 
-nota: "if executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
+#nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
 
 
 
