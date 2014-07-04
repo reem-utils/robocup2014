@@ -2,7 +2,7 @@ ASR_LOOP: True
 ASR_ON: "False"
 GRAMATICA: "robocup/minimals"
 
-sentence: "go to the kitchen and ask my name and introduce yourself"
+sentence: "go to the kitchen, ask my name and introduce yourself"
 sentence8: "ask my name"
 sentence9: "introduce yourself"
 sentence10: "learn donald, recognize donald and find donald"
