@@ -1,8 +1,21 @@
 ASR_LOOP: True
 ASR_ON: "False"
-GRAMATICA: "robocup/general"
+GRAMATICA: "robocup/minimals"
 
-sentence: "find me"
+sentence: "go to the kitchen and ask my name and introduce yourself"
+sentence8: "ask my name"
+sentence9: "introduce yourself"
+sentence10: "learn donald, recognize donald and find donald"
+sentence11: "recognize donald"
+sentence14: "find donald"
+sentence12: "grasp the pringles"
+sentence13: "find me"
+sentence15: "bring me the pringles"
+sentence16: "bring the pringles to the dinner table"
+sentence17: "find a coke"
+sentence18: "point at me"
+sentence19: "follow me"
+
 sentence0: "retrieve the coke from the sofa, and leave the apartment"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
@@ -12,9 +25,9 @@ sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
 
-notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, VerbCategories.txt, newGrammar.cfg, general.gram/minimals.gram (to change between them HERE or in files:sm_gpsr_order, newUnderstanding, grammarReader, gpsrASAction)"
+notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram
 
-nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
+nota: "if executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
 
 
 

@@ -14,20 +14,18 @@ from std_srvs.srv import Empty
 from GenerateGoalScript import world
 from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST, SKILLS
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
-#TODO: find_person import FindPersonSM
-#TODO: complete_grasp_pipeline import CompleteGraspPipelineStateMachine as GraspSM
-#TODO: search_object_with_confidence import SearchObjectWithConfidenceStateMachine as SearchObjSM
-from navigation_states.nav_to_poi import nav_to_poi #navigation.move_to_room import MoveToRoomStateMachine as MoveToRoomSM
-# from pal_smach_utils.navigation.follow_and_stop import FollowAndStop as FollowMeSM
+from object_states.object_detect_sm import object_detect_sm
+from navigation_states.nav_to_poi import nav_to_poi
+from follow_me.follow_learn import LearnPerson
+from follow_me.follow_operator import FollowOperator
 from face_states.learn_face import learn_face
 from face_states.recognize_face import recognize_face
 from search_person_in_poi import SearchPersonSM
 from util_states.point_to_poi import point_to_poi
-#TODO: grasping.sm_release import ReleaseObjectStateMachine as ReleaseSM
-#TODO: recognize_face import RecognizeFaceStateMachine as RecognizePersonSM
-#TODO: introduce_yourself import IntroduceYourselfStateMachine as IntroduceSM
-#TODO: sound_action import SpeakActionState <-- listen to
+from object_grasping_states.place_object_sm import place_object_sm
+from object_grasping_states.pick_object_sm import pick_object_sm
 
 #edit your path in gpsrSoar/src/pathscript.py
 
@@ -35,14 +33,16 @@ from util_states.point_to_poi import point_to_poi
 SKILLS TODO:
 
 --go_to (poi)
-grasp    (object)           --> grasping
-bring_to(person)            --> grasping
-bring_to_loc(poi)           --> grasping
-find_object(object)         --> object detection
-find_person(person)         --> person detection
-point_at(poi)               --> to finish, adding point functionality and finishing turn one
+-grasp    (object)           --> grasping -- TO TEST
+-bring_to(person)            --> grasping -- TO TEST
+-bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
+-find_object(object)         --> object detection --always return succeeded regardless it seeing something or not
+-        faliable    --> not found
+-find_person(person)        --> TO TEST
+--        faliable    --> not found
+--point_at(poi) 
 --ask_name()
-follow(person)              --> follow me
+-follow(person)              --> follow me --TO ASK ROGER
 --introduce_me()
 --learn_person(person)        --> face recognition
 --recognize_person(person)    --> face recognition
@@ -78,6 +78,8 @@ if TEST:
 else:
     SLEEP_TIME = 3
 
+object_position = PoseStamped()
+
 class dummy(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
@@ -87,7 +89,7 @@ class dummy(smach.State):
 class speaker(smach.StateMachine): 
 
 
-    def __init__(self, text=None):
+    def __init__(self, text=None, waitu = True):
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'])
         
@@ -99,7 +101,7 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                         'SaySM',
-                        text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                        text_to_say(text,wait = waitu),    #uncomment and comment dumy to make the robot anounce what he is going to do
                         #dummy(),
                         transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
@@ -118,6 +120,21 @@ def call_go_to(loc_name,world):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             out = sm.execute()     
+            
+            
+        if out=='aborted':
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN REACHING ' + loc_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -137,6 +154,15 @@ def call_guide_to(loc_name,world):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             sm.execute()
+            
+            
+        if out=='aborted':
+            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN REACHING ' + loc_name)
+            time.sleep(SLEEP_TIME)            
+            return "aborted"
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -193,7 +219,7 @@ def call_point_at(loc_name): #TODO  #to finish, test and include
         while(out=='aborted' and tries<3):       
             tries = tries+1
             sm = point_to_poi(loc_name)    #to finish, test and include
-            sm.execute()    
+            out = sm.execute()    
     #############################################################################    
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -210,38 +236,19 @@ def call_follow(pers): #TODO
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
+            
+            sm = follow_learn()    #to finish, test and include
+            sm.execute()             
+            
+            sm2 = follow_operator()    #to finish, test and include
+            out = sm2.execute()    
+            sm2.userdata.in_learn_person = sm.userdata.in_learn_person
             #follow me
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
 def call_find_object(object_name): #TODO 
-    '''
-    out = aborted
-    tries = 0
-    while(out==aborted and tries<3):
-        print "SM : find_object %s" % (object_name)
-        tosay = "I'm going to search for "+object_name
-        speak = SpeakActionState(text=tosay)    
-        speak.execute(ud=None)
-        sm = SearchObjSM()
-        sm.userdata.object_to_search_for = object_name
-        sm.execute()
-        for i in range(len(sm.userdata.object_found.object_list)):
-            try:
-                sm.userdata.object_found.object_list[i].name == object_name
-                return succeeded
-            except IndexError:
-                tries = tries+1
-    
-    
-    
-    if (out == aborted):
-        tosayn = "Here it should be the " + object_name + " but I can't see it"
-        speakn = SpeakActionState(text=tosayn)    
-        speakn.execute(ud=None)
-    return succeeded
-    '''
     
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
@@ -251,8 +258,33 @@ def call_find_object(object_name): #TODO
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<3):      
+            ###
+#             out = 'succeeded'
+#             object_position.header.frame_id = "base_link"
+#             object_position.pose.position.x = 0.5
+#             object_position.pose.position.z = 1.0
+#             object_position.pose.orientation.w = 1.0 
+            ###            
+            sm = object_detect_sm()    #THIS ALWAYS RETURN succeded
+            out = sm.execute()                #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
+            object_position = sm.userdata.object_pose
             tries = tries+1
+            
+            
+        if out=='aborted':
+            tosay = "I couldn't find the " + object_name + " you asked for. It isn't here. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN FINDING ' + object_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I couldn't find the " + object_name + " you asked for. It isn't there. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -267,7 +299,9 @@ def call_grasp(obj): #TODO #adding grasping
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<3):   
+            sm.pick_object_sm(object_position)  #if not workng, blame chang
+            out = sm.execute()
             tries = tries+1       
             #grasping here
     #############################################################################
@@ -284,10 +318,25 @@ def call_find_person(person_name): #TOTEST
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<1):       
             tries = tries+1
             sm = SearchPersonSM(person_name)
             out = sm.execute()
+            
+            
+        if out=='aborted':
+            tosay = "I couldn't find the person known as " + person_name + ". He isn't here. I'm going to the referee to inform"
+            speak = speaker(tosay)
+            speak.execute()
+            rospy.logwarn('FAIL IN FINDING '+person_name)
+            time.sleep(SLEEP_TIME)
+            
+            call_go_to('referee',world)
+            tosay = "I couldn't find the person known as " + person_name + ". He isn't there. I'm afraid that sentence was from category 3"
+            speak = speaker(tosay)
+            speak.execute() 
+            
+            return "aborted"
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -305,7 +354,17 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<3):      
+            
+            person_object_position = PoseStamped()
+            person_object_position.header.frame_id = "base_link"
+            person_object_position.pose.position.x = 0.5
+            person_object_position.pose.position.z = 1.25
+            person_object_position.pose.orientation.w = 1.0  
+            
+            sm = place_object_sm(person_object_position)
+            out = sm.execute()
+            
             tries = tries+1
             #realese here
     #############################################################################
@@ -323,9 +382,24 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
     rospy.logwarn('call_bring_to_loc '+location_name)    
     #############################################################################
     if SKILLS :
+        param_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
+        
+        loc_object_position = PoseStamped()
+        loc_object_position.header.frame_id = "base_link"
+        loc_object_position.pose.position.x = 0.5
+        if rospy.has_param(param_name):            
+            loc_object_position.pose.position.z = rospy.get_param(param_name)
+        else:
+            loc_object_position.pose.position.z = 1.25
+        loc_object_position.pose.orientation.w = 1.0  
+    
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):       
+        while(out=='aborted' and tries<3):              
+            
+            sm = place_object_sm(loc_object_position)   
+            out = sm.execute()                
+            
             tries = tries+1
             #realese here
     #############################################################################
@@ -523,7 +597,8 @@ def main(world):
                 print "SM return: %s \n\n" % (out) 
                 if out=="succeeded": 
                     command.AddStatusComplete()
-                
+                elif out=="aborted":
+                    command.AddStatusError()
                 else:
                     print "gpsrSoar interface: unknown ERROR"
                     exit(1)

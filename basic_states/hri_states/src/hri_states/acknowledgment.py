@@ -74,8 +74,10 @@ class acknowledgment(smach.StateMachine):
             self.userdata.tts_wait_before_speaking=0
             self.userdata.standard_error='OK'
             self.userdata.manip_time_to_play=30
+            self.userdata.skip_planning=False
             
             smach.StateMachine.add(
+                                   
                                 'INIT_VAR',
                                 init_var(self.type_movement,
                                          self.tts_text),
@@ -89,7 +91,7 @@ class acknowledgment(smach.StateMachine):
                                                                            'manip_motion_to_play',
                                                                            'manip_time_to_play',
                                                                            'tts_wait_before_speaking',
-                                                                           'tts_lang'])
+                                                                           'tts_lang','skip_planning'])
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
@@ -101,7 +103,7 @@ class acknowledgment(smach.StateMachine):
                                 text_to_say())
 
                 sm.add('MOVE',
-                                play_motion_sm())
+                                play_motion_sm(skip_planning=False))
                 
             smach.StateMachine.add('PUT_MOVMENT', sm,
                                      transitions={'succeeded':'succeeded',

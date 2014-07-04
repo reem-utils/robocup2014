@@ -6,6 +6,8 @@ import roslib
 
 from emergency_situation.image_creator import ImageCreator
 from emergency_situation.pdf_creator import create_pdf
+from util_states.image_to_cv import image_converter
+
 import os
 import shutil
 
@@ -41,7 +43,7 @@ RESOLUTION = rospy.get_param("/emergency_situation/resolution")
 IMAGE_NAME = rospy.get_param("/emergency_situation/image")
 IMAGE_ORIGIN = rospy.get_param("/emergency_situation/origin")
 IMAGE_ORIGIN = [0, 0]
-IMAGE_NAME = "subMap_1.pgm"
+IMAGE_NAME = "subMap_0.pgm"
 
 
 class GeneratePDF_State(smach.State):
@@ -53,6 +55,7 @@ class GeneratePDF_State(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo("Informing Ambulance...............")
+        image_converter()
         image_created_number = ImageCreator(location_list=[userdata.person_location.pose.pose.position.x, userdata.person_location.pose.pose.position.y], 
                                         origin=IMAGE_ORIGIN,
                                         scale=RESOLUTION, 
@@ -65,10 +68,6 @@ class GeneratePDF_State(smach.State):
         #shutil.copy(PKG_PATH + '/config/' + "reem3.pdf", self.pendrive_location + '/reem3.pdf')
         rospy.loginfo("Ambulance informed successfully !!!!")
         return 'succeeded'
-
-
-
-
 
 
 

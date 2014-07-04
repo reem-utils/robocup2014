@@ -57,6 +57,9 @@ class DoInspection(smach.StateMachine):
         with self:
             self.userdata.pressed = False
             self.userdata.press = False
+            self.userdata.tts_time_before_speaking = 0
+            self.userdata.tts_text = ""
+            self.userdata.tts_lang = ""
             
             # Check if the button is pressed
             smach.StateMachine.add(

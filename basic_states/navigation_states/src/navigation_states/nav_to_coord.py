@@ -114,7 +114,7 @@ class nav_to_coord(smach.StateMachine):
 def main():
     rospy.loginfo('Go POi Node')
     rospy.init_node('go_poi')
-    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'],input_keys=['nav_to_coord_goal'])
     with sm:      
         sm.userdata.nav_to_coord_goal = [1.0,0.0,0.0]
         smach.StateMachine.add(

@@ -15,6 +15,8 @@ OKGREEN = '\033[92m'
 from speech_states.say import text_to_say
 from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from follow_learn import LearnPerson
+from manipulation_states.move_head_form import move_head_form
+from hri_states.acknowledgment import acknowledgment
 #from speech_states.listen_to import  ListenToSM
 #from learn_person import LearnPerson
 
@@ -39,12 +41,20 @@ class FollowMeInit(smach.StateMachine):
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
             self.userdata.tts_lang=None
+            self.userdata.head_left_right=None
+            self.userdata.head_up_down=None
             self.userdata.standard_error='OK'
             self.userdata.in_learn_person=1
+
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'INTRO','aborted':'INTRO'})
+
             smach.StateMachine.add('INTRO',
                                    text_to_say(START_FRASE),
-                                   transitions={'succeeded': 'Listen','aborted':'INTRO'})
-
+                                   transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER','aborted':'START_FOLLOWING_COME_CLOSER'})
+            
             smach.StateMachine.add('Listen',
                                    ListenWordSM_Concurrent("follow me"),
                                    transitions={'succeeded': 'START_FOLLOWING_COME_CLOSER',
@@ -56,7 +66,7 @@ class FollowMeInit(smach.StateMachine):
 
             # it learns the person that we have to follow
             smach.StateMachine.add('SM_LEARN_PERSON',
-                                   LearnPerson(),
+                                   LearnPerson(learn_face=True),
                                    transitions={'succeeded': 'SM_STOP_LEARNING',
                                                 'aborted': 'aborted'})
 

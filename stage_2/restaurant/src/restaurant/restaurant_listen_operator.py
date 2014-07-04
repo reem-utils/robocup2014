@@ -13,7 +13,7 @@ import math
 from speech_states.say import text_to_say
 from speech_states.say_yes_or_no import SayYesOrNoSM
 from speech_states.listen_and_check_word import ListenWordSM
-from navigation_states.get_current_robot_pose import get_current_robot_pose 
+from navigation_states.get_current_robot_pose_mapping import get_current_robot_pose_mapping 
 from speech_states.listen_to import ListenToSM    
 import roslib
 from geometry_msgs.msg import PoseWithCovarianceStamped
@@ -98,29 +98,33 @@ class proces_Tags(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['new_position','finish','aborted', 'preempted'], 
                                 input_keys=["asr_userSaid", 'asr_userSaid_tags', 'object'],
-                                output_keys=['objectName','objectOrientation'])
+                                output_keys=['objectName','objectOrientation','tts_text'])
         #self.tags = parserGrammar(GRAMMAR_NAME)
         
        
 
     def execute(self, userdata):
-        rospy.loginfo(OKGREEN+"i'm looking what tags are"+ENDC)
+        listTags = userdata.asr_userSaid_tags
+        rospy.loginfo(OKGREEN+"i'm looking what tags are    "+ str(listTags) +ENDC)
         rospy.loginfo(OKGREEN+str(userdata.asr_userSaid)+ENDC)
         #rospy.loginfo(OKGREEN+"TAGS: "+str(self.tags)+ENDC)
         #rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
         #userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
-        
-        if userdata.asr_userSaid=="finish" :
+        userdata.tts_text= "i have listened that "+userdata.asr_userSaid
+        if "guide" in userdata.asr_userSaid :
             rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
         
-        listTags = userdata.asr_userSaid_tags
+        
          
         #Process tags
-        userdata.object_array = []
+       # userdata.object_array = []
+        locationValue=None
+        objectValue=None
         locationValue = [tag for tag in listTags if tag.key == 'direction']
-        objectValue = [tag for tag in listTags if tag.key == 'class']
-     
+        objectValue = [tag for tag in listTags if tag.key == 'objects']
+        
+        
         if objectValue and locationValue:
             userdata.objectOrientation = locationValue[0].value
             userdata.objectName = objectValue[0].value
@@ -192,14 +196,19 @@ class ListenOperator(smach.StateMachine):
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
+                                   transitions={'succeeded': 'feedback_listen',
+                                                'aborted': 'aborted','preempted':'preempted'})
+            
+            smach.StateMachine.add('feedback_listen',
+                                   text_to_say("i am listening"),
                                    transitions={'succeeded': 'LISTEN_TO',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
-            
             smach.StateMachine.add('LISTEN_TO',
                                    ListenToSM(GRAMMAR_NAME),
-                                   transitions={'succeeded': 'PROCES_TAGS',
+                                   transitions={'succeeded':'PROCES_TAGS',# 'PROCES_TAGS',
                                                 'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
+
             
         
             smach.StateMachine.add('CAN_YOU_REPEAT',
@@ -209,12 +218,17 @@ class ListenOperator(smach.StateMachine):
                         
             smach.StateMachine.add('PROCES_TAGS',
                        proces_Tags(),
-                       transitions={'new_position': 'GET_POSE','finish':'succeeded',
+                       transitions={'new_position': 'feedback_repead','finish':'succeeded',
                                     'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
+            
+            smach.StateMachine.add('feedback_repead',
+                       text_to_say(),
+                       transitions={'succeeded': 'GET_POSE',
+                                    'aborted': 'aborted','preempted':'preempted'})
 
             
             smach.StateMachine.add('GET_POSE',
-                                   get_current_robot_pose(),
+                                   get_current_robot_pose_mapping(),
                                    transitions={'succeeded': 'SAVE_POINT',
                                                 'aborted': 'GET_POSE',
                                                 'preempted':'preempted'})

@@ -21,7 +21,7 @@ RESTAURANT_guide.PY
 """
 
 
-SAY_FINISH_FOLLOWING= "OK, now we can start ordering 33"
+SAY_FINISH_FOLLOWING= "OK, i have finish learning"
 SAY_LETS_GO=" i'M READY, WHEN YOU WANT WE CAN START"
 
 import roslib
@@ -53,18 +53,6 @@ class init_var(smach.State):
         userdata.standard_error="Dummy"
         return 'succeeded'
      
-
-
-    
-
-class learn_person(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded',
-                                    'aborted','preempted'],output_keys=['in_learn_person'])
-    def execute(self,userdata):
-        rospy.loginfo("im learning a person")
-        userdata.in_learn_person=1
-        return 'succeeded'
              
         
 def child_term_cb(outcome_map):
@@ -111,7 +99,7 @@ class restaurantGuide(smach.StateMachine):
             
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'LEARN_INIT',
+                                   transitions={'succeeded': 'CHANGE_STATE_MAP',
                                                 'aborted': 'aborted','preempted':'preempted'})
             
             def navigation_MAP_cb(userdata,request):
@@ -125,7 +113,7 @@ class restaurantGuide(smach.StateMachine):
                 return update
             
             smach.StateMachine.add('CHANGE_STATE_MAP',
-                                    ServiceState('pal_navigation_sm',Acknowledgment,
+                                    ServiceState('/pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_MAP_cb ),
                                     transitions = {'succeeded': 'LEARN_INIT',
                                                     'aborted':'CHANGE_STATE_MAP'})
@@ -145,7 +133,7 @@ class restaurantGuide(smach.StateMachine):
             with sm:
                 # it follow the person for long time
                 sm.add('FOLLOW_ME',
-                                FollowOperator())
+                                FollowOperator(distToHuman=0.4, feedback=False, learn_if_lost=True))
                 # here it have to listen and put pois in the map
                 sm.add('LISTEN_OPERATOR_RESTAURANT',
                                 ListenOperator())
@@ -156,7 +144,7 @@ class restaurantGuide(smach.StateMachine):
             
             
             smach.StateMachine.add('CHANGE_STATE_STOP',
-                                    ServiceState('pal_navigation_sm',Acknowledgment,
+                                    ServiceState('/pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_LOC_cb ),
                                     transitions = {'succeeded': 'FINISH',
                                                    'aborted':'CHANGE_STATE_STOP'})

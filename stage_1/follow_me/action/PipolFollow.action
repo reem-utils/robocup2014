@@ -1,0 +1,8 @@
+# Id from pipol_tracker
+int32 id_to_follow
+---
+# No result
+string result
+---
+# No feedback
+string feedback
