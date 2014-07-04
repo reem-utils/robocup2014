@@ -94,13 +94,6 @@ class process_place_location(smach.State):
         if foundObject:
             pois = rospy.get_param("/mmap/object/" + object_class)
             userdata.nav_to_poi_name = pois.values().pop()[1]
-            # Check if object_position is the correct
-            rospy.logwarn(type(userdata.object_position))
-            userdata.object_position = PoseStamped()
-            userdata.object_position.header.frame_id = "base_link"
-            userdata.object_position.pose.position.x = userdata.object_position.pose.position.x
-            userdata.object_position.pose.position.z = 1.0
-            userdata.object_position.pose.orientation.w = 1.0
         
             # Prepare the place location
             pois = rospy.get_param("/mmap/place")
@@ -212,16 +205,16 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_start_obj_recognition',
                  text_to_say("I'm going to start the Object recognition process.", wait=False),
-                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
+                 transitions={'succeeded': 'Object_Recognition_and_Grasping', 'aborted': 'Object_Recognition_and_Grasping'}) 
              
             #TODO: Now only the 'succeed' is considered... Should the failure considered also!
             smach.StateMachine.add(
                 'Object_Recognition_and_Grasping',
                 object_detection_and_grasping_sm(),
-                transitions={'succeeded': 'say_go_second_location', 
+                transitions={'succeeded': 'Process_Place_location', 
                              'aborted': 'aborted', 
-                             'fail_object_grasping':'fail_object_grasping',
-                             'fail_object_detection':'fail_object_detection'})
+                             'fail_object_grasping':'aborted',
+                             'fail_object_detection':'try_again_recognition'})
              
             smach.StateMachine.add(
                 'Process_Place_location',
@@ -230,18 +223,18 @@ class PickPlaceSM(smach.StateMachine):
                              'aborted':'aborted'})
 
             # Do object_recognition 
-            smach.StateMachine.add(
-                'object_recognition',
-                recognize_object(),
-                transitions={'succeeded': 'process_object_recognition', 'aborted': 'try_again_recognition', 
-                'preempted': 'preempted'}) 
-  
-            # Process the objects recognized
-            smach.StateMachine.add(
-                'process_object_recognition',
-                process_place_location(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
-                'preempted': 'preempted'}) 
+#             smach.StateMachine.add(
+#                 'object_recognition',
+#                 recognize_object(),
+#                 transitions={'succeeded': 'process_object_recognition', 'aborted': 'try_again_recognition', 
+#                 'preempted': 'preempted'}) 
+#   
+#             # Process the objects recognized
+#             smach.StateMachine.add(
+#                 'process_object_recognition',
+#                 process_place_location(),
+#                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
+#                 'preempted': 'preempted'}) 
                         
             # We don't recognized the object
             smach.StateMachine.add(
