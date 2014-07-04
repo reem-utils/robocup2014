@@ -42,7 +42,7 @@ class Prepare_data(smach.State):
         object_covariance = self.object_position if self.object_position else userdata.object_position
         object_stamped = PoseStamped()
         object_stamped.header = object_covariance.header
-        object_stamped.pose = object_covariance.pose.pose
+        object_stamped.pose = object_covariance.pose
         userdata.object_pick_position = object_stamped
         return 'succeeded'
 

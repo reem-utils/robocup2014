@@ -80,7 +80,7 @@ class process_place_location(smach.State):
     def __init__(self):
         smach.State.__init__(self,
                              outcomes = ['succeeded', 'aborted', 'preempted'], 
-                             input_keys = ['object_pose','object_detected_name'], 
+                             input_keys = ['object_position','object_detected_name','nav_to_poi_name', 'pose_to_place'], 
                              output_keys = ['nav_to_poi_name','pose_to_place'])
     def execute(self, userdata):
         objectList = rospy.get_param("mmap/object/information")
@@ -95,15 +95,24 @@ class process_place_location(smach.State):
             pois = rospy.get_param("/mmap/object/" + object_class)
             userdata.nav_to_poi_name = pois.values().pop()[1]
             # Check if object_position is the correct
+            rospy.logwarn(type(userdata.object_position))
+            userdata.object_position = PoseStamped()
+            userdata.object_position.header.frame_id = "base_link"
+            userdata.object_position.pose.position.x = userdata.object_position.pose.position.x
+            userdata.object_position.pose.position.z = 1.0
+            userdata.object_position.pose.orientation.w = 1.0
+        
             # Prepare the place location
-            pois = rospy.get_param("/mmap/place/" + userdata.nav_to_poi_name)
-            poi = pois.values().pop()
+            pois = rospy.get_param("/mmap/place")
+            for key,value in pois.iteritems():
+                if value[1] == userdata.nav_to_poi_name:
+                    userdata.pose_to_place = PoseStamped()
+                    userdata.pose_to_place.header.frame_id = "base_link"
+                    userdata.pose_to_place.pose.position.x = value[2]
+                    userdata.pose_to_place.pose.position.z = value[3]
+                    userdata.pose_to_place.pose.orientation.w = value[4]
+                    break  
             
-            userdata.pose_to_place = PoseStamped()
-            userdata.pose_to_place.header.frame_id = "base_link"
-            userdata.pose_to_place.pose.position.x = poi[2]
-            userdata.pose_to_place.pose.position.z = poi[3]
-            userdata.pose_to_place.pose.orientation.w = poi[4]
             return 'succeeded'
         
         return 'aborted'
@@ -171,6 +180,7 @@ class PickPlaceSM(smach.StateMachine):
             self.userdata.tts_text = ''
             self.userdata.loop_iterations = 0
             self.userdata.did_unk = False
+            self.userdata.object_name = ['Pringles', 'Barritas']
             
             # Say start Pick and Place
             smach.StateMachine.add(
@@ -205,19 +215,19 @@ class PickPlaceSM(smach.StateMachine):
                  transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
              
             #TODO: Now only the 'succeed' is considered... Should the failure considered also!
-#             smach.StateMachine.add(
-#                 'Object_Recognition_and_Grasping',
-#                 object_detection_and_grasping_sm(),
-#                 transitions={'succeeded': 'say_go_second_location', 
-#                              'aborted': 'aborted', 
-#                              'fail_object_grasping':'fail_object_grasping',
-#                              'fail_object_detection':'fail_object_detection'})
-#             
-#             smach.StateMachine.add(
-#                 'Process_Place_location',
-#                 process_place_location(),
-#                 transitions={'succeeded':'say_go_second_location',
-#                              'aborted':'aborted'})
+            smach.StateMachine.add(
+                'Object_Recognition_and_Grasping',
+                object_detection_and_grasping_sm(),
+                transitions={'succeeded': 'say_go_second_location', 
+                             'aborted': 'aborted', 
+                             'fail_object_grasping':'fail_object_grasping',
+                             'fail_object_detection':'fail_object_detection'})
+             
+            smach.StateMachine.add(
+                'Process_Place_location',
+                process_place_location(),
+                transitions={'succeeded':'say_go_second_location',
+                             'aborted':'aborted'})
 
             # Do object_recognition 
             smach.StateMachine.add(
