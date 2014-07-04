@@ -2,8 +2,8 @@ ASR_LOOP: True
 ASR_ON: "False"
 GRAMATICA: "robocup/minimals"
 
-sentence: "go to the kitchen"
-sentence10: "grasp the pringles"
+sentence10: "go to the kitchen"
+sentence: "grasp the pringles"
 sentence11: "bring me the pringles"
 sentence12: "bring the pringles to the dinner table"
 sentence13: "find a coke"
