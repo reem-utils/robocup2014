@@ -44,7 +44,7 @@ class NamePreparation(smach.State):
             output_keys=['name'])
 
     def execute(self,person_name, userdata):
-        if person_name = 'person':
+        if person_name == 'person':
             userdata.name = ''
         else:
             userdata.name = person_name

@@ -40,7 +40,7 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 
 <location> = charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table;
 
-<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | spoons | glass;
+<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | pringles | beer | lemonade | milo | water | spoons | glass;
 
 <category> = drink | food | kitchenware | snack;
 
