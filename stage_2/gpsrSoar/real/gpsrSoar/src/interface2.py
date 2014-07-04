@@ -36,9 +36,9 @@ SKILLS TODO:
 -grasp    (object)           --> grasping -- TO TEST
 -bring_to(person)            --> grasping -- TO TEST
 -bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
-find_object(object)         --> object detection --Faked
+-find_object(object)         --> object detection --Faked
 -        faliable    --> not found
---find_person(person)        --> TO TEST
+-find_person(person)        --> TO TEST
 --        faliable    --> not found
 --point_at(poi) 
 --ask_name()
