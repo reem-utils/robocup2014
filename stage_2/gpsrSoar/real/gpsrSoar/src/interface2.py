@@ -89,10 +89,11 @@ class dummy(smach.State):
 class speaker(smach.StateMachine): 
 
 
-    def __init__(self, text=None, waitu = True):
+    def __init__(self, text=None, wait = True):
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'])
         
+        self.wait = wait
         with self: 
         
             self.userdata.tts_wait_before_speaking=0
@@ -101,7 +102,7 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                         'SaySM',
-                        text_to_say(text,wait = waitu),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                        text_to_say(text,wait = self.wait),    #uncomment and comment dumy to make the robot anounce what he is going to do
                         #dummy(),
                         transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
@@ -109,7 +110,7 @@ class speaker(smach.StateMachine):
 def call_go_to(loc_name,world):
 
     tosay = "I'm going to the "+str(loc_name)
-    speak = speaker(tosay)
+    speak = speaker(tosay,wait=False)
     speak.execute()
     rospy.logwarn('call_go_to '+ loc_name)
     #############################################################################
