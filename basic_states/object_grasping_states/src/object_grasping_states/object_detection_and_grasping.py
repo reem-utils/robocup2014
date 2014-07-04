@@ -27,12 +27,9 @@ class prepare_grasp(smach.State):
                              outcomes=['succeeded', 'aborted'],
                              input_keys=['object_position'],
                              output_keys=['object_position'])
-        
     def execute(self, userdata):
         userdata.object_position = userdata.object_position
-
-        #TODO: Add 0.1 to object_pose z axis
-        
+        return 'succeeded'
         
 class object_detection_and_grasping_sm(smach.StateMachine):
     def __init__(self):
