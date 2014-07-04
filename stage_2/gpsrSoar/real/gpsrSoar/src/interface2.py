@@ -89,7 +89,7 @@ class dummy(smach.State):
 class speaker(smach.StateMachine): 
 
 
-    def __init__(self, text=None):
+    def __init__(self, text=None, waitu = True):
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'])
         
@@ -101,7 +101,7 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                         'SaySM',
-                        text_to_say(text),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                        text_to_say(text,wait = waitu),    #uncomment and comment dumy to make the robot anounce what he is going to do
                         #dummy(),
                         transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
@@ -219,7 +219,7 @@ def call_point_at(loc_name): #TODO  #to finish, test and include
         while(out=='aborted' and tries<3):       
             tries = tries+1
             sm = point_to_poi(loc_name)    #to finish, test and include
-            sm.execute()    
+            out = sm.execute()    
     #############################################################################    
     time.sleep(SLEEP_TIME)
     return "succeeded"
@@ -241,7 +241,7 @@ def call_follow(pers): #TODO
             sm.execute()             
             
             sm2 = follow_operator()    #to finish, test and include
-            sm2.execute()    
+            out = sm2.execute()    
             sm2.userdata.in_learn_person = sm.userdata.in_learn_person
             #follow me
     #############################################################################
@@ -266,8 +266,8 @@ def call_find_object(object_name): #TODO
 #             object_position.pose.position.z = 1.0
 #             object_position.pose.orientation.w = 1.0 
             ###            
-            sm = object_detect_sm()    #to finish, test and include
-            sm.execute()    
+            sm = object_detect_sm()    #THIS ALWAYS RETURN succeded
+            out = sm.execute()                #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
             object_position = sm.userdata.object_pose
             tries = tries+1
             
@@ -300,7 +300,8 @@ def call_grasp(obj): #TODO #adding grasping
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):   
-            pick_object_sm(object_position)  #if not workng, blame chang
+            sm.pick_object_sm(object_position)  #if not workng, blame chang
+            out = sm.execute()
             tries = tries+1       
             #grasping here
     #############################################################################
@@ -361,7 +362,8 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
             person_object_position.pose.position.z = 1.25
             person_object_position.pose.orientation.w = 1.0  
             
-            place_object_sm(person_object_position)
+            sm = place_object_sm(person_object_position)
+            out = sm.execute()
             
             tries = tries+1
             #realese here
@@ -395,7 +397,8 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         tries = 0
         while(out=='aborted' and tries<3):              
             
-            place_object_sm(loc_object_position)                   
+            sm = place_object_sm(loc_object_position)   
+            out = sm.execute()                
             
             tries = tries+1
             #realese here
