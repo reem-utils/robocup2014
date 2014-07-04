@@ -1,6 +1,6 @@
 ASR_LOOP: True
 ASR_ON: "False"
-GRAMATICA: "robocup/general"
+GRAMATICA: "robocup/minimals"
 
 sentence: "bring me a coke"
 sentence0: "retrieve the coke from the sofa, and leave the apartment"
@@ -12,7 +12,7 @@ sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
 
-notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, VerbCategories.txt, newGrammar.cfg, general.gram/minimals.gram (to change between them HERE or in files:sm_gpsr_order, newUnderstanding, grammarReader, gpsrASAction)"
+notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram (to change between them HERE or in files:sm_gpsr_order, newUnderstanding, grammarReader, gpsrASAction)"
 
 nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
 

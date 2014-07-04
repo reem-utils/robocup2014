@@ -36,6 +36,20 @@ class DummyStateMachine(smach.State):
 
         rospy.sleep(1)
         return 'succeeded'
+    
+class NamePreparation(smach.State):
+    def __init__(self,person_name):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+            input_keys=['name'], 
+            output_keys=['name'])
+
+    def execute(self,person_name, userdata):
+        if person_name = 'person':
+            userdata.name = ''
+        else:
+            userdata.name = person_name
+            
+        return 'succeeded'
 
  
 class Wait_search(smach.State):
@@ -210,6 +224,12 @@ class SearchPersonSM(smach.StateMachine):
             self.userdata.tts_text = ''
             self.userdata.tts_lang = 'en_US'
                         
+
+            smach.StateMachine.add(
+                                   'Name_Preparation',
+                                   NamePreparation(person_name),
+                                   transitions={'succeeded': 'Say_Searching', 'aborted': 'aborted', 
+                                    'preempted': 'preempted'})            
 
             smach.StateMachine.add(
                                    'Say_Searching',
