@@ -2,7 +2,7 @@ ASR_LOOP: True
 ASR_ON: "False"
 GRAMATICA: "robocup/minimals"
 
-sentence: "go to the kitchen and ask my name and introduce yourself"
+sentence: "go to the kitchen, ask donald name and introduce yourself"
 sentence8: "ask my name"
 sentence9: "introduce yourself"
 sentence10: "learn donald, recognize donald and find donald"
@@ -25,9 +25,9 @@ sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
 
-notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram
+notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram"
 
-#nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
+nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
 
 
 

@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import roslib
-#roslib.load_manifest('pal_smach_utils')
 import rospy
 import smach
 from smach import *
@@ -16,9 +15,7 @@ from pal_interaction_msgs.msg import *
 from pal_interaction_msgs.srv import *
 
 from speech_states.say import text_to_say
-#from pal_smach_utils.speech.did_you_say_yes_or_no_sm import HearingConfirmationSM
 from speech_states.say_yes_or_no import SayYesOrNoSM
-#from pal_smach_utils.utils.timeout_container import SleepState
 
 from pal_interaction_msgs.msg._ASREvent import ASREvent
 
@@ -194,7 +191,6 @@ class BringOrderLoc(smach.State):
                   print "WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGHHHHHHHHHHHHHHHHHHHHH "+userdata.userSaidData
                   if userdata.location_name == '':
                     if 'fridge' in userdata.userSaidData: # TODO: recorrer la lista de locations para cogerlo
-                        print 'TODO VA BIEN, MIENTRAS SUENE ESTA ALARMA TODO VA BIEN'
                         userdata.location_name = 'fridge'
                         return 'succeeded'
                   return 'aborted'
@@ -231,13 +227,9 @@ class askMissingInfo(smach.StateMachine):
                                                remapping={'asr_userSaid': 'userSaidData', 'asr_userSaid_tags':'userSaidTags'})
                         
                         smach.StateMachine.add('BRING_LOCATION',
-                                               BringOrderLoc(),#BringLocationAsk(),
+                                               BringOrderLoc(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'PREPARATION_CONFIRM_OBJECT', 'preempted': 'preempted'},
                                                remapping={'location_name': 'location_name'})
-
-#                         smach.StateMachine.add('PRINT_MESSAGE',
-#                                                PrintUserData(),
-#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})    
 
                         smach.StateMachine.add('PREPARATION_CONFIRM_OBJECT',
                                                prepare_confirm_info(),
