@@ -122,7 +122,7 @@ def new_world(loc_list):  #generates a new world
 
 def ask_data(Type='LOCATIONS', objectName='coke'):    
     if TEST:
-        return 'lift'
+        return idx2obj(1,Type)
     ad = askMissingInfoSM(Type=Type, objectName=objectName)
     #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
     #ad.userdata.dataType = Type
@@ -134,16 +134,17 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 
 def ask_category(category):
     if TEST:
-        if category == "drink":
-            return 'coke'
-        if category == "food":
-            return 'cookies'
-        if category == "snack":
-            return 'chocolate'
-        if category == "cleaning":
-            return 'deodorant'
-        if category == "kitchenware":
-            return 'spoon'
+        return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category))
+#         if category == "drink":
+#             return 'coke'
+#         if category == "food":
+#             return 'cookies'
+#         if category == "snack":
+#             return 'chocolate'
+#         if category == "cleaning":
+#             return 'deodorant'
+#         if category == "kitchenware":
+#             return 'spoon'
     print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
@@ -154,20 +155,21 @@ def ask_category(category):
 
 def ask_category_loc(category):
     if TEST:
-        if category == "table":
-            return 'kitchen table'
-        if category == "shelf":
-            return 'bookshelf'
-        if category == "appliance":
-            return 'fridge'
-        if category == "utensils":
-            return 'plant'
-        if category == "seat":
-            return 'armchair'
-        if category == "seating":
-            return 'armchair'
-        if category == "door":
-            return 'exit'
+        return idx2obj(1,rospy.get_param('/robocup_params/locations'))
+#         if category == "table":
+#             return 'kitchen table'
+#         if category == "shelf":
+#             return 'bookshelf'
+#         if category == "appliance":
+#             return 'fridge'
+#         if category == "utensils":
+#             return 'plant'
+#         if category == "seat":
+#             return 'armchair'
+#         if category == "seating":
+#             return 'armchair'
+#         if category == "door":
+#             return 'exit'
     ad = askCategoryLocSM(GRAMMAR_NAME = category) 
     out = ad.execute()
     obj = ad.userdata._data['location_name']

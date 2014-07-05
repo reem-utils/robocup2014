@@ -32,7 +32,7 @@ sp {gp*apply*initialize-gp
    (<l14> ^id 14 ^pointed-at no)
       (<r> ^pointedAtLoc -1
            ^introduced no
-           ^locId 13
+           ^locId 2
            ^id 1
            ^obj1Id -1)
 
@@ -56,7 +56,7 @@ sp {gp*apply*initialize-gp
 
    (<d> ^name go-to
         ^robot <rr>)
-   (<rr> ^locId 
+   (<rr> ^locId 12
          ^id 1)
 
 }
