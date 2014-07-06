@@ -33,6 +33,7 @@ from manipulation_states.give_object import give_object
 from object_grasping_states.pick_object_sm import pick_object_sm
 from object_grasping_states.place_object_sm import place_object_sm
 from geometry_msgs.msg import PoseStamped
+from hri_states.recognize_object_and_pick import RecObjectAndPick
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -221,10 +222,7 @@ class CocktailPartySM(smach.StateMachine):
             self.userdata.object_name = ""
             self.userdata.manip_time_to_play = 4
             self.userdata.did_pick = True
-            
-            # Must we say something to start? "I'm ready" or something
-            # Must we wait for the spoken order? 
-            
+
             smach.StateMachine.add(
                  'init_cocktail',
                  text_to_say("Ready for cocktail party"),
@@ -281,7 +279,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                  'wait_for_person',
                  detect_face(),
-                 transitions={'succeeded': 'learning_person', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'learning_person', 'aborted': 'ask_for_person'})
             
             # Learn Person -> Ask name + Face Recognition
             # TODO: Set database
@@ -294,7 +292,7 @@ class CocktailPartySM(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to drink?", GRAMMAR_NAME),
+                AskQuestionSM("What would you like to order?", GRAMMAR_NAME),
                 transitions={'succeeded': 'process_order', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
 
@@ -309,43 +307,64 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'say_got_it',
                 text_to_say("I got it!"),
-                transitions={'succeeded': 'go_to_storage', 'aborted': 'ask_order', 
+                transitions={'succeeded': 'go_to_storage', 'aborted': 'go_to_storage', 
                 'preempted': 'preempted'}) 
             
             # Go to the storage_room
             smach.StateMachine.add(
                 'go_to_storage',
                 nav_to_poi("storage_room"),
-                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'go_to_storage', 
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'go_to_storage', 
                 'preempted': 'preempted'}) 
+            
+            # Recognize and pick object if found
+            smach.StateMachine.add(
+                'recognize_object_and_pick',
+                RecObjectAndPick(),
+                transitions={'succeeded': 'go_to_party', 
+                             'fail_grasp':'go_to_party',
+                             'fail_recognize': 'try_again_recognition'})
             
             # Say start object recognition
-            smach.StateMachine.add(
-                 'say_start_obj_recognition',
-                 text_to_say("I'm going to start the Object recognition"),
-                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
-             
-            # Do object_recognition 
-            smach.StateMachine.add(
-                'object_recognition',
-                dummy_recognize(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
-                'preempted': 'preempted'}) 
- 
-            # Say grasp object
-            smach.StateMachine.add(
-                'say_grasp_order',
-                text_to_say("I'm going to grasp it"),
-                transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
-                'preempted': 'preempted'}) 
-            
-            # Grasp Object
-            smach.StateMachine.add(
-                'grasp_food_order',
-                pick_object_sm(),
-                transitions={'succeeded': 'go_to_party', 'aborted': 'Grasp_fail_Ask_Person', 
-                'preempted': 'preempted'}) 
+#             smach.StateMachine.add(
+#                  'say_start_obj_recognition',
+#                  text_to_say("I'm going to start the Object recognition"),
+#                  transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
+#              
+#             # Do object_recognition 
+#             smach.StateMachine.add(
+#                 'object_recognition',
+#                 dummy_recognize(),
+#                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
+#                 'preempted': 'preempted'}) 
+#  
+#             # Say grasp object
+#             smach.StateMachine.add(
+#                 'say_grasp_order',
+#                 text_to_say("I'm going to grasp it"),
+#                 transitions={'succeeded': 'grasp_food_order', 'aborted': 'Grasp_fail_Ask_Person', 
+#                 'preempted': 'preempted'}) 
+#             
+#             # Grasp Object
+#             smach.StateMachine.add(
+#                 'grasp_food_order',
+#                 pick_object_sm(),
+#                 transitions={'succeeded': 'go_to_party', 'aborted': 'Grasp_fail_Ask_Person', 
+#                 'preempted': 'preempted'}) 
 
+            # We don't recognized the object
+            smach.StateMachine.add(
+                'try_again_recognition',
+                checkLoop(),
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
+                'preempted': 'preempted', 'end':'say_fail_recognize'}) 
+        
+            # Say fail recognize objects
+            smach.StateMachine.add(
+                 'say_fail_recognize', 
+                 text_to_say("I'm not able to recognized any object."),
+                 transitions={'succeeded': 'Grasp_fail_Ask_Person', 'aborted': 'Grasp_fail_Ask_Person'})
+            
             # Ask for grasp object
             smach.StateMachine.add(
                 'Grasp_fail_Ask_Person',
@@ -356,7 +375,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                  'Rest_arm',
                  play_motion_sm('rest_object_right'),
-                 transitions={'succeeded':'go_to_party', 'aborted':'go_to_party', 'preempted':'go_to_party'})
+                 transitions={'succeeded':'change_did_pick', 'aborted':'change_did_pick', 'preempted':'change_did_pick'})
       
             smach.StateMachine.add(
                  'change_did_pick',
