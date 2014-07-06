@@ -138,6 +138,10 @@ def call_go_to(loc_name,world):
             speak.execute() 
             
             return "aborted"
+        else:
+            tosay = "I arrivet to the " + loc_name
+            speak = speaker(tosay)
+            speak.execute()
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
