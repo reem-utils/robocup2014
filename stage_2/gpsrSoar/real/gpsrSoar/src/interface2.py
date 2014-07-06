@@ -102,7 +102,7 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                         'SaySM',
-                        text_to_say(text,wait = self.wait),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                        text_to_say(text,wait = self.wait),    #comment and uncomment dumy to make the robot anounce what he is going to do
                         #dummy(),
                         transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
@@ -116,8 +116,8 @@ def call_go_to(loc_name,world):
     #############################################################################
     if SKILLS :
         out = 'aborted'
-        tries = 0
-        while(out=='aborted' and tries<3):       
+        tries = 0       
+        while(out=='aborted' and tries<3):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             out = sm.execute()     
