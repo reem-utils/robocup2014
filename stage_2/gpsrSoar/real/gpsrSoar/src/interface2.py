@@ -80,6 +80,8 @@ else:
 
 object_position = PoseStamped()
 
+ROOMS = rospy.get_param('/robocup_params/rooms')
+
 class dummy(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'])
@@ -255,22 +257,26 @@ def call_find_object(object_name): #TODO
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_find_object '+object_name)
+    
     #############################################################################
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):      
-            ###
-#             out = 'succeeded'
-#             object_position.header.frame_id = "base_link"
-#             object_position.pose.position.x = 0.5
-#             object_position.pose.position.z = 1.0
-#             object_position.pose.orientation.w = 1.0 
-            ###            
-            sm = object_detect_sm()    #THIS ALWAYS RETURN succeded
-            out = sm.execute()                #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
-            object_position = sm.userdata.object_pose
-            tries = tries+1
+    
+        current_position = world.get_current_position()        
+        if current_position in ROOMS:
+            room = rospy.get_param('/robocup_params/room/' + current_position)
+                
+        #while(out=='aborted' and tries<3):      
+        for table in room :
+            if out == 'succeeded' and tries == 3:
+                break
+            call_go_to(table)        
+             
+            sm = object_detect_sm()#
+            out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
+            object_position = sm.userdata.object_pose #
+            tries = tries+1#
             
             
         if out=='aborted':
