@@ -1,0 +1,13 @@
+<launch>
+
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find restaurant)/launch/restaurant_params.launch" />
+
+    <!-- State Machine -->
+    <node 
+    	pkg ="restaurant"
+        type="check_dependences.py"
+        name="check_dependences"
+        output="screen">
+     </node>
+</launch>

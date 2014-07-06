@@ -122,7 +122,7 @@ class announce_sentence_understood(smach.State):
         announced = "I understood that I should: \n"
         print('INSIDE CALLBACK')
         for command in userdata.o_actionSet:
-            announced = announced + "%s %s %s %s \n" % (
+            announced = announced + "%s %s %s %s. \n" % (
                 command.action,
                 command.location,
                 command.person,

@@ -248,7 +248,7 @@ class orderList():
                     r = str(prod.rhs()).strip('(').strip(')').strip(',').strip("'")
                     if r == 'it':
                         item = self.actionSet[len(self.actionSet)-1].item
-                    elif r == 'me':
+                    elif r == 'me' or r == 'my':
                         person = 'referee'
                     elif r == 'him':
                         person = pervious_person
