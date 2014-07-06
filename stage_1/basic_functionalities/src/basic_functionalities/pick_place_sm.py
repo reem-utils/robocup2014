@@ -207,7 +207,7 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_location',
                 nav_to_poi(),
-                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'say_go_location', 
                 'preempted': 'preempted'})    
  
             # recognize and pick object if found
