@@ -132,7 +132,9 @@ def call_go_to(loc_name,world):
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
             time.sleep(SLEEP_TIME)
             
-            call_go_to('referee',world)
+            
+            sm = nav_to_poi(poi_name = 'referee')
+            out = sm.execute()     
             tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
             speak = speaker(tosay)
             speak.execute() 
