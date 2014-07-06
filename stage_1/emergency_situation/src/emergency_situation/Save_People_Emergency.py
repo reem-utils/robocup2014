@@ -123,8 +123,8 @@ class Save_People_Emergency(smach.StateMachine):
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
-                #DummyStateMachine(),
-                GeneratePDF_State(),
+                DummyStateMachine(),
+                #GeneratePDF_State(),
                 transitions={'succeeded':'Say_Save', 'aborted':'aborted', 'preempted':'preempted'})
              
             smach.StateMachine.add(
