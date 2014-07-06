@@ -27,6 +27,7 @@ from util_states.point_to_poi import point_to_poi
 from object_grasping_states.place_object_sm import place_object_sm
 from object_grasping_states.pick_object_sm import pick_object_sm
 
+from gpsr.sm_gpsr_orders import TIME_INIT
 #edit your path in gpsrSoar/src/pathscript.py
 
 '''
@@ -113,7 +114,7 @@ def call_go_to(loc_name,world):
 
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay,wait=False)
-    speak.execute()
+    speak.execute() 
     rospy.logwarn('call_go_to '+ loc_name)
     #############################################################################
     if SKILLS :
@@ -500,6 +501,10 @@ def main(world):
                 command = agent.GetCommand(i)
                 command_name = command.GetCommandName()
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
+                
+                if time.time()-TIME_INIT > 270:
+                    call_go_to('referee')
+                    return "succeeded"
 
                 out = "NULL"
                 if command_name == "navigate":
