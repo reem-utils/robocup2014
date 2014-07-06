@@ -80,7 +80,7 @@ class process_place_location(smach.State):
     def __init__(self):
         smach.State.__init__(self,
                              outcomes = ['succeeded', 'aborted', 'preempted'], 
-                             input_keys = ['object_position','object_detected_name','nav_to_poi_name', 'pose_to_place','object_position'], 
+                             input_keys = ['object_position','object_detected_name','nav_to_poi_name', 'pose_to_place'], 
                              output_keys = ['nav_to_poi_name','pose_to_place', 'object_position'])
     def execute(self, userdata):
         objectList = rospy.get_param("mmap/object/information")
@@ -97,12 +97,12 @@ class process_place_location(smach.State):
             
             rospy.logwarn("Info " + str(userdata.object_position))
             rospy.logwarn("Type: " + str(type(userdata.object_position)))
-            p = PoseStamped()
-            p.header.frame_id = userdata.object_position.header.frame_id
-            p.pose.position.x = userdata.object_position.pose.pose.position.x
-            p.pose.position.z = userdata.object_position.pose.pose.position.z
-            p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
-            userdata.object_position = p
+#             p = PoseStamped()
+#             p.header.frame_id = userdata.object_position.header.frame_id
+#             p.pose.position.x = userdata.object_position.pose.pose.position.x
+#             p.pose.position.z = userdata.object_position.pose.pose.position.z
+#             p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
+#             userdata.object_position = p
             
             # Prepare the place location
             pois = rospy.get_param("/mmap/place")
@@ -180,7 +180,7 @@ class PickPlaceSM(smach.StateMachine):
             self.userdata.tts_lang = ''
             self.userdata.tts_wait_before_speak = ''
             self.userdata.tts_text = ''
-            self.userdata.loop_iterations = 0
+            self.userdata.loop_iterations = 1
             self.userdata.did_unk = False
             self.userdata.object_name = ['Pringles', 'Barritas']
             
@@ -214,14 +214,16 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'recognize_object_and_pick',
                 RecObjectAndPick(),
-                transitions={'succeeded': 'say_go_second_location', 
-                             'aborted': 'try_again_recognition'})
-             
-#             smach.StateMachine.add(
-#                 'Process_Place_location',
-#                 process_place_location(),
-#                 transitions={'succeeded':'say_go_second_location',
-#                              'aborted':'aborted'})
+                transitions={'succeeded': 'Process_Place_location', 
+                             'fail_grasp':'Process_Place_location',
+                             'fail_recognize': 'try_again_recognition'})
+            
+            # Prepare the place location
+            smach.StateMachine.add(
+                'Process_Place_location',
+                process_place_location(),
+                transitions={'succeeded':'say_go_second_location',
+                             'aborted':'aborted'})
 
             # Say start object recognition
 #             smach.StateMachine.add(
@@ -247,7 +249,7 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'try_again_recognition',
                 checkLoop(),
-                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_start_obj_recognition', 
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
                 'preempted': 'preempted', 'end':'say_fail_recognize'}) 
         
             # Say fail recognize objects
