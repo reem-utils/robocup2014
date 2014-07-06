@@ -149,7 +149,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_avoid_that',
                 Avoid_That(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'go_what_did_you_say', 
+                transitions={'succeeded': 'say_going_what_say', 'aborted': 'say_going_what_say', 
                 'preempted': 'preempted'}) 
             
             # Say Go What did you say 
