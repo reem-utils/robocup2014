@@ -5,14 +5,14 @@ GRAMATICA: "robocup/minimals"
 sentence8: "go to the kitchen, ask donald name and introduce yourself"  #working
 sentence9: "ask my name"                                                 #working
 sentence10: "introduce yourself"                                        #working
-sentence17: "learn donald, recognize donald and find donald"
+sentence: "learn donald, recognize donald and find donald"
 sentence11: "recognize donald"                                          #working	
 sentence14: "find donald"
 sentence12: "grasp the pringles"
 sentence13: "find me"
 sentence15: "bring me the pringles"
 sentence16: "bring the pringles to the dinner table"
-sentence: "find a coke"
+sentence17: "find a coke"
 sentence18: "point at me"
 sentence19: "follow me"
 
