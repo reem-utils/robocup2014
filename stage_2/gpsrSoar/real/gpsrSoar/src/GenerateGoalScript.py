@@ -1,4 +1,4 @@
-from translator import obj2idx  #, idx2obj, get_list
+from translator import obj2idx, idx2obj #, get_list
 import roslib
 PERSON = 'PERSON'
 ROBOT = 'ROBOT'

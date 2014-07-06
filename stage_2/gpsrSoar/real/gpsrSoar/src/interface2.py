@@ -27,6 +27,7 @@ from util_states.point_to_poi import point_to_poi
 from object_grasping_states.place_object_sm import place_object_sm
 from object_grasping_states.pick_object_sm import pick_object_sm
 
+from gpsr.sm_gpsr_orders import TIME_INIT
 #edit your path in gpsrSoar/src/pathscript.py
 
 '''
@@ -113,7 +114,7 @@ def call_go_to(loc_name,world):
 
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay,wait=False)
-    speak.execute()
+    speak.execute() 
     rospy.logwarn('call_go_to '+ loc_name)
     #############################################################################
     if SKILLS :
@@ -132,12 +133,18 @@ def call_go_to(loc_name,world):
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
             time.sleep(SLEEP_TIME)
             
-            call_go_to('referee',world)
+            
+            sm = nav_to_poi(poi_name = 'referee')
+            out = sm.execute()     
             tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
             speak = speaker(tosay)
             speak.execute() 
             
             return "aborted"
+        else:
+            tosay = "I arrivet to the " + loc_name
+            speak = speaker(tosay)
+            speak.execute()
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -494,6 +501,10 @@ def main(world):
                 command = agent.GetCommand(i)
                 command_name = command.GetCommandName()
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
+                
+                if time.time()-TIME_INIT > 270:
+                    call_go_to('referee')
+                    return "succeeded"
 
                 out = "NULL"
                 if command_name == "navigate":
@@ -594,6 +605,7 @@ def main(world):
 
                 elif command_name == "achieved":
                     goal_achieved = True
+                    call_go_to('referee')
                     out = "succeeded"
                 
                 else:
