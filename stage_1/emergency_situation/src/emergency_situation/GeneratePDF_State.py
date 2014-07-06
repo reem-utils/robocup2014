@@ -66,7 +66,9 @@ class GeneratePDF_State(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo("Informing Ambulance...............")
+        #Creating image from REEM's camera
         image_converter()
+        
         image_created_number = ImageCreator(location_list=[userdata.person_location.pose.pose.position.x, userdata.person_location.pose.pose.position.y], 
                                         origin=IMAGE_ORIGIN,
                                         scale=RESOLUTION, 
