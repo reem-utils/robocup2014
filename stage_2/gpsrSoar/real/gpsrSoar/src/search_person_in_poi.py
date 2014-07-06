@@ -42,12 +42,12 @@ class NamePreparation(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['name'], 
             output_keys=['name'])
-
-    def execute(self,person_name, userdata):
-        if person_name == 'person':
+        self.person_name=person_name
+    def execute(self, userdata):
+        if self.person_name == 'person':
             userdata.name = ''
         else:
-            userdata.name = person_name
+            userdata.name = self.person_name
             
         return 'succeeded'
 
