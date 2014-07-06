@@ -8,7 +8,7 @@ Created on 08/03/2014
 '''
 import rospy
 import smach
-from face_states.learn_face import learn_face
+from face_states.new_database_and_learn import new_database_and_learn
 from speech_states.say import text_to_say
 from speech_states.ask_question import AskQuestionSM
 from speech_states.parser_grammar import parserGrammar
@@ -107,7 +107,7 @@ class SaveFaceSM(smach.StateMachine):
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
-                learn_face(10),
+                 new_database_and_learn(10),
                 transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

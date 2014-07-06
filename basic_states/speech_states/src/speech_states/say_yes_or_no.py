@@ -36,17 +36,17 @@ class ProcessCommand(smach.State):
         
         yes = [tag for tag in questionTags if tag.key == 'yes']
         no = [tag for tag in questionTags if tag.key == 'no']
-         
+          
         print yes
         print no
-         
+          
         if yes:
             rospy.loginfo("YES")
             return 'yes'
         if no: 
             rospy.loginfo("NO")
             return 'no'
-         
+          
         rospy.loginfo("Aborted")
         return 'aborted'
         
@@ -54,9 +54,9 @@ class ProcessCommand(smach.State):
 #             for value in element[1]:
 #                 if userdata.asr_userSaid == value:
 #                     return element[0]
-#         
-#        return 'aborted'
-    
+#          
+#         return 'aborted'
+     
 class SayYesOrNoSM(smach.StateMachine):
     """
     Executes a SM that ask for confirmation. 
