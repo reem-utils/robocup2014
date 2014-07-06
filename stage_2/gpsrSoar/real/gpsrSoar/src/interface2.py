@@ -16,10 +16,10 @@ from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST, SKILLS
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
-from object_states.object_detect_sm import object_detect_sm
+#from object_states.object_detect_sm import object_detect_sm
 from navigation_states.nav_to_poi import nav_to_poi
-from follow_me.follow_learn import LearnPerson
-from follow_me.follow_operator import FollowOperator
+#from follow_me.follow_learn import LearnPerson
+#from follow_me.follow_operator import FollowOperator
 from face_states.new_database_and_learn import new_database_and_learn as learn_face
 from face_states.recognize_face import recognize_face
 from search_person_in_poi import SearchPersonSM
@@ -79,6 +79,8 @@ else:
     SLEEP_TIME = 3
 
 object_position = PoseStamped()
+
+ROOMS = rospy.get_param('/robocup_params/rooms')
 
 class dummy(smach.State):
     def __init__(self):
@@ -255,22 +257,26 @@ def call_find_object(object_name): #TODO
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_find_object '+object_name)
+    
     #############################################################################
     if SKILLS :
         out = 'aborted'
         tries = 0
-        while(out=='aborted' and tries<3):      
-            ###
-#             out = 'succeeded'
-#             object_position.header.frame_id = "base_link"
-#             object_position.pose.position.x = 0.5
-#             object_position.pose.position.z = 1.0
-#             object_position.pose.orientation.w = 1.0 
-            ###            
-            sm = object_detect_sm()    #THIS ALWAYS RETURN succeded
-            out = sm.execute()                #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
-            object_position = sm.userdata.object_pose
-            tries = tries+1
+    
+        current_position = world.get_current_position()        
+        if current_position in ROOMS:
+            room = rospy.get_param('/robocup_params/room/' + current_position)
+                
+        #while(out=='aborted' and tries<3):      
+        for table in room :
+            if out == 'succeeded' and tries == 3:
+                break
+            call_go_to(table)        
+             
+            sm = object_detect_sm()#
+            out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
+            object_position = sm.userdata.object_pose #
+            tries = tries+1#
             
             
         if out=='aborted':

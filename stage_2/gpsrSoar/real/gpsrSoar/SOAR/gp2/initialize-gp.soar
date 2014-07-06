@@ -38,27 +38,27 @@ sp {gp*apply*initialize-gp
 
       (<obj1> ^delivered no
            ^pointed no
-           ^locId -1
+           ^locId 10
            ^toBeGrasped no
            ^grasped no
            ^found no
-           ^id -1)
+           ^id 0)
 
       (<pers1> ^followed no
-           ^memorized yes
+           ^memorized no
            ^locId 13
            ^obj1Id -1
-           ^recognized yes
+           ^recognized no
            ^askedName no
-           ^near yes
+           ^near no
            ^found no
-           ^id 5)
+           ^id 15)
 
    (<d> ^name find
-        ^person <pp>
+        ^object <ii>
         ^robot <rr>)
-   (<pp> ^found yes
-           ^id 5)
+   (<ii> ^found yes
+         ^id 0)
    (<rr> ^id 1)
 
 }
