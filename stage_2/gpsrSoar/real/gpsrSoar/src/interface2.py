@@ -16,10 +16,10 @@ from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST, SKILLS
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
-from object_states.object_detect_sm import object_detect_sm
+#from object_states.object_detect_sm import object_detect_sm
 from navigation_states.nav_to_poi import nav_to_poi
-from follow_me.follow_learn import LearnPerson
-from follow_me.follow_operator import FollowOperator
+#from follow_me.follow_learn import LearnPerson
+#from follow_me.follow_operator import FollowOperator
 from face_states.new_database_and_learn import new_database_and_learn as learn_face
 from face_states.recognize_face import recognize_face
 from search_person_in_poi import SearchPersonSM
