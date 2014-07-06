@@ -16,10 +16,9 @@ from object_grasping_states.place_object_sm import place_object_sm
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovariance
 from std_msgs.msg import Header
 from manipulation_states.play_motion_sm import play_motion_sm
-from object_grasping_states.object_detection_and_grasping import object_detection_and_grasping_sm
 from object_states.recognize_object import recognize_object
-from geometry_msgs.msg._PoseWithCovarianceStamped import PoseWithCovarianceStamped
-
+from hri_states.recognize_object_and_pick import RecObjectAndPick
+ 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
@@ -105,8 +104,6 @@ class process_place_location(smach.State):
             p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
             userdata.object_position = p
             
-#             userdata.object_position.pose.pose.position.z = userdata.object_position.pose.pose.position.z + 0.1
-#             userdata.object_position = userdata.object_position
             # Prepare the place location
             pois = rospy.get_param("/mmap/place")
             for key,value in pois.iteritems():
@@ -213,20 +210,12 @@ class PickPlaceSM(smach.StateMachine):
                 transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
                 'preempted': 'preempted'})    
  
-            # Say start object recognition
+            # recognize and pick object if found
             smach.StateMachine.add(
-                 'say_start_obj_recognition',
-                 text_to_say("I'm going to start the Object recognition process.", wait=False),
-                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
-             
-            #TODO: Now only the 'succeed' is considered... Should the failure considered also!
-#             smach.StateMachine.add(
-#                 'Object_Recognition_and_Grasping',
-#                 object_detection_and_grasping_sm(),
-#                 transitions={'succeeded': 'Process_Place_location', 
-#                              'aborted': 'aborted', 
-#                              'fail_object_grasping':'aborted',
-#                              'fail_object_detection':'try_again_recognition'})
+                'recognize_object_and_pick',
+                RecObjectAndPick(),
+                transitions={'succeeded': 'say_go_second_location', 
+                             'aborted': 'try_again_recognition'})
              
 #             smach.StateMachine.add(
 #                 'Process_Place_location',
@@ -234,19 +223,25 @@ class PickPlaceSM(smach.StateMachine):
 #                 transitions={'succeeded':'say_go_second_location',
 #                              'aborted':'aborted'})
 
-            # Do object_recognition 
-            smach.StateMachine.add(
-                'object_recognition',
-                recognize_object(),
-                transitions={'succeeded': 'process_object_recognition', 'aborted': 'try_again_recognition', 
-                'preempted': 'preempted'}) 
-   
-            # Process the objects recognized
-            smach.StateMachine.add(
-                'process_object_recognition',
-                process_place_location(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
-                'preempted': 'preempted'}) 
+            # Say start object recognition
+#             smach.StateMachine.add(
+#                  'say_start_obj_recognition',
+#                  text_to_say("I'm going to start the Object recognition process.", wait=False),
+#                  transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'})
+#              
+#             # Do object_recognition 
+#             smach.StateMachine.add(
+#                 'object_recognition',
+#                 recognize_object(),
+#                 transitions={'succeeded': 'process_object_recognition', 'aborted': 'try_again_recognition', 
+#                 'preempted': 'preempted'}) 
+#    
+#             # Process the objects recognized
+#             smach.StateMachine.add(
+#                 'process_object_recognition',
+#                 process_place_location(),
+#                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
+#                 'preempted': 'preempted'}) 
                         
             # We don't recognized the object
             smach.StateMachine.add(
