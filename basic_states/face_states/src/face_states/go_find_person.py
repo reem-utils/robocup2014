@@ -122,7 +122,7 @@ def child_term_cb(outcome_map):
     
     if outcome_map['say_search_faces'] == 'succeeded':
         rospy.loginfo(OKGREEN + "Say and Move Head ends" + ENDC)
-        return True
+        return False
 
     # in all other case, just keep running, don't terminate anything
     return False
@@ -166,7 +166,7 @@ class go_find_person(smach.StateMachine):
     No io_keys.
 
     """
-    def __init__(self,poi_name=None,time_out=30):
+    def __init__(self,poi_name=None,time_out=90):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['name', 'nav_to_poi_name', 'face','face_frame'],
                                      output_keys=['face', 'standard_error', 'face_frame'])
@@ -177,13 +177,14 @@ class go_find_person(smach.StateMachine):
             self.userdata.num_iterations = 0
             self.userdata.face = None
             self.userdata.wait_time = 5
+            self.userdata.nav_to_poi_name=None
+            self.userdata.face_frame=None
             
             # We define the different points
             smach.StateMachine.add(
                 'prepare_poi',
-                prepare_poi(self.poi_nem),
-                transitions={'poi': 'go_poi', 'no_poi': 'Concurrence', 
-                'preempted': 'preempted'}) 
+                prepare_poi(self.poi_name),
+                transitions={'poi': 'go_poi', 'no_poi': 'Concurrence'}) 
             smach.StateMachine.add(
                                    'Say_Searching',
                                    text_to_say('Right Now I am looking for you.',wait=False),
@@ -195,11 +196,7 @@ class go_find_person(smach.StateMachine):
                                    nav_to_poi(),
                                    transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
-            smach.StateMachine.add(
-                                   'go_poi',
-                                   nav_to_poi(),
-                                   transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
-                                    'preempted': 'preempted'})
+
             # Concurrence
             sm_conc = smach.Concurrence(outcomes=['succeeded', 'aborted', 'preempted', 'endTime'],
                                         default_outcome='succeeded',
@@ -231,7 +228,7 @@ class go_find_person(smach.StateMachine):
             smach.StateMachine.add(
                                    'Say_Finish',
                                    text_to_say('I have finish with no exit the search'),
-                                   transitions={'succeeded': 'prepare_poi', 'aborted': 'aborted', 
+                                   transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
             
             
