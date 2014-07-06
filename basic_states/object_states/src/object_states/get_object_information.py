@@ -74,14 +74,14 @@ class obtain_info(smach.State):
             
             if prob == 0.0:
                 userdata.standard_error= "Can't find a location"
-                rospy.logerr("Can't find a location for " + objectName)
+                rospy.logerr("Can't find a location for " + str(objectName))
             else:
                 userdata.standard_error='OK'
                 rospy.loginfo("Location: " + userdata.object_location)
                 return 'succeeded'
         else :
             userdata.standard_error='Object not found'
-            rospy.logerr(objectName + ' NOT FOUND')
+            rospy.logerr(str(objectName) + ' NOT FOUND')
             return 'aborted'
 
 
