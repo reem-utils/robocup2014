@@ -189,7 +189,7 @@ class emergency_situation_sm(smach.StateMachine):
             
             smach.StateMachine.add(
                                    'Final_State',
-                                   text_to_say('Emergency Situation Test 2014 Finished Successfully.'),
+                                   text_to_say('Emergency Situation Test 2014 Finished Successfully. Emergency Test'),
                                    transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             
         

@@ -46,6 +46,8 @@ def create_pdf(file_location):
     # I_people.drawWidth = 0.5 * inch
 
     im = Image(file_location+"logo.png")
+    img_person = Image(file_location + "camera_image.png")
+
     im_map = Image(file_location + "map_with_cross.png")
 
     im_map.drawHeight = 3*inch*im_map.drawHeight/im_map.drawWidth
@@ -73,6 +75,7 @@ def create_pdf(file_location):
     Story.append(p3)
     Story.append(Spacer(1, 0.5*inch))
     Story.append(p2)
+    Story.append(img_person)
     doc.build(Story)
 
 # create_pdf('chen')
