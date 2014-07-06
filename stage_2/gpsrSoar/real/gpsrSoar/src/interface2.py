@@ -13,7 +13,7 @@ from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 from GenerateGoalScript import world
 from speech_states.say import text_to_say
-from sm_gpsr_orders import TEST, SKILLS
+from sm_gpsr_orders import TEST, SKILLS, TIME_INIT
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
 from object_states.object_detect_sm import object_detect_sm
@@ -27,7 +27,6 @@ from util_states.point_to_poi import point_to_poi
 from object_grasping_states.place_object_sm import place_object_sm
 from object_grasping_states.pick_object_sm import pick_object_sm
 
-from gpsr.sm_gpsr_orders import TIME_INIT
 #edit your path in gpsrSoar/src/pathscript.py
 
 '''
