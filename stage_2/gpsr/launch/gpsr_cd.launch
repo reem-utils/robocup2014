@@ -1,11 +1,11 @@
 <launch>
 
     <!-- TODO: maybe we need to delete the params before loading them -->
-    <include file="$(find restaurant)/launch/restaurant_params.launch" />
+    <include file="$(find gpsr)/launch/gpsrParams.launch" />
 
     <!-- State Machine -->
     <node 
-    	pkg ="restaurant"
+    	pkg ="gpsr"
         type="check_dependences.py"
         name="check_dependences"
         output="screen">
