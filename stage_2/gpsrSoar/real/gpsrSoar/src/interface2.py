@@ -502,7 +502,7 @@ def main(world):
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
                 
                 if time.time()-TIME_INIT > 270:
-                    call_go_to('referee')
+                    call_go_to('referee',world)
                     return "succeeded"
 
                 out = "NULL"
