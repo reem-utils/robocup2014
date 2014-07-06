@@ -18,18 +18,17 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/amcl_pose",
                     "/scan_filtered",    
                     "/asr_event",
-                    "/sonar_base",
                     "/move_base/goal",
-                    "/gesture_detection/gesture",
-                    "/play_motion/goal",
-                    "/person/faceDetections"
+                    "/head_mount_xtion/gestures",
+                    "/object_detect/recognize"
                     ]
                     
-SERVICES_LIST_NAMES = []  # #################### Services #####################
+SERVICES_LIST_NAMES = ["/pal_face/recognizer"]  # #################### Services #####################
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/move_base",
-                    "/sound"]
+                    "/sound",
+                    "/play_motion", ]
 
 PARAMS_LIST_NAMES = []
                      
