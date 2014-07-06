@@ -7,11 +7,6 @@ NAMES = rospy.get_param('/robocup_params/persons')
 CATEGORYS = rospy.get_param('/robocup_params/it_category')
 PERSONS = NAMES
 
-# locations = 'loc'
-# items = 'it'
-# print dir()
-# locations =['a', 's', 'd', 'f']
-# items = ['q', 'w', 'e', 'r']
 
 def obj2idx(Object, List):
     return globals()[List].index(Object.replace(' ', '_'))

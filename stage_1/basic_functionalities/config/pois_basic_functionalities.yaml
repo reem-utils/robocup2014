@@ -1,11 +1,11 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    init_avoid_that: [submap_0, init_avoid_that, -3.349, 1.618, 2.498]
-    avoid_that: [submap_0, avoid_that, -7.298, 5.911,  -2.252]
+    init_avoid_that: [submap_0, init_avoid_that, 10.439, 7.733, -2.099]
+    avoid_that: [submap_0, avoid_that, 3.863, -6.791, 0.541]
 
-    init_pick_and_place: [submap_0, init_pick_and_place, 9.955, -1.491,  -0.966]
-    pick_and_place: [submap_0, pick_and_place, 13.426, -4.48,  1.448]
+    init_pick_and_place: [submap_0, init_pick_and_place, 10.310, -3.171,  -0.635]
+    pick_and_place: [submap_0, pick_and_place, 13.426, -4.48,  0.850]
     waste_bin: [submap_0, waste_bin, 11.495, -4.99, -1.448] 
 
     init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
@@ -22,8 +22,8 @@ poi:
     hallway: [submap_0, hallway, 14.910, -1.393, -1.603]
     living_room: [submap_0, living_room, 9.955, -1.491,  -0.966]
     working_desk: [submap_0, working_desk, 10.320, -8.315,  -1.459]
-    kitchen_counter: [submap_0, kitchen_counter, 10.320, -8.315,  -1.459]
-    dinner_table: [submap_0, dinner_table, 11.75, -3.11,  1.448]
+    kitchen_counter: [submap_0, kitchen_counter,13.287, -4.521,  0.963]
+    dinner_table: [submap_0, dinner_table, 11.75, -3.11,  0.850]
     bookshelf: [submap_0, bookshelf, 9.079, -6.977, -0.065]
     point_room_one: [submap_0, point_room_one, 7.910, 6.254, 0.709]
     point_room_two: [submap_0, point_room_two, 8.476, 5.305, -0.767]

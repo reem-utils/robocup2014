@@ -73,7 +73,7 @@ def main():
         # it call the learn state
         smach.StateMachine.add(
             'detect_object',
-            object_detect_sm('pringles'),
+            object_detect_sm('Barritas'),
             transitions={'succeeded': 'succeeded','aborted' : 'aborted'})
     
 

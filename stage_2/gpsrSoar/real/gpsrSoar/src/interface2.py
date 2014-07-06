@@ -20,7 +20,7 @@ from object_states.object_detect_sm import object_detect_sm
 from navigation_states.nav_to_poi import nav_to_poi
 from follow_me.follow_learn import LearnPerson
 from follow_me.follow_operator import FollowOperator
-from face_states.learn_face import learn_face
+from face_states.new_database_and_learn import new_database_and_learn as learn_face
 from face_states.recognize_face import recognize_face
 from search_person_in_poi import SearchPersonSM
 from util_states.point_to_poi import point_to_poi
@@ -89,10 +89,11 @@ class dummy(smach.State):
 class speaker(smach.StateMachine): 
 
 
-    def __init__(self, text=None, waitu = True):
+    def __init__(self, text=None, wait = True):
         #Initialization of the SMACH State machine
         smach.StateMachine.__init__(self,outcomes=['succeeded', 'preempted', 'aborted'])
         
+        self.wait = wait
         with self: 
         
             self.userdata.tts_wait_before_speaking=0
@@ -101,7 +102,7 @@ class speaker(smach.StateMachine):
             
             smach.StateMachine.add(
                         'SaySM',
-                        text_to_say(text,wait = waitu),    #uncomment and comment dumy to make the robot anounce what he is going to do
+                        text_to_say(text,wait = self.wait),    #comment and uncomment dumy to make the robot anounce what he is going to do
                         #dummy(),
                         transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'aborted'})
 
@@ -109,14 +110,14 @@ class speaker(smach.StateMachine):
 def call_go_to(loc_name,world):
 
     tosay = "I'm going to the "+str(loc_name)
-    speak = speaker(tosay)
+    speak = speaker(tosay,wait=False)
     speak.execute()
     rospy.logwarn('call_go_to '+ loc_name)
     #############################################################################
     if SKILLS :
         out = 'aborted'
-        tries = 0
-        while(out=='aborted' and tries<3):       
+        tries = 0       
+        while(out=='aborted' and tries<3):
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             out = sm.execute()     
@@ -180,13 +181,13 @@ def call_learn_person(pers): #TOTEST   #Recorda que abans sempre busca una perso
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1            
-            sm = learn_face()
-            sm.userdata.name = pers
+            sm = learn_face(name_face='donald', name_database='Soar')
+            sm.userdata.name_face = pers
             out = sm.execute()     
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
-
+learn_face
 def call_recognize_person(pers): #TODO  PersonName maybe?
 
     tosay = "I'm going to recognize " + pers

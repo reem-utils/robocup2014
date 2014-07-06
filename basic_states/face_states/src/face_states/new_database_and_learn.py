@@ -52,6 +52,8 @@ class preparedataName(smach.State):
         
         if userdata.name_face==None : # this is the database
             userdata.name=self.name
+        else :
+            userdata.name=userdata.name_face
         return 'succeeded'
    
     

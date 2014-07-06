@@ -172,7 +172,7 @@ class SearchObjectSM(smach.StateMachine):
             # say that it goes to the POI indicated in the previous SM
             smach.StateMachine.add( 
                 'say_go_to_poi',
-                text_to_say("I'm going to take the object"),
+                text_to_say("I'm going to take the object", wait=False),
                 transitions={'succeeded': 'go_to_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -186,7 +186,7 @@ class SearchObjectSM(smach.StateMachine):
             # Say start recognition
             smach.StateMachine.add(
                 'say_start_recognition',
-                text_to_say("I'm going to start object recognition"),
+                text_to_say("I'm going to start object recognition",wait=False),
                 transitions={'succeeded': 'object_detection', 'aborted': 'object_detection', 
                 'preempted': 'preempted'}) 
                   

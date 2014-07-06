@@ -45,18 +45,20 @@ sp {gp*apply*initialize-gp
            ^id -1)
 
       (<pers1> ^followed no
-           ^memorized no
+           ^memorized yes
            ^locId 13
            ^obj1Id -1
-           ^recognized no
+           ^recognized yes
            ^askedName no
-           ^near no
+           ^near yes
            ^found no
-           ^id 15)
+           ^id 5)
 
-   (<d> ^name go-to
+   (<d> ^name find
+        ^person <pp>
         ^robot <rr>)
-   (<rr> ^locId 
-         ^id 1)
+   (<pp> ^found yes
+           ^id 5)
+   (<rr> ^id 1)
 
 }
