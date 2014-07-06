@@ -33,16 +33,16 @@ from object_grasping_states.pick_object_sm import pick_object_sm
 SKILLS TODO:
 
 --go_to (poi)
--grasp    (object)           --> grasping -- TO TEST
--bring_to(person)            --> grasping -- TO TEST
--bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
--find_object(object)         --> object detection --always return succeeded regardless it seeing something or not
--        faliable    --> not found
--find_person(person)        --> TO TEST
---        faliable    --> not found
---point_at(poi) 
---ask_name()
--follow(person)              --> follow me --TO ASK ROGER
+grasp    (object)           --> grasping -- TO TEST
+bring_to(person)            --> grasping -- TO TEST
+bring_to_loc(poi)           --> grasping -- TO TEST --CONSULT PARAM WITH each loc high
+find_object(object)         --> object detection --always return succeeded regardless it seeing something or not
+        faliable    --> not found
+find_person(person)        --> TO TEST
+        faliable    --> not found
+point_at(poi) 
+ask_name()
+follow(person)              --> follow me --TO ASK ROGER
 --introduce_me()
 --learn_person(person)        --> face recognition
 --recognize_person(person)    --> face recognition
