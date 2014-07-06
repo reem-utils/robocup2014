@@ -598,6 +598,7 @@ def main(world):
 
                 elif command_name == "achieved":
                     goal_achieved = True
+                    call_go_to('referee')
                     out = "succeeded"
                 
                 else:
