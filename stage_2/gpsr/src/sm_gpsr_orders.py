@@ -17,7 +17,7 @@ from speech_states.ask_question import AskQuestionSM
 
 SENTENCE_SAID = '/parsing/sentence' 
 TEST = False #Care with items and categories on test sentences, they don't match with the grammars
-SKILLS = False
+SKILLS = True
 TEST_SENTENCE1 = "cat1Sentences/sentence"
 TEST_SENTENCE2 = "cat2Sentences/sentence"
 if TEST : 
