@@ -55,9 +55,9 @@ class RecObjectAndPick(smach.StateMachine):
     Nothing must be taken into account to use this SM.
     """
     def __init__(self):
-        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted', 'fail_grasp', 'fail_recognize'],
                                      input_keys=['object_name'], 
-                                     output_keys=[])
+                                     output_keys=['object_position','object_detected_name'])
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
@@ -77,7 +77,7 @@ class RecObjectAndPick(smach.StateMachine):
             smach.StateMachine.add(
                 'object_recognition',
                 recognize_object(),
-                transitions={'succeeded': 'process_object_recognition', 'aborted': 'aborted', 
+                transitions={'succeeded': 'process_object_recognition', 'aborted': 'fail_recognize', 
                 'preempted': 'preempted'}) 
    
             # Process the objects recognized
@@ -97,7 +97,7 @@ class RecObjectAndPick(smach.StateMachine):
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'aborted', #TODO: Change aborted to try again
+                transitions={'succeeded': 'succeeded', 'aborted': 'fail_grasp', #TODO: Change aborted to try again
                 'preempted': 'preempted'}) 
  
 def main():
