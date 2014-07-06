@@ -1,0 +1,24 @@
+<launch>
+  
+<!-- load the configuration file -->
+  <rosparam file="$(find gpsr)/config/parsing.yaml"
+      command="load" ns="parsing" />
+
+<!-- load the paramaters file -->
+  <rosparam file="$(find gpsr)/config/robocup_params.yaml"
+      command="load" ns="robocup_params" />
+
+<!-- load the pois file -->
+  <rosparam file="$(find gpsr)/config/pois_gpsr.yaml"
+      command="load" ns="mmap" />
+
+<!-- load the sentences for test file -->
+  <rosparam file="$(find gpsr)/config/cat1Sentences.yaml"
+      command="load" ns="cat1Sentences" />
+
+<!-- load the sentences for test file -->
+  <rosparam file="$(find gpsr)/config/cat2Sentences.yaml"
+      command="load" ns="cat2Sentences" />
+
+
+</launch>
