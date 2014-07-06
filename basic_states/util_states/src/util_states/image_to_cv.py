@@ -23,7 +23,7 @@ class image_converter:
         
         self.image_pub = rospy.Publisher("image_topic_2",Image)
         self.im_saved = False
-        cv2.namedWindow("Image window", 1)
+        #cv2.namedWindow("Image window", 1)
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber(IMAGE_TOPIC,Image,self.callback)
 
