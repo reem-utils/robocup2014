@@ -295,7 +295,8 @@ class askCategory(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, outcomes = ['succeeded', 'preempted', 'aborted'])
-                #GRAMMAR_NAME = 'robocup/' + GRAMMAR_NAME
+                
+                GRAMMAR_NAME='gpsr/' + GRAMMAR_NAME
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
@@ -396,7 +397,8 @@ class askCategoryLoc(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
-                #GRAMMAR_NAME='robocup/' + GRAMMAR_NAME.replace(' ', '_')
+                
+                GRAMMAR_NAME='gpsr/' + GRAMMAR_NAME
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
