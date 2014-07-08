@@ -1,0 +1,19 @@
+#JSGF V1.0;
+
+grammar table;
+
+public <basic> =  (<gocmd> <locations> )| <garbage>  ; 
+
+<bringcmd> = go to the;
+<locations>  = kitchen table {obj.put("object","kitchen table");} | dinner table {obj.put("object","dinner table");} | working desk {obj.put("object","working desk");};
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 

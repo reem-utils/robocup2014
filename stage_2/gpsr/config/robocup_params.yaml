@@ -25,7 +25,6 @@ loc_category:
         table: ["kitchen table", "dinner table", "working desk"]
         shelf: ["kitchen counter","bookshelf", "pantry"]
         seat: ["armchair"]
-        seating: ["armchair"]
         door: ["exit", "entrance"]
 
 kitchen_table_heigh: 1
