@@ -37,6 +37,7 @@ from hri_states.recognize_object_and_pick import RecObjectAndPick
 
 # Constants
 NUMBER_OF_ORDERS = 3
+NUMBER_OF_TRIES = 3
 GRAMMAR_NAME = "robocup/drinks"
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -193,6 +194,23 @@ class checkLoop(smach.State):
             userdata.did_pick = True
             userdata.loop_iterations = userdata.loop_iterations + 1
             return 'succeeded'
+        
+class checkRecognition(smach.State):
+    def __init__(self):
+        rospy.loginfo("Entering loop_test")
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
+                                input_keys=['try_iterations', 'did_unk'],
+                                output_keys=['standard_error', 'try_iterations', "did_unk"])
+
+    def execute(self, userdata):
+        
+        if userdata.try_iterations == NUMBER_OF_TRIES:
+            return 'end'
+        else:
+            rospy.loginfo(userdata.loop_iterations)
+            userdata.standard_error='OK'
+            userdata.try_iterations = userdata.try_iterations + 1
+            return 'succeeded'
 
 class CocktailPartySM(smach.StateMachine):
     """
@@ -218,6 +236,7 @@ class CocktailPartySM(smach.StateMachine):
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 0
+            self.userdata.try_iterations = 1
             self.userdata.gesture_name = ''
             self.userdata.object_name = ""
             self.userdata.manip_time_to_play = 4
@@ -356,7 +375,7 @@ class CocktailPartySM(smach.StateMachine):
             # We don't recognized the object
             smach.StateMachine.add(
                 'try_again_recognition',
-                checkLoop(),
+                checkRecognition(),
                 transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
                 'preempted': 'preempted', 'end':'say_fail_recognize'}) 
         
