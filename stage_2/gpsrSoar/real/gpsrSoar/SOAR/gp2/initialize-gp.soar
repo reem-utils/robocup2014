@@ -54,11 +54,11 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 15)
 
-   (<d> ^name find
+   (<d> ^name bring-to
         ^object <ii>
         ^robot <rr>)
-   (<ii> ^found yes
-         ^id 0)
+   (<ii> ^delivered yes
+         ^locId 6         ^id 0)
    (<rr> ^id 1)
 
 }
