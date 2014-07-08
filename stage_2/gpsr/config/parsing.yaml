@@ -1,11 +1,11 @@
 ASR_LOOP: True
-ASR_ON: "True"
+ASR_ON: "False"
 GRAMATICA: "robocup/minimals"
 
 sentence8: "go to the kitchen, ask donald name and introduce yourself"  #working
 sentence9: "ask my name"                                                 #working
 sentence10: "introduce yourself"                                        #working
-sentence: "learn donald, recognize donald and find donald"
+sentence0: "learn donald, recognize donald and find donald"
 sentence11: "recognize donald"                                          #working	
 sentence14: "find donald"
 sentence12: "grasp the pringles"
@@ -16,17 +16,17 @@ sentence17: "find a coke"
 sentence18: "point at me"
 sentence19: "follow me"
 
-sentence0: "retrieve the coke from the sofa, and leave the apartment"
+
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
-sentence3: "bring the coke to a sofa"
+sentence: "bring the coke to a armchair"
 sentence4: "go to the sofa, grasp the coke bring the coke to bookshelf"  
 sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
 
 
-notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram", grammars in speech_states/grammar/robocup/gpsr folder
+notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram, grammars in speech_states/grammar/robocup/gpsr folder"
 
 nottes: "Remmember to add categories in each grammar, for exemple apart from sofa add seat"
 

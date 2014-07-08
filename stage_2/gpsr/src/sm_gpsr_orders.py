@@ -30,7 +30,7 @@ else:
     
 GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
 #GRAMATICA = 'robocup/minimals'#'robocup/general'
-TIME_INIT = 0
+TIME_INIT = time.time()
 
 class sent():
     def __init__(self, text):
@@ -202,23 +202,11 @@ class gpsrOrders(smach.StateMachine):
                     remapping={'o_sentence': 'sentence', 'o_asrOn': 'asrOn', 'o_asrLoop': 'asrLoop'})
 
 
-            # smach.StateMachine.add(
-            #         'MOVE_TO_REFEREE',
-            #         MoveActionState(goal_cb=move_to_caller_goal_cb,
-            #             output_keys=['out_referee_position']),
-            #         remapping={'referee_position': 'out_referee_position'},
-            #         transitions={succeeded: 'LISTEN_ORDER', aborted: 'aborted'})
-
             smach.StateMachine.add(
                     'Check_ASR',
                     check_AsrOn(),
                     transitions={'ASR_ON': 'ASK_QUESTION', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
                     remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
-
-#             smach.StateMachine.add('GO_TO_REFEREE',
-#                    nav_to_poi(),#MoveToRoomStateMachine(),
-#                    transitions={'succeeded': 'LISTEN_ORDER', 'aborted': 'TELL_ABORTED_GO_TO'},
-#                    remapping={'nav_to_poi_name': 'room_location'})#'room_name':'room_name'})
 
             smach.StateMachine.add(
                     'TELL_ABORTED_GO_TO',
@@ -231,21 +219,6 @@ class gpsrOrders(smach.StateMachine):
                     transitions={'succeeded': 'PARSE_ORDER', 'aborted': 'ASK_QUESTION'},
                     remapping={'asr_answer': 'o_userSaidData'})
  
-#             smach.StateMachine.add(
-#                     'LISTEN_ORDER',
-#                     ListenToSM(grammar=GRAMATICA),
-#                     transitions={'succeeded': 'ORDER_CONFIRMATION', 'aborted': 'LISTEN_ORDER'},
-#                     remapping={'o_userSaidData_text': 'o_userSaidData'})
-# 
-# 
-#             smach.StateMachine.add(
-#                     'ORDER_CONFIRMATION',
-#                     #TODO : when Criss uploads the yesorno function
-#                     DummyState(),#HearingConfirmationSM(grammar_to_reset_when_finished=GRAMATICA),
-#                     transitions={'correct_word_heard': 'PARSE_ORDER',
-#                                  'wrong_word_heard': 'LISTEN_ORDER',
-#                                  'preempted': 'preempted',
-#                                  'aborted': 'LISTEN_ORDER'})
 
             smach.StateMachine.add(
                     'WRONG_WORD',
