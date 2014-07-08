@@ -3,6 +3,7 @@ roslib.load_manifest('gpsr')
 import smach
 from smach_ros import SimpleActionState
 import rospy
+import time
 
 from util_states.global_common import transform_pose
 from speech_states.listen_to import ListenToSM
@@ -29,6 +30,7 @@ else:
     
 GRAMATICA = rospy.get_param('/parsing/GRAMATICA')
 #GRAMATICA = 'robocup/minimals'#'robocup/general'
+TIME_INIT = 0
 
 class sent():
     def __init__(self, text):
@@ -66,7 +68,7 @@ class sentence_solved(smach.State):
 
     def execute(self,userdata):
         for command in userdata.i_actionSet:
-            userdata.o_stencenceSolved = 'I understood that I should %s %s %s %s \n' % (
+            userdata.o_stencenceSolved = 'I understood that I should %s %s %s %s. \n' % (
                 command.action,
                 command.location,
                 command.person,
@@ -128,6 +130,7 @@ class announce_sentence_understood(smach.State):
                 command.person,
                 command.item)
         userdata.tts_text = announced
+        TIME_INIT = time.time()
         return 'succeeded'
 
 

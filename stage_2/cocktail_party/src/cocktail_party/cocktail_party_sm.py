@@ -241,11 +241,12 @@ class CocktailPartySM(smach.StateMachine):
             self.userdata.object_name = ""
             self.userdata.manip_time_to_play = 4
             self.userdata.did_pick = True
+            self.userdata.grammar_name = GRAMMAR_NAME
 
             smach.StateMachine.add(
                  'init_cocktail',
                  text_to_say("Ready for cocktail party"),
-                 transitions={'succeeded': 'wait_for_door', 'aborted': 'wait_for_door'}) 
+                 transitions={'succeeded': 'learning_person', 'aborted': 'wait_for_door'}) 
                   
             # We wait for open door and go inside
             smach.StateMachine.add(
@@ -256,7 +257,7 @@ class CocktailPartySM(smach.StateMachine):
             # Say Wave recognize
             smach.StateMachine.add(
                  'say_search_wave',
-                 text_to_say("I'm searching for people waving at me"),
+                 text_to_say("I'm searching for people waving at me", wait=False),
                  transitions={'succeeded': 'wave_recognition', 'aborted': 'wave_recognition'}) 
             
             # Gesture recognition -> Is anyone waving?
@@ -269,7 +270,7 @@ class CocktailPartySM(smach.StateMachine):
             # Say Wave recognize
             smach.StateMachine.add(
                  'say_wave_recognize',
-                 text_to_say("Someone waved to me. I will go there"),
+                 text_to_say("Someone waved to me. I will go there", wait=False),
                  transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'prepare_coord_wave'}) 
               
             # Prepare the goal to the person that is waving
@@ -319,7 +320,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'process_order',
                 process_order(),
-                transitions={'succeeded': 'search_food_order', 'aborted': 'ask_order', 
+                transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
         
             # Say what he ask

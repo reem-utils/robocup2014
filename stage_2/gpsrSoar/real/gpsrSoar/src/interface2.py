@@ -13,13 +13,13 @@ from smach_ros import ServiceState, SimpleActionState
 from std_srvs.srv import Empty
 from GenerateGoalScript import world
 from speech_states.say import text_to_say
-from sm_gpsr_orders import TEST, SKILLS
+from sm_gpsr_orders import TEST, SKILLS, TIME_INIT
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
-#from object_states.object_detect_sm import object_detect_sm
+from object_states.object_detect_sm import object_detect_sm
+from follow_me.follow_learn import LearnPerson
+from follow_me.follow_operator import FollowOperator
 from navigation_states.nav_to_poi import nav_to_poi
-#from follow_me.follow_learn import LearnPerson
-#from follow_me.follow_operator import FollowOperator
 from face_states.new_database_and_learn import new_database_and_learn as learn_face
 from face_states.recognize_face import recognize_face
 from search_person_in_poi import SearchPersonSM
@@ -113,7 +113,7 @@ def call_go_to(loc_name,world):
 
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay,wait=False)
-    speak.execute()
+    speak.execute() 
     rospy.logwarn('call_go_to '+ loc_name)
     #############################################################################
     if SKILLS :
@@ -132,12 +132,18 @@ def call_go_to(loc_name,world):
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
             time.sleep(SLEEP_TIME)
             
-            call_go_to('referee',world)
+            
+            sm = nav_to_poi(poi_name = 'referee')
+            out = sm.execute()     
             tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
             speak = speaker(tosay)
             speak.execute() 
             
             return "aborted"
+        else:
+            tosay = "I arrivet to the " + loc_name
+            speak = speaker(tosay)
+            speak.execute()
     #############################################################################
     world.set_current_position(loc_name)
     time.sleep(SLEEP_TIME)  
@@ -251,7 +257,7 @@ def call_follow(pers): #TODO
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_find_object(object_name): #TODO 
+def call_find_object(object_name,world): #TODO 
     
     tosay = "I'm going to search for " + object_name
     speak = speaker(tosay)
@@ -268,15 +274,15 @@ def call_find_object(object_name): #TODO
             room = rospy.get_param('/robocup_params/room/' + current_position)
                 
         #while(out=='aborted' and tries<3):      
-        for table in room :
-            if out == 'succeeded' and tries == 3:
-                break
-            call_go_to(table)        
-             
-            sm = object_detect_sm()#
-            out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
-            object_position = sm.userdata.object_pose #
-            tries = tries+1#
+            for table in room :
+                if out == 'succeeded' and tries == 3:
+                    break
+                call_go_to(table)        
+                 
+                sm = object_detect_sm()#
+                out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
+                object_position = sm.userdata.object_pose #
+                tries = tries+1#
             
             
         if out=='aborted':
@@ -494,6 +500,10 @@ def main(world):
                 command = agent.GetCommand(i)
                 command_name = command.GetCommandName()
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
+                
+                if time.time()-TIME_INIT > 270:
+                    call_go_to('referee')
+                    return "succeeded"
 
                 out = "NULL"
                 if command_name == "navigate":
@@ -546,7 +556,7 @@ def main(world):
                     if (obj =="NULL"):
                         print "ERROR: el objeto %s no existe" % (obj_to_search)
                     
-                    out = call_find_object(obj)
+                    out = call_find_object(obj,world)
                 
                 elif command_name == "search-person":
                     pers_to_search = command.GetParameterValue("pers")
@@ -594,6 +604,7 @@ def main(world):
 
                 elif command_name == "achieved":
                     goal_achieved = True
+                    call_go_to('referee')
                     out = "succeeded"
                 
                 else:

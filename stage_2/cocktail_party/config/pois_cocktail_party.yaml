@@ -1,14 +1,17 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    party_room: [submap_0, party_room, -4.980, -6.084, 0.119]
-    storage_room: [submap_0, storage_room, -11.192, -5.540, 1.448]
-    leave_room: [submap_0, leave_room, 0.823, -8.587, 3.112]
+    party_room: [submap_0, party_room, 6.071, -1.742, 0.908]
+    storage_room: [submap_0, storage_room,  13.234, -4.326,  0.850]
+    leave_room: [submap_0, leave_room,10.439, 7.733, -2.099]
+    kitchen_counter: [submap_0, kitchen_counter, 13.234, -4.326,  0.850]
+    dinner_table: [submap_0, dinner_table, 13.234, -4.326,  0.850]
 
 object:
   information:
-    coke: [information, coke, beverage]
-    pringles: [information, pringles, snack]
+    Coke: [information, Coke, beverage]
+    Pringles: [information, Pringles, snack]
+    Barritas: [information, Barritas, snack]
 
   beverage:
     kitchen_counter: [beverage, kitchen_counter, 0.90]

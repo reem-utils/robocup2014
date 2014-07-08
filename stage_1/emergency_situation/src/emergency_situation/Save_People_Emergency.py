@@ -18,6 +18,8 @@ from speech_states.say import text_to_say
 from manipulation_states.play_motion_sm import play_motion_sm
 from util_states.topic_reader import topic_reader
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from emergency_situation.GeneratePDF_State import GeneratePDF_State
+from util_states.image_to_cv import image_converter
 
 #from emergency_situation.GeneratePDF_State import GeneratePDF_State
 
@@ -121,8 +123,8 @@ class Save_People_Emergency(smach.StateMachine):
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
-                DummyStateMachine(),
-                #GeneratePDF_State(),
+                #DummyStateMachine(),
+                GeneratePDF_State(),
                 transitions={'succeeded':'Say_Save', 'aborted':'aborted', 'preempted':'preempted'})
              
             smach.StateMachine.add(
