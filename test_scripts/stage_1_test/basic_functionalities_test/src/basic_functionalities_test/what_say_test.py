@@ -28,7 +28,8 @@ def main():
 
     with sm:
 	
-	sm.userdata.grammar_name="robocup/what_did_you_say"
+	sm.userdata.grammar_name="robocup/what_did_you_say_2"
+
 	# Activate the server
         smach.StateMachine.add('ActivateASR',
                     ActivateASR(),

@@ -68,7 +68,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Say Start basic Functionalities
             smach.StateMachine.add(
                  'say_start_basic_functionalities',
-                 text_to_say("I'mfrom util_states.state_concurrence import ConcurrenceRobocup ready to start Basic Functionalities"),
+                 text_to_say("I'm ready to start Basic Functionalities"),
                  transitions={'succeeded': 'say_going_pick_place', 'aborted': 'say_going_pick_place'}) 
             
             # Say Go Pick and Place
