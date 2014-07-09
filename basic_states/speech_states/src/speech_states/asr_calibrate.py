@@ -24,7 +24,7 @@ class CalibrateASR(smach.StateMachine):
         This state machine calibrates the ASR service.
     
     """
-    def __init__(self, grammar = None):
+    def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=[],
                     output_keys=[])
@@ -48,8 +48,8 @@ class CalibrateASR(smach.StateMachine):
 
             smach.StateMachine.add('Activate_Asr',
                     ServiceState('/asr_service',
-                    ASRService,
-                    request_cb = AsrServerRequestActivate_cb,
-                    response_cb = AsrServerRequestActivate_response_cb,
+                        ASRService,
+                        request_cb = AsrServerRequestActivate_cb,
+                        response_cb = AsrServerRequestActivate_response_cb),
                     transitions={'succeeded':'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
              
