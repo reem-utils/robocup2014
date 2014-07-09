@@ -44,7 +44,7 @@ class DynamicParameterSetter(smach.State):
         rospy.loginfo("Got a client! Setting parameters.")
         config = dynparamclient.update_configuration(p_dict)
         # check if it was really set
-        rospy.loginfo("Parameters set: " + str(config))
+        #rospy.loginfo("Parameters set: " + str(config))
 
         return 'succeeded'
         
