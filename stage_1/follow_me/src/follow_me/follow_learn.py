@@ -31,7 +31,7 @@ SAY_LEARN="I'm enrolling your face"
 # It's only becouse i can't import the file... i can't understand
 class select_ID(smach.State):
 
-    def __init__(self,learn_face,pub): 
+    def __init__(self, learn_face, pub): 
         smach.State.__init__(self, input_keys=['tracking_msg','in_learn_person'],
                              output_keys=['in_learn_person'],
                              outcomes=['succeeded','aborted', 'preempted','learn_face'])
@@ -145,7 +145,7 @@ class LearnPerson(smach.StateMachine):
            
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
-                                   select_ID(self.learn_face),
+                                   select_ID(self.learn_face, self.follow_pub),
                                    transitions={'succeeded': 'STOP_LEARNING',
                                                 'aborted': 'CONTROL_TIME','learn_face':'FACE_SAY'})
             

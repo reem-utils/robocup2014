@@ -332,7 +332,7 @@ class FollowOperator(smach.StateMachine):
             # I_KNOW is that i have find the targed_id in personArray
             # not_found is that i don't
             smach.StateMachine.add('FILTER_AND_PROCESS',
-                                   filter_and_process(self.follow_pub),
+                                   filter_and_process(),
                                    transitions={'find_it': 'CALCULATE_GOAL',
                                                 'occluded':'OCCLUDED_PERSON', 
                                                 'not_find': 'I_DONT_KNOW',

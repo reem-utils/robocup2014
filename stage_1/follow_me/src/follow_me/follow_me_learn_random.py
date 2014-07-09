@@ -18,6 +18,7 @@ from speech_states.listen_and_check_word import ListenWordSM
 from speech_states.say_with_enable import say_with_enable
 from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
+from manipulation_states.move_head_form import move_head_form
 from std_msgs.msg import Int32
 
 
@@ -30,7 +31,7 @@ NEW_PERSON="A you are here, lets go"
 # It's only becouse i can't import the file... i can't understand
 class select_ID(smach.State):
 
-    def __init__(self,pub): 
+    def __init__(self, pub): 
         smach.State.__init__(self, input_keys=['tracking_msg','in_learn_person'],
                              output_keys=['in_learn_person'],
                              outcomes=['succeeded','aborted', 'preempted'])
@@ -99,8 +100,12 @@ class LearnPersonRandom(smach.StateMachine):
 
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'WAIT_TIME',
-                                                'aborted': 'WAIT_TIME'})
+                                   transitions={'succeeded': 'DEFAULT_POSITION',
+                                                'aborted': 'DEFAULT_POSITION'})
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'WAIT_TIME','aborted':'WAIT_TIME'})
             
             smach.StateMachine.add('WAIT_TIME',
                        wait_time(),
@@ -119,7 +124,7 @@ class LearnPersonRandom(smach.StateMachine):
             
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
-                                   select_ID(),
+                                   select_ID(self.follow_pub),
                                    transitions={'succeeded': 'NEW_PERSON',
                                                 'aborted': 'WAIT_TIME'})
             

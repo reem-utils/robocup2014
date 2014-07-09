@@ -22,7 +22,7 @@ PEOPLE_TRACKER_TOPIC = '/pipol_tracker_node/peopleSet'
 ID_TO_FOLLOW_TOPIC = '/follow_me/id'
 POINT_HEAD_TOPIC = '/head_controller/point_head_action/goal'
 
-TIME_BETWEEN_GOALS = 1.0
+TIME_BETWEEN_GOALS = 0.3
 
 
 class FollowPipolTrackerIdWithHead():
@@ -81,7 +81,7 @@ class FollowPipolTrackerIdWithHead():
                         if int(person.targetId) == int(self.current_tracked_id):
                             found_id_in_msg = True
                             phg = PointHeadActionGoal()
-                            phg.goal.min_duration = rospy.Duration(1.0) # adapt for as far as the detection is??
+                            phg.goal.min_duration = rospy.Duration(0.6) # adapt for as far as the detection is??
                             phg.goal.target.header.frame_id = "base_link"
                             phg.goal.target.header.stamp = rospy.Time.now()
                             phg.goal.target.point.x = person.x
@@ -92,7 +92,6 @@ class FollowPipolTrackerIdWithHead():
     
                             #Publish
                             if rospy.Time.now() - last_time > rospy.Duration(TIME_BETWEEN_GOALS):
-                                rospy.loginfo("Sent head command")
                                 self.point_head_pub.publish(phg)
                                 last_time = rospy.Time.now()
 
