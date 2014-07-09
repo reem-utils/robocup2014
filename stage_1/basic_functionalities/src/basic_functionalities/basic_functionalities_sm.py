@@ -18,6 +18,8 @@ from manipulation_states.play_motion_sm import play_motion_sm
 from navigation_states.go_poi_listen_word import Go_Poi_Listen_Word
 from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from hri_states.acknowledgment import acknowledgment
+from util_states.timeout import TimeOut
+from util_states.state_concurrence import ConcurrenceRobocup
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -82,7 +84,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 #Go_Poi_Listen_Word('point_room_one', SENTENCE_STOP),
                 #transitions={'succeeded': 'say_going_avoid', 'aborted': 'confirm_stop_pick_place', 
                 #'preempted': 'preempted'})    
-                transitions={'succeeded':'do_pick_and_place', 'aborted': 'confirm_stop_pick_place', 
+                transitions={'succeeded':'pick_timer', 'aborted': 'confirm_stop_pick_place', 
                 'preempted': 'preempted'})
                 
             # The robot wait for "move" to move to the poi
@@ -103,12 +105,30 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 acknowledgment("yes", "Okey, I move"),
                 transitions={'succeeded': 'say_going_pick_place', 'aborted': 'say_going_pick_place', 
                 'preempted': 'preempted'})   
-            # Do pick and place
+            
+            # Do pick and place + TimeOut
+            STATES = [PickPlaceSM(), TimeOut(180)]
+            STATE_NAMES = ["do_pick_and_place", "time_pick"]
+            outcome_map = {'succeeded': {"do_pick_and_place": 'succeeded'}, 'aborted': {"time_pick": 'succeeded'}}
+        
             smach.StateMachine.add(
-                'do_pick_and_place',
-                PickPlaceSM(),
+                "pick_timer",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'say_going_avoid', 'aborted': "timeout_pick_and_place"})
+            
+            # Say TimeOut 
+            smach.StateMachine.add(
+                'timeout_pick_and_place',
+                text_to_say("The time for Pick and Place is finish"),
                 transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
-                'preempted': 'preempted'}) 
+                'preempted': 'preempted'})
+            
+           
+#             smach.StateMachine.add(
+#                 'do_pick_and_place',
+#                 PickPlaceSM(),
+#                 transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
+#                 'preempted': 'preempted'}) 
            
             # Say Go Avoid that
             smach.StateMachine.add(
@@ -123,7 +143,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 #Go_Poi_Listen_Word('point_room_two', SENTENCE_STOP),
                 #transitions={'succeeded': 'say_going_what_say', 'aborted': 'confirm_stop_avoid_that', 
                 #'preempted': 'preempted'})    
-                transitions={'succeeded': 'do_avoid_that', 'aborted': 'confirm_stop_avoid_that', 
+                transitions={'succeeded': 'avoid_timer', 'aborted': 'confirm_stop_avoid_that', 
                 'preempted': 'preempted'})
                   
             # The robot wait for "move" to move to the poi
@@ -145,12 +165,29 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
                 'preempted': 'preempted'}) 
             
-            # Do avoid that
+            # Do avoid that + TimeOut
+            STATES = [Avoid_That(), TimeOut(180)]
+            STATE_NAMES = ["do_avoid_that", "time_avoid"]
+            outcome_map = {'succeeded': {"do_avoid_that": 'succeeded'}, 'aborted': {"time_avoid": 'succeeded'}}
+        
             smach.StateMachine.add(
-                'do_avoid_that',
-                Avoid_That(),
+                "avoid_timer",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'say_going_what_say', 'aborted': "timeout_avoid_that"})
+            
+            # Say TimeOut 
+            smach.StateMachine.add(
+                'timeout_avoid_that',
+                text_to_say("The time for Avoid That is finish"),
                 transitions={'succeeded': 'say_going_what_say', 'aborted': 'say_going_what_say', 
-                'preempted': 'preempted'}) 
+                'preempted': 'preempted'})
+            
+            # Do avoid that
+#             smach.StateMachine.add(
+#                 'do_avoid_that',
+#                 Avoid_That(),
+#                 transitions={'succeeded': 'say_going_what_say', 'aborted': 'say_going_what_say', 
+#                 'preempted': 'preempted'}) 
             
             # Say Go What did you say 
             smach.StateMachine.add(
@@ -165,7 +202,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 #Go_Poi_Listen_Word('point_room_three', SENTENCE_STOP),
                 #transitions={'succeeded': 'say_finish_basic_functionalities', 'aborted': 'confirm_stop_what_say', 
                 #'preempted': 'preempted'})    
-                transitions={'succeeded': 'do_what_did_you_say', 'aborted': 'confirm_stop_what_say', 
+                transitions={'succeeded': 'what_say_timer', 'aborted': 'confirm_stop_what_say', 
                              'preempted': 'preempted'})   
          
             # The robot wait for "move" to move to the poi
@@ -187,12 +224,29 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 transitions={'succeeded': 'say_going_what_say', 'aborted': 'say_going_what_say', 
                 'preempted': 'preempted'}) 
             
-            # Do what did you say
+            # Do what did you say + TimeOut
+            STATES = [WhatSaySM(), TimeOut(180)]
+            STATE_NAMES = ["do_what_did_you_say", "time_what_say"]
+            outcome_map = {'succeeded': {"do_what_did_you_say": 'succeeded'}, 'aborted': {"time_what_say": 'succeeded'}}
+        
             smach.StateMachine.add(
-                'do_what_did_you_say',
-                WhatSaySM(),
+                "what_say_timer",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'say_going_what_say', 'aborted': "timeout_what_say"})
+            
+            # Say TimeOut 
+            smach.StateMachine.add(
+                'timeout_what_say',
+                text_to_say("The time for What did you say is finish"),
                 transitions={'succeeded': 'say_finish_basic_functionalities', 'aborted': 'say_finish_basic_functionalities', 
-                'preempted': 'preempted'}) 
+                'preempted': 'preempted'})
+            
+            # Do what did you say
+#             smach.StateMachine.add(
+#                 'do_what_did_you_say',
+#                 WhatSaySM(),
+#                 transitions={'succeeded': 'say_finish_basic_functionalities', 'aborted': 'say_finish_basic_functionalities', 
+#                 'preempted': 'preempted'}) 
 
             # Say Finish basic Functionalities
             smach.StateMachine.add(

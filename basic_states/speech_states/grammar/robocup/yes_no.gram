@@ -2,7 +2,7 @@
 
 grammar first;
 
-public <basic> = ( <yes> {obj.put("yes",$.$value);}  |  <no> {obj.put("no",$.$value);} ) | <garbage>;
+public <basic> = ( <yes> {obj.put("yes","yes");}  |  <no> {obj.put("no","no");} ) | <garbage>;
 
 <yes> = yes | yeah ;
 <no> = no;

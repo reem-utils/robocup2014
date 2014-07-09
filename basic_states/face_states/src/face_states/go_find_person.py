@@ -47,7 +47,8 @@ class prepare_poi(smach.State):
         else :
             if userdata.nav_to_poi_name == None :
                 userdata.nav_to_poi_name=self.poi_name
-                return 'poi'
+            rospy.logwarn(userdata.nav_to_poi_name)
+            return 'poi'
  
  
 class Wait_search(smach.State):
@@ -193,8 +194,8 @@ class go_find_person(smach.StateMachine):
             
             smach.StateMachine.add(
                                    'go_poi',
-                                   nav_to_poi(),
-                                   transitions={'succeeded': 'Concurrence', 'aborted': 'aborted', 
+                                   nav_to_poi(poi_name),
+                                   transitions={'succeeded': 'Concurrence', 'aborted': 'Concurrence', #TODO
                                     'preempted': 'preempted'})
 
             # Concurrence
