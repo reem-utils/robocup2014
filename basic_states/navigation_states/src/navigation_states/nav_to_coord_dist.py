@@ -42,9 +42,6 @@ class prepareData(smach.State):
         if None in userdata.nav_to_coord_goal:
             rospy.logerr("No Goal to Send... Error")
             return 'aborted'
-        
-        
-        #################
          
         #Calculating vectors for the position indicated
         new_pose = Pose()
@@ -100,15 +97,19 @@ class nav_to_coord_dist(smach.StateMachine):
     This state machine receive the name of the point and go there. 
 
     Required parameters:
-    No parameters.
+        No required parameters.
 
     Optional parameters:
-    No optional parameters# todo need de mmap
+        @param x: 
+        @param y: 
+        @param yaw: 
+        @param distance_to_human: 
 
     Input keys: 
-        nav_to_poi_name: String that contain the poi information
+        @key nav_to_coord_goal: [x, y, yaw]
     Output keys:
-        standard_error: String that show what kind of error could be happened
+        @key standard_error: String that show what kind of error could be happened
+    
     No io_keys.
 
   
