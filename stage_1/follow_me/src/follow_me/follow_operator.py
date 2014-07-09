@@ -162,8 +162,8 @@ Thats why we make desired distance zero if person too close.
             distance_des = position_distance - self.distanceToHuman
             userdata.feadback=OKI
             rospy.logwarn("----neu feadback :  "+str(userdata.feadback))
-            if distance_des>MAX_GOAL :
-                distance_des =MAX_GOAL
+#             if distance_des>MAX_GOAL :
+#                 distance_des =MAX_GOAL
 
             #alfa = math.atan2(userdata.tracking_msg_filtered.y,userdata.tracking_msg_filtered.x)
         else:
