@@ -79,8 +79,6 @@ class RecognizeCommand(smach.State):
 
                 # TODO: add confidence check before returning valid recognition (confirmation dialogue)
                 goto_tags = [tag for tag in userdata.speechData.tags if tag.key == self._command_a]
-            #   print "\n\n\n gototags es: "
-            #   print goto_tags
                 if goto_tags:
                     if self._command_b == goto_tags[0].value:
                         return 'valid_command'
@@ -137,25 +135,6 @@ class RecogCommand(smach.StateMachine):
                                                DeactivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'succeeded'})
 
-
-# class BringLocationAsk(smach.State):
-# 
-#         def __init__(self):
-#                 smach.State.__init__(self,
-#                                      outcomes=['succeeded', 'preempted', 'aborted'],
-#                                      input_keys=['userSaidTags'],
-#                                      output_keys=['location_name']) 
-#                 
-#         def execute(self, userdata):
-#             try: 
-#                   for tag in userdata.userSaidTags :
-#                     if tag.key == 'location':
-#                       userdata.location_name = tag.value
-#                   return 'succeeded'
-#             except:
-#                   print 'faaaail object'
-#                   return 'aborted'
-
 class BringOrderObject(smach.State):
 
         def __init__(self):
@@ -188,10 +167,9 @@ class BringOrderLoc(smach.State):
                     if tag.key == 'location':
                       userdata.location_name = tag.value
                       return 'succeeded'
-                  print "WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGGHHHHHHHHHHHHHHHHHHHHH "+userdata.userSaidData
                   if userdata.location_name == '':
-                    if 'fridge' in userdata.userSaidData: # TODO: recorrer la lista de locations para cogerlo
-                        userdata.location_name = 'fridge'
+                    if 'kitchen' in userdata.userSaidData: # TODO: recorrer la lista de locations para cogerlo
+                        userdata.location_name = 'kitchen'
                         return 'succeeded'
                   return 'aborted'
             except:
@@ -295,7 +273,8 @@ class askCategory(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, outcomes = ['succeeded', 'preempted', 'aborted'])
-                #GRAMMAR_NAME = 'robocup/' + GRAMMAR_NAME
+                
+                GRAMMAR_NAME='gpsr/' + GRAMMAR_NAME
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
@@ -335,10 +314,6 @@ class askCategory(smach.StateMachine):
                                                BringOrderObject(),
                                                transitions={'aborted': 'HEAR_COMMAND_OBJECT', 'succeeded': 'PREPARATION_CONFIRM_OBJECT', 'preempted': 'preempted'})
                                                
-#                         smach.StateMachine.add('PRINT_MESSAGE',
-#                                                PrintUserData(),
-#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
-
                         smach.StateMachine.add('PREPARATION_CONFIRM_OBJECT',
                                                prepare_confirm_info(),
                                                transitions={'succeeded': 'CONFIRM_OBJECT'},
@@ -396,7 +371,8 @@ class askCategoryLoc(smach.StateMachine):
 
         def __init__(self, GRAMMAR_NAME='categories', command_key='finn', command_value='xxx'):
                 smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
-                #GRAMMAR_NAME='robocup/' + GRAMMAR_NAME.replace(' ', '_')
+                
+                GRAMMAR_NAME='gpsr/' + GRAMMAR_NAME
                 
                 self.userdata.cat = GRAMMAR_NAME
                 self.userdata.objectList = []
@@ -417,10 +393,6 @@ class askCategoryLoc(smach.StateMachine):
                         smach.StateMachine.add('ENABLE_GRAMMAR',
                                                ActivateASR(GRAMMAR_NAME),
                                                transitions={'succeeded': 'PREPARATION_ASK_INFO'})
-
-                       # def catQuestion(userdata):
-                        #  text = 'You said a ' + userdata.cat + '. I could go to ' + ', '.join(userdata.locList) + '. Which ' + userdata.cat + ' do you prefer?'
-                         # return text                       
                          
 
                         smach.StateMachine.add('PREPARATION_ASK_INFO',
@@ -428,7 +400,6 @@ class askCategoryLoc(smach.StateMachine):
                                                transitions={'succeeded': 'ASK_INFO'},
                                                remapping={'tosay':'tts_text'})
 
-                        #blabla
                         smach.StateMachine.add('ASK_INFO',
                                                text_to_say(),
                                                transitions={'succeeded': 'HEAR_COMMAND',
@@ -444,10 +415,6 @@ class askCategoryLoc(smach.StateMachine):
                                                BringOrderLoc(),
                                                transitions={'aborted': 'HEAR_COMMAND', 'succeeded': 'PREPARATION_CONFIRM_OBJECT', 'preempted': 'preempted'})
                                                
-#                         smach.StateMachine.add('PRINT_MESSAGE',
-#                                                PrintUserData(),
-#                                                transitions={'succeeded': 'RECOGNIZE_COMMAND', 'preempted': 'preempted'})
-
                         smach.StateMachine.add('PREPARATION_CONFIRM_OBJECT',
                                                prepare_confirm_info(),
                                                transitions={'succeeded': 'CONFIRM_OBJECT'},
@@ -478,6 +445,3 @@ class askCategoryLoc(smach.StateMachine):
                                                transitions={'succeeded': 'succeeded' })
                         
 
-
-
-# vim: expandtab ts=4 sw=4
