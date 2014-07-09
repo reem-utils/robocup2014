@@ -27,9 +27,6 @@ class PipolFollower():
         # helper variables
         success = True
         
-        # publish info to the console for the user
-        rospy.loginfo('%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i' % (self._action_name, goal.order, self._feedback.sequence[0], self._feedback.sequence[1]))
-        
         # start executing the action
         for i in xrange(1, goal.order):
           # check that preempt has not been requested by the client
