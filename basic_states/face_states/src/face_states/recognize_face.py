@@ -165,6 +165,7 @@ class recognize_face_concurrent(smach.StateMachine):
         with self:
 
             self.userdata.face = ""
+            self.userdata.name=""
             
             # extract the database that the robot is finding
             smach.StateMachine.add(

@@ -1,4 +1,4 @@
-from translator import obj2idx  #, idx2obj, get_list
+from translator import obj2idx, idx2obj #, get_list
 import roslib
 PERSON = 'PERSON'
 ROBOT = 'ROBOT'
@@ -87,6 +87,10 @@ class world():
     def set_current_position(self,location):
         loc = obj2idx(location, 'LOCATIONS')
         self.robot.locId = loc
+        
+    def get_current_position(self):
+        loc = idx2obj(self.robot.locId,'LOCATIONS')
+        return loc
     
     def new_world(self, allFile, locations):
 

@@ -44,7 +44,7 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 
 <category> = drink | food | utils;
 
-<loccategory> = a table | a seating | a seat | a shelf | a door;
+<loccategory> = a table | a seat | a shelf | a door;
 
 <garbage>  = <garbage2>;
 

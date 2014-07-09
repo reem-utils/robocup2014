@@ -1,0 +1,22 @@
+#JSGF V1.0;
+
+grammar utils;
+
+public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ; 
+
+<bringcmd> = bring;
+<person> = me ;
+<objects> = [some | the | a ] <object>;
+
+<object>  = medicine {obj.put("object","medicine");} | mug {obj.put("object","mug");} | cup {obj.put("object","cup");};
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 

@@ -4,12 +4,11 @@ items: ["coke", "coke_zero", "juice", "energy_drink", "aquarius", "fanta", "prin
 
 persons: [ "andrew", "charles", "george", "amanda", "hannah", "donald", "frank", "james", "samuel", "deborah", "michelle", "rebecca", "taylor", "paul", "edward", "referee", "person"]
 
-rooms: ["kitchen", "hallway", "living room"]
+rooms: ["kitchen", "living room"]
 
 room:
     kitchen: ["kitchen table", "kitchen counter"]
-    living: ["pantry", "armchair", "bookshelf", "dinner table"]
-    bedroom: ["sideboard", "bed", "drawer"]
+    living room: ["pantry", "armchair", "bookshelf", "dinner table", "working_desk"]
 
 
 location:
@@ -26,7 +25,6 @@ loc_category:
         table: ["kitchen table", "dinner table", "working desk"]
         shelf: ["kitchen counter","bookshelf", "pantry"]
         seat: ["armchair"]
-        seating: ["armchair"]
         door: ["exit", "entrance"]
 
 kitchen_table_heigh: 1

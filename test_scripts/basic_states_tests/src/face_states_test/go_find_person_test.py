@@ -33,7 +33,7 @@ def main():
                 # it call the learn state
         smach.StateMachine.add(
             'prepare_face_reconize',
-            go_find_person(),
+            go_find_person(time_out=200),
             transitions={'succeeded': 'succeeded','aborted' : 'aborted'})
         
 

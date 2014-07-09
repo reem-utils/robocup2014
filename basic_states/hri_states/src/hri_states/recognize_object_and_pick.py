@@ -8,6 +8,7 @@ Created on 05/07/2014
 
 import rospy
 import smach
+import math
 from speech_states.say import text_to_say
 from object_grasping_states.pick_object_sm import pick_object_sm
 from object_states.recognize_object import recognize_object
@@ -24,15 +25,18 @@ class process_pick_location(smach.State):
                              input_keys = ['object_position'], 
                              output_keys = ['object_position'])
     def execute(self, userdata):
+        if (userdata.object_position.pose.pose.position.z == 0.476659206266) or (math.isnan(userdata.object_position.pose.pose.orientation.x)):    
+            return 'aborted'
+        else:
 
-        p = PoseStamped()
-        p.header.frame_id = userdata.object_position.header.frame_id
-        p.pose.position.x = userdata.object_position.pose.pose.position.x
-        p.pose.position.z = userdata.object_position.pose.pose.position.z
-        p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
-        userdata.object_position = p
+            p = PoseStamped()
+            p.header.frame_id = userdata.object_position.header.frame_id
+            p.pose.position.x = userdata.object_position.pose.pose.position.x
+            p.pose.position.z = userdata.object_position.pose.pose.position.z + 0.1
+            p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
+            userdata.object_position = p
 
-        return 'succeeded'
+            return 'succeeded'
 
     
     
@@ -84,7 +88,7 @@ class RecObjectAndPick(smach.StateMachine):
             smach.StateMachine.add(
                 'process_object_recognition',
                 process_pick_location(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'fail_recognize', 
                 'preempted': 'preempted'}) 
 
             # Say grasp object

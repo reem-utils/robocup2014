@@ -36,10 +36,8 @@ print per
 
 categories = ['drink', 'snack', 'cleaning_stuff', 'food', 'kitchenware']
 loc_categories = ['door', 'table', 'shelf', 'appliance', 'seat', 'seating', 'utensil']
-# except:
-#   persons = {'homer': 0, '': ''}
 
-# print 'blebla'
+
 def indexGrammar(grammar):
   print grammar
   d = {}
@@ -53,10 +51,6 @@ def indexGrammar(grammar):
 print per
 
 persons = indexGrammar(per['persons'])
-# persons['referee'] = len(persons) + 1
-# persons['albert'] = len(persons) + 1
-# persons['jordi'] = len(persons) + 1
-# persons['ricardo'] = len(persons) + 1
 locations = indexGrammar(per['locations'])
 items = indexGrammar(per['items'])
 # items = {'coke': 0, 'apartment': 3, '': ''}
@@ -124,9 +118,6 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
     if TEST:
         return idx2obj(1,Type)
     ad = askMissingInfoSM(Type=Type, objectName=objectName)
-    #ad.userdata._data = {'dataType': Type, 'object_name':objectName}
-    #ad.userdata.dataType = Type
-    #ad.userdata.object_name = objectName
     out = ad.execute()
     loc = ad.userdata._data['location_name']
     print "EL loc ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+loc
@@ -135,41 +126,16 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 def ask_category(category):
     if TEST:
         return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category))
-#         if category == "drink":
-#             return 'coke'
-#         if category == "food":
-#             return 'cookies'
-#         if category == "snack":
-#             return 'chocolate'
-#         if category == "cleaning":
-#             return 'deodorant'
-#         if category == "kitchenware":
-#             return 'spoon'
     print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
     obj = ad.userdata._data['object_name']
-    #ob = obj2idx(ad.userdata.object_name, 'ITEMS')
     print "EL OBJ ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_category!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+obj
     return obj   #--------------'''
 
 def ask_category_loc(category):
     if TEST:
         return idx2obj(1,rospy.get_param('/robocup_params/locations'))
-#         if category == "table":
-#             return 'kitchen table'
-#         if category == "shelf":
-#             return 'bookshelf'
-#         if category == "appliance":
-#             return 'fridge'
-#         if category == "utensils":
-#             return 'plant'
-#         if category == "seat":
-#             return 'armchair'
-#         if category == "seating":
-#             return 'armchair'
-#         if category == "door":
-#             return 'exit'
     ad = askCategoryLocSM(GRAMMAR_NAME = category) 
     out = ad.execute()
     obj = ad.userdata._data['location_name']
@@ -179,14 +145,11 @@ def ask_category_loc(category):
 
 def check_object_location(obj):
     if obj != '':
-        # result = get_obj_location(obj)
-        # if result == 'NULL':
         result = ask_data(Type='LOCATIONS', objectName=obj)
      
         return obj2idx(result, 'LOCATIONS')
     else:
         return '-1'
-    #return 'sofa'
 
 class gpsrASAction(object):
   _result   = gpsrSoar.msg.gpsrActionResult()
