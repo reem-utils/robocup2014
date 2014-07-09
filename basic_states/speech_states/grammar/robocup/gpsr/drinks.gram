@@ -1,0 +1,24 @@
+#JSGF V1.0;
+
+grammar drinks;
+
+public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ; 
+
+<bringcmd> = bring;
+<person> = me ;
+<objects> = <aobject> | <anobject> | <object>;
+
+<aobject>  = a red bull {obj.put("object","red bull");} | a coke {obj.put("object","coke");} | a beer {obj.put("object","beer");};
+<anobject> = an apple juice {obj.put("object","apple juice");};
+<object>   = juice {obj.put("object","juice");} | beer {obj.put("object","beer");} | water {obj.put("object","water");} | wine {obj.put("object","wine");};
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 
