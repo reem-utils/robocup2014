@@ -107,8 +107,8 @@ class LearnPerson(smach.StateMachine):
     def __init__(self,learn_face=False):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
-        self.learn_face=learn_face
-        self.follow_pub= rospy.Publisher('/follow_me/id', Int32)    
+        self.learn_face = learn_face
+        self.follow_pub = rospy.Publisher('/follow_me/id', Int32, latch=True)    
         
         with self:
             self.userdata.tts_wait_before_speaking=0

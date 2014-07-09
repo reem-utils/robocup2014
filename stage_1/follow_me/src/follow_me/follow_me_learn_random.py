@@ -87,8 +87,8 @@ class LearnPersonRandom(smach.StateMachine):
     def __init__(self,feedback=True):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
-        self.feedback=feedback
-        self.follow_pub= rospy.Publisher('/follow_me/id', Int32)  
+        self.feedback = feedback
+        self.follow_pub = rospy.Publisher('/follow_me/id', Int32, latch=True)  
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
