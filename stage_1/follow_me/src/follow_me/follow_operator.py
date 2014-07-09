@@ -72,11 +72,10 @@ class init_var(smach.State):
 
 # Here we have to take the message that we need, chosing the correct ID
 class filter_and_process(smach.State):
-    def __init__(self,pub):
+    def __init__(self):
         smach.State.__init__(self, outcomes=['find_it','not_find','occluded','preempted'],
                              input_keys=['tracking_msg','in_learn_person', 'tracking_msg_filtered'],
                              output_keys=['tracking_msg_filtered','in_learn_person'])
-        self.pub=pub
     def execute(self, userdata):
         find=False
 
@@ -94,7 +93,7 @@ class filter_and_process(smach.State):
         
         if find :
             
-            self.pub.publish(userdata.in_learn_person.targetId)
+            
             #rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
             if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
@@ -301,7 +300,6 @@ class FollowOperator(smach.StateMachine):
             outcomes=['succeeded', 'lost','preempted'],
             input_keys=['in_learn_person'])
 
-        self.follow_pub= rospy.Publisher('/follow_me/id', Int32)    
         self.feedback=feedback
         
         self.learn_if_lost=learn_if_lost
