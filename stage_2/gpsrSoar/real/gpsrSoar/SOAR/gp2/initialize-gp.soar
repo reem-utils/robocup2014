@@ -55,13 +55,10 @@ sp {gp*apply*initialize-gp
            ^id 15)
 
    (<d> ^name bring-to
-        ^person <pp>
         ^object <ii>
         ^robot <rr>)
-   (<pp> ^obj1Id 0
-           ^id 15)
    (<ii> ^delivered yes
-         ^id 0)
+         ^locId 6         ^id 0)
    (<rr> ^id 1)
 
 }

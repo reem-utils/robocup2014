@@ -1,0 +1,13 @@
+<launch>
+
+    <!-- TODO: maybe we need to delete the params before loading them -->
+    <include file="$(find gpsr)/launch/gpsrParams.launch" />
+
+    <!-- State Machine -->
+    <node 
+    	pkg ="gpsr"
+        type="check_dependences.py"
+        name="check_dependences"
+        output="screen">
+     </node>
+</launch>

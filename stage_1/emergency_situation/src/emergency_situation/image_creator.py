@@ -20,6 +20,7 @@ def ImageCreator(location_list, scale,origin, image_name, pkg_path, image_path):
     #img_map = Image.open(image_path + image_name).convert("RGB")
     img_map = Image.open(pkg_path + "/config/subMap1.pgm").convert("RGB")
     img_cross = Image.open(pkg_path + "/config/cross.png")
+    
     print "Resizing cross"
     resized_cross = img_cross.resize((15, 15))
 

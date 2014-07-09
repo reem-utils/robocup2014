@@ -23,7 +23,7 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 <exit> =  <exitcommand> the apartment;
 
 
-<gocommand>   = go | move | navigate;
+<gocommand>   = go | move | navigate | guide me;
 <fetchcommand>= retrieve | bring;
 <bringcommand>= bring | carry;
 <getcommand>  = retrieve | get | bring;
@@ -36,15 +36,15 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 <determinant> = the | an | a | some;
 
 
-<person> = albert | homer | jordi | karen | ricardo | referee | Michael | Christopher | Matthew | Joshua | David | James | Daniel | Robert | John | Joseph | Jessica | Jennifer | Amanda | Ashley | Sarah | Stephanie | Melissa | Nicole | Elizabeth | Heather;
+<person> = andrew | charles | george | amanda | hannah | donald | frank | james | samuel | deborah | michelle | rebecca | taylor | paul | edward | referee | person;
 
-<location> = charger | exit | kitchen | business | side board | sofa | toilet | armchair | bed | bookshelf | drawer | closet | tv | table;
+<location> = kitchen table | kitchen counter | kitchen | hallway | bookshelf | living room | armchair | pantry | dinner table | working desk | lift | entrance | exit | referee;
 
-<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | milk | beer | lemonade | milo | water | spoons | glass;
+<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | pringles | beer | lemonade | milo | water | spoons | glass;
 
-<category> = drink | food | kitchenware | snack;
+<category> = drink | food | utils;
 
-<loccategory> = table | shelf | appliance | utensils | seat | seating | door;
+<loccategory> = a table | a seat | a shelf | a door;
 
 <garbage>  = <garbage2>;
 

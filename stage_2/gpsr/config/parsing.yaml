@@ -1,18 +1,34 @@
 ASR_LOOP: True
 ASR_ON: "False"
-GRAMATICA: "robocup/general"
+GRAMATICA: "robocup/minimals"
 
-sentence: "bring me a coke"
-sentence0: "retrieve the coke from the sofa, and leave the apartment"
+sentence8: "go to the kitchen, ask donald name and introduce yourself"  #working
+sentence9: "ask my name"                                                 #working
+sentence10: "introduce yourself"                                        #working
+sentence0: "learn donald, recognize donald and find donald"
+sentence11: "recognize donald"                                          #working	
+sentence14: "find donald"
+sentence12: "grasp the pringles"
+sentence13: "find me"
+sentence15: "bring me the pringles"
+sentence16: "bring the pringles to the dinner table"
+sentence17: "find a coke"
+sentence18: "point at me"
+sentence19: "follow me"
+
+
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
-sentence3: "bring the coke to a sofa"
+sentence: "bring the coke to a armchair"
 sentence4: "go to the sofa, grasp the coke bring the coke to bookshelf"  
 sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
 
-notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, VerbCategories.txt, newGrammar.cfg, general.gram/minimals.gram (to change between them HERE or in files:sm_gpsr_order, newUnderstanding, grammarReader, gpsrASAction)"
+
+notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram, grammars in speech_states/grammar/robocup/gpsr folder"
+
+nottes: "Remmember to add categories in each grammar, for exemple apart from sofa add seat"
 
 nota: "If executing test (hardcoded in sm_gpsr_order) there are some locations and objects hardcoded"
 

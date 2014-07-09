@@ -37,7 +37,7 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 <category> = drink | food | utils;
 
 <loccategory> = <aloccategory>;
-<aloccategory> = a table | a seating | a seat | a shelf | a door;
+<aloccategory> = a table | a seat | a shelf | a door;
 
 
 <garbage>  = <garbage2>;

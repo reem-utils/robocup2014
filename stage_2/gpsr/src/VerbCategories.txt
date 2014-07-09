@@ -26,6 +26,7 @@ retrieve bring_from
 retrieve_from bring_from
 bring_from bring_from
 memorize learn_person
+learn learn_person
 ask learn_person
 leave exit
 exit exit
