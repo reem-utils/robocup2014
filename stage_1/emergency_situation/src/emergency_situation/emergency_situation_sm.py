@@ -180,7 +180,6 @@ class emergency_situation_sm(smach.StateMachine):
                         Get_Person_Desired_Object(),
                         transitions={'succeeded':'Ambulance_SM', 'aborted':'Get_Person_Desired_Object', 'preempted':'Ambulance_SM'})
 
-            #TODO: Define Entry room POI: userdata.nav_poi (?)
             #Retrying to go to entry_door until is succeeded
             smach.StateMachine.add(
                                    'Ambulance_SM',

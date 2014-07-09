@@ -23,6 +23,7 @@ from gesture_states.wave_detection_sm import WaveDetection
 from gesture_detection_mock.msg import Gesture
 from navigation_states.get_current_robot_pose import get_current_robot_pose
 from emergency_situation.Search_Emergency_Wave_Room_Change_SM import Search_Emergency_Wave_Room_Change
+from face_states.detect_faces import detect_face
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -125,24 +126,11 @@ class Search_People_Emergency(smach.StateMachine):
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
 
-#             smach.StateMachine.add(
-#                 'Say_Search',
-#                 text_to_say('Where are you? Give me signals, please.'),
-#                 transitions={'succeeded':'Gesture_Recognition', 'aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
-# 
-#             # Search for a Wave Gesture
-#             # Output_keys: gesture_detected: type Gesture
-#             self.userdata.nav_to_coord = [0, 0, 0]
-#             #Look Down
-#             #Move head right/left
-#             smach.StateMachine.add(
-#                 'Gesture_Recognition',
-#                 WaveDetection(),
-#                 transitions={'succeeded':'Say_Search','aborted':'Gesture_Recognition', 'preempted':'Gesture_Recognition'})
             smach.StateMachine.add(
                 'Home_Play',
                 play_motion_sm('home'),
                 transitions={'succeeded':'Search_Person_Room_by_Room','aborted':'Search_Person_Room_by_Room'})
+            
             smach.StateMachine.add(
                 'Search_Person_Room_by_Room',
                 Search_Emergency_Wave_Room_Change(),
@@ -152,7 +140,13 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_No_People_Found',
                 text_to_say("I could not find any person in an emergency situation, sorry. Can you come to me?"),
-                transitions={'succeeded':'Register_Position', 'aborted':'aborted'})
+                transitions={'succeeded':'face_detection', 'aborted':'aborted'})
+            #If the person is not found, then it will detect the face 
+            smach.StateMachine.add(
+                'face_detection',
+                detect_face(),
+                transitions={'succeeded': 'Register_Position', 'aborted': 'Move_head_prepare', 
+                'preempted': 'preempted'}) 
             
             smach.StateMachine.add(
                 'Say_Search',
