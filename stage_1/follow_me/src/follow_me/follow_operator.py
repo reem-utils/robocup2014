@@ -24,6 +24,8 @@ from speech_states.say import text_to_say
 #from tornado.options import define
 from follow_me_learn_random import LearnPersonRandom
 from speech_states.say_with_enable import say_with_enable
+from std_msgs.msg import Int32
+
 
 
 
@@ -90,6 +92,8 @@ class filter_and_process(smach.State):
                     
         
         if find :
+            
+            
             #rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
             if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
@@ -296,7 +300,6 @@ class FollowOperator(smach.StateMachine):
             outcomes=['succeeded', 'lost','preempted'],
             input_keys=['in_learn_person'])
 
-        
         self.feedback=feedback
         
         self.learn_if_lost=learn_if_lost
@@ -329,7 +332,7 @@ class FollowOperator(smach.StateMachine):
             # I_KNOW is that i have find the targed_id in personArray
             # not_found is that i don't
             smach.StateMachine.add('FILTER_AND_PROCESS',
-                                   filter_and_process(),
+                                   filter_and_process(self.follow_pub),
                                    transitions={'find_it': 'CALCULATE_GOAL',
                                                 'occluded':'OCCLUDED_PERSON', 
                                                 'not_find': 'I_DONT_KNOW',
