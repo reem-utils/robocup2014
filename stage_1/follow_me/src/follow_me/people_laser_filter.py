@@ -57,19 +57,16 @@ class PipolLaserFilter():
 
     def laser_cb(self, data):
         """cb for laser topic"""
-        print "laser cb"
         self.last_scan_msg = data
         self.new_msg = True
 
     def people_tracker_cb(self, data):
-        print "people tracker cb"
         """cb for pipol tracker topic"""
         self.last_pipol_msg = data
         
     def tracking_cb(self, data):
-        print "people id cb"
         self.current_tracked_id = data.data
-        rospy.loginfo("Following id: " + str(self.current_tracked_id) + " with head.")
+        rospy.loginfo("tracking id: " + str(self.current_tracked_id) + ".")
 
     def run(self):
         """Publishing in topics (depending on rate of publication on detections)"""
@@ -84,8 +81,6 @@ class PipolLaserFilter():
                 if self.current_tracked_id is not None:
                     for person in self.last_pipol_msg.peopleSet:
                         if int(person.targetId) == int(self.current_tracked_id):
-                            print "ok"
-                            person_angle = math.atan2(person.y, person.x)
                             
                             nr = []
                             for (i, ray) in enumerate(self.last_scan_msg.ranges):
@@ -93,8 +88,8 @@ class PipolLaserFilter():
                                 angle = -angle #because laser is flipped 180 deg
                                 dx = math.cos(angle) * ray + self.laser_x
                                 dy = math.sin(angle) * ray
-                                
-                                if math.sqrt((person.x - dx)**2 + (person.y-dy)**2) < 0.5:
+                                #filtering out laser points around person position
+                                if math.sqrt((person.x - dx)**2 + (person.y-dy)**2) < 0.7: #add a param in case this should be tuned
                                     nr.append(0.001) #small distance to filter it out from scan
                                 else:
                                     nr.append(ray)
@@ -105,14 +100,9 @@ class PipolLaserFilter():
     
 
 if __name__ == '__main__':
-#     if len(sys.argv) != 2:
-#         print "Usage: " + sys.argv[0] + " <id_to_follow>"
-#         print "Example:\n"
-#         print sys.argv[0] + " 12"
-#         exit(0)
-    rospy.init_node('follow_vision_raw')
+    rospy.init_node('people_laser_filter')
     rospy.sleep(0.5)  # Give a moment to init_node to do its job
-    rospy.loginfo("Initializing follow id")
+    rospy.loginfo("Initializing people filter")
     filter_person_in_laser = PipolLaserFilter()
     rospy.loginfo("Running")
     filter_person_in_laser.run()
