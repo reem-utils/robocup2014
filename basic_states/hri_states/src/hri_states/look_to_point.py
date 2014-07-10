@@ -17,7 +17,7 @@ import smach_ros
 from smach_ros import SimpleActionState
 # Msgs
 from pipol_tracker_pkg.msg import person, personArray
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
+from geometry_msgs.msg import PointStamped, PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header, Int32
 from control_msgs.msg import PointHeadActionGoal, PointHeadAction
 
@@ -89,8 +89,8 @@ class look_to_point(smach.StateMachine):
             
             smach.StateMachine.add(
                  'prepare_data',
-                 prepare_data_look("I'm searching for people waving at me", wait=False),
-                 transitions={'succeeded': 'wave_recognition', 'aborted': 'wave_recognition'}) 
+                 prepare_data_look(point_to_look, frame_id),
+                 transitions={'succeeded': 'look_to_point', 'aborted': 'aborted'}) 
             
             def look_to_point_cb(userdata, result_status, result):
                 if result_status != 3: # 3 == SUCCEEDED
@@ -105,7 +105,7 @@ class look_to_point(smach.StateMachine):
                     userdata.standard_error = "OK"
                 return 'succeeded'
 
-            smach.StateMachine.add('MoveRobot', 
+            smach.StateMachine.add('look_to_point', 
                                 SimpleActionState(POINT_HEAD_TOPIC,
                                                    PointHeadAction,
                                                    goal_key='point_head_goal',
@@ -117,5 +117,25 @@ class look_to_point(smach.StateMachine):
                                              'preempted':'preempted'})
             
             
-            
-            
+def main():
+    rospy.loginfo('Look To Point')
+    rospy.init_node('look_to_point_node')
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'],
+                            input_keys=[])
+    with sm:      
+        sm.userdata.point_to_look = PointStamped()
+        sm.userdata.point_to_look.header.frame_id = 'base_link'
+        sm.userdata.point_to_look.point.x = 1.0
+        sm.userdata.point_to_look.point.y = 1.0
+        sm.userdata.point_to_look.point.z = 1.0
+        
+        smach.StateMachine.add(
+            'look_to_point',
+            look_to_point(),
+            transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
+
+    sm.execute()
+    rospy.spin()
+
+if __name__=='__main__':
+    main()        
