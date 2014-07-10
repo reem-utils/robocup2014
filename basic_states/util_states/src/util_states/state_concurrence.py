@@ -16,16 +16,13 @@ class ConcurrenceRobocup(smach.Concurrence):
 
     Example of use:
         STATES = [MoveToRoomStateMachine(announcement=None), SpeakActionState("This is a test!")]
-        STATE_NAMES = ["MOVE_TO_EXIT", "SPEAbasic_functionalitiesK_SOMETHING"]
+        STATE_NAMES = ["MOVE_TO_EXIT", "SPEAK_SOMETHING"]
         outcome_map = {succeeded: {"MOVE_TO_EXIT": succeeded, "SPEAK_SOMETHING": succeeded}}
 
         smach.StateMachine.add(
             "MOVE_AND_SPEAK",
             ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, input_keys=["room_name"], outcome_map=outcome_map)
             )
-
-    You can test it running: roslaunch cocktail_party test_concurrence_robocup.launch
-
     """
     def __init__(self,
         states=[],

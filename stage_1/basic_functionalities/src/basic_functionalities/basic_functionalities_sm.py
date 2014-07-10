@@ -20,6 +20,7 @@ from speech_states.listen_and_check_word import ListenWordSM_Concurrent
 from hri_states.acknowledgment import acknowledgment
 from util_states.timeout import TimeOut
 from util_states.state_concurrence import ConcurrenceRobocup
+from util_states.concurrence_with_time import ConcurrenceTime
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -107,13 +108,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 'preempted': 'preempted'})   
             
             # Do pick and place + TimeOut
-            STATES = [PickPlaceSM(), TimeOut(180)]
-            STATE_NAMES = ["do_pick_and_place", "time_pick"]
-            outcome_map = {'succeeded': {"do_pick_and_place": 'succeeded'}, 'aborted': {"time_pick": 'succeeded'}}
+            STATES = [PickPlaceSM()]
+            STATE_NAMES = ["do_pick_and_place"]
         
             smach.StateMachine.add(
                 "pick_timer",
-                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                ConcurrenceTime(states=STATES, state_names=STATE_NAMES, timeout=180),
                 transitions={'succeeded': 'say_going_avoid', 'aborted': "timeout_pick_and_place"})
             
             # Say TimeOut 
@@ -166,13 +166,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 'preempted': 'preempted'}) 
             
             # Do avoid that + TimeOut
-            STATES = [Avoid_That(), TimeOut(180)]
-            STATE_NAMES = ["do_avoid_that", "time_avoid"]
-            outcome_map = {'succeeded': {"do_avoid_that": 'succeeded'}, 'aborted': {"time_avoid": 'succeeded'}}
-        
+            STATES = [Avoid_That()]
+            STATE_NAMES = ["do_avoid_that"]
+
             smach.StateMachine.add(
                 "avoid_timer",
-                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                ConcurrenceTime(states=STATES, state_names=STATE_NAMES, timeout=180),
                 transitions={'succeeded': 'say_going_what_say', 'aborted': "timeout_avoid_that"})
             
             # Say TimeOut 
@@ -225,13 +224,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 'preempted': 'preempted'}) 
             
             # Do what did you say + TimeOut
-            STATES = [WhatSaySM(), TimeOut(180)]
-            STATE_NAMES = ["do_what_did_you_say", "time_what_say"]
-            outcome_map = {'succeeded': {"do_what_did_you_say": 'succeeded'}, 'aborted': {"time_what_say": 'succeeded'}}
-        
+            STATES = [WhatSaySM()]
+            STATE_NAMES = ["do_what_did_you_say"]
+            
             smach.StateMachine.add(
                 "what_say_timer",
-                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                ConcurrenceTime(states=STATES, state_names=STATE_NAMES, timeout=180),
                 transitions={'succeeded': 'say_going_what_say', 'aborted': "timeout_what_say"})
             
             # Say TimeOut 

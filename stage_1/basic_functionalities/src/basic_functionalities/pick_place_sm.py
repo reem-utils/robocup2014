@@ -215,7 +215,7 @@ class PickPlaceSM(smach.StateMachine):
                 'recognize_object_and_pick',
                 RecObjectAndPick(),
                 transitions={'succeeded': 'Process_Place_location', 
-                             'fail_grasp':'Process_Place_location',
+                             'fail_grasp':'recognize_object_and_pick',
                              'fail_recognize': 'try_again_recognition'})
             
             # Prepare the place location
