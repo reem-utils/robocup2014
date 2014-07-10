@@ -73,7 +73,6 @@ class prepare_ask_person_back(smach.State):
         
         return 'succeeded'
  
-
 class change_did_pick(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
@@ -162,6 +161,29 @@ class checkRecognition(smach.State):
             userdata.try_iterations = userdata.try_iterations + 1
             return 'succeeded'
 
+class prepare_recognize(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['list_orders'],
+                                output_keys=['object_name'])
+
+    def execute(self, userdata):
+        for item in userdata.list_orders:
+            userdata.object_name.append(item[1])
+        return 'succeeded'
+    
+class check_object_grasp(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['list_orders','object_detected_name'],
+                                output_keys=['object_name'])
+
+    def execute(self, userdata):
+        for item in userdata.list_orders:
+            if userdata.object_dectected_name == item[1]:
+                userdata.name = item[0]
+        return 'succeeded'
+        
 class CocktailPartySM(smach.StateMachine):
     """
     Executes a SM that does the Cocktail Party.
@@ -188,7 +210,7 @@ class CocktailPartySM(smach.StateMachine):
             self.userdata.loop_iterations = 1
             self.userdata.try_iterations = 1
             self.userdata.gesture_name = ''
-            self.userdata.object_name = ""
+            self.userdata.object_name = []
             self.userdata.manip_time_to_play = 4
             self.userdata.did_pick = True
             self.userdata.grammar_name = GRAMMAR_NAME
@@ -217,14 +239,28 @@ class CocktailPartySM(smach.StateMachine):
                 transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'go_to_storage', 
                 'preempted': 'preempted'}) 
             
+            # Prepare info for recognize
+            smach.StateMachine.add(
+                'prepare_recognize',
+                prepare_recognize(),
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
+            
             # Recognize and pick object if found
             smach.StateMachine.add(
                 'recognize_object_and_pick',
                 RecObjectAndPick(),
                 transitions={'succeeded': 'go_to_party', 
-                             'fail_grasp':'go_to_party',
+                             'fail_grasp':'recognize_object_and_pick',
                              'fail_recognize': 'try_again_recognition'})
 
+            # Check which object had grasp
+            smach.StateMachine.add(
+                'check_object_grasp',
+                check_object_grasp(),
+                transitions={'succeeded': 'go_to_party', 'aborted': 'aborted', 
+                'preempted': 'preempted'})
+            
             # We don't recognized the object
             smach.StateMachine.add(
                 'try_again_recognition',
