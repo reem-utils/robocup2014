@@ -70,7 +70,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_start_basic_functionalities',
                  text_to_say("I'm ready to start Basic Functionalities"),
-                 transitions={'succeeded': 'say_going_pick_place', 'aborted': 'say_going_pick_place'}) 
+                 transitions={'succeeded': 'do_pick_and_place', 'aborted': 'do_pick_and_place'}) # TODO before it was say_going_pick_place
             
             # Say Go Pick and Place
             smach.StateMachine.add(
@@ -121,14 +121,14 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 'do_pick_and_place',
                 PickPlaceSM(),
-                transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
+                transitions={'succeeded': 'play_motion_state_2', 'aborted': 'play_motion_state_2', 
                 'preempted': 'preempted'})   
                         
             # Say TimeOut 
             smach.StateMachine.add(
                 'timeout_pick_and_place',
                 text_to_say("The time for Pick and Place is finish"),
-                transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
+                transitions={'succeeded': 'play_motion_state_2', 'aborted': 'play_motion_state_2', 
                 'preempted': 'preempted'})
             
            
@@ -137,7 +137,12 @@ class BasicFunctionalitiesSM(smach.StateMachine):
 #                 PickPlaceSM(),
 #                 transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
 #                 'preempted': 'preempted'}) 
-           
+            smach.StateMachine.add(
+                'play_motion_state_2',
+                play_motion_sm('home', skip_planning=True),
+                transitions={'succeeded': 'say_going_avoid',
+                             'preempted':'say_going_avoid', 
+                             'aborted':'play_motion_state_2'})   
             # Say Go Avoid that
             smach.StateMachine.add(
                  'say_going_avoid',

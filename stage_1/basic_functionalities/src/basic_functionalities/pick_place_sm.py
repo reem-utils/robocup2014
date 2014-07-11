@@ -108,7 +108,7 @@ class PickPlaceSM(smach.StateMachine):
             # Say Going to location
             smach.StateMachine.add(
                  'say_go_location',
-                 text_to_say("I'm going to the location where I have to recognize some objects"),
+                 text_to_say("I'm going to the location where I have to recognize some objects",wait=False),
                  transitions={'succeeded': 'prepare_location', 'aborted': 'prepare_location'}) 
              
             # Prepare the poi for nav_to_poi
