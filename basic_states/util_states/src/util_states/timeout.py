@@ -25,11 +25,13 @@ class TimeOut(smach.State):
     def __init__(self, wait_time = None):
         
         smach.State.__init__(self, input_keys=['wait_time', 'standard_error'], output_keys=['wait_time','standard_error'], outcomes=['succeeded', 'aborted'])       
-        self.time_init = rospy.Time.now()
+        
         self.wait_time = wait_time
-
+        
     def execute(self, userdata):  
-       
+        
+        self.time_init = rospy.Time.now()
+            
         if not self.wait_time and not userdata.wait_time:
             rospy.logerr("Time isn't set")
             return 'aborted'
