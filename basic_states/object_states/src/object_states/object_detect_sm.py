@@ -91,7 +91,7 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
  
     with sm:
-        sm.userdata.object_name = 'Barritas' 
+        sm.userdata.object_name = 'Pringles' 
         
         smach.StateMachine.add('Search_Object',
                             object_detect_sm(),

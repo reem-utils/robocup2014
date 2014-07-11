@@ -28,14 +28,14 @@ def main():
 
     
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
-    sis = smach_ros.IntrospectionServer(
-        'basic_functionalities_introspection', sm, '/BF_ROOT')
-    sis.start()
+#     sis = smach_ros.IntrospectionServer(
+#         'basic_functionalities_introspection', sm, '/BF_ROOT')
+#     sis.start()
 
     sm.execute()
 
     rospy.spin()
-    sis.stop()
+ #   sis.stop()
 
 
 if __name__ == '__main__':
