@@ -18,7 +18,8 @@ TOPIC_LIST_NAMES = [  # Topics and Actions
                     "/asr_event", 
                     "/pal_face/faces"]
 
-SERVICES_LIST_NAMES = []  # #################### Services #####################
+SERVICES_LIST_NAMES = [# #################### Services #####################
+                       "blort_tracker/recognize_object"]  
                        
 ACTION_LIST_NAMES = [  # #################### Actions #####################
                     "/play_motion",

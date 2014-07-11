@@ -215,7 +215,7 @@ class PickPlaceSM(smach.StateMachine):
                 'recognize_object_and_pick',
                 RecObjectAndPick(),
                 transitions={'succeeded': 'Process_Place_location', 
-                             'fail_grasp':'Process_Place_location',
+                             'fail_grasp':'recognize_object_and_pick',
                              'fail_recognize': 'try_again_recognition'})
             
             # Prepare the place location
@@ -274,8 +274,15 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'say_go_second_location', 'aborted': 'say_go_second_location', #TODO: Change aborted to try again
-                'preempted': 'preempted'})     
+                transitions={'succeeded': 'say_go_second_location', 'aborted': 'home_position', #TODO: Change aborted to try again
+                'preempted': 'preempted'})    
+             
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'home_position', #TODO: Change aborted to try again
+                'preempted': 'preempted'})   
    
             # Say go to second location
             smach.StateMachine.add(
@@ -294,7 +301,7 @@ class PickPlaceSM(smach.StateMachine):
             # Say release object
             smach.StateMachine.add(
                  'say_release_obj',
-                 text_to_say("I'm going to release the object", wait=False),
+                 text_to_say("I'm going to release the object", wait=True),
                  transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
             
             # Check if we pick the know or the unk object

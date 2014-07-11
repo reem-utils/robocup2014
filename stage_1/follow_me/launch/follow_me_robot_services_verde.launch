@@ -13,6 +13,11 @@
 	      type="reverse_node.py"
 	      name="NavigationBack_node">
 	</node>
+
+	<node pkg="follow_me"
+	      type="look_at_id.py"
+	      name="move_head_look_id">
+	</node>
 	
  
 

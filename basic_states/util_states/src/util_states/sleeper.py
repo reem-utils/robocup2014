@@ -22,7 +22,7 @@ class Sleeper(smach.State):
    """
 
     def __init__(self, sleep_time = None):
-        smach.State.__init__(self, input_keys=['sleep_time'], output_keys=['sleep_time'], outcomes=['succeeded', 'aborted'])       
+        smach.State.__init__(self, input_keys=['sleep_time'], output_keys=['sleep_time'], outcomes=['succeeded', 'preempted','aborted'])       
         self.sleep_time = sleep_time
         
     def execute(self, userdata):  
@@ -34,6 +34,13 @@ class Sleeper(smach.State):
         #Priority in init
         userdata.sleep_time = self.sleep_time if self.sleep_time else userdata.sleep_time  
         
-        rospy.sleep(userdata.sleep_time)
+        time = 0
+        while time < userdata.sleep_time:
+            time += 0.5
+            rospy.sleep(0.5)
+            if self.preempt_requested():
+                rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in Wait_search State')
+                return 'preempted'
+            
         return 'succeeded'
         

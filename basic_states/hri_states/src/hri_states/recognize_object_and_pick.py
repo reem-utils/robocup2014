@@ -13,6 +13,7 @@ from speech_states.say import text_to_say
 from object_grasping_states.pick_object_sm import pick_object_sm
 from object_states.recognize_object import recognize_object
 from geometry_msgs.msg import PoseStamped
+from manipulation_states.play_motion_sm import play_motion_sm
 
 class process_pick_location(smach.State):
     """"
@@ -70,6 +71,12 @@ class RecObjectAndPick(smach.StateMachine):
             self.userdata.tts_wait_before_speak = ''
             self.userdata.tts_text = ''
             
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'home_position', #TODO: Change aborted to try again
+                'preempted': 'preempted'}) 
             
             # Say start object recognition
             smach.StateMachine.add(

@@ -31,6 +31,9 @@ from speech_states.read_asr import ReadASR
 from manipulation_states.play_motion_sm import play_motion_sm
 from smach.user_data import Remapper
 from tf.transformations import quaternion_from_euler
+from face_states.go_find_person import go_find_person
+from pal_detection_msgs.msg import FaceDetection
+
 # Constants
 NUMBER_OF_QUESTIONS = 3
 GRAMMAR_NAME = 'robocup/what_did_you_say_2'
@@ -50,6 +53,7 @@ class prepare_coord_person(smach.State):
     def execute(self, userdata):
         
         new_pose = Pose()
+        rospy.logwarn(str(userdata.face))
         # TODO: We adapt the coordinates respect Kinect 
         new_pose.position.x = userdata.face.position.z
         new_pose.position.y = -userdata.face.position.x
@@ -220,7 +224,7 @@ class WhatSaySM(smach.StateMachine):
             # Go to the location
             smach.StateMachine.add(
                  'go_location',
-                 nav_to_poi("find_me"),
+                 nav_to_poi("init_what_say"),
                  transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
                  'preempted': 'preempted'})    
              
@@ -232,7 +236,7 @@ class WhatSaySM(smach.StateMachine):
             # Look for a face
             smach.StateMachine.add(
                  'search_face',
-                 SearchFacesSM(),
+                 go_find_person("init_what_say"),
                  transitions={'succeeded': 'Say_Found_Face', 'aborted': 'ask_for_tc', 
                  'preempted': 'preempted'},
                   remapping={'face_frame':'face_frame'})
