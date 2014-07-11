@@ -28,6 +28,7 @@ OKGREEN = '\033[92m'
 POINT_HEAD_TOPIC = '/head_controller/point_head_action'
 
 TIME_BETWEEN_GOALS = 0.3
+UP=1.2
 
 class prepare_data_look(smach.State):
     def __init__(self, point_to_look, frame_id, min_duration=0.9,direction=""):
@@ -66,6 +67,7 @@ class prepare_data_look(smach.State):
         
         if self.direction!="" :
             print "I HAVE A NEW ORDER"
+            phg.target.point.z=UP
             if self.direction =="left" :
                 phg.target.point.y = 1
             elif self.direction=="right":
@@ -79,40 +81,6 @@ class prepare_data_look(smach.State):
         print phg
         return 'succeeded'
 
-
-class direction_calculate(smach.State):
-    def __init__(self,direction,duration):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                              input_keys=['point_to_look'],
-                              output_keys=['point_to_look'])
-        
-        self.direction=direction
-        self.min_duration=duration
-    def execute(self, userdata):
-        
-        phg = PointHeadGoal()
-        phg.min_duration = rospy.Duration(self.min_duration) # adapt for as far as the detection is??
-        phg.target.header.stamp = rospy.Time.now()
-        phg.pointing_axis.x = 1.0
-        phg.pointing_frame = 'head_mount_xtion_rgb_frame'
-        
-
-        print "im looking if it's a new lokation"
-        if self.direction!="":
-            if self.direction=="left" :
-                phg.target.point.y = 1
-            elif self.direction=="right":
-                phg.target.point.y = -1
-            elif self.direction=="front":
-                phg.target.point.y = 0
-        
-            else :
-                return'aborted'
-                
-            userdata.point_to_look=phg
-        
-        
-        return 'succeeded'    
 
 
 class look_to_point(smach.StateMachine):
@@ -199,7 +167,7 @@ def main():
         
         smach.StateMachine.add(
             'look_to_point',
-            look_to_point(direction="left"),
+            look_to_point(direction="left",min_duration=2.0),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 
     sm.execute()

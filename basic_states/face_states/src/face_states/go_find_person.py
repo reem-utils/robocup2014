@@ -83,7 +83,7 @@ class say_searching_faces(smach.StateMachine):
                                    text_to_say('I am looking for the referee',wait=True), 
                                    transitions={'succeeded':'Move_head_Left', 'aborted':'aborted'})        
             smach.StateMachine.add('Move_head_Left',
-                                   look_to_point(direction="left", min_duration=1),
+                                   look_to_point(direction="left", min_duration=3),
                                    transitions={'succeeded':'Wait_search_2', 'aborted':'aborted'})
              
             smach.StateMachine.add('Wait_search_2', 

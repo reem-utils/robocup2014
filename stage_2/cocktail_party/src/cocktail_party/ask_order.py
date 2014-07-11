@@ -78,7 +78,7 @@ class AskOrder(smach.StateMachine):
             # Gesture recognition -> Is anyone waving?
             smach.StateMachine.add(
                 'wave_recognition',
-                WaveDetection(),
+                WaveDetection(time_for_wave=20),
                 transitions={'succeeded': 'say_wave_recognize', 'aborted': 'ask_for_person', 
                 'preempted': 'preempted'}) 
             
