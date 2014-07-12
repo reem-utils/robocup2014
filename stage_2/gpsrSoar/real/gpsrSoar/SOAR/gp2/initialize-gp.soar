@@ -56,7 +56,7 @@ sp {gp*apply*initialize-gp
 
    (<d> ^name go-to
         ^robot <rr>)
-   (<rr> ^locId 11
+   (<rr> ^locId 2
          ^id 1)
 
 }
