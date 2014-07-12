@@ -108,7 +108,7 @@ class GraspOrder(smach.StateMachine):
                 'try_again_recognition',
                 checkLoop(),
                 transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
-                'preempted': 'preempted', 'end':'say_fail_recognize'}) 
+                'preempted': 'preempted', 'end':'Grasp_fail_Ask_Person'}) 
             
         #Grasp Mock Part 
             # Home position
@@ -128,7 +128,7 @@ class GraspOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'go_to_party', 'aborted': 'Grasp_fail_Ask_Person', 
+                transitions={'succeeded': 'succeeded', 'aborted': 'Grasp_fail_Ask_Person', 
                 'preempted': 'preempted'})    
      
         # We ask for the object            
@@ -147,6 +147,6 @@ class GraspOrder(smach.StateMachine):
             smach.StateMachine.add(
                  'change_did_pick',
                  change_did_pick(),
-                 transitions={'succeeded':'go_to_party', 'aborted':'go_to_party', 'preempted':'go_to_party'})
+                 transitions={'succeeded':'succeeded', 'aborted':'succeeded', 'preempted':'preempted'})
         
   

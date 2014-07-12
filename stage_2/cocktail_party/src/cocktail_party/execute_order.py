@@ -37,13 +37,13 @@ class ExecuteOrder(smach.StateMachine):
             smach.StateMachine.add(
                  'grasp_order',
                  GraspOrder(),
-                 transitions={'succeeded': 'check_loop', 'aborted': 'aborted'}) 
+                 transitions={'succeeded': 'go_to_party', 'aborted': 'aborted'}) 
             
             # Go to the party room
             smach.StateMachine.add(
                 'go_to_party',
                 nav_to_poi('party_room'),
-                transitions={'succeeded': 'say_search_person', 'aborted': 'go_to_party', 
+                transitions={'succeeded': 'deliver_order', 'aborted': 'go_to_party', 
                 'preempted': 'preempted'}) 
 
             # Deliver the order
