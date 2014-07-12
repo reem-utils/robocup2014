@@ -47,11 +47,11 @@ class prepareData(smach.State):
             left_right = 0.0
 
         if self.head_ud == "down":
-            up_down = 0.3
+            up_down = 0.5
         elif self.head_ud == "normal":
             up_down = 0.1
         elif self.head_ud == "up":
-            up_down = -0.1
+            up_down = -0.15 # TODO before it was -0.1
             
         userdata.move_head_pose = [left_right, up_down]
         if self.preempt_requested():

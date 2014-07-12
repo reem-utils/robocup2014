@@ -13,6 +13,7 @@ from speech_states.say import text_to_say
 from object_grasping_states.pick_object_sm import pick_object_sm
 from object_states.recognize_object import recognize_object
 from geometry_msgs.msg import PoseStamped
+from manipulation_states.play_motion_sm import play_motion_sm
 
 class process_pick_location(smach.State):
     """"
@@ -32,7 +33,8 @@ class process_pick_location(smach.State):
             p = PoseStamped()
             p.header.frame_id = userdata.object_position.header.frame_id
             p.pose.position.x = userdata.object_position.pose.pose.position.x
-            p.pose.position.z = userdata.object_position.pose.pose.position.z + 0.1
+            p.pose.position.y = userdata.object_position.pose.pose.position.y - 0.1
+            p.pose.position.z = userdata.object_position.pose.pose.position.z
             p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
             userdata.object_position = p
 
@@ -69,8 +71,7 @@ class RecObjectAndPick(smach.StateMachine):
             self.userdata.tts_lang = ''
             self.userdata.tts_wait_before_speak = ''
             self.userdata.tts_text = ''
-            
-            
+                        
             # Say start object recognition
             smach.StateMachine.add(
                  'say_start_obj_recognition',
@@ -101,8 +102,16 @@ class RecObjectAndPick(smach.StateMachine):
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'succeeded', 'aborted': 'fail_grasp', #TODO: Change aborted to try again
+                transitions={'succeeded': 'succeeded', 'aborted': 'home_position',
                 'preempted': 'preempted'}) 
+                     
+            # Home position
+            smach.StateMachine.add(
+                'home_position',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'fail_grasp', 'aborted': 'home_position', 
+                'preempted': 'preempted'}) 
+            
  
 def main():
     rospy.init_node('Rec_Pick_node')
@@ -116,7 +125,9 @@ def main():
                             RecObjectAndPick(),
                             transitions={
                                          'succeeded': 'succeeded', 
-                                         'aborted': 'aborted'})
+                                         'aborted': 'aborted',
+                                         'fail_grasp':'aborted',
+                                         'fail_recognize':'aborted'})
   
     sm.execute()
  

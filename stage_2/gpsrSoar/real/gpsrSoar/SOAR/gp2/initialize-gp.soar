@@ -55,10 +55,14 @@ sp {gp*apply*initialize-gp
            ^id 15)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 74a0c0cf0ccd93011c90fdcf4f24bb529f85b394
    (<d> ^name go-to
         ^robot <rr>)
    (<rr> ^locId 13
          ^id 1)
+<<<<<<< HEAD
 =======
    (<d> ^name bring-to
         ^object <ii>
@@ -67,5 +71,7 @@ sp {gp*apply*initialize-gp
          ^locId 6         ^id 0)
    (<rr> ^id 1)
 >>>>>>> cda45dfd7d2da8e342dcd1e34040da8b0da2d99d
+=======
+>>>>>>> 74a0c0cf0ccd93011c90fdcf4f24bb529f85b394
 
 }

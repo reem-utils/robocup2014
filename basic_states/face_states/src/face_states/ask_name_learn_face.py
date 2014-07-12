@@ -23,7 +23,7 @@ class prepare_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['asr_answer', 'asr_answer_tags'],
-                                output_keys=['name'])
+                                output_keys=['name_face'])
         self.tags = parserGrammar(GRAMMAR_NAME)
 
     def execute(self, userdata):
@@ -31,19 +31,19 @@ class prepare_name(smach.State):
             if element[0] == 'nameshort' or element[0] == 'nameall':
                 for value in element[1]:
                     if value in userdata.asr_answer:
-                        userdata.name = value
+                        userdata.name_face = value
                         return 'succeeded'
         return 'aborted'
     
 class prepare_say_name(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['name'],
+                                input_keys=['name_face'],
                                 output_keys=['tts_text','tts_wait_before_speaking', 'tts_lang'])
 
     def execute(self, userdata):
 
-        userdata.tts_text = "Nice to meet you " + userdata.name
+        userdata.tts_text = "Nice to meet you " + userdata.name_face
         userdata.tts_wait_before_speaking = 0
         userdata.tts_lang = None
         
@@ -66,13 +66,13 @@ class SaveFaceSM(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self):
+    def __init__(self,time_enroll=10):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                        input_keys=[],
-                                        output_keys=['name'])
+                                        input_keys=['name_face','delete_database'],
+                                        output_keys=['name_face'])
 
         with self:
-            self.userdata.name = ''
+            self.userdata.name_face = ''
             self.userdata.asr_userSaid = ''
             self.userdata.grammar_name = ''
             
@@ -107,8 +107,8 @@ class SaveFaceSM(smach.StateMachine):
             # Start learning
             smach.StateMachine.add(
                 'learn_face',
-                 new_database_and_learn(10),
-                transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
+                 new_database_and_learn(time_enroll),
+                 transitions={'succeeded': 'prepare_say_name', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
             # Say learn name

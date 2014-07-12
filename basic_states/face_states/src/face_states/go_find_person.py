@@ -15,6 +15,7 @@ from face_states.recognize_face import recognize_face_concurrent
 from speech_states.say import text_to_say
 from manipulation_states.move_head_form import move_head_form
 from navigation_states.turn_infinit import turn_infinit
+from hri_states.look_to_point import look_to_point
 
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -79,41 +80,44 @@ class say_searching_faces(smach.StateMachine):
                                    transitions={'succeeded':'Say_search', 'preempted':'preempted'})
             
             smach.StateMachine.add('Say_search', 
-                                   text_to_say('I am looking for the referee',wait=False), 
-                                   transitions={'succeeded':'Move_head_Left', 'aborted':'aborted'})
-            
+                                   text_to_say('I am looking for the referee',wait=True), 
+                                   transitions={'succeeded':'Move_head_Left', 'aborted':'aborted'})        
             smach.StateMachine.add('Move_head_Left',
-                                   move_head_form( head_left_right='mid_left', head_up_down='normal'),
+                                   look_to_point(direction="left", min_duration=3),
                                    transitions={'succeeded':'Wait_search_2', 'aborted':'aborted'})
-            
+             
             smach.StateMachine.add('Wait_search_2', 
                                    Wait_search(), 
                                    transitions={'succeeded':'Move_head_Right', 'preempted':'preempted'})
-            
+             
             smach.StateMachine.add('Move_head_Right',
-                                   move_head_form( head_left_right='mid_right', head_up_down='normal'),
+                                   look_to_point(direction="front", min_duration=1),
                                    transitions={'succeeded':'Wait_search_3', 'aborted':'aborted'})
-            
+             
             smach.StateMachine.add('Wait_search_3', 
                                    Wait_search(), 
                                    transitions={'succeeded':'Move_head_Middle', 'preempted':'preempted'})
-            
+             
             smach.StateMachine.add('Move_head_Middle',
-                                   move_head_form( head_left_right='center', head_up_down='normal'),
-                                   transitions={'succeeded':'succeeded', 'aborted':'aborted'})
- 
+                                   look_to_point(direction="right", min_duration=1),
+                                   transitions={'succeeded':'Wait_search_1', 'aborted':'Wait_search_1'})
+     
             
 # gets called when ANY child state terminates
 def child_term_cb(outcome_map):
 
     # terminate all running states if walk_to_poi finished with outcome succeeded
-    if outcome_map['turn'] == 'succeeded':
-        rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
-        
-        return False
+#     if outcome_map['turn'] == 'succeeded':
+#         rospy.loginfo(OKGREEN + "Walk_to_poi ends" + ENDC)
+#         
+#         return False
 
     # terminate all running states if BAR finished
     if outcome_map['find_faces'] == 'succeeded':
+        rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
+        return True
+    
+    if outcome_map['find_faces'] == 'aborted':
         rospy.loginfo(OKGREEN + "Find_faces ends" + ENDC)
         return True
     
@@ -132,6 +136,9 @@ def out_cb(outcome_map):
     if outcome_map['find_faces'] == 'succeeded':
         rospy.logwarn('Out_CB = Find Faces Succeeded')
         return 'succeeded'    
+    if outcome_map['find_faces'] == 'aborted':
+        rospy.logwarn('Out_CB = Find Faces aborted')
+        return 'endTime'    
     elif outcome_map['TimeOut'] == 'succeeded':
         rospy.logwarn('Out_CB = TimeOut finished succeeded')
         return 'endTime'    
@@ -188,7 +195,7 @@ class go_find_person(smach.StateMachine):
                 transitions={'poi': 'go_poi', 'no_poi': 'Concurrence'}) 
             smach.StateMachine.add(
                                    'Say_Searching',
-                                   text_to_say('Right Now I am looking for you.',wait=False),
+                                   text_to_say('Right Now I am looking for you.',wait=True),
                                    transitions={'succeeded': 'go_poi', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
             
@@ -209,7 +216,7 @@ class go_find_person(smach.StateMachine):
             with sm_conc:
                 # Go around the room 
                # smach.Concurrence.add('walk_to_poi', nav_to_poi())                  
-                smach.Concurrence.add('turn', turn_infinit('left'))
+                #smach.Concurrence.add('turn', turn_infinit('left'))
                 # Move head
                 smach.Concurrence.add('TimeOut', TimeOut(self.time_out))
                  
@@ -220,17 +227,23 @@ class go_find_person(smach.StateMachine):
 
             
             smach.StateMachine.add('Concurrence', sm_conc, 
-                                transitions={'succeeded':'succeeded', 
+                                transitions={'succeeded':'DEFAULT_POSITION', 
                                              'aborted':'Say_Finish', 
                                              'endTime': 'Say_Finish',
                                              'preempted':'Say_Finish'})
 
-                  
             smach.StateMachine.add(
                                    'Say_Finish',
-                                   text_to_say('I have finish with no exit the search'),
-                                   transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
+                                   text_to_say('I have finish with no exit the search',wait=False),
+                                   transitions={'succeeded': 'DEFAULT_POSITION_NO', 'aborted': 'DEFAULT_POSITION_NO', 
                                     'preempted': 'preempted'})
             
+            smach.StateMachine.add('DEFAULT_POSITION_NO',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'aborted','aborted':'aborted'})
             
             
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'succeeded','aborted':'succeeded'})

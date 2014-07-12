@@ -24,6 +24,8 @@ from speech_states.say import text_to_say
 #from tornado.options import define
 from follow_me_learn_random import LearnPersonRandom
 from speech_states.say_with_enable import say_with_enable
+from std_msgs.msg import Int32
+
 
 
 
@@ -90,6 +92,8 @@ class filter_and_process(smach.State):
                     
         
         if find :
+            
+            
             #rospy.logerr("\n\nid i am looking for is:  "+ str(userdata.in_learn_person))
             # i want that be like 3 or 4
             if  (userdata.tracking_msg_filtered.targetStatus & person.OCCLUDDED):
@@ -162,8 +166,8 @@ Thats why we make desired distance zero if person too close.
             distance_des = position_distance - self.distanceToHuman
             userdata.feadback=OKI
             rospy.logwarn("----neu feadback :  "+str(userdata.feadback))
-            if distance_des>MAX_GOAL :
-                distance_des =MAX_GOAL
+#             if distance_des>MAX_GOAL :
+#                 distance_des =MAX_GOAL
 
             #alfa = math.atan2(userdata.tracking_msg_filtered.y,userdata.tracking_msg_filtered.x)
         else:
@@ -296,7 +300,6 @@ class FollowOperator(smach.StateMachine):
             outcomes=['succeeded', 'lost','preempted'],
             input_keys=['in_learn_person'])
 
-        
         self.feedback=feedback
         
         self.learn_if_lost=learn_if_lost

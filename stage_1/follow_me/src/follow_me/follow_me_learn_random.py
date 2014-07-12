@@ -18,6 +18,8 @@ from speech_states.listen_and_check_word import ListenWordSM
 from speech_states.say_with_enable import say_with_enable
 from pipol_tracker_pkg.msg import personArray,person
 from util_states.topic_reader import topic_reader
+from manipulation_states.move_head_form import move_head_form
+from std_msgs.msg import Int32
 
 
 Y_CALIBRARTION=0.5 # it calibrates the person that robot takes
@@ -29,11 +31,11 @@ NEW_PERSON="A you are here, lets go"
 # It's only becouse i can't import the file... i can't understand
 class select_ID(smach.State):
 
-    def __init__(self): 
+    def __init__(self, pub): 
         smach.State.__init__(self, input_keys=['tracking_msg','in_learn_person'],
                              output_keys=['in_learn_person'],
                              outcomes=['succeeded','aborted', 'preempted'])
-
+        self.pub=pub
     def execute(self, userdata):
         userdata.in_learn_person=None
         person_detect=userdata.tracking_msg
@@ -52,6 +54,7 @@ class select_ID(smach.State):
                 
         
         if found :
+            self.pub.publish(userdata.in_learn_person.targetId)
             rospy.loginfo(OKGREEN+"i have learned the person whit  ID  :  " 
                               + str(userdata.in_learn_person)+ENDC)
             return 'succeeded'
@@ -85,7 +88,8 @@ class LearnPersonRandom(smach.StateMachine):
     def __init__(self,feedback=True):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'],
                                     output_keys=['standard_error','in_learn_person'])
-        self.feedback=feedback
+        self.feedback = feedback
+        self.follow_pub = rospy.Publisher('/follow_me/id', Int32, latch=True)  
         with self:
             self.userdata.tts_wait_before_speaking=0
             self.userdata.tts_text=None
@@ -96,8 +100,12 @@ class LearnPersonRandom(smach.StateMachine):
 
             smach.StateMachine.add('INIT_VAR',
                                    init_var(),
-                                   transitions={'succeeded': 'WAIT_TIME',
-                                                'aborted': 'WAIT_TIME'})
+                                   transitions={'succeeded': 'DEFAULT_POSITION',
+                                                'aborted': 'DEFAULT_POSITION'})
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'WAIT_TIME','aborted':'WAIT_TIME'})
             
             smach.StateMachine.add('WAIT_TIME',
                        wait_time(),
@@ -116,7 +124,7 @@ class LearnPersonRandom(smach.StateMachine):
             
             # it learns the person that we have to follow
             smach.StateMachine.add('SELECT_ID',
-                                   select_ID(),
+                                   select_ID(self.follow_pub),
                                    transitions={'succeeded': 'NEW_PERSON',
                                                 'aborted': 'WAIT_TIME'})
             

@@ -70,7 +70,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_start_basic_functionalities',
                  text_to_say("I'm ready to start Basic Functionalities"),
-                 transitions={'succeeded': 'do_pick_and_place', 'aborted': 'do_pick_and_place'}) # TODO before it was say_going_pick_place
+                 transitions={'succeeded': 'say_going_pick_place', 'aborted': 'say_going_pick_place'}) 
             
             # Say Go Pick and Place
             smach.StateMachine.add(
@@ -85,7 +85,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
                 #Go_Poi_Listen_Word('point_room_one', SENTENCE_STOP),
                 #transitions={'succeeded': 'say_going_avoid', 'aborted': 'confirm_stop_pick_place', 
                 #'preempted': 'preempted'})    
-                transitions={'succeeded':'do_pick_and_place', 'aborted': 'confirm_stop_pick_place', 
+                transitions={'succeeded':'pick_timer', 'aborted': 'confirm_stop_pick_place', 
                 'preempted': 'preempted'})
                 
             # The robot wait for "move" to move to the poi
@@ -111,24 +111,18 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             STATES = [PickPlaceSM()]
             STATE_NAMES = ["do_pick_and_place"]
         
-#             smach.StateMachine.add(
-#                 "pick_timer",
-#                 ConcurrenceTime(states=STATES, state_name=STATE_NAMES, timeout=180),
-#                 transitions={'succeeded': 'say_going_avoid', 
-#                              'aborted':'say_going_avoid', 
-#                              'time_ends': "timeout_pick_and_place"})
-            
             smach.StateMachine.add(
-                'do_pick_and_place',
-                PickPlaceSM(),
-                transitions={'succeeded': 'play_motion_state_2', 'aborted': 'play_motion_state_2', 
-                'preempted': 'preempted'})   
-                        
+                "pick_timer",
+                ConcurrenceTime(states=STATES, state_name=STATE_NAMES, timeout=180),
+                transitions={'succeeded': 'say_going_avoid', 
+                             'aborted':'say_going_avoid', 
+                             'time_ends': "timeout_pick_and_place"})
+            
             # Say TimeOut 
             smach.StateMachine.add(
                 'timeout_pick_and_place',
                 text_to_say("The time for Pick and Place is finish"),
-                transitions={'succeeded': 'play_motion_state_2', 'aborted': 'play_motion_state_2', 
+                transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
                 'preempted': 'preempted'})
             
            
@@ -137,12 +131,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
 #                 PickPlaceSM(),
 #                 transitions={'succeeded': 'say_going_avoid', 'aborted': 'say_going_avoid', 
 #                 'preempted': 'preempted'}) 
-            smach.StateMachine.add(
-                'play_motion_state_2',
-                play_motion_sm('home', skip_planning=True),
-                transitions={'succeeded': 'say_going_avoid',
-                             'preempted':'say_going_avoid', 
-                             'aborted':'play_motion_state_2'})   
+           
             # Say Go Avoid that
             smach.StateMachine.add(
                  'say_going_avoid',

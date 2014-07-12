@@ -12,6 +12,7 @@ import rospy
 import smach
 from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
+from manipulation_states.play_motion_sm import play_motion_sm
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -81,7 +82,14 @@ class Avoid_That(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'], output_keys=['standard_error'])
         with self:
-
+            
+            # Home position
+            smach.StateMachine.add(
+                'home_position_init',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'prepare_Avoid', 'aborted': 'home_position_init', #TODO: Change aborted to try again
+                'preempted': 'preempted'}) 
+            
             # We prepare the information to go to the init door
             smach.StateMachine.add(
                 'prepare_Avoid',
