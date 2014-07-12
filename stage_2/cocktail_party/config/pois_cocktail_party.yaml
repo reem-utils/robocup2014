@@ -1,11 +1,11 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    party_room: [submap_0, party_room, 6.071, -1.742, 0.908]
-    storage_room: [submap_0, storage_room,  13.234, -4.326,  0.850]
-    leave_room: [submap_0, leave_room,10.439, 7.733, -2.099]
-    kitchen_counter: [submap_0, kitchen_counter, 13.234, -4.326,  0.850]
-    dinner_table: [submap_0, dinner_table, 13.234, -4.326,  0.850]
+    party_room: [submap_0, party_room, 5.672,-8.394, 1.399]
+    storage_room: [submap_0, storage_room,  12.927,-7.445,  1.708]
+    leave_room: [submap_0, leave_room,5.362, -9.159, -1.450]
+    kitchen_counter: [submap_0, kitchen_counter, 10.954, -6.4517,  1.500]
+    dinner_table: [submap_0, dinner_table,10.954, -6.4517,  1.500]
 
 object:
   information:

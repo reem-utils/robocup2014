@@ -1,12 +1,12 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    init_avoid_that: [submap_0, init_avoid_that, -1.009, -6.852, 1.810]
-    avoid_that: [submap_0, avoid_that, -3.822, 3.771, 1.704]
+    init_avoid_that: [submap_0, init_avoid_that, 2.940, 0.269, -1.501]
+    avoid_that: [submap_0, avoid_that, 3.945,-10.529, -0.842]
 
-    init_pick_and_place: [submap_0, init_pick_and_place, -8.958, -0.934,  -2.888]
-    pick_and_place: [submap_0, pick_and_place, -12.125, -2.879, -1.384]
-    waste_bin: [submap_0, waste_bin, -12.762, -0.871, 1.820] 
+    init_pick_and_place: [submap_0, init_pick_and_place, 9.064, -7.645,  -0.061]
+    pick_and_place: [submap_0, pick_and_place, 12.571,  -6.7113163572, 1.406]
+    waste_bin: [submap_0, waste_bin, 12.309, -0.871, -1.597] 
 
     init_fetch_and_carry: [submap_0, init_fetch_and_carry, -2.0, -2.0, 0]
     fetch_and_carry: [submap_0, fetch_and_carry, -2.0, -2.0, 0]
@@ -14,7 +14,7 @@ poi:
     init_find_me: [submap_0, init_find_me,-1.521, 7.646,  -0.620]
     find_me: [submap_0, find_me, -1.521, 7.646,  -0.620]
 
-    init_what_say: [submap_0, init_what_say,-6.691, 1.22,0.099]
+    init_what_say: [submap_0, init_what_say,8.220,-3.786,0.441]
 
     entry_door_init: [submap_0, entry_door_init, 3.705, -0.694, 0.06]
     entry_door_exit: [submap_0, entry_door_exit,7.017, -0.472, 0.051]
@@ -22,8 +22,8 @@ poi:
     hallway: [submap_0, hallway, 14.910, -1.393, -1.603]
     living_room: [submap_0, living_room, 9.955, -1.491,  -0.966]
     working_desk: [submap_0, working_desk, 10.320, -8.315,  -1.459]
-    kitchen_counter: [submap_0, kitchen_counter, -10.106, -2.506,  -1.334]
-    dinner_table: [submap_0, dinner_table, -10.106, -2.506,  -1.334]
+    kitchen_counter: [submap_0, kitchen_counter, 10.954, -6.4517,  1.500]
+    dinner_table: [submap_0, dinner_table, 10.954, -6.4517,  1.500]
     bookshelf: [submap_0, bookshelf, 9.079, -6.977, -0.065]
     point_room_one: [submap_0, point_room_one, 7.910, 6.254, 0.709]
     point_room_two: [submap_0, point_room_two, 8.476, 5.305, -0.767]

@@ -19,51 +19,70 @@ from smach_ros import SimpleActionState
 from pipol_tracker_pkg.msg import person, personArray
 from geometry_msgs.msg import PointStamped, PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header, Int32
-from control_msgs.msg import PointHeadActionGoal, PointHeadAction
+from control_msgs.msg import PointHeadActionGoal, PointHeadAction, PointHeadGoal
 
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
 
-POINT_HEAD_TOPIC = '/head_controller/point_head_action/goal'
+POINT_HEAD_TOPIC = '/head_controller/point_head_action'
 
 TIME_BETWEEN_GOALS = 0.3
+UP=1.2
 
 class prepare_data_look(smach.State):
-    def __init__(self, point_to_look, frame_id):
+    def __init__(self, point_to_look, frame_id, min_duration=0.9,direction=""):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                               input_keys=['point_to_look'],
                               output_keys=['point_head_goal'])
         
         self.point_to_look = point_to_look
         self.frame_id = frame_id
+        self.min_duration = min_duration
+        self.direction=direction
+        
           
     def execute(self, userdata):
         
         if userdata.point_to_look == None and self.point_to_look == None:
             rospy.logerr("No point to look at! Error at SM Look_to_point")
             return 'aborted'
+        print str(self.direction)
         
         self.point_to_look = self.point_to_look if self.point_to_look else userdata.point_to_look
         
-        phg = PointHeadActionGoal()
-        phg.goal.min_duration = rospy.Duration(0.6) # adapt for as far as the detection is??
+        phg = PointHeadGoal()
+        phg.min_duration = rospy.Duration(self.min_duration) # adapt for as far as the detection is??
         
-        phg.goal.target.header.frame_id = self.frame_id if self.frame_id else self.point_to_look.header.frame_id
+        phg.target.header.frame_id = self.frame_id if self.frame_id else self.point_to_look.header.frame_id
         
-        phg.goal.target.header.stamp = rospy.Time.now()
+        phg.target.header.stamp = rospy.Time.now()
         
-        phg.goal.target.point.x = self.point_to_look.point.x
-        phg.goal.target.point.y = self.point_to_look.point.y
-        phg.goal.target.point.z = self.point_to_look.point.z
+        phg.target.point.x = self.point_to_look.point.x
+        phg.target.point.y = self.point_to_look.point.y
+        phg.target.point.z = self.point_to_look.point.z
         
-        phg.goal.pointing_axis.x = 1.0
-        phg.goal.pointing_frame = 'head_mount_xtion_rgb_frame'
+        phg.pointing_axis.x = 1.0
+        phg.pointing_frame = 'head_mount_xtion_rgb_frame'
+        
+        if self.direction!="" :
+            print "I HAVE A NEW ORDER"
+            phg.target.point.z=UP
+            if self.direction =="left" :
+                phg.target.point.y = 1
+            elif self.direction=="right":
+                phg.target.point.y = -1
+            elif self.direction=="front":
+                phg.target.point.y = 0
+        
+        
         
         userdata.point_head_goal = phg
-        
+        print phg
         return 'succeeded'
-    
+
+
+
 class look_to_point(smach.StateMachine):
     """
     This SM makes the robot to look at a defined Point (in 3D space).
@@ -78,19 +97,34 @@ class look_to_point(smach.StateMachine):
           
     """
     
-    def __init__(self, point_to_look = None, frame_id = None):
+    def __init__(self, point_to_look = None, frame_id = None, direction = "",min_duration=0.9):
         smach.StateMachine.__init__(self, 
                                     input_keys = ['point_to_look'],
                                     output_keys = ['standard_error'],
                                     outcomes=['succeeded', 'preempted', 'aborted'])
-
+        
         with self:
             self.userdata.standard_error = " "
+            self.userdata.point_to_look = PointStamped()
+            self.userdata.point_to_look.header.frame_id = 'base_link'
+            self.userdata.point_to_look.point.x = 1.0
+            self.userdata.point_to_look.point.y = 0.0
+            self.userdata.point_to_look.point.z = 1.0
+            
+            
+#             smach.StateMachine.add('look_direction', 
+#                     direction_calculate(direction,min_duration), 
+#                     transitions={'succeeded':'prepare_data', 
+#                                  'aborted':'prepare_data', 
+#                                  'preempted':'preempted'})
+
+            
             
             smach.StateMachine.add(
                  'prepare_data',
-                 prepare_data_look(point_to_look, frame_id),
+                 prepare_data_look(point_to_look, frame_id,min_duration=0.9,direction=direction),
                  transitions={'succeeded': 'look_to_point', 'aborted': 'aborted'}) 
+            
             
             def look_to_point_cb(userdata, result_status, result):
                 if result_status != 3: # 3 == SUCCEEDED
@@ -104,6 +138,8 @@ class look_to_point(smach.StateMachine):
                 else:
                     userdata.standard_error = "OK"
                 return 'succeeded'
+            
+
 
             smach.StateMachine.add('look_to_point', 
                                 SimpleActionState(POINT_HEAD_TOPIC,
@@ -131,7 +167,7 @@ def main():
         
         smach.StateMachine.add(
             'look_to_point',
-            look_to_point(),
+            look_to_point(direction="left",min_duration=2.0),
             transitions={'succeeded': 'succeeded','preempted':'preempted', 'aborted':'aborted'})
 
     sm.execute()

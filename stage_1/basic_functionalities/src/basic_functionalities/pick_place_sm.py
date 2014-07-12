@@ -13,18 +13,14 @@ from navigation_states.nav_to_poi import nav_to_poi
 from speech_states.say import text_to_say
 from object_grasping_states.pick_object_sm import pick_object_sm
 from object_grasping_states.place_object_sm import place_object_sm
-from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovariance
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 from std_msgs.msg import Header
 from manipulation_states.play_motion_sm import play_motion_sm
-from object_states.recognize_object import recognize_object
-from hri_states.recognize_object_and_pick import RecObjectAndPick
- 
+
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
 FAIL = '\033[91m'
 OKGREEN = '\033[92m'
-NUMBER_OF_TRIES = 3
-
 
 class DummyStateMachine(smach.State):
     def __init__(self):
@@ -37,8 +33,8 @@ class DummyStateMachine(smach.State):
    
         rospy.sleep(3)
         return 'succeeded'
-
-class prepare_unk_object(smach.State):
+    
+class dummy_recognize(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=['object_position','pose_to_place','nav_to_poi_name'], 
@@ -56,15 +52,16 @@ class prepare_unk_object(smach.State):
         userdata.pose_to_place.pose.position.x = 0.4
         userdata.pose_to_place.pose.position.z = 0.95
         userdata.pose_to_place.pose.orientation.w = 1.0
-        userdata.nav_to_poi_name='waste_bin'
+        userdata.nav_to_poi_name='dinner_table'
          
         rospy.sleep(5)
         return 'succeeded'
 
+
 # Class that prepare the value need for nav_to_poi
 class prepare_location(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
             input_keys=[], 
             output_keys=['nav_to_poi_name']) 
 
@@ -72,85 +69,6 @@ class prepare_location(smach.State):
         userdata.nav_to_poi_name='pick_and_place'
         return 'succeeded'
 
-class process_place_location(smach.State):
-    """"
-        Getting the POI name of the "Place" location.
-    """
-    
-    def __init__(self):
-        smach.State.__init__(self,
-                             outcomes = ['succeeded', 'aborted', 'preempted'], 
-                             input_keys = ['object_position','object_detected_name','nav_to_poi_name', 'pose_to_place'], 
-                             output_keys = ['nav_to_poi_name','pose_to_place', 'object_position'])
-    def execute(self, userdata):
-        objectList = rospy.get_param("mmap/object/information")
-        foundObject= False
-        for key,value in objectList.iteritems():
-            if value[1] == userdata.object_detected_name:
-                object_class = value[3]
-                foundObject = True  
-                break    
-            
-        if foundObject:
-            pois = rospy.get_param("/mmap/object/" + object_class)
-            userdata.nav_to_poi_name = pois.values().pop()[1]
-            
-            rospy.logwarn("Info " + str(userdata.object_position))
-            rospy.logwarn("Type: " + str(type(userdata.object_position)))
-#             p = PoseStamped()
-#             p.header.frame_id = userdata.object_position.header.frame_id
-#             p.pose.position.x = userdata.object_position.pose.pose.position.x
-#             p.pose.position.z = userdata.object_position.pose.pose.position.z
-#             p.pose.orientation.w = userdata.object_position.pose.pose.orientation.w
-#             userdata.object_position = p
-            
-            # Prepare the place location
-            pois = rospy.get_param("/mmap/place")
-            for key,value in pois.iteritems():
-                if value[1] == userdata.nav_to_poi_name:
-                    userdata.pose_to_place = PoseStamped()
-                    userdata.pose_to_place.header.frame_id = "base_link"
-                    userdata.pose_to_place.pose.position.x = value[2]
-                    userdata.pose_to_place.pose.position.z = value[3]
-                    userdata.pose_to_place.pose.orientation.w = value[4]
-                    break  
-
-            return 'succeeded'
-        
-        return 'aborted'
-    
-class checkLoop(smach.State):
-    def __init__(self):
-        rospy.loginfo("Entering loop_test")
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
-                                input_keys=['loop_iterations', 'did_unk'],
-                                output_keys=['standard_error', 'loop_iterations', "did_unk"])
-
-    def execute(self, userdata):
-        
-        if userdata.loop_iterations == NUMBER_OF_TRIES:
-            return 'end'
-        else:
-            rospy.loginfo(userdata.loop_iterations)
-            userdata.standard_error='OK'
-            userdata.did_unk = True
-            userdata.loop_iterations = userdata.loop_iterations + 1
-            return 'succeeded'
- 
-class check_object(smach.State):       
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=["did_unk"],
-                                output_keys=[])
-        
-    def execute(self, userdata):
-    
-        if userdata.did_unk:
-            return 'succeeded'
-         
-        return 'aborted'
-    
-        
 class PickPlaceSM(smach.StateMachine):
     """
     Executes a SM that does the test to pick and place.
@@ -180,9 +98,6 @@ class PickPlaceSM(smach.StateMachine):
             self.userdata.tts_lang = ''
             self.userdata.tts_wait_before_speak = ''
             self.userdata.tts_text = ''
-            self.userdata.loop_iterations = 1
-            self.userdata.did_unk = False
-            self.userdata.object_name = ['Pringles', 'Barritas']
             
             # Say start Pick and Place
             smach.StateMachine.add(
@@ -193,7 +108,7 @@ class PickPlaceSM(smach.StateMachine):
             # Say Going to location
             smach.StateMachine.add(
                  'say_go_location',
-                 text_to_say("I'm going to the location where I have to recognize some objects", wait=False),
+                 text_to_say("I'm going to the location where I have to recognize some objects",wait=False),
                  transitions={'succeeded': 'prepare_location', 'aborted': 'prepare_location'}) 
              
             # Prepare the poi for nav_to_poi
@@ -207,87 +122,46 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                 'go_location',
                 nav_to_poi(),
-                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'say_go_location', 
+                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
                 'preempted': 'preempted'})    
  
-            # recognize and pick object if found
-            smach.StateMachine.add(
-                'recognize_object_and_pick',
-                RecObjectAndPick(),
-                transitions={'succeeded': 'Process_Place_location', 
-                             'fail_grasp':'recognize_object_and_pick',
-                             'fail_recognize': 'try_again_recognition'})
-            
-            # Prepare the place location
-            smach.StateMachine.add(
-                'Process_Place_location',
-                process_place_location(),
-                transitions={'succeeded':'say_go_second_location',
-                             'aborted':'aborted'})
-
             # Say start object recognition
-#             smach.StateMachine.add(
-#                  'say_start_obj_recognition',
-#                  text_to_say("I'm going to start the Object recognition process.", wait=False),
-#                  transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'})
-#              
-#             # Do object_recognition 
-#             smach.StateMachine.add(
-#                 'object_recognition',
-#                 recognize_object(),
-#                 transitions={'succeeded': 'process_object_recognition', 'aborted': 'try_again_recognition', 
-#                 'preempted': 'preempted'}) 
-#    
-#             # Process the objects recognized
-#             smach.StateMachine.add(
-#                 'process_object_recognition',
-#                 process_place_location(),
-#                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
-#                 'preempted': 'preempted'}) 
-                        
-            # We don't recognized the object
             smach.StateMachine.add(
-                'try_again_recognition',
-                checkLoop(),
-                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
-                'preempted': 'preempted', 'end':'say_fail_recognize'}) 
-        
-            # Say fail recognize objects
+                 'say_start_obj_recognition',
+                 text_to_say("I'm going to start the Object recognition"),
+                 transitions={'succeeded': 'object_recognition', 'aborted': 'object_recognition'}) 
+             
+            # Do object_recognition 
             smach.StateMachine.add(
-                 'say_fail_recognize', 
-                 text_to_say("I'm not able to recognized any object. I'm going to search for anything"),
-                 transitions={'succeeded': 'prepare_unk_object', 'aborted': 'prepare_unk_object'})
-            
-            # Prepare goal to pick any object
-            smach.StateMachine.add(
-                 'prepare_unk_object', 
-                 prepare_unk_object(),
-                 transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object'})
-            
+                'object_recognition',
+                dummy_recognize(),
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
+                'preempted': 'preempted'}) 
+ 
             # Say grasp object
             smach.StateMachine.add(
                  'say_grasp_object',
-                 text_to_say("I'm going to grasp the object", wait=False),
+                 text_to_say("I'm going to grasp the object"),
                  transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
-            
+             
             # Grasp the object
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'say_go_second_location', 'aborted': 'home_position', #TODO: Change aborted to try again
-                'preempted': 'preempted'})    
-             
+                transitions={'succeeded': 'say_go_second_location', 'aborted': 'play_motion_grasp', 
+                'preempted': 'preempted'})     
+            
             # Home position
             smach.StateMachine.add(
-                'home_position',
+                'play_motion_grasp',
                 play_motion_sm('home'),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'home_position', #TODO: Change aborted to try again
-                'preempted': 'preempted'})   
-   
+                transitions={'succeeded': 'say_grasp_object', 'preempted':'say_grasp_object', 
+                             'aborted':'play_motion_grasp'}) 
+ 
             # Say go to second location
             smach.StateMachine.add(
                  'say_go_second_location',
-                 text_to_say("I'm going to the location where I should release the object", wait=False),
+                 text_to_say("I'm going to the location where I should release the object"),
                  transitions={'succeeded': 'go_second_location', 'aborted': 'go_second_location'})
              
             # Go the location - We need to go to the place to object category, so we assume that the
@@ -301,14 +175,8 @@ class PickPlaceSM(smach.StateMachine):
             # Say release object
             smach.StateMachine.add(
                  'say_release_obj',
-                 text_to_say("I'm going to release the object", wait=True),
+                 text_to_say("I'm going to release the object"),
                  transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
-            
-            # Check if we pick the know or the unk object
-            smach.StateMachine.add(
-                'check_place_give',
-                check_object(),
-                transitions={'succeeded':'release_object', 'aborted':'pregrasp_state', 'preempted':'check_place_give'})
             
             # Release the object
             smach.StateMachine.add(
@@ -316,19 +184,13 @@ class PickPlaceSM(smach.StateMachine):
                 place_object_sm(),
                 transitions={'succeeded': 'play_motion_state', 'aborted': 'say_release_obj', 
                 'preempted': 'preempted'})     
-            
-            # Pre-grasp position
-            smach.StateMachine.add(
-                'pregrasp_state',
-                play_motion_sm('pre_grasp', skip_planning=True),
-                transitions={'succeeded': 'play_motion_state', 'preempted':'play_motion_state', 
-                             'aborted':'pregrasp_state'}) 
-            
+                        
             # Home position
             smach.StateMachine.add(
                 'play_motion_state',
                 play_motion_sm('home'),
-                transitions={'succeeded': 'say_end_pick_place', 'preempted':'say_end_pick_place', 
+                transitions={'succeeded': 'say_end_pick_place',
+                             'preempted':'say_end_pick_place', 
                              'aborted':'say_end_pick_place'}) 
             
             # Say end Pick and Place

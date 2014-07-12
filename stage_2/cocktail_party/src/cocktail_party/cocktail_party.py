@@ -27,10 +27,15 @@ def main():
         STATE_NAMES = ["CocktailPartySM"]
     
         # We have 10 minuts -> 600 sec
+#         smach.StateMachine.add(
+#             "Cocktail_test",
+#             ConcurrenceTime(states=STATES, state_names=STATE_NAMES, timeout=570),
+#             transitions={'succeeded': 'leaving_arena', 'aborted': "Say_timeout"})
         smach.StateMachine.add(
             "Cocktail_test",
-            ConcurrenceTime(states=STATES, state_names=STATE_NAMES, timeout=570),
+            CocktailPartySM(),
             transitions={'succeeded': 'leaving_arena', 'aborted': "Say_timeout"})
+            
             
         # Say TimeOut
         smach.StateMachine.add(

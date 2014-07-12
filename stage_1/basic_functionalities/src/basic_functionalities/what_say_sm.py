@@ -212,7 +212,12 @@ class WhatSaySM(smach.StateMachine):
             # Listen the first question
             self.userdata.grammar_name = GRAMMAR_NAME
             
-
+            # Home position
+            smach.StateMachine.add(
+                'home_position_init',
+                play_motion_sm('home'),
+                transitions={'succeeded': 'say_what_did_you_say', 'aborted': 'home_position_init', #TODO: Change aborted to try again
+                'preempted': 'preempted'}) 
                      
             # Enter room
             smach.StateMachine.add(

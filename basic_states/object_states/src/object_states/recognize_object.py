@@ -19,6 +19,7 @@ from object_recognition_msgs.msg import RecognizedObject, RecognizedObjectArray
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
 from manipulation_states.move_head_form import move_head_form
+from util_states.sleeper import Sleeper
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -95,9 +96,16 @@ class recognize_object(smach.StateMachine):
             smach.StateMachine.add(
                                    'Look_down',
                                    move_head_form(head_left_right="center", head_up_down="down"),
-                                   transitions={'succeeded': 'detect_object', 
+                                   transitions={'succeeded': 'sleep_state', 
                                                 'aborted': 'aborted', 
                                                 'preempted': 'preempted'})
+            # Only for rh2c 
+            smach.StateMachine.add(
+                    'sleep_state',
+                    Sleeper(5),
+                    transitions={'succeeded': 'detect_object', 'aborted': 'aborted', 
+                    'preempted': 'preempted'})
+            
             smach.StateMachine.add(
                     'detect_object',
                     object_detect_sm(),
@@ -107,19 +115,32 @@ class recognize_object(smach.StateMachine):
             smach.StateMachine.add(
                     'process_object',
                     process_object(),
-                    transitions={'succeeded': 'Look_normal', 'aborted': 'aborted', 
+                    transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                     'preempted': 'preempted'})
             
-            smach.StateMachine.add(
-                   'Look_normal',
-                   move_head_form(head_left_right="center", head_up_down="normal"),
-                   transitions={'succeeded': 'succeeded', 
-                                'aborted': 'aborted', 
-                                'preempted': 'preempted'})
+#             smach.StateMachine.add(
+#                    'Look_normal',
+#                    move_head_form(head_left_right="center", head_up_down="normal"),
+#                    transitions={'succeeded': 'succeeded', 
+#                                 'aborted': 'aborted', 
+#                                 'preempted': 'preempted'})
 
+def main():
+    rospy.init_node('recognize_object_node')
 
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+ 
+    with sm:
+        sm.userdata.object_name = 'Pringles' 
+        
+        smach.StateMachine.add('recognize_object',
+                            recognize_object(),
+                            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
 
-
-                 
+    sm.execute()
+ 
+ 
+if __name__ == '__main__':
+    main()                 
 
 

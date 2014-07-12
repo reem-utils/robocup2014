@@ -215,10 +215,18 @@ class CocktailPartySM(smach.StateMachine):
             self.userdata.did_pick = True
             self.userdata.grammar_name = GRAMMAR_NAME
 
+
+            smach.StateMachine.add(
+                'play_motion_state',
+                play_motion_sm('home', skip_planning=True),
+                transitions={'succeeded': 'init_cocktail',
+                             'preempted':'init_cocktail', 
+                             'aborted':'play_motion_state'})   
+            
             smach.StateMachine.add(
                  'init_cocktail',
                  text_to_say("Ready for cocktail party"),
-                 transitions={'succeeded': 'learning_person', 'aborted': 'wait_for_door'}) 
+                 transitions={'succeeded': 'Ask_order', 'aborted': 'Ask_order'}) 
                   
             # We wait for open door and go inside
             smach.StateMachine.add(
@@ -243,7 +251,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_recognize',
                 prepare_recognize(),
-                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'aborted', 
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'aborted', # todo put recognize_object_And_pic
                 'preempted': 'preempted'})
             
             # Recognize and pick object if found
@@ -252,7 +260,7 @@ class CocktailPartySM(smach.StateMachine):
                 RecObjectAndPick(),
                 transitions={'succeeded': 'go_to_party', 
                              'fail_grasp':'recognize_object_and_pick',
-                             'fail_recognize': 'try_again_recognition'})
+                             'fail_recognize': 'recognize_object_and_pick'})
 
             # Check which object had grasp
             smach.StateMachine.add(
@@ -374,7 +382,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'check_loop',
                 checkLoop(),
-                transitions={'succeeded': 'wave_recognition', 'aborted': 'aborted', 
+                transitions={'succeeded': 'say_leaving_arena', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'say_leaving_arena'}) 
             
             # Say leaving the arena 
