@@ -16,10 +16,10 @@ sentence17: "find a coke"
 sentence18: "point at me"
 sentence19: "follow me"
 
-
+sentence: "move to the kitchen, move to the lift and leave the apartment"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
-sentence: "bring the coke to a armchair"
+sentence3: "bring the coke to a armchair"
 sentence4: "go to the sofa, grasp the coke bring the coke to bookshelf"  
 sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"

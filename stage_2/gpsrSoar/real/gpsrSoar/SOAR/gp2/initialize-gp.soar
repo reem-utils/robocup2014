@@ -60,7 +60,7 @@ sp {gp*apply*initialize-gp
 >>>>>>> 74a0c0cf0ccd93011c90fdcf4f24bb529f85b394
    (<d> ^name go-to
         ^robot <rr>)
-   (<rr> ^locId 13
+   (<rr> ^locId 2
          ^id 1)
 <<<<<<< HEAD
 =======

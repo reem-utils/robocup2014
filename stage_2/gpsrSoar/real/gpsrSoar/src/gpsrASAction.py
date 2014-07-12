@@ -14,6 +14,7 @@ from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
 
 from sm_gpsr_orders import TEST
+from interface2 import call_go_to
 
 import actionlib
 import gpsrSoar.msg
@@ -180,6 +181,7 @@ class gpsrASAction(object):
     #"-----------------------------------------------------------orders list------------------------------"
     rospy.logwarn (str(self._goal.orderList))
     while not success:
+        
       soarResult = interface.main(self._world)
       if soarResult == 'aborted':
         self._result.outcome = 'aborted'
@@ -200,6 +202,8 @@ class gpsrASAction(object):
 
           self.print_goal()
   
+    rospy.logwarn("ES AQUI?????????????????????????????????????????????????????????????????")
+    call_go_to('referee', self._world)
     """
       for i in xrange(1, goal.order):
       # check that preempt has not been requested by the client
