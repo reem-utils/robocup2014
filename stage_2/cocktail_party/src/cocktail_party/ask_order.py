@@ -87,7 +87,8 @@ class AskOrder(smach.StateMachine):
                  'say_wave_recognize',
                  text_to_say("Someone waved to me. I will go there", wait=False),
                  transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'prepare_coord_wave'}) 
-              
+           
+        # Person Recognize   
             # Prepare the goal to the person that is waving
             # TODO: it goes a little far to the person... 
             smach.StateMachine.add(
@@ -102,7 +103,8 @@ class AskOrder(smach.StateMachine):
                 nav_to_coord('/base_link'),
                 transitions={'succeeded': 'learning_person', 'aborted': 'go_to_person_wave', 
                 'preempted': 'preempted'}) 
-
+        
+        # FAIL Person Recognize
             # Ask for person if it can see anyone
             smach.StateMachine.add(
                 'ask_for_person',
@@ -117,7 +119,6 @@ class AskOrder(smach.StateMachine):
                  transitions={'succeeded': 'learning_person', 'aborted': 'ask_for_person'})
             
             # Learn Person -> Ask name + Face Recognition
-            # TODO: Set database
             smach.StateMachine.add(
                 'learning_person',
                 SaveFaceSM(),
