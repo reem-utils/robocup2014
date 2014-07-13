@@ -17,6 +17,7 @@ from sm_gpsr_orders import TEST, SKILLS, TIME_INIT
 from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
 
 from object_states.object_detect_sm import object_detect_sm
+from object_states.recognize_object import recognize_object
 from follow_me.follow_learn import LearnPerson
 from follow_me.follow_operator import FollowOperator
 from navigation_states.nav_to_poi import nav_to_poi
@@ -29,6 +30,7 @@ from object_grasping_states.place_object_sm import place_object_sm
 from object_grasping_states.pick_object_sm import pick_object_sm
 
 #edit your path in gpsrSoar/src/pathscript.py
+
 
 '''
 SKILLS TODO:
@@ -82,6 +84,7 @@ else:
 object_position = PoseStamped()
 
 ROOMS = rospy.get_param('/robocup_params/rooms')
+TABLES = rospy.get_param('/robocup_params/loc_category/table')
 
 class dummy(smach.State):
     def __init__(self):
@@ -115,7 +118,7 @@ def call_go_to(loc_name,world):
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay,wait=False)
     speak.execute() 
-    rospy.logwarn('call_go_to '+ loc_name)  
+    rospy.logwarn('call_go_to '+ loc_name + ' from :')  
     #############################################################################
     if SKILLS :      
         if (time.time()-TIME_INIT) > 270:
@@ -153,6 +156,7 @@ def call_go_to(loc_name,world):
             speak.execute()
     #############################################################################
     world.set_current_position(loc_name)
+    rospy.logwarn(world.get_current_position())
     time.sleep(SLEEP_TIME)  
     return "succeeded" 
 
@@ -292,19 +296,28 @@ def call_find_object(object_name,world): #TODO
         
         out = 'aborted'
         tries = 0
-    
-        current_position = world.get_current_position()        
+        object_position = None
+        
+        current_position = world.get_current_position()    
         if current_position in ROOMS:
-            room = rospy.get_param('/robocup_params/room/' + current_position.replace(" ","_"))
-                
-        #while(out=='aborted' and tries<3):      
+            room = rospy.get_param('/robocup_params/room/' + current_position)
             for table in room :
-                if out == 'succeeded' and tries == 3:
+                if object_position!=None or tries == 3:
                     break
-                call_go_to(table,world)        
+                call_go_to(table.replace(" ","_"),world)        
                  
-                sm = object_detect_sm()#
-                out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
+                sm = recognize_object()                
+                sm.userdata.object_name = object_name[0].upper()  + object_name[1:] # TODO: TITLE
+                out = sm.execute()      # 
+                object_position = sm.userdata.object_pose
+                rospy.logwarn(object_position)
+                tries = tries+1#
+                
+        if current_position in TABLES:       
+            while(object_position==None and tries<3):   
+                sm = recognize_object()
+                sm.userdata.object_name = object_name[0].upper() + object_name[1:]                
+                out = sm.execute()#
                 object_position = sm.userdata.object_pose #
                 tries = tries+1#
             
@@ -340,7 +353,7 @@ def call_grasp(obj): #TODO #adding grasping
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):   
-            sm.pick_object_sm(object_position)  #if not workng, blame chang
+            sm = pick_object_sm(object_position)  #if not workng, blame chang
             out = sm.execute()
             tries = tries+1       
             #grasping here
@@ -425,7 +438,7 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
     if location_name == '':
         tosay = "I'm leaving this here"
     else:
-        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this provably you will want to take it before I throw it to the floor, thanks"
+        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to_loc '+location_name)  
@@ -525,7 +538,6 @@ def main(world):
     res = agent.ExecuteCommandLine(p_cmd)
     print str(res)
     
-
     goal_achieved = False
     while not goal_achieved:
         agent.Commit()  
@@ -542,7 +554,7 @@ def main(world):
                 command = agent.GetCommand(i)
                 command_name = command.GetCommandName()
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
-                
+                rospy.logwarn(world.get_current_position())
                 rospy.logwarn(str(time.time()) + '   ' + str(TIME_INIT))
                 if (time.time()-TIME_INIT) > 270:
                     tosay = "time out."

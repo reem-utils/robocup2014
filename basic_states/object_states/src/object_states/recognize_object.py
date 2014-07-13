@@ -36,7 +36,7 @@ class process_object(smach.State):
         object_correct = []
         
         if userdata.object_pose.recognized_objects.objects:            
-            #Object_correct would be of type RecognizedObject
+            #Object_correct would be of type RecognizobjectdedObject
             if type(userdata.object_name) is list:
                 object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if (objectd.type.key in userdata.object_name)]
             elif type(userdata.object_name) is str:
@@ -54,7 +54,7 @@ class process_object(smach.State):
                 return 'aborted'
         else:
             userdata.standard_error="no objects available"+userdata.standard_error
-            userdata.objectd=None
+            userdata.object_detected_name=None
             return 'aborted'
 
 
