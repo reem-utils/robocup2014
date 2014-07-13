@@ -301,7 +301,7 @@ def call_find_object(object_name,world): #TODO
             for table in room :
                 if out == 'succeeded' and tries == 3:
                     break
-                call_go_to(table)        
+                call_go_to(table,world)        
                  
                 sm = object_detect_sm()#
                 out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
@@ -545,6 +545,9 @@ def main(world):
                 
                 rospy.logwarn(str(time.time()) + '   ' + str(TIME_INIT))
                 if (time.time()-TIME_INIT) > 270:
+                    tosay = "time out."
+                    speak = speaker(tosay)
+                    speak.execute()
                     call_go_to('referee',world)
                     return "succeeded"
 
