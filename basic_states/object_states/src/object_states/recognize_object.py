@@ -34,27 +34,45 @@ class process_object(smach.State):
 
     def execute(self, userdata):
         object_correct = []
+        if userdata.object_pose == None:
+            userdata.standard_error="no objects available"+userdata.standard_error
+            userdata.object_position = []
+            userdata.object_detected_name = []
+            return 'aborted'
         
         if userdata.object_pose.recognized_objects.objects:            
             #Object_correct would be of type RecognizobjectdedObject
             if type(userdata.object_name) is list:
                 object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if (objectd.type.key in userdata.object_name)]
+                
             elif type(userdata.object_name) is str:
                 object_correct = [objectd for objectd in  userdata.object_pose.recognized_objects.objects if objectd.type.key==userdata.object_name]
-            
-            if object_correct:
-                object_aux = object_correct.pop()
-                userdata.object_position = object_aux.pose #PoseWithCovarianceStamped
-                userdata.object_detected_name = object_aux.type.key
-                userdata.standard_error="Recognize_object OK" + userdata.standard_error
                 
-                return 'succeeded'
-            else :
-                userdata.standard_error="No Object with that identifier " + userdata.standard_error
-                return 'aborted'
+            object_position_a = []
+            object_name_a = []
+            for objectd in object_correct:
+                object_position_a.append(objectd.pose)
+                object_name_a.append(objectd.type.key)
+            
+            userdata.object_position = object_position_a
+            userdata.object_detected_name = object_name_a
+            print object_position_a
+            print object_name_a
+#             if object_correct:
+#                 object_aux = object_correct.pop()
+#                 userdata.object_position = object_aux.pose #PoseWithCovarianceStamped
+#                 userdata.object_detected_name = object_aux.type.key
+#                 userdata.standard_error="Recognize_object OK" + userdata.standard_error
+                
+            return 'succeeded'
+#             else :
+#                 userdata.standard_error="No Object with that identifier " + userdata.standard_error
+#                 return 'aborted'
         else:
             userdata.standard_error="no objects available"+userdata.standard_error
-            userdata.object_detected_name=None
+            userdata.object_position = []
+            userdata.object_detected_name = []
+
             return 'aborted'
 
 

@@ -1,6 +1,8 @@
 from translator import obj2idx, idx2obj #, get_list
 import roslib
 import rospy
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovarianceStamped
+
 PERSON = 'PERSON'
 ROBOT = 'ROBOT'
 ITEM = 'ITEM'
@@ -29,6 +31,7 @@ class item():
         self.grasped = ignore
         self.delivered = ignore
         self.pointed = ignore
+        self.object_pose = ignore#PoseWithCovarianceStamped()
 
 class person():
     def __init__(self):

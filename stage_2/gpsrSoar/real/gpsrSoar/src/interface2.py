@@ -14,7 +14,7 @@ from std_srvs.srv import Empty
 from GenerateGoalScript import world
 from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST, SKILLS, TIME_INIT
-from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovarianceStamped
 
 from object_states.object_detect_sm import object_detect_sm
 from object_states.recognize_object import recognize_object
@@ -81,7 +81,7 @@ if TEST:
 else:
     SLEEP_TIME = 3
 
-object_position = PoseStamped()
+# object_position = PoseStamped()
 
 ROOMS = rospy.get_param('/robocup_params/rooms')
 TABLES = rospy.get_param('/robocup_params/loc_category/table')
@@ -151,7 +151,7 @@ def call_go_to(loc_name,world):
             
             return "aborted"
         else:
-            tosay = "I arrivet to the " + loc_name
+            tosay = "I arrived to the " + loc_name
             speak = speaker(tosay)
             speak.execute()
     #############################################################################
@@ -296,32 +296,63 @@ def call_find_object(object_name,world): #TODO
         
         out = 'aborted'
         tries = 0
-        object_position = None
+        world.item.object_pose = PoseWithCovarianceStamped()
         
         current_position = world.get_current_position()    
+        rospy.logwarn(current_position)
+        rospy.logwarn(ROOMS)
+        rospy.loginfo('-----------------------------------------')
         if current_position in ROOMS:
+            rospy.loginfo('-----------------------------------------')
             room = rospy.get_param('/robocup_params/room/' + current_position)
             for table in room :
-                if object_position!=None or tries == 3:
+                rospy.loginfo('-----------------------------------------')
+                if world.item.object_pose.header.frame_id!='':
                     break
                 call_go_to(table.replace(" ","_"),world)        
-                 
-                sm = recognize_object()                
-                sm.userdata.object_name = object_name[0].upper()  + object_name[1:] # TODO: TITLE
-                out = sm.execute()      # 
-                object_position = sm.userdata.object_pose
-                rospy.logwarn(object_position)
-                tries = tries+1#
+                tries = 0
                 
-        if current_position in TABLES:       
-            while(object_position==None and tries<3):   
+                while(world.item.object_pose.header.frame_id=='' and tries<3):   
+                    sm = recognize_object()
+                    sm.userdata.object_name = object_name[0].upper() + object_name[1:]                
+                    out = sm.execute()#
+                    names = sm.userdata.object_detected_name
+                    poses = sm.userdata.object_position
+                    rospy.loginfo('-----------------------------------------')
+                    rospy.loginfo(names)
+                    rospy.loginfo('-----------------------------------------')
+                    rospy.loginfo(poses)
+                    rospy.loginfo('-----------------------------------------')
+                    tries = tries+1
+                
+                    i = 0
+                    while i<len(names):                    
+                        if names[i] == (object_name[0].upper() + object_name[1:]):
+                            world.item.object_pose = poses[i]
+                        i = i +1                        
+        
+        if current_position.replace("_"," ") in TABLES:       
+            while(world.item.object_pose.header.frame_id=='' and tries<3):   
                 sm = recognize_object()
                 sm.userdata.object_name = object_name[0].upper() + object_name[1:]                
-                out = sm.execute()#
-                object_position = sm.userdata.object_pose #
-                tries = tries+1#
+                out = sm.execute()
+                names = sm.userdata.object_detected_name
+                poses = sm.userdata.object_position
+                rospy.loginfo('-----------------------------------------')
+                rospy.loginfo(names)
+                rospy.loginfo('-----------------------------------------')
+                rospy.loginfo(poses)
+                rospy.loginfo('-----------------------------------------')
+                tries = tries+1
             
-            
+                i = 0
+                while i<len(names):                    
+                    if names[i] == (object_name[0].upper() + object_name[1:]):
+                        world.item.object_pose = poses[i]
+                    i = i +1
+                             
+        rospy.logwarn(world.item.object_pose)      
+             
         if out=='aborted':
             tosay = "I couldn't find the " + object_name + " you asked for. It isn't here. I'm going to the referee to inform"
             speak = speaker(tosay)
@@ -339,21 +370,26 @@ def call_find_object(object_name,world): #TODO
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_grasp(obj): #TODO #adding grasping
+def call_grasp(obj,world): #TODO #adding grasping
 
     tosay = "I'm going to grasp the " + obj
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_grasp '+obj)  
+    rospy.logwarn(world.item.object_pose)      
     #############################################################################
     if SKILLS :      
+        pose_object_to_grasp = PoseStamped()
+        pose_object_to_grasp.header = world.item.object_pose.header
+        pose_object_to_grasp.pose = world.item.object_pose.pose.pose
+        
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):   
-            sm = pick_object_sm(object_position)  #if not workng, blame chang
+            sm = pick_object_sm(pose_object_to_grasp)  #if not workng, blame chang
             out = sm.execute()
             tries = tries+1       
             #grasping here
@@ -376,7 +412,7 @@ def call_find_person(person_name): #TOTEST
         tries = 0
         while(out=='aborted' and tries<1):       
             tries = tries+1
-            sm = SearchPersonSM(person_name)
+            sm = SearchPersonSM('person')#person_name
             out = sm.execute()
             
             
@@ -580,7 +616,7 @@ def main(world):
                     if (obj =="NULL"):
                         print "ERROR: el objeto %s no existe" % (obj_to_grasp)
                     
-                    out = call_grasp(obj)
+                    out = call_grasp(obj,world)
 
                 elif command_name == "deliver": #to Person
                     try:

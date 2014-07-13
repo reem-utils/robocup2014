@@ -2,7 +2,7 @@ ASR_LOOP: True
 ASR_ON: "False"
 GRAMATICA: "robocup/minimals"
 
-sentence: "move to the kitchen, grasp the pringles and bring it to me"
+sentence: "move to the kitchen, grasp the pringles and bring it to the exit"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
 sentence3: "bring the coke to a armchair"
