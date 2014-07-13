@@ -34,13 +34,13 @@ sp {gp*apply*initialize-gp
            ^introduced no
            ^locId 2
            ^id 1
-           ^obj1Id -1)
+           ^obj1Id 6)
 
       (<obj1> ^delivered no
            ^pointed no
            ^locId 2
            ^toBeGrasped no
-           ^grasped no
+           ^grasped yes
            ^found no
            ^id 6)
 
@@ -54,12 +54,11 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 15)
 
-   (<d> ^name grasp
+   (<d> ^name bring-to
         ^object <ii>
         ^robot <rr>)
-   (<ii> ^toBeGrasped no
-         ^grasped yes         ^id 6)
-   (<rr> ^id 1
-         ^obj1Id 6)
+   (<ii> ^delivered yes
+         ^locId 12         ^id 6)
+   (<rr> ^id 1)
 
 }
