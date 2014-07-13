@@ -125,8 +125,11 @@ def call_go_to(loc_name,world):
         tries = 0       
         while(out=='aborted' and tries<3):
             tries = tries+1
-            sm = nav_to_poi(poi_name = loc_name)
-            out = sm.execute()     
+            if world.get_current_position() == loc_name:  
+                out = 'succeeded'
+            else:
+                sm = nav_to_poi(poi_name = loc_name)
+                out = sm.execute()     
             
             
         if out=='aborted':
@@ -292,7 +295,7 @@ def call_find_object(object_name,world): #TODO
     
         current_position = world.get_current_position()        
         if current_position in ROOMS:
-            room = rospy.get_param('/robocup_params/room/' + current_position)
+            room = rospy.get_param('/robocup_params/room/' + current_position.replace(" ","_"))
                 
         #while(out=='aborted' and tries<3):      
             for table in room :
@@ -378,6 +381,9 @@ def call_find_person(person_name): #TOTEST
             
             return "aborted"
     #############################################################################
+    tosay = "Found you"
+    speak = speaker(tosay)
+    speak.execute()
     time.sleep(SLEEP_TIME)
     return "succeeded"
 

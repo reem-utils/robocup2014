@@ -126,7 +126,7 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 
 def ask_category(category):
     if TEST:
-        return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category))
+        return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category.replace("/gpsr","")))
     print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
@@ -202,7 +202,7 @@ class gpsrASAction(object):
 
           self.print_goal()
   
-    rospy.logwarn("ES AQUI?????????????????????????????????????????????????????????????????")
+    rospy.logwarn("FINISHING SENTENCE")
     call_go_to('referee', self._world)
     """
       for i in xrange(1, goal.order):
