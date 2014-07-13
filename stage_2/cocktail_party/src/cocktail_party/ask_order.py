@@ -63,8 +63,8 @@ class AskOrder(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=[],
-                                    output_keys=['name', 'object_name'])
+                                    input_keys=['delete_database'],
+                                    output_keys=['name_face', 'object_name'])
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
@@ -121,7 +121,7 @@ class AskOrder(smach.StateMachine):
             # Learn Person -> Ask name + Face Recognition
             smach.StateMachine.add(
                 'learning_person',
-                SaveFaceSM(),
+                SaveFaceSM(time_enroll=5),
                 transitions={'succeeded': 'ask_order', 'aborted': 'learning_person', 
                 'preempted': 'preempted'}) 
             

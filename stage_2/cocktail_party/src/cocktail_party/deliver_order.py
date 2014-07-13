@@ -60,16 +60,27 @@ class prepare_coord_order(smach.State):
 class prepare_ask_person_back(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=['name'],
+                                input_keys=['name_face'],
                                 output_keys=['standard_error', 'tts_text'])
 
     def execute(self, userdata):
         
-        userdata.tts_text = "I can't see you " + userdata.name + ". Can you come to me, please?"
+        userdata.tts_text = "I can't see you " + userdata.name_face + ". Can you come to me, please?"
         
         return 'succeeded'
  
- 
+class prepare_searching(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['name_face'],
+                                output_keys=['standard_error', 'tts_text'])
+
+    def execute(self, userdata):
+        
+        userdata.tts_text = "I'm going to search " + userdata.name_face 
+        
+        return 'succeeded'
+    
 class DeliverOrder(smach.StateMachine):
     """
     Executes a SM that execute one order in cocktail Party.
@@ -86,7 +97,7 @@ class DeliverOrder(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['did_pick', 'object_name', 'name'],
+                                    input_keys=['did_pick', 'object_name', 'name_face'],
                                     output_keys=[])
 
         with self:
@@ -95,8 +106,15 @@ class DeliverOrder(smach.StateMachine):
 
             # Say search for person
             smach.StateMachine.add(
+                'prepare_say_search_person',
+                prepare_searching(),
+                transitions={'succeeded': 'say_search_person', 'aborted': 'search_for_person', 
+                'preempted': 'preempted'}) 
+            
+            # Say search for person
+            smach.StateMachine.add(
                 'say_search_person',
-                text_to_say("I'm going to search the person who ordered me"),
+                text_to_say(),
                 transitions={'succeeded': 'search_for_person', 'aborted': 'search_for_person', 
                 'preempted': 'preempted'}) 
              

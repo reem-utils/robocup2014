@@ -63,6 +63,35 @@ class change_did_pick(smach.State):
         userdata.did_pick = False
         return 'succeeded'
 
+class object_detected(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=["object_detected_name", 'list_orders'],
+                                output_keys=["name", 'name_face'])
+        
+    def execute(self, userdata):
+
+        for item in userdata.list_orders:
+            if item[1] == userdata.object_detected_name:
+                userdata.name_face = item[0]
+                userdata.name = item[0]
+                return 'succeeded'
+
+        return 'aborted'
+
+class select_object(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
+                                input_keys=['list_orders', 'loop_iterations'],
+                                output_keys=["name", 'name_face', 'object_name'])
+        
+    def execute(self, userdata):
+
+        userdata.name = userdata.list_orders[userdata.loop_iterations-1][0]
+        userdata.name_face = userdata.list_orders[userdata.loop_iterations-1][0]
+        userdata.object_name = userdata.list_orders[userdata.loop_iterations-1][1]
+        return 'succeeded'
+    
 class GraspOrder(smach.StateMachine):
     """
     Executes a SM that execute one order in cocktail Party.
@@ -79,7 +108,7 @@ class GraspOrder(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=['object_name', 'name'],
+                                    input_keys=['object_name', 'name_face', 'list_orders', 'loop_iterations'],
                                     output_keys=['did_pick'])
 
         with self:
@@ -91,17 +120,23 @@ class GraspOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'object_recognition',
                 dummy_recognize(),
-                transitions={'succeeded': 'play_motion_grasp', 'aborted': 'play_motion_grasp', 
+                transitions={'succeeded': 'select_object', 'aborted': 'select_object', 
                 'preempted': 'preempted'}) 
             
             # Recognize and pick object if found
             smach.StateMachine.add(
                 'recognize_object_and_pick',
                 RecObjectAndPick(),
-                transitions={'succeeded': 'succeeded', 
+                transitions={'succeeded': 'object_detected', 
                              'fail_grasp':'Grasp_fail_Ask_Person',
                              'fail_recognize': 'try_again_recognition'})
     
+            # Check which object I picked and prepare the person name
+            smach.StateMachine.add(
+                'object_detected',
+                object_detected(),
+                transitions={'succeeded': 'succeeded', 'aborted':'aborted'})
+
         # Recognize Fail Part
             # We don't recognized the object
             smach.StateMachine.add(
@@ -111,6 +146,12 @@ class GraspOrder(smach.StateMachine):
                 'preempted': 'preempted', 'end':'Grasp_fail_Ask_Person'}) 
             
         #Grasp Mock Part 
+            # Check which object I picked and prepare the person name
+            smach.StateMachine.add(
+                'select_object',
+                select_object(),
+                transitions={'succeeded': 'play_motion_grasp', 'aborted':'aborted'})
+            
             # Home position
             smach.StateMachine.add(
                 'play_motion_grasp',

@@ -27,7 +27,7 @@ class ExecuteOrder(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                            input_keys=['object_name', 'name'], 
+                                            input_keys=['object_name', 'name_face', 'list_orders', 'loop_iterations'], 
                                             output_keys=[])
 
         with self:

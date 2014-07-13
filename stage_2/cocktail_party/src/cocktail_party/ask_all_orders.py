@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 Created on 10/07/2014
 
@@ -17,7 +18,7 @@ class checkLoop(smach.State):
         rospy.loginfo("Entering loop_test")
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
                                 input_keys=['loop_iterations'],
-                                output_keys=['standard_error', 'loop_iterations', "did_pick"])
+                                output_keys=['standard_error', 'loop_iterations', "did_pick",'delete_database'])
 
     def execute(self, userdata):
         
@@ -27,16 +28,18 @@ class checkLoop(smach.State):
             rospy.loginfo(userdata.loop_iterations)
             userdata.standard_error='OK'
             userdata.loop_iterations = userdata.loop_iterations + 1
+            userdata.delete_database=False
             return 'succeeded'
 
 class process_info(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted', 'end'], 
-                                input_keys=['name', 'object_name', 'loop_iterations'],
+        smach.State.__init__(self, outcomes=['succeeded','aborted'], 
+                                input_keys=['name_face', 'object_name', 'loop_iterations', 'list_orders'],
                                 output_keys=['list_orders'])
 
     def execute(self, userdata):
-        userdata.list_orders.append([userdata.name, userdata.object_name])
+        userdata.list_orders.append([userdata.name_face, userdata.object_name])
+        rospy.loginfo(str(userdata.list_orders))
         return 'succeeded'
   
  
@@ -63,8 +66,7 @@ class AskAllOrders(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.loop_iterations = 1
             self.userdata.list_orders = []
-            
-            # Ask Order
+            self.userdata.delete_database=True            # Ask Order
             smach.StateMachine.add(
                  'ask_order',
                  AskOrder(),
@@ -83,4 +85,29 @@ class AskAllOrders(smach.StateMachine):
                 transitions={'succeeded': 'ask_order', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'succeeded'}) 
                        
-            
+def main():
+    rospy.init_node('cocktail_order')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+
+    with sm:
+
+        smach.StateMachine.add(
+            'cocktail_orders',
+            AskAllOrders(),
+            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
+
+    
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+#     sis = smach_ros.IntrospectionServer(
+#         'basic_functionalities_introspection', sm, '/BF_ROOT')
+#     sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+ #   sis.stop()
+
+
+if __name__ == '__main__':
+    main()

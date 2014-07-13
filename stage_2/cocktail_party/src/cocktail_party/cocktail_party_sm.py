@@ -83,20 +83,20 @@ class CocktailPartySM(smach.StateMachine):
             # Ask Order -> Wave + Learn Person + Order
             smach.StateMachine.add(
                 'Ask_order',
-                AskOrder(),
+                AskAllOrders(),
                 transitions={'succeeded':'go_to_storage', 'aborted':'aborted'})   
             
-            # Go to the storage_room
-            smach.StateMachine.add(
-                'go_to_storage',
-                nav_to_poi("storage_room"),
-                transitions={'succeeded': 'execute_order', 'aborted': 'go_to_storage', 
-                'preempted': 'preempted'}) 
+#             # Go to the storage_room
+#             smach.StateMachine.add(
+#                 'go_to_storage',
+#                 nav_to_poi("storage_room"),
+#                 transitions={'succeeded': 'execute_order', 'aborted': 'go_to_storage', 
+#                 'preempted': 'preempted'}) 
             
             # Execute the order 
             smach.StateMachine.add(
                 'execute_order',
-                ExecuteOrder(),
+                ExecuteAllOrders(),
                 transitions={'succeeded': 'say_leaving_arena', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
