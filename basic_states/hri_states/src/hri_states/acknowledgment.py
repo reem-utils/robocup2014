@@ -35,8 +35,8 @@ class init_var(smach.State):
     def execute(self, userdata):
         
         
-        if   userdata.tts_text == None :
-            userdata.tts_text=self.tts_text
+        if  userdata.tts_text == None :
+            userdata.tts_text = self.tts_text
         if  userdata.type_movment == None :
             userdata.type_movment=self.type_movement
         

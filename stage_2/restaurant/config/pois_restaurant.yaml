@@ -1,7 +1,7 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    ordering: [submap_0, ordering, 3.0, -3.0, 0]
+    ordering: [submap_0, ordering, 0.0, 0.0, 0]
 
 object:
   information:

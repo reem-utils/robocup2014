@@ -109,7 +109,7 @@ class GraspOrder(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['object_name', 'name_face', 'list_orders', 'loop_iterations'],
-                                    output_keys=['did_pick'])
+                                    output_keys=['did_pick','name_face'])
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!

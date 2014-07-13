@@ -40,12 +40,14 @@ class restaurantInit(smach.StateMachine):
             self.userdata.in_learn_person=1
             self.userdata.type_movment = 'home'
             
-            smach.StateMachine.add('DEFAULT_POSITION',
-                                   move_head_form("center","up"),
-                                   transitions={'succeeded': 'INTRO','aborted':'INTRO'})
+
             smach.StateMachine.add('INTRO',
                                    acknowledgment(type_movement='home', tts_text=START_FRASE),
-                                   transitions={'succeeded': 'Learn','aborted':'aborted'})
+                                   transitions={'succeeded': 'DEFAULT_POSITION','aborted':'DEFAULT_POSITION'})
+            
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'Learn','aborted':'Learn'})
 
             # it learns the person that we have to follow
             smach.StateMachine.add('Learn',

@@ -110,7 +110,7 @@ class nav_to_coord(smach.StateMachine):
             
             smach.StateMachine.add('Aborting_text',
                                    text_to_say('I cannot reach the location, sorry'),
-                                   transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+                                   transitions={'succeeded':'aborted', 'aborted':'aborted'})
 def main():
     rospy.loginfo('Go POi Node')
     rospy.init_node('go_poi')

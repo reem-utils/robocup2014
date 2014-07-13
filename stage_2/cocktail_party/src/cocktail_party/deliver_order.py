@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 Created on 12/07/2014
 
@@ -10,11 +11,13 @@ import math
 from speech_states.say import text_to_say
 from navigation_states.nav_to_coord import nav_to_coord
 from face_states.recognize_face import recognize_face_concurrent
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, PointStamped, Point
 from util_states.math_utils import normalize_vector, vector_magnitude
 from manipulation_states.give_object import give_object
 from manipulation_states.play_motion_sm import play_motion_sm
 from face_states.detect_faces import detect_face
+import tf
+from hri_states.look_to_point import look_to_point
 
 class check_place_give(smach.State):
     def __init__(self):
@@ -38,22 +41,35 @@ class prepare_coord_order(smach.State):
         
     def execute(self, userdata):
         
-        new_pose = Pose()
-        new_pose.position.x = userdata.face.position.x
-        new_pose.position.y = userdata.face.position.y
+        rospy.loginfo("Getting a TransformListener...")
+        tf_listener = tf.TransformListener()
+        rospy.sleep(0.5) # we need to wait a moment so the tf listener inits
 
-        unit_vector = normalize_vector(new_pose.position)
-        position_distance = vector_magnitude(new_pose.position)
+        ps = PointStamped()
+        ps.header.frame_id = 'head_mount_xtion_rgb_optical_frame'
+        ps.header.stamp = rospy.Time.now()
+        ps.point = userdata.face.position
 
-        distance_des = 0.0
-        if position_distance >= self.distanceToHuman: 
-            distance_des = position_distance - self.distanceToHuman
-        else:
-            rospy.loginfo(" Person too close => not moving, just rotate")
- 
-        alfa = math.atan2(new_pose.position.y, new_pose.position.x)
+        # transform the pose of the face detection to base_link to compute on that frame
+        transform_ok = False
+        while not transform_ok: # this is ugly as is polling to TF... but works
+            try:
+                transformed_point = tf_listener.transformPoint("/base_link", ps)
+                transform_ok = True
+            except tf.ExtrapolationException, tf.LookupException:
+                rospy.logwarn("Exception on transforming transformed_point... trying again.")
+                ps.header.stamp = rospy.Time.now()
+                rospy.sleep(0.3) # a real current time doesnt really work
+
+
+        alfa = math.atan2(transformed_point.point.x, transformed_point.point.y)
+        if transformed_point.point.x>self.distanceToHuman :
+            transformed_point.point.x=transformed_point.point.x-self.distanceToHuman
+        else :
+            transformed_point.point.x=0
+            transformed_point.point.y=0
         
-        userdata.nav_to_coord_goal = [new_pose.position.x, new_pose.position.y, alfa]
+        userdata.nav_to_coord_goal = [transformed_point.point.x, transformed_point.point.y, alfa]
         
         return 'succeeded'
 
@@ -73,11 +89,12 @@ class prepare_searching(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
                                 input_keys=['name_face'],
-                                output_keys=['standard_error', 'tts_text'])
+                                output_keys=['standard_error', 'tts_text','name'])
 
     def execute(self, userdata):
         
         userdata.tts_text = "I'm going to search " + userdata.name_face 
+        userdata.name=userdata.name_face
         
         return 'succeeded'
     
@@ -104,6 +121,11 @@ class DeliverOrder(smach.StateMachine):
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.did_pick = True
 
+
+            smach.StateMachine.add(
+                'look_to_point',
+                look_to_point(direction="up",min_duration=1.0),
+                transitions={'succeeded': 'prepare_say_search_person','preempted':'preempted', 'aborted':'aborted'})
             # Say search for person
             smach.StateMachine.add(
                 'prepare_say_search_person',
@@ -122,7 +144,7 @@ class DeliverOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'search_for_person',
                 #go_find_person("party_room"),
-                recognize_face_concurrent(),
+                recognize_face_concurrent(time_out=15),
                 transitions={'succeeded': 'say_found_person', 'aborted': 'prepare_ask_for_person_back', 
                 'preempted': 'preempted'}) 
             
@@ -130,7 +152,7 @@ class DeliverOrder(smach.StateMachine):
             # Say found the person
             smach.StateMachine.add(
                 'say_found_person',
-                text_to_say("I found you!"),
+                text_to_say("I found you!",wait=False),
                 transitions={'succeeded': 'prepare_coord_order', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
@@ -138,7 +160,7 @@ class DeliverOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'prepare_coord_order',
                 prepare_coord_order(),
-                transitions={'succeeded': 'go_to_person_order', 'aborted': 'aborted', 
+                transitions={'succeeded': 'deliver_drink', 'aborted': 'aborted', 
                 'preempted': 'preempted'})             
             
             # Go to person
@@ -170,7 +192,7 @@ class DeliverOrder(smach.StateMachine):
             # Deliver Drink 
             smach.StateMachine.add(
                 'deliver_drink',
-                text_to_say("I'm going to deliver the drink"),
+                text_to_say("Ok, I'm going to deliver the drink, please take it"),
                 transitions={'succeeded': 'check_place_give', 'aborted': 'check_place_give', 
                 'preempted': 'preempted'}) 
             
@@ -192,3 +214,39 @@ class DeliverOrder(smach.StateMachine):
                 'Give_Object',
                 give_object(),
                 transitions={'succeeded':'succeeded', 'aborted':'Give_Object', 'preempted':'Give_Object'})
+            
+            
+            
+            
+            
+            
+def main():
+    rospy.init_node('cocktail_deliver')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+
+    with sm:
+        sm.userdata.did_pick=True
+        sm.userdata.object_name="Cocacola"
+        sm.userdata.name_face="hannah"
+
+        smach.StateMachine.add(
+            'cocktail_execute',
+            DeliverOrder(),
+            transitions={'succeeded': 'succeeded', 'aborted': 'aborted'})
+
+    
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+#     sis = smach_ros.IntrospectionServer(
+#         'basic_functionalities_introspection', sm, '/BF_ROOT')
+#     sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+ #   sis.stop()
+
+
+if __name__ == '__main__':
+    main()
+           

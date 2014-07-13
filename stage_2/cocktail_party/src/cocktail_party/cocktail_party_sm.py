@@ -84,7 +84,7 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                 'Ask_order',
                 AskAllOrders(),
-                transitions={'succeeded':'go_to_storage', 'aborted':'aborted'})   
+                transitions={'succeeded':'execute_order', 'aborted':'aborted'})   
             
 #             # Go to the storage_room
 #             smach.StateMachine.add(

@@ -11,6 +11,7 @@ import rospy
 
 from execute_order import ExecuteOrder
 from navigation_states.nav_to_poi import nav_to_poi
+from manipulation_states.play_motion_sm import play_motion_sm
 
 NUMBER_OF_ORDERS = 3
 
@@ -93,8 +94,15 @@ class ExecuteAllOrders(smach.StateMachine):
             smach.StateMachine.add(
                 'check_loop',
                 checkLoop(),
-                transitions={'succeeded': 'execute_order', 'aborted': 'aborted', 
+                transitions={'succeeded': 'play_motion_state', 'aborted': 'aborted', 
                 'preempted': 'preempted', 'end':'succeeded'}) 
+            
+            smach.StateMachine.add(
+                'play_motion_state',
+                play_motion_sm('home', skip_planning=True),
+                transitions={'succeeded': 'go_to_storage',
+                             'preempted':'go_to_storage', 
+                             'aborted':'play_motion_state'})   
                        
                         
 def main():
