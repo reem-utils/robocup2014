@@ -2,7 +2,7 @@
 
 grammar iam;
 
-public <basic> = ((<myname> | <iam> | <onlyname> ) | <garbage> ){obj.put("external","1");}; 
+public <basic> = ((<myname> | <iam> ) | <garbage> ){obj.put("external","1");}; 
 
 <onlyname> = <name> {obj.put("name",$.$value);};
 <myname>   = my name is <name> {obj.put("name",$.$value);};
