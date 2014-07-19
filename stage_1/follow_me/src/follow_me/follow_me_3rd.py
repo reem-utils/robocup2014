@@ -95,7 +95,7 @@ class create_nav_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],output_keys=['nav_to_coord_goal'])
     def execute(self,userdata):
-        userdata.nav_to_coord_goal=[2,0,0]
+        userdata.nav_to_coord_goal=[1,0,0]
         rospy.loginfo("i'm creating a a realy far goal, because i lost the operator")
         return 'succeeded'
     
@@ -319,7 +319,7 @@ class follow_me_3rd(smach.StateMachine):
                                 Search_Wave_SM())
             
             smach.StateMachine.add('SEARCH_OPERATOR', sm,
-                                     transitions={'gesture_recongize':'CREATE_GESTURE_NAV_GOAL',
+                                     transitions={'gesture_recongize':'DEFAULT_POSITION',
                                                  'nav_finisheed':'SEARCH_OPERATOR_GESTURE_2','preempted':'preempted'})
            
         
@@ -335,20 +335,20 @@ class follow_me_3rd(smach.StateMachine):
             
             smach.StateMachine.add('CREATE_GESTURE_NAV_GOAL',
                                    create_nav_gesture_goal(),
-                                   transitions={'succeeded':'SAY_CROSSING',
+                                   transitions={'succeeded':'RECOGNIZE_PERSON',
                                                'aborted':'aborted','preempted':'preempted'})
 
 
-            smach.StateMachine.add('SAY_CROSSING',
-                                   text_to_say(SAY_CROSSING),
-                                   transitions={'succeeded':'GO_TO_GESTURE',
-                                               'aborted':'GO_TO_GESTURE','preempted':'preempted'}) 
-            #if the navigation goal it's impossible it will be heare allways 
-            smach.StateMachine.add('GO_TO_GESTURE',
-                                   nav_to_coord('/base_link'),
-                                   transitions={'succeeded':'RECOGNIZE_PERSON',
-                                               'aborted':'RECOGNIZE_PERSON','preempted':'preempted'})  
-            
+#             smach.StateMachine.add('SAY_CROSSING',
+#                                    text_to_say(SAY_CROSSING),
+#                                    transitions={'succeeded':'GO_TO_GESTURE',
+#                                                'aborted':'GO_TO_GESTURE','preempted':'preempted'}) 
+#             #if the navigation goal it's impossible it will be heare allways 
+#             smach.StateMachine.add('GO_TO_GESTURE',
+#                                    nav_to_coord('/base_link'),
+#                                    transitions={'succeeded':'RECOGNIZE_PERSON',
+#                                                'aborted':'RECOGNIZE_PERSON','preempted':'preempted'})  
+#             
             #when i'm whit the person i have to look if it's the person
             smach.StateMachine.add('RECOGNIZE_PERSON',
                                    LearnPerson(learn_face=False),
