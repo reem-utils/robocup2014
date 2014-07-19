@@ -85,6 +85,7 @@ class GeneratePDF_State(smach.State):
         
         rospy.loginfo("Secure Copying from Control to Multimedia - Pendrive")
         subprocess.call("copy_to_usb.sh", shell=True)
+        subprocess.call("unmountexample.sh", shell=True)
         
         return 'succeeded'
 
