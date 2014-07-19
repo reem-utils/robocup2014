@@ -294,7 +294,7 @@ def call_find_object(object_name,world): #TODO
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
-        out = 'aborted' 
+        out = 'aborted' #provando, provando
         tries = 0
         world.item.object_pose = PoseWithCovarianceStamped()
         
