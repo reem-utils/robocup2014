@@ -14,6 +14,8 @@ from restaurant_listen_operator import ListenOperator
 from pal_navigation_msgs.msg import NavigationStatus
 from pal_navigation_msgs.srv import Acknowledgment,AcknowledgmentRequest,AcknowledgmentResponse
 from smach_ros import ServiceState
+from manipulation_states.move_head_form import move_head_form
+from follow_me.fake_id import fake_id
 
 """
 RESTAURANT_guide.PY
@@ -146,9 +148,18 @@ class restaurantGuide(smach.StateMachine):
             smach.StateMachine.add('CHANGE_STATE_STOP',
                                     ServiceState('/pal_navigation_sm',Acknowledgment,
                                                  request_cb = navigation_LOC_cb ),
-                                    transitions = {'succeeded': 'FINISH',
+                                    transitions = {'succeeded': 'DEFAULT_POSITION',
                                                    'aborted':'CHANGE_STATE_STOP'})
+            smach.StateMachine.add('DEFAULT_POSITION',
+                                   move_head_form("center","up"),
+                                   transitions={'succeeded': 'fake_id','aborted':'fake_id'})
             
+            
+            # it say finsih that then we can stard serving orders
+            smach.StateMachine.add('fake_id',
+                                   fake_id(),
+                                   transitions={'succeeded': 'FINISH',
+                                    'aborted': 'FINISH','preempted':'FINISH'})
             # it say finsih that then we can stard serving orders
             smach.StateMachine.add('FINISH',
                                    text_to_say(SAY_FINISH_FOLLOWING),

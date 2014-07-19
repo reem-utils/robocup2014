@@ -108,7 +108,7 @@ class RecObjectAndPick(smach.StateMachine):
             # Home position
             smach.StateMachine.add(
                 'home_position',
-                play_motion_sm('home'),
+                play_motion_sm('home',skip_planning=True),
                 transitions={'succeeded': 'fail_grasp', 'aborted': 'home_position', 
                 'preempted': 'preempted'}) 
             

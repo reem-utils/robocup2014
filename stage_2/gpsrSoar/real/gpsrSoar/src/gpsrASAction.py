@@ -14,6 +14,7 @@ from speech_states.listen_general_command import askCategory as askCategorySM
 from speech_states.listen_general_command import askCategoryLoc as askCategoryLocSM 
 
 from sm_gpsr_orders import TEST
+from interface2 import call_go_to
 
 import actionlib
 import gpsrSoar.msg
@@ -36,7 +37,6 @@ print per
 
 categories = ['drink', 'snack', 'cleaning_stuff', 'food', 'kitchenware']
 loc_categories = ['door', 'table', 'shelf', 'appliance', 'seat', 'seating', 'utensil']
-
 
 def indexGrammar(grammar):
   print grammar
@@ -125,7 +125,7 @@ def ask_data(Type='LOCATIONS', objectName='coke'):
 
 def ask_category(category):
     if TEST:
-        return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category))
+        return idx2obj(1,rospy.get_param('/robocup_params/it_category/'+category.replace("/gpsr","")))
     print "category: " + category
     ad = askCategorySM(GRAMMAR_NAME = category)
     out = ad.execute()
@@ -162,7 +162,7 @@ class gpsrASAction(object):
     self._goalDonei = 0
     self._goal = []
     self._world = world()
-    
+
     if TEST:
         errorfilepath = roslib.packages.get_pkg_dir("gpsr") + "/config/"
         error = errorfilepath + "error.txt"
@@ -177,10 +177,15 @@ class gpsrASAction(object):
     print self._world.robot.locId
     self.print_goal()
     
+    self._world.set_current_position('referee')
     #"-----------------------------------------------------------orders list------------------------------"
     rospy.logwarn (str(self._goal.orderList))
     while not success:
+        
       soarResult = interface.main(self._world)
+      self.gpsr_category_flag_hack = 1
+      rospy.logwarn(self.gpsr_category_flag_hack)
+      rospy.logwarn('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
       if soarResult == 'aborted':
         self._result.outcome = 'aborted'
         self._as.set_succeeded(self._result)
@@ -199,7 +204,10 @@ class gpsrASAction(object):
           self._world.update_world(self._last_goal)
 
           self.print_goal()
-  
+          
+    self.gpsr_category_flag_hack = 0
+    rospy.logwarn("FINISHING SENTENCE")
+    call_go_to('referee', self._world)
     """
       for i in xrange(1, goal.order):
       # check that preempt has not been requested by the client
@@ -236,20 +244,7 @@ class gpsrASAction(object):
 
     locc = get_list('LOCATIONS') #Saves in locc all possible locations
     
-    #this is a dummy for tests!!!
-    # command = commands[1]
-    # print command.action 
 
-    # print command.location
-    # print command.item
-    # print command.person
-
-    # printNewGoal(oaction=command.action, oitem=items[command.item], operson=persons[command.person], olocation=locations[command.location])
-    # printNewGoal(oaction='go_to', oitem=items[command.item], operson=persons[command.person], olocation=1)
-    # compileInit(locations=iloc, persons=iperson, items=iitem, oaction=command.action, oitem=items[command.item], operson=persons[command.person], olocation=locations[command.location])
-
-    # checks that the item is or not a category
-    # print 'blablabal'
     if command.item in categories: #if the item is a category this ask for further information and updates it
       objct = ask_category(command.item)
       self._world.item.id = obj2idx(objct, 'ITEMS')
@@ -292,7 +287,12 @@ class gpsrASAction(object):
       self._world.item.locId = str(obj2idx(command.location, 'LOCATIONS'))
 
     if self._world.item.locId == '-1' and self._world.item.id != '-1': # If we know the item but not the location we check it and save it in world
-      iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
+      rospy.logwarn(self.gpsr_category_flag_hack)
+      rospy.logwarn('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+      if self.gpsr_category_flag_hack == 1:
+        iloc = self._world.robot.locId
+      else:
+        iloc = check_object_location(idx2obj(int(self._world.item.id), 'ITEMS'))
       self._world.item.locId = iloc
 
     if (command.action == 'memorize' or command.action == 'recognize'):

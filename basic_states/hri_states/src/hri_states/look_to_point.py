@@ -28,7 +28,7 @@ OKGREEN = '\033[92m'
 POINT_HEAD_TOPIC = '/head_controller/point_head_action'
 
 TIME_BETWEEN_GOALS = 0.3
-UP=1.2
+UP=1.3
 
 class prepare_data_look(smach.State):
     def __init__(self, point_to_look, frame_id, min_duration=0.9,direction=""):
@@ -74,6 +74,9 @@ class prepare_data_look(smach.State):
                 phg.target.point.y = -1
             elif self.direction=="front":
                 phg.target.point.y = 0
+            elif self.direction=="up":
+                phg.target.point.y = 0
+                phg.target.point.z=1.6
         
         
         

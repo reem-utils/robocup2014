@@ -20,6 +20,7 @@ from speech_states.say import text_to_say
 from restaurant_guide_phase import restaurantGuide
 from restaurant_navigation import RestaurantNavigation
 from restaurant_order_phase import RestaurantOrder
+from manipulation_states.move_head_form import move_head_form
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'

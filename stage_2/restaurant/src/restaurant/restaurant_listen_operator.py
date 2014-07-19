@@ -11,7 +11,7 @@ import math
 
 
 from speech_states.say import text_to_say
-from speech_states.say_yes_or_no import SayYesOrNoSM
+from speech_states.say_yes_or_no import SayYesOrNoSM, SayYesOrNoSM_2
 from speech_states.listen_and_check_word import ListenWordSM
 from navigation_states.get_current_robot_pose_mapping import get_current_robot_pose_mapping 
 from speech_states.listen_to import ListenToSM    
@@ -72,9 +72,9 @@ class save_point(smach.State):
         yaw=userdata.current_robot_yaw
         rospy.loginfo(OKGREEN+"I Have a new point"+ENDC)
         if (userdata.objectOrientation== 'right') :
-            yaw=yaw+(math.pi/2)
-        if (userdata.objectOrientation== 'left'):
             yaw=yaw-(math.pi/2)
+        if (userdata.objectOrientation== 'left'):
+            yaw=yaw+(math.pi/2)
         if (userdata.objectOrientation== 'back'):
             yaw=yaw-math.pi
         if (userdata.objectOrientation=='front'):
@@ -110,7 +110,7 @@ class proces_Tags(smach.State):
         #rospy.loginfo(OKGREEN+"TAGS: "+str(self.tags)+ENDC)
         #rospy.loginfo(OKGREEN+str(userdata.asr_userSaid_tags)+ENDC)
         #userdata.object=userdata.asr_userSaid # it means that in this place it have a coke
-        userdata.tts_text= "i have listened that "+userdata.asr_userSaid
+        userdata.tts_text= "i have listened that "+userdata.asr_userSaid + "    , it's that correct?"
         if "guide" in userdata.asr_userSaid :
             rospy.logwarn("-------------------------------------i'm have a finish order")
             return 'finish'
@@ -209,10 +209,8 @@ class ListenOperator(smach.StateMachine):
                                    transitions={'succeeded':'PROCES_TAGS',# 'PROCES_TAGS',
                                                 'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
 
-            
-        
             smach.StateMachine.add('CAN_YOU_REPEAT',
-                       acknowledgment(tts_text=SAY_REPEAT,type_movement='no'),
+                       text_to_say(SAY_REPEAT),
                        transitions={'succeeded': 'LISTEN_TO',
                                     'aborted': 'LISTEN_TO','preempted':'preempted'})
                         
@@ -220,11 +218,16 @@ class ListenOperator(smach.StateMachine):
                        proces_Tags(),
                        transitions={'new_position': 'feedback_repead','finish':'succeeded',
                                     'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
-            
+            # i have understand i have to ask
             smach.StateMachine.add('feedback_repead',
                        text_to_say(),
+                       transitions={'succeeded': 'confirm_order',
+                                    'aborted': 'LISTEN_TO','preempted':'preempted'})
+            
+            smach.StateMachine.add('confirm_order',
+                       SayYesOrNoSM_2(),
                        transitions={'succeeded': 'GET_POSE',
-                                    'aborted': 'aborted','preempted':'preempted'})
+                                    'aborted': 'CAN_YOU_REPEAT','preempted':'preempted'})
 
             
             smach.StateMachine.add('GET_POSE',
@@ -240,7 +243,7 @@ class ListenOperator(smach.StateMachine):
                                                 'aborted': 'aborted','preempted':'preempted'})
 
             smach.StateMachine.add('SAY_OK',
-                                   acknowledgment(tts_text=SAY_OK,type_movement='yes'),
+                                   text_to_say(SAY_OK),
                                    transitions={'succeeded': 'LISTEN_TO',
                                                 'aborted': 'LISTEN_TO','preempted':'preempted'})
             

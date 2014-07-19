@@ -29,6 +29,7 @@ class Process_face(smach.State):
 
     def execute(self, userdata):
         
+        rospy.logwarn("i'm looking for::::::::::::::.              "+str (userdata.name))
         # first of all i look if it's some faces
         if userdata.faces.faces:
             # i look in what option we are, if we are looking for a name o no
@@ -130,6 +131,31 @@ class process_faces_from_topic(smach.StateMachine):
         
         return 'succeeded'
 
+class check_time(smach.StateMachine):
+    def __init__(self,time_out): 
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=['time_init'], 
+                                 output_keys=[])
+        self.time_out=time_out
+    def execute(self, userdata):
+        if self.time_out== 0 :
+            return 'succeeded'
+        else :
+            if  rospy.Time.now().secs-userdata.time_init.secs > self.time_out :
+                return 'aborted'
+            else :
+                return 'succeeded'
+
+class init_time(smach.StateMachine):
+    def __init__(self): 
+        smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
+                                 input_keys=[], 
+                                 output_keys=['time_init'])
+    def execute(self, userdata):
+        
+        userdata.time_init = rospy.Time.now()
+        return 'succeeded'
+
 class recognize_face_concurrent(smach.StateMachine): 
     """
     Executes a SM that look if it can recognize faces
@@ -157,7 +183,7 @@ class recognize_face_concurrent(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """
-    def __init__(self,minConfidence=90):
+    def __init__(self,minConfidence=90,time_out=0):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=['name'], 
                                  output_keys=['standard_error','face','face_frame'])
@@ -168,10 +194,17 @@ class recognize_face_concurrent(smach.StateMachine):
             self.userdata.name=""
             
             # extract the database that the robot is finding
+            self.time_init = rospy.Time.now()
+            
+            smach.StateMachine.add(
+                    'init_time',
+                    init_time(),
+                    transitions={'succeeded': 'detect_face', 'aborted': 'aborted'})
+            
             smach.StateMachine.add(
                                 'detect_face',
-                                detect_face(minConfidence),
-                                transitions={'succeeded': 'Process_face', 'aborted': 'aborted', 
+                                detect_face(minConfidence,time_topic=1),
+                                transitions={'succeeded': 'Process_face', 'aborted': 'check_time', 
                                 'preempted': 'preempted'})
             #Change succeeded:proces_face
             
@@ -191,7 +224,13 @@ class recognize_face_concurrent(smach.StateMachine):
             smach.StateMachine.add(
                     'time_sleeper',
                     Sleeper(0.5),
-                    transitions={'succeeded': 'detect_face', 'aborted': 'detect_face'})
+                    transitions={'succeeded': 'check_time', 'aborted': 'detect_face'})
+            
+            smach.StateMachine.add(
+                    'check_time',
+                    check_time(time_out),
+                    transitions={'succeeded': 'detect_face', 'aborted': 'aborted'})
+            
                  
 
 

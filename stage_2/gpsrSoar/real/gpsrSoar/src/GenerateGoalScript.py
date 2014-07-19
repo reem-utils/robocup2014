@@ -1,5 +1,8 @@
 from translator import obj2idx, idx2obj #, get_list
 import roslib
+import rospy
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovarianceStamped
+
 PERSON = 'PERSON'
 ROBOT = 'ROBOT'
 ITEM = 'ITEM'
@@ -28,6 +31,7 @@ class item():
         self.grasped = ignore
         self.delivered = ignore
         self.pointed = ignore
+        self.object_pose = ignore#PoseWithCovarianceStamped()
 
 class person():
     def __init__(self):
@@ -64,32 +68,15 @@ class world():
         self.location.append(location())
         self.name = ''
 
-#     def new_object(self, Object, iters):
-#             f = Object[0]
-#             text = '   (<' + f + f + str(iters) + '> '
-#             first_attr = True
-#             ignore_field = True
-#             obj = getattr(self, Object)
-#             for n in obj.__dict__.keys():
-#                 # print n
-#                 if str(getattr(obj, n)) != ignore:
-#                     if first_attr:
-#                         text += '^' + n + ' ' + str(getattr(getattr(self, Object), n)) + '\n'
-#                         first_attr = False
-#                         ignore_field = False
-#                     else:
-#                         text += '           ^' first_attr+ n + ' ' + str(getattr(self.robot, n)) + '\n'
-#             if ignore_field:
-#                 text = ''
-#             else:
-#                 text += ')\n'
-#             return text
+
     def set_current_position(self,location):
         loc = obj2idx(location, 'LOCATIONS')
         self.robot.locId = loc
         
     def get_current_position(self):
-        loc = idx2obj(self.robot.locId,'LOCATIONS')
+        rospy.logwarn(self.robot.locId)
+        #rospy.logwarn('typeof locId: ' + str(type(self.robot.locId)))
+        loc = idx2obj(int(self.robot.locId),'LOCATIONS')
         return loc
     
     def new_world(self, allFile, locations):

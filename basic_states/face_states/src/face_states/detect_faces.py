@@ -45,7 +45,7 @@ class detect_face(smach.StateMachine):
     No io_keys.
 
     """
-    def __init__(self,minConfidence=90.0):
+    def __init__(self,minConfidence=90.0,time_topic=60):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'],
                                  input_keys=[], 
                                  output_keys=['standard_error','faces'])
@@ -72,7 +72,7 @@ class detect_face(smach.StateMachine):
                  
             smach.StateMachine.add(
                                 'Read_Topic',
-                                face_topic_reader(60),
+                                face_topic_reader(time_topic),
                                 remapping={'topic_output_msg': 'faces'},
                                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 
                                 'preempted': 'preempted'})

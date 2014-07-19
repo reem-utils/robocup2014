@@ -18,6 +18,8 @@ from smach.user_data import Remapper
 from object_grasping_states.object_detection_and_grasping import object_detection_and_grasping_sm
 from object_grasping_states.place_object_sm import place_object_sm
 from geometry_msgs.msg import PoseStamped
+from hri_states.recognize_object_and_pick import RecObjectAndPick
+from object_grasping_states.pick_object_sm import pick_object_sm
 
 # Constants
 NUMBER_OF_ORDERS = 3
@@ -125,6 +127,7 @@ class RestaurantNavigation(smach.StateMachine):
             self.userdata.standard_error='OK'
             self.userdata.object_name = ''
             self.userdata.object_index = 0
+            self.userdata.object_name=None
             self.userdata.time_out_grasp=TIME_OUT_GRASP
 
             # Process order
@@ -152,18 +155,37 @@ class RestaurantNavigation(smach.StateMachine):
             smach.StateMachine.add(
                 'say_grasp_object',
                 text_to_say("Grasping Object"),
-                transitions={'succeeded': 'Search_and_grasp_Object', 'aborted': 'aborted', 
+                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
+#             smach.StateMachine.add(
+#                 'Search_and_grasp_Object',
+#                 object_detection_and_grasping_sm(),
+#                 transitions={'succeeded':'prepare_delivery_goal', 
+#                              'fail_object_detection':'say_object_not_find', 
+#                              'fail_object_grasping':'say_not_grasp',
+#                              'aborted':'aborted',
+#                              'preempted':'preempted'},
+#                 remapping = {'object_name':'object_to_grasp'})
+            
+                        # Recognize and pick object if found
+                        
+                        
+                        # Grasp the object
+            # Grasp the object
             smach.StateMachine.add(
-                'Search_and_grasp_Object',
-                object_detection_and_grasping_sm(),
-                transitions={'succeeded':'prepare_delivery_goal', 
-                             'fail_object_detection':'say_object_not_find', 
-                             'fail_object_grasping':'say_not_grasp',
-                             'aborted':'aborted',
-                             'preempted':'preempted'},
-                remapping = {'object_name':'object_to_grasp'})
+                'grasp_object',
+                pick_object_sm(),
+                transitions={'succeeded': 'succeeded', 'aborted': 'say_not_grasp', 
+                'preempted': 'preempted'})    
+            
+            smach.StateMachine.add(
+                'recognize_object_and_pick',
+                RecObjectAndPick(),
+                transitions={'succeeded': 'prepare_delivery_goal', 
+                             'fail_grasp':'say_not_grasp',
+                             'fail_recognize': 'say_object_not_find'})
+    
                         # Go to the delivery place
                         # Grasp Object
             smach.StateMachine.add(

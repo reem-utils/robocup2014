@@ -2,7 +2,7 @@
 
 grammar iam;
 
-public <basic> = ((<myname> | <iam> | <onlyname> ) | <garbage> ){obj.put("external","1");}; 
+public <basic> = ((<myname> | <iam> ) | <garbage> ){obj.put("external","1");}; 
 
 <onlyname> = <name> {obj.put("name",$.$value);};
 <myname>   = my name is <name> {obj.put("name",$.$value);};
@@ -14,7 +14,7 @@ public <basic> = ((<myname> | <iam> | <onlyname> ) | <garbage> ){obj.put("extern
 
 <nameall> = alexander | andrew | andrew | angel | anthony | anthony | benjamin | brandon | brian | caleb | charles | christian | christopher | christopher | daniel | daniel | david | david | dennis | donald | dylan | edward | elijah | eric | ethan | evan | frank | gabriel | gary | gavin | george | gregory | isaac | jackson | jacob | james | james | jason | jeffrey | jerry | john | john | jonathan | jose | joseph | joseph | joshua | joshua | kenneth | kevin | landon | larry | logan | lucas | mark | mason | matthew | matthew | michael | michael | nathan | nicholas | noah | paul | raymond | richard | robert | ronald | ryan | samuel | scott | stephen | steven | thomas | timothy | tyler | william | william | abigail | addison | alexis | allison | alyssa | amanda | amy | angela | anna | anna | ashley | eva | avery | barbara | betty | brenda | brianna | brooklyn | carol | chloe | cynthia | deborah | debra | donna | dorothy | elizabeth | elizabeth | ella | emily | emma | evelyn | gabriella | grace | hailey | hannah | helen | isabella | jennifer | jessica | karen | kathleen | kayla | kimberly | laura | leah | lillian | lily | linda | lisa | madison | margaret | maria | martha | mary | melissa | mia | michelle | nancy | natalie | olivia | pamela | patricia | rebecca | riley | ruth | samantha | sandra | sarah | sarah | savannah | sharon | shirley | sofia | sophia | susan | taylor | victoria | virginia;
 
-<garbage>  = <garbage1>;
+<garbage>  = <garbage2>;
 
 <garbage1> = _unk;
 <garbage2> = <garbage1> | (_unk _unk);

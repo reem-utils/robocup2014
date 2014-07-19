@@ -63,8 +63,8 @@ class AskOrder(smach.StateMachine):
     """
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
-                                    input_keys=[],
-                                    output_keys=['name', 'object_name'])
+                                    input_keys=['delete_database'],
+                                    output_keys=['name_face', 'object_name'])
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
@@ -87,7 +87,8 @@ class AskOrder(smach.StateMachine):
                  'say_wave_recognize',
                  text_to_say("Someone waved to me. I will go there", wait=False),
                  transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'prepare_coord_wave'}) 
-              
+           
+        # Person Recognize   
             # Prepare the goal to the person that is waving
             # TODO: it goes a little far to the person... 
             smach.StateMachine.add(
@@ -102,7 +103,8 @@ class AskOrder(smach.StateMachine):
                 nav_to_coord('/base_link'),
                 transitions={'succeeded': 'learning_person', 'aborted': 'go_to_person_wave', 
                 'preempted': 'preempted'}) 
-
+        
+        # FAIL Person Recognize
             # Ask for person if it can see anyone
             smach.StateMachine.add(
                 'ask_for_person',
@@ -117,10 +119,9 @@ class AskOrder(smach.StateMachine):
                  transitions={'succeeded': 'learning_person', 'aborted': 'ask_for_person'})
             
             # Learn Person -> Ask name + Face Recognition
-            # TODO: Set database
             smach.StateMachine.add(
                 'learning_person',
-                SaveFaceSM(),
+                SaveFaceSM(time_enroll=5),
                 transitions={'succeeded': 'ask_order', 'aborted': 'learning_person', 
                 'preempted': 'preempted'}) 
             

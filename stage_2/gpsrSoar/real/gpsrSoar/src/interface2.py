@@ -14,9 +14,10 @@ from std_srvs.srv import Empty
 from GenerateGoalScript import world
 from speech_states.say import text_to_say
 from sm_gpsr_orders import TEST, SKILLS, TIME_INIT
-from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point
+from geometry_msgs.msg import PoseStamped, Pose, Quaternion, Point, PoseWithCovarianceStamped
 
 from object_states.object_detect_sm import object_detect_sm
+from object_states.recognize_object import recognize_object
 from follow_me.follow_learn import LearnPerson
 from follow_me.follow_operator import FollowOperator
 from navigation_states.nav_to_poi import nav_to_poi
@@ -29,6 +30,7 @@ from object_grasping_states.place_object_sm import place_object_sm
 from object_grasping_states.pick_object_sm import pick_object_sm
 
 #edit your path in gpsrSoar/src/pathscript.py
+
 
 '''
 SKILLS TODO:
@@ -79,9 +81,10 @@ if TEST:
 else:
     SLEEP_TIME = 3
 
-object_position = PoseStamped()
+# object_position = PoseStamped()
 
 ROOMS = rospy.get_param('/robocup_params/rooms')
+TABLES = rospy.get_param('/robocup_params/loc_category/table')
 
 class dummy(smach.State):
     def __init__(self):
@@ -115,7 +118,7 @@ def call_go_to(loc_name,world):
     tosay = "I'm going to the "+str(loc_name)
     speak = speaker(tosay,wait=False)
     speak.execute() 
-    rospy.logwarn('call_go_to '+ loc_name)  
+    rospy.logwarn('call_go_to '+ loc_name + ' from :')  
     #############################################################################
     if SKILLS :      
         if (time.time()-TIME_INIT) > 270:
@@ -125,8 +128,11 @@ def call_go_to(loc_name,world):
         tries = 0       
         while(out=='aborted' and tries<3):
             tries = tries+1
-            sm = nav_to_poi(poi_name = loc_name)
-            out = sm.execute()     
+            if world.get_current_position() == loc_name:  
+                out = 'succeeded'
+            else:
+                sm = nav_to_poi(poi_name = loc_name)
+                out = sm.execute()     
             
             
         if out=='aborted':
@@ -145,11 +151,12 @@ def call_go_to(loc_name,world):
             
             return "aborted"
         else:
-            tosay = "I arrivet to the " + loc_name
+            tosay = "I arrived to the " + loc_name
             speak = speaker(tosay)
             speak.execute()
     #############################################################################
     world.set_current_position(loc_name)
+    rospy.logwarn(world.get_current_position())
     time.sleep(SLEEP_TIME)  
     return "succeeded" 
 
@@ -289,23 +296,63 @@ def call_find_object(object_name,world): #TODO
         
         out = 'aborted'
         tries = 0
-    
-        current_position = world.get_current_position()        
+        world.item.object_pose = PoseWithCovarianceStamped()
+        
+        current_position = world.get_current_position()    
+        rospy.logwarn(current_position)
+        rospy.logwarn(ROOMS)
+        rospy.loginfo('-----------------------------------------')
         if current_position in ROOMS:
+            rospy.loginfo('-----------------------------------------')
             room = rospy.get_param('/robocup_params/room/' + current_position)
-                
-        #while(out=='aborted' and tries<3):      
             for table in room :
-                if out == 'succeeded' and tries == 3:
+                rospy.loginfo('-----------------------------------------')
+                if world.item.object_pose.header.frame_id!='':
                     break
-                call_go_to(table)        
-                 
-                sm = object_detect_sm()#
-                out = sm.execute()      #          #PROVABLY WE WILL HAVE TO CHECK IF THERE IS A TABLE NEARBY BEFORE STARTING TO SEARCH
-                object_position = sm.userdata.object_pose #
-                tries = tries+1#
+                call_go_to(table.replace(" ","_"),world)        
+                tries = 0
+                
+                while(world.item.object_pose.header.frame_id=='' and tries<3):   
+                    sm = recognize_object()
+                    sm.userdata.object_name = object_name[0].upper() + object_name[1:]                
+                    out = sm.execute()#
+                    names = sm.userdata.object_detected_name
+                    poses = sm.userdata.object_position
+                    rospy.loginfo('-----------------------------------------')
+                    rospy.loginfo(names)
+                    rospy.loginfo('-----------------------------------------')
+                    rospy.loginfo(poses)
+                    rospy.loginfo('-----------------------------------------')
+                    tries = tries+1
+                
+                    i = 0
+                    while i<len(names):                    
+                        if names[i] == (object_name[0].upper() + object_name[1:]):
+                            world.item.object_pose = poses[i]
+                        i = i +1                        
+        
+        if current_position.replace("_"," ") in TABLES:       
+            while(world.item.object_pose.header.frame_id=='' and tries<3):   
+                sm = recognize_object()
+                sm.userdata.object_name = object_name[0].upper() + object_name[1:]                
+                out = sm.execute()
+                names = sm.userdata.object_detected_name
+                poses = sm.userdata.object_position
+                rospy.loginfo('-----------------------------------------')
+                rospy.loginfo(names)
+                rospy.loginfo('-----------------------------------------')
+                rospy.loginfo(poses)
+                rospy.loginfo('-----------------------------------------')
+                tries = tries+1
             
-            
+                i = 0
+                while i<len(names):                    
+                    if names[i] == (object_name[0].upper() + object_name[1:]):
+                        world.item.object_pose = poses[i]
+                    i = i +1
+                             
+        rospy.logwarn(world.item.object_pose)      
+             
         if out=='aborted':
             tosay = "I couldn't find the " + object_name + " you asked for. It isn't here. I'm going to the referee to inform"
             speak = speaker(tosay)
@@ -323,21 +370,26 @@ def call_find_object(object_name,world): #TODO
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
-def call_grasp(obj): #TODO #adding grasping
+def call_grasp(obj,world): #TODO #adding grasping
 
     tosay = "I'm going to grasp the " + obj
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_grasp '+obj)  
+    rospy.logwarn(world.item.object_pose)      
     #############################################################################
     if SKILLS :      
+        pose_object_to_grasp = PoseStamped()
+        pose_object_to_grasp.header = world.item.object_pose.header
+        pose_object_to_grasp.pose = world.item.object_pose.pose.pose
+        
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):   
-            sm.pick_object_sm(object_position)  #if not workng, blame chang
+            sm = pick_object_sm(pose_object_to_grasp)  #if not workng, blame chang
             out = sm.execute()
             tries = tries+1       
             #grasping here
@@ -360,7 +412,7 @@ def call_find_person(person_name): #TOTEST
         tries = 0
         while(out=='aborted' and tries<1):       
             tries = tries+1
-            sm = SearchPersonSM(person_name)
+            sm = SearchPersonSM('person')#person_name
             out = sm.execute()
             
             
@@ -378,6 +430,9 @@ def call_find_person(person_name): #TOTEST
             
             return "aborted"
     #############################################################################
+    tosay = "Found you"
+    speak = speaker(tosay)
+    speak.execute()
     time.sleep(SLEEP_TIME)
     return "succeeded"
 
@@ -419,7 +474,7 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
     if location_name == '':
         tosay = "I'm leaving this here"
     else:
-        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this provably you will want to take it before I throw it to the floor, thanks"
+        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to_loc '+location_name)  
@@ -519,7 +574,6 @@ def main(world):
     res = agent.ExecuteCommandLine(p_cmd)
     print str(res)
     
-
     goal_achieved = False
     while not goal_achieved:
         agent.Commit()  
@@ -536,9 +590,12 @@ def main(world):
                 command = agent.GetCommand(i)
                 command_name = command.GetCommandName()
                 print "El nombre del commando %d/%d es %s" % (i+1,numberCommands,command_name)
-                
+                rospy.logwarn(world.get_current_position())
                 rospy.logwarn(str(time.time()) + '   ' + str(TIME_INIT))
                 if (time.time()-TIME_INIT) > 270:
+                    tosay = "time out."
+                    speak = speaker(tosay)
+                    speak.execute()
                     call_go_to('referee',world)
                     return "succeeded"
 
@@ -559,7 +616,7 @@ def main(world):
                     if (obj =="NULL"):
                         print "ERROR: el objeto %s no existe" % (obj_to_grasp)
                     
-                    out = call_grasp(obj)
+                    out = call_grasp(obj,world)
 
                 elif command_name == "deliver": #to Person
                     try:
@@ -638,7 +695,7 @@ def main(world):
 
                 elif command_name == "achieved":
                     goal_achieved = True
-                    call_go_to('referee')
+                    #call_go_to('referee', world)
                     out = "succeeded"
                 
                 else:

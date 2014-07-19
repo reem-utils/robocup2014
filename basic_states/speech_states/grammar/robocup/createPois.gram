@@ -7,7 +7,7 @@ public <basic> = (<locations> | end guide ) | <garbage> {obj.put("external","1")
 <locations>= here you have <objects> {obj.put("objects",$.$value);};
 
 
-<objects> = beverage | snacks | drinks | table one | table two | table three
+<objects> = beverage | snacks | drinks | table one | table two | table three;
 
 <garbage> = <garbage1>;
 
