@@ -10,6 +10,7 @@
 import rospy
 import smach
 import smach_ros
+import sys
 import actionlib
 
 from speech_states.listen_and_repeat import ListenRepeatSM
@@ -22,12 +23,14 @@ def main():
     rospy.init_node('listen_repeat_test')
 
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
-
+    print "put the name of the gramar"
+    lineRead = sys.stdin.readline()
+    GRAMAR = "robocup/"+lineRead[:len(lineRead)-1]
     with sm:
         sm.userdata.grammar_name = None
 
         smach.StateMachine.add('ListenRepeatTest',
-            ListenRepeatSM("robocup/what_did_you_say_2"),
+            ListenRepeatSM(GRAMAR),
             transitions={'succeeded': 'ListenRepeatTest', 'aborted': 'ListenRepeatTest'})
 
     # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!

@@ -32,6 +32,22 @@ class Extraction_cb(smach.State):
     
         return 'succeeded'  
 
+class check_bucle(smach.State):
+    
+    def __init__(self,bucle):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                                input_keys=[],
+                                output_keys=[])
+        self.bucle=bucle
+    def execute(self, userdata):
+        if self.bucle==False :
+            userdata.asr_userSaid = "time out"
+            userdata.asr_userSaid_tags = []
+            userdata.standard_error = ''
+            return 'aborted'
+        else :    
+            return 'succeeded' 
+
 class ReadASR(smach.StateMachine):
     """
         Read from asr_event and returns what the user has said
@@ -41,7 +57,7 @@ class ReadASR(smach.StateMachine):
     
     """
 
-    def __init__(self):
+    def __init__(self,Time=30,bucle=True):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=[],
                     output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
@@ -53,8 +69,13 @@ class ReadASR(smach.StateMachine):
            
             # topic reader state
             smach.StateMachine.add('topicReader',
-                    topic_reader_state(30),
-                    transitions={'succeeded': 'Process', 'aborted': 'topicReader', 'preempted': 'preempted'})
+                    topic_reader_state(Time),
+                    transitions={'succeeded': 'Process', 'aborted': 'check_bucle', 'preempted': 'preempted'})
+            
+                        # Process asr_event -> asr_userSaid state       
+            smach.StateMachine.add('check_bucle',
+                    check_bucle(bucle),
+                    transitions={'succeeded': 'topicReader', 'aborted': 'aborted'})
             
             # Process asr_event -> asr_userSaid state       
             smach.StateMachine.add('Process',

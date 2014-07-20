@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 Created on 10/07/2014
 
@@ -6,6 +7,11 @@ Created on 10/07/2014
 
 import smach
 import rospy
+import sys
+
+import smach_ros
+import sys
+import actionlib
 
 from speech_states.say import text_to_say
 from gesture_states.wave_detection_sm import WaveDetection
@@ -48,7 +54,7 @@ class process_order(smach.State):
          
         return 'aborted'
     
-class AskOrder(smach.StateMachine):
+class listen_repeat_calibrate(smach.StateMachine):
     """
     Executes a SM that ask for a order in cocktail Party.
         
@@ -62,75 +68,19 @@ class AskOrder(smach.StateMachine):
     No output keys.
     No io_keys.
     """
-    def __init__(self):
+    def __init__(self,GRAMMAR_NAME):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                     input_keys=['delete_database'],
                                     output_keys=['name_face', 'object_name'])
-
+        self.grammar_name=GRAMMAR_NAME
         with self:
-            # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-
-            # Say Wave recognize
-            smach.StateMachine.add(
-                 'say_search_wave',
-                 text_to_say("I'm searching for people waving at me", wait=False),
-                 transitions={'succeeded': 'wave_recognition', 'aborted': 'wave_recognition'}) 
-            
-            # Gesture recognition -> Is anyone waving?
-            smach.StateMachine.add(
-                'wave_recognition',
-                WaveDetection(time_for_wave=20),
-                transitions={'succeeded': 'say_wave_recognize', 'aborted': 'ask_for_person', 
-                'preempted': 'preempted'}) 
-            
-            # Say Wave recognize
-            smach.StateMachine.add(
-                 'say_wave_recognize',
-                 text_to_say("Someone waved to me. I will go there", wait=False),
-                 transitions={'succeeded': 'prepare_coord_wave', 'aborted': 'prepare_coord_wave'}) 
-           
-        # Person Recognize   
-            # Prepare the goal to the person that is waving
-            # TODO: it goes a little far to the person... 
-            smach.StateMachine.add(
-                'prepare_coord_wave',
-                prepare_coord_wave(),
-                transitions={'succeeded': 'go_to_person_wave', 'aborted': 'aborted', 
-                'preempted': 'preempted'})  
-            
-            # Go to the person -> we assume that gesture will return the position
-            smach.StateMachine.add(
-                'go_to_person_wave',
-                nav_to_coord('/base_link'),
-                transitions={'succeeded': 'learning_person', 'aborted': 'go_to_person_wave', 
-                'preempted': 'preempted'}) 
         
-        # FAIL Person Recognize
-            # Ask for person if it can see anyone
-            smach.StateMachine.add(
-                'ask_for_person',
-                text_to_say("I can't see anyone. Can anyone come to me, please?"),
-                transitions={'succeeded': 'wait_for_person', 'aborted': 'ask_for_person', 
-                'preempted': 'preempted'}) 
-            
-            # Wait for person
-            smach.StateMachine.add(
-                 'wait_for_person',
-                 detect_face(),
-                 transitions={'succeeded': 'learning_person', 'aborted': 'ask_for_person'})
-            
-            # Learn Person -> Ask name + Face Recognition
-            smach.StateMachine.add(
-                'learning_person',
-                SaveFaceSM(time_enroll=5),
-                transitions={'succeeded': 'ask_order', 'aborted': 'learning_person', 
-                'preempted': 'preempted'}) 
-            
+         
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to order?", GRAMMAR_NAME),
-                transitions={'succeeded': 'process_order', 'aborted': 'calibrate', # TODO before it was ask_order
+                AskQuestionSM("tell me", self.grammar_name),
+                transitions={'succeeded': 'succeeded', 'aborted': 'calibrate', 
                 'preempted': 'preempted'}) 
 
             # Process the answer
@@ -153,3 +103,33 @@ class AskOrder(smach.StateMachine):
                 text_to_say("I got it!"),
                 transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
                 'preempted': 'preempted'}) 
+            
+            
+            
+def main():
+    rospy.init_node('listen_repeat_test')
+
+    sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
+    print "put the name of the gramar"
+    lineRead = sys.stdin.readline()
+    GRAMMAR_NAME = "robocup/"+lineRead[:len(lineRead)-1]
+    with sm:
+        sm.userdata.grammar_name = None
+
+        smach.StateMachine.add('ListenRepeatTest',
+            listen_repeat_calibrate(GRAMMAR_NAME),
+            transitions={'succeeded': 'ListenRepeatTest', 'aborted': 'ListenRepeatTest'})
+
+    # This is for the smach_viewer so we can see what is happening, rosrun smach_viewer smach_viewer.py it's cool!
+    sis = smach_ros.IntrospectionServer(
+        'listen_repeat_test_introspection', sm, '/LISTEN_REPEAT_TEST')
+    sis.start()
+
+    sm.execute()
+
+    rospy.spin()
+    sis.stop()
+
+
+if __name__ == '__main__':
+    main()

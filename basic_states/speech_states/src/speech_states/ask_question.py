@@ -98,7 +98,7 @@ class AskQuestionSM(smach.StateMachine):
             # Listen the order and repeat
             smach.StateMachine.add(
                 'listen_answer',
-                ReadASR(),
+                ReadASR(Time=7,bucle=False),
                 transitions={'succeeded': 'SaveData', 'aborted': 'aborted', 'preempted': 'preempted'})
            
             # Save information
