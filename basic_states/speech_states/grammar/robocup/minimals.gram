@@ -30,7 +30,7 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 
 <person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
 
-<location> = hallway table | kitchen table | kitchen counter | bar | sideboard | stove | couch table | dinner table | bed | left sidetable | right sidetable | sofa | armchair | fridge | waste bin | referee | entrance | exit;
+<location> = hallway table | kitchen table | kitchen counter | bar | side board | stove | couch table | dinner table | bed | left side table | right side table | sofa | armchair | fridge | waste bin | referee | entrance | exit | hallway | kitchen | bedroom | living room;
 
 <item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | pringles | strawberry cookies | baby food | beans | coffee | crackers | noodles | yest;
 
