@@ -79,8 +79,8 @@ class listen_repeat_calibrate(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("tell me", self.grammar_name),
-                transitions={'succeeded': 'succeeded', 'aborted': 'calibrate', 
+                AskQuestionSM("what would you want to tell me", self.grammar_name,calibrate=True,Bucle=False,time_calibrate=10),
+                transitions={'succeeded': 'succeeded', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
 
             # Process the answer
@@ -89,14 +89,6 @@ class listen_repeat_calibrate(smach.StateMachine):
                 process_order(),
                 transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order',  # TODO before it was ask_order
                 'preempted': 'preempted'}) 
-            
-            smach.StateMachine.add(
-                'calibrate',
-                CalibrateASR(),
-                transitions={'succeeded': 'ask_order', 'aborted': 'ask_order', 
-                'preempted': 'preempted'})
-            
-        
             # Say what he ask
             smach.StateMachine.add(
                 'say_got_it',

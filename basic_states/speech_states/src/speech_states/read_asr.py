@@ -10,7 +10,7 @@ Created on Tue Mar 5 16:18:00 2014
 import rospy
 import smach
 
-from speech_states.asr_topic_reader import topic_reader_state
+from speech_states.asr_topic_reader import topic_reader_state, topic_reader
 from pal_interaction_msgs.msg._ASREvent import ASREvent
 
 
@@ -54,23 +54,34 @@ class ReadASR(smach.StateMachine):
         
         @output string asr_userSaid
         @output actiontag[] asr_userSaid_tags
+        @ calibrate is hardcode
     
     """
 
-    def __init__(self,Time=30,bucle=True):
+    def __init__(self,Time=30,bucle=True,calibrate=False,Time_calibrate=12):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=[],
                     output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
         
+        if calibrate :
+            print "Calibrate is true"
+            Time=Time_calibrate
+        else:
+            print "Calibrate is FALSE"
         with self:
             self.userdata.asr_userSaid=None
             self.userdata.standard_error="OK"
             self.userdata.asr_userSaid_tags=None
            
-            # topic reader state
+#             # topic reader state
+#             smach.StateMachine.add('topicReader',
+#                     topic_reader_state(Time,calibrate),
+#                     transitions={'succeeded': 'Process', 'aborted': 'check_bucle', 'preempted': 'preempted'})
+
+             # topic reader state
             smach.StateMachine.add('topicReader',
-                    topic_reader_state(Time),
-                    transitions={'succeeded': 'Process', 'aborted': 'check_bucle', 'preempted': 'preempted'})
+                     topic_reader(Time,calibrate),
+                     transitions={'succeeded': 'Process', 'aborted': 'check_bucle', 'preempted': 'preempted'})
             
                         # Process asr_event -> asr_userSaid state       
             smach.StateMachine.add('check_bucle',

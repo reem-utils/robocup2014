@@ -48,7 +48,7 @@ class ListenToSM(smach.StateMachine):
         @output actiontag[] asr_userSaid_tags
     """
     
-    def __init__(self, grammar=None):
+    def __init__(self, grammar=None,calibrate=False,Time_calibrate=12):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['grammar_name'],
                     output_keys=['asr_userSaid', 'standard_error', 'asr_userSaid_tags'])
@@ -71,7 +71,7 @@ class ListenToSM(smach.StateMachine):
             
             # Read from server
             smach.StateMachine.add('ReadASR',
-                    ReadASR(),
+                    ReadASR(calibrate=calibrate,Time_calibrate=Time_calibrate),
                     transitions={'succeeded': 'DeactivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
             
             # Deactivate the server

@@ -64,7 +64,7 @@ class CalibrateASR(smach.StateMachine):
                         ASRService,
                         request_cb = AsrServerRequestActivate_cb,
                         response_cb = AsrServerRequestActivate_response_cb),
-                    transitions={'succeeded':'wait', 'aborted': 'wait', 'preempted': 'preempted'})
+                    transitions={'succeeded':'succeeded', 'aborted': 'wait', 'preempted': 'preempted'})
         
             smach.StateMachine.add(
                     'wait',

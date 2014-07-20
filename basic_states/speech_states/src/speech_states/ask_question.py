@@ -16,6 +16,7 @@ from speech_states.say_yes_or_no import SayYesOrNoSM
 from activate_asr import ActivateASR
 from deactivate_asr import DeactivateASR
 from read_asr import ReadASR
+from asr_calibrate import CalibrateASR
 
 class saveData(smach.State):
     
@@ -58,6 +59,23 @@ class prepareData(smach.State):
  
         return 'succeeded'
     
+ 
+class check(smach.State):
+    
+    def __init__(self, calibrate):
+        
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                            input_keys=[], output_keys=[])
+        self.calibrate=calibrate
+    def execute(self, userdata):
+           
+        if self.calibrate==True :
+            return 'succeeded'
+        else :
+            return 'aborted'
+
+    
+    
 class AskQuestionSM(smach.StateMachine):
 
     """      
@@ -69,7 +87,7 @@ class AskQuestionSM(smach.StateMachine):
         @output actiontag[] asr_answer_tags
     """
     
-    def __init__(self, text=None, grammar = None):
+    def __init__(self, text=None, grammar = None, calibrate=False,Bucle=True,time_calibrate=12):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                     input_keys=['tts_text', 'grammar_name'],
                     output_keys=['asr_answer', 'standard_error', 'asr_answer_tags'])
@@ -98,8 +116,8 @@ class AskQuestionSM(smach.StateMachine):
             # Listen the order and repeat
             smach.StateMachine.add(
                 'listen_answer',
-                ReadASR(Time=7,bucle=False),
-                transitions={'succeeded': 'SaveData', 'aborted': 'aborted', 'preempted': 'preempted'})
+                ReadASR(Time=12,bucle=Bucle,Time_calibrate=time_calibrate),
+                transitions={'succeeded': 'SaveData', 'aborted': 'calibrate', 'preempted': 'preempted'})
            
             # Save information
             smach.StateMachine.add(
@@ -124,10 +142,25 @@ class AskQuestionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'confirm_question',
                 SayYesOrNoSM(),
-                transitions={'succeeded': 'DeactivateASR', 'aborted': 'aborted', 'preempted': 'preempted'})
+                transitions={'succeeded': 'DeactivateASR', 'aborted': 'calibrate', 'preempted': 'preempted'})
 
             # Deactivate the server
             smach.StateMachine.add('DeactivateASR',
                 DeactivateASR(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'aborted', 'preempted': 'preempted'})
             
+            
+            
+            smach.StateMachine.add(
+                'calibrate',
+                check(calibrate),
+                transitions={'succeeded': 'calibrate_action', 'aborted': 'aborted', 
+                'preempted': 'aborted'})
+            
+            
+            # all the places that was aborted now is calibrate
+            smach.StateMachine.add(
+                'calibrate_action',
+                CalibrateASR(),
+                transitions={'succeeded': 'aborted', 'aborted': 'aborted', 
+                'preempted': 'aborted'})
