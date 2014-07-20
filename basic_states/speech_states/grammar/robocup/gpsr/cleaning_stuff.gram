@@ -8,7 +8,7 @@ public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ;
 <person> = me ;
 <objects> = [some | the | a ] <object>;
 
-<object>  = brush {obj.put("object","brush");} | detergent {obj.put("object","detergent");} | shampoo {obj.put("object","shampoo");} | sponge {obj.put("object","sponge");} | tooth paste {obj.put("object","tooth paste");};
+<object>  = brush {obj.put("object","brush");} | detergent {obj.put("object","detergent");} | shampoo {obj.put("object","shampoo");} | sponge {obj.put("object","sponge");} | toothpaste {obj.put("object","toothpaste");};
 
 <garbage>  = <garbage2>;
 

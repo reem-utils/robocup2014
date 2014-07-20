@@ -5,7 +5,7 @@ grammar shelf;
 public <basic> =  (<gocmd> <locations> )| <garbage>  ; 
 
 <bringcmd> = go to the;
-<locations>  = bar {obj.put("object","bar");} | sideboard {obj.put("object","sideboard");} | left sidetable {obj.put("object","left sidetable");} | right sidetable {obj.put("object","right sidetable");};
+<locations>  = bar {obj.put("object","bar");} | sideboard {obj.put("object","sideboard");} | left sidetable {obj.put("object","left sidetable");} | right sidetable {obj.put("object","right sidetable");} | kitchen counter {obj.put("object","kitchen counter");};
 
 <garbage>  = <garbage2>;
 
