@@ -12,6 +12,8 @@
 
 import rospy
 import smach
+import time
+
 from speech_states.listen_to import ListenToSM
 from navigation_states.nav_to_poi import nav_to_poi
 from navigation_states.nav_to_coord import nav_to_coord
@@ -100,7 +102,7 @@ class SelectAnswer(smach.State):
     def execute(self, userdata):        
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
-        question_params = rospy.get_param("/question_list/questions/what_say_simple")
+        question_params = rospy.get_param("/questions/what_say_simple")
         question_number = [tag for tag in questionTags if tag.key == 'questionumber']
         rospy.loginfo("Question TAGS :: " + str(questionTags))
         rospy.loginfo("Question TAGS NUMBER:: " + str(question_number))
@@ -111,10 +113,15 @@ class SelectAnswer(smach.State):
             rospy.loginfo("Value: " + str(value))
             
             if str(question_number[0].value) == str(value[2]):
-                rospy.loginfo("FOUND!")
-                userdata.tts_text = "The answer is " + str(value[3])
-                userdata.tts_wait_before_speaking = 0
-                userdata.standard_error=''
+                rospy.logerr(str(value[2]))
+                if  str(value[2]) == str(1):
+                    t = time.strftime('%H:%M')
+                    userdata.tts_text = "The answer is " + str(t)
+                else:
+                    rospy.loginfo("FOUND!")
+                    userdata.tts_text = "The answer is " + str(value[3])
+                    userdata.tts_wait_before_speaking = 0
+                    userdata.standard_error=''
                 return 'succeeded'
             
             # Process info -> value[2] and Process country -> value[3]
@@ -216,7 +223,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'home_position_init',
                 play_motion_sm('home'),
-                transitions={'succeeded': 'say_what_did_you_say', 'aborted': 'home_position_init', #TODO: Change aborted to try again
+                transitions={'succeeded': 'ActivateASR', 'aborted': 'home_position_init', #TODO: Change aborted to try again
                 'preempted': 'preempted'}) 
                      
             # Enter room
