@@ -23,7 +23,7 @@ from execute_all_order import ExecuteAllOrders
 # Constants
 NUMBER_OF_ORDERS = 3
 NUMBER_OF_TRIES = 3
-GRAMMAR_NAME = "robocup/drinks"
+GRAMMAR_NAME = "robocup/cocktail"
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
