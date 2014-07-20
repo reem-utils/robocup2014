@@ -16,7 +16,6 @@ import smach
 import smach_ros
 from smach_ros import SimpleActionState
 # Msgs
-from pipol_tracker_pkg.msg import person, personArray
 from geometry_msgs.msg import PointStamped, PoseStamped, Pose, Point, Quaternion
 from std_msgs.msg import Header, Int32
 from control_msgs.msg import PointHeadActionGoal, PointHeadAction, PointHeadGoal

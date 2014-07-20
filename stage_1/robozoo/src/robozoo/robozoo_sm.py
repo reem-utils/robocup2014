@@ -18,6 +18,8 @@ from object_grasping_states.pick_object_sm import pick_object_sm
 from object_grasping_states.place_object_sm import place_object_sm
 from speech_states.say import text_to_say
 from geometry_msgs.msg import PoseStamped
+from util_states.state_concurrence import ConcurrenceRobocup
+from util_states.sleeper import Sleeper
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -27,22 +29,21 @@ OKGREEN = '\033[92m'
 class dummy_recognize(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-            input_keys=['object_position','pose_to_place','nav_to_poi_name'], 
-            output_keys=['object_position','pose_to_place', 'nav_to_poi_name'])
+            input_keys=['object_position','pose_to_place'], 
+            output_keys=['object_position','pose_to_place'])
 
     def execute(self, userdata):
         
         userdata.object_position = PoseStamped()
         userdata.object_position.header.frame_id = "base_link"
-        userdata.object_position.pose.position.x = 0.85
-        userdata.object_position.pose.position.z = 0.95
+        userdata.object_position.pose.position.x = 0.95
+        userdata.object_position.pose.position.z = 1.00
         userdata.object_position.pose.orientation.w = 1.0
         userdata.pose_to_place = PoseStamped()
         userdata.pose_to_place.header.frame_id = "base_link"
         userdata.pose_to_place.pose.position.x = 0.95
-        userdata.pose_to_place.pose.position.z = 0.95
+        userdata.pose_to_place.pose.position.z = 1.00
         userdata.pose_to_place.pose.orientation.w = 1.0
-        userdata.nav_to_poi_name='dinner_table'
          
         rospy.sleep(5)
         return 'succeeded'
@@ -83,30 +84,17 @@ class RoboZooSM(smach.StateMachine):
 
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
-            self.userdata.nav_to_poi_name=''
-            
-#             # Do the Macarena Dance
-#             smach.StateMachine.add(
-#                 'do_macarena',
-#                 #DummyStateMachine(),
-#                 play_motion_sm(motion='macarena'),
-#                 transitions={'succeeded': 'do_YMCA', 'aborted': 'aborted', 
-#                 'preempted': 'preempted'}) 
-# 
-#             # Do the YMCA Dance
-#             smach.StateMachine.add(
-#                 'do_YMCA',
-#                 play_motion_sm(motion='ymca'),
-#                 transitions={'succeeded': 'do_robot', 'aborted': 'aborted', 
-#                 'preempted': 'preempted'})    
-# 
-#             # Do the Robot Dance
-#             smach.StateMachine.add(
-#                 'do_robot',
-#                 play_motion_sm('robot'),
-#                 transitions={'succeeded': 'succeed', 'aborted': 'aborted', 
-#                 'preempted': 'preempted'}) 
 
+            # Robot presentation: Little talk + wave gesture
+            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave")]
+            STATE_NAMES = ["say_presentation", "salute_wave"]
+            outcome_map = {'succeeded': {"say_presentation": 'succeeded', "salute_wave": 'succeeded'}}
+        
+            smach.StateMachine.add(
+                "robot_presentation",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'object_recognition', 'aborted': "robot_presentation"})
+            
             # Do object_recognition 
             smach.StateMachine.add(
                 'object_recognition',
@@ -117,28 +105,52 @@ class RoboZooSM(smach.StateMachine):
             # Say grasp object
             smach.StateMachine.add(
                  'say_grasp_object',
-                 text_to_say("I'm going to grasp the noodles"),
+                 text_to_say("I am hungry. I am going to pick the noodles"),
                  transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
             
             # Grasp the object
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'say_release_object', 'aborted': 'play_motion_state',
+                transitions={'succeeded': 'say_why_object', 'aborted': 'play_motion_state',
                 'preempted': 'preempted'}) 
             
-            # Say grasp object
+            # Say release object
             smach.StateMachine.add(
-                 'say_release_object',
-                 text_to_say("I'm going to release the noodles"),
+                 'say_why_object',
+                 text_to_say("I am a robot, I can't eat this. I am so sad! I am going to leave the noodles in the table", wait=False),
                  transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
             
             # Release the object
             smach.StateMachine.add(
                 'release_object',
                 place_object_sm(),
-                transitions={'succeeded': 'play_motion_state', 'aborted': 'aborted', 
+                transitions={'succeeded': 'robot_finish', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
+            
+            # Say hard job + bow
+            STATES = [text_to_say("Uff, this was a hard job. Thank you very much for your attention"), play_motion_sm("bow")]
+            STATE_NAMES = ["say_hard_job", "motion_bow"]
+            outcome_map = {'succeeded': {"say_hard_job": 'succeeded', "motion_bow": 'succeeded'}}
+        
+            smach.StateMachine.add(
+                "robot_finish",
+                ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+                transitions={'succeeded': 'say_rest', 'aborted': "say_rest"})
+       
+            # Say go rest
+            smach.StateMachine.add(
+                 'say_rest',
+                 text_to_say("I am going to rest for a few seconds", wait = False),
+                 transitions={'succeeded': 'sleep_robot', 'aborted': 'sleep_robot'})
+ 
+            # Sleep
+            smach.StateMachine.add(
+                'sleep_robot',
+                Sleeper(30),
+                transitions={'succeeded': 'robot_presentation',
+                             'preempted':'robot_presentation', 
+                             'aborted':'robot_presentation'})
             
             # Home position
             smach.StateMachine.add(
