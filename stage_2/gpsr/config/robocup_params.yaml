@@ -1,14 +1,15 @@
-locations: ["kitchen_table", "kitchen_counter", "kitchen", "hallway", "bookshelf", "living_room", "armchair", "pantry", "dinner_table", "working_desk", "lift", "entrance", "exit", "referee", "trash_bin"]
+locations: ["hallway_table", "kitchen_table", "bar", "sideboard", "stove", "couch_table", "dinner_table", "bed", "left_sidetable", "right_sidetable", "sofa", "armchair", "fridge", "waste_bin", "referee", "table", "shelf", "appliance", "seating", "entrance", "exit"]
 
-items: ["coke", "coke_zero", "juice", "energy_drink", "aquarius", "fanta", "pringles", "beans_can", "cookies", "medicine", "mug", "cup"]
+items: ["brush", "detergent", "shampoo", "sponge", "tooth_paste", "cola", "beer", "chocolate_milk", "energy_drink", "grape_juice", "milk", "orange_juice", "water", "chips", "biscuits", "bread", "chocolate_cookies", "pringles", "strawberry_cookies", "baby_food", "beans", "coffee", "crackers", "noodles", "yest", "cleaning_stuff", "drink", "food", "snaks"]
 
-persons: [ "andrew", "charles", "george", "amanda", "hannah", "donald", "frank", "james", "samuel", "deborah", "michelle", "rebecca", "taylor", "paul", "edward", "referee", "person"]
+persons: [ "anna", "beth", "carmen", "jennifer", "jessica", "kimberly", "kristina", "laura", "mary", "sarah", "alfred", "charles", "daniel", "james", "jhon", "luis", "paul", "richard", "robert", "steve", "person"]
 
-rooms: ["kitchen", "living room"]
+rooms: ["kitchen", "living room", "hallway"]
 
 room:
-    kitchen: ["kitchen table", "kitchen counter"]
-    living room: ["pantry", "armchair", "bookshelf", "dinner table", "working_desk"]
+    kitchen: ["kitchen table", "bar"]
+    living room: ["sideboard"]
+    hallway: ["hallway table"]
 
 
 location:
@@ -17,19 +18,28 @@ location:
 
 
 it_category:
-        drink: ["coke", "coke zero", "juice", "energy drink", "aquarius", "fanta"]
-        food: ["pringles", "beans can", "cookies"]
-        utils: ["medicine", "mug", "cup"]
+        cleaning_stuff: ["brush", "detergent", "shampoo", "sponge", "tooth paste"]
+        drink: ["cola", "beer", "chocolate milk", "energy drink", "grape juice", "milk", "orange juice", "water"]
+        food: ["baby food", "beans", "coffee", "crackers", "noodles", "yeast"]
+        snaks: ["chips", "biscuits", "bread", "chocolate cookies", "pringles", "strawberry cookies"]
 
 loc_category:
-        table: ["kitchen table", "dinner table", "working desk"]
-        shelf: ["kitchen counter","bookshelf", "pantry"]
-        seat: ["armchair"]
+        table: ["hallway table", "kitchen table", "couch table", "dinner table"]
+        shelf: ["bar","sideboard", "left sidetable", "right sidetable"]
+        seating: ["bed", "sofa", "armchair"]
+        appliance: ["stove", "fridge", "waste bin"]
         door: ["exit", "entrance"]
 
-kitchen_table_heigh: 1
-dinner_table_heigh: 1
-working_desk_heigh: 1
+hallway_table_heigh: 0.90
+kitchen_table_heigh: 0.87
+bar_heigh: 0.93
+sideboard_heigh: 0.74
+stove_heigh: 0.93
+couch_table_heigh: 0.40
+dinner_table_heigh: 0.87
+bed_heigh: 0.77
+left_sidetable_heigh: 0.77
+right_sidetable_heigh: 0.77
 
 
 

@@ -1,11 +1,11 @@
 #JSGF V1.0;
 
-grammar table;
+grammar seat;
 
 public <basic> =  (<gocmd> <locations> )| <garbage>  ; 
 
 <bringcmd> = go to the;
-<locations>  = hallway table {obj.put("object","hallway table");} | kitchen table {obj.put("object","kitchen table");} | dinner table {obj.put("object","dinner table");} | couch table {obj.put("object","couch table");};
+<locations>  = bed {obj.put("object","bed");} | sofa {obj.put("object","sofa");} | armchair {obj.put("object","armchair");};
 
 <garbage>  = <garbage2>;
 
@@ -14,6 +14,3 @@ public <basic> =  (<gocmd> <locations> )| <garbage>  ;
 <garbage3> = <garbage2> | (_unk _unk _unk);
 <garbage4> = <garbage3> | (_unk _unk _unk _unk);
 <garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
-
-
- 

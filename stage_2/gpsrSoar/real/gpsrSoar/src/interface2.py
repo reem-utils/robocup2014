@@ -81,8 +81,6 @@ if TEST:
 else:
     SLEEP_TIME = 3
 
-# object_position = PoseStamped()
-
 ROOMS = rospy.get_param('/robocup_params/rooms')
 TABLES = rospy.get_param('/robocup_params/loc_category/table')
 
@@ -294,7 +292,7 @@ def call_find_object(object_name,world): #TODO
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
-        out = 'aborted' #provando, provando
+        out = 'aborted' 
         tries = 0
         world.item.object_pose = PoseWithCovarianceStamped()
         

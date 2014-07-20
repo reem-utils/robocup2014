@@ -1,8 +1,8 @@
 ASR_LOOP: True
-ASR_ON: "False"
+ASR_ON: "True"
 GRAMATICA: "robocup/minimals"
 
-sentence: "move to the kitchen, grasp the pringles and bring it to the exit"
+sentence: "Move to the living room, move to the kitchen, and move to the entrance"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
 sentence3: "bring the coke to a armchair"
@@ -10,6 +10,18 @@ sentence4: "go to the sofa, grasp the coke bring the coke to bookshelf"
 sentence5: "Bring the kitchenware to a table"
 sentence6: "Bring a snack to a seat"
 sentence7: "Go to the bar, ask the person name, and recognize him"
+
+
+sentenceT1_CAT1: "Move to the LOCATION, move to the LOCATION, and move to the LOCATION"
+sentenceT2_CAT1: "Move to the LOCATION, move to the LOCATION and leave the apartment"
+sentenceT3_CAT1: "Move to the LOCATION, grasp the ITEM, and bring it to me"
+sentenceT4_CAT1: "Move to the LOCATION, grasp the ITEM, and bring it to the LOCATION"
+sentenceT5_CAT1: "Move to the LOCATION, grasp the ITEM, and put it in the trash bin"
+sentenceT6_CAT1: "Move to the LOCATION, find a person, and introduce yourself"
+sentenceT7_CAT1: "Move to the LOCATION, find a person, and guide it to the exit"
+
+sentenceT8_CAT2: "Bring me some ITEM_CATEGORY from a LOCATION_CATEGOR"
+
 
 
 notes: "FILES TO TAKE INTO ACCOUNT WHEN PREPARING GPSR: robocup_params.yaml, pois_gpsr.yaml, newGrammar.cfg, general.gram/minimals.gram, locations.gram, grammars in speech_states/grammar/robocup/gpsr folder"
