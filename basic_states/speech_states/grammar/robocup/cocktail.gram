@@ -1,0 +1,27 @@
+#JSGF V1.0;
+
+grammar drinks;
+
+public <basic> =  (<bringcmd> [<person>] (<objects>|<objects2>) )| <garbage>  ; 
+
+<bringcmd> = bring;
+<person> = me ;
+<objects> = <aobject> | <anobject> | [the|some] <object>;
+
+<aobject>  = a cola {obj.put("object","cola");} | a beer {obj.put("object","beer");};
+<anobject> = an energy drink {obj.put("object","energy drink");} | an orange juice {obj.put("object","orange juice");};
+<object>   = cola {obj.put("object","cola");} | beer {obj.put("object","beer");} | chocolate milk {obj.put("object","chocolate milk");} | energy drink {obj.put("object","energy drink");} | grape juice {obj.put("object","grape juice");} | milk {obj.put("object","milk");} | orange juice {obj.put("object","orange juice");} | water {obj.put("object","water");};
+
+<objects2> = [some | the | a ] <object2>;
+
+<object2>  = chips {obj.put("object","chips");} | biscuits {obj.put("object","biscuits");} | bread {obj.put("object","bread");} | chocolate cookies {obj.put("object","chocolate cookies");} | pringles {obj.put("object","pringles");} | strawberry cookies {obj.put("object","strawberry cookies");};
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
