@@ -8,7 +8,7 @@ public <basic> = ([it] [is] [<prep>] [<determinant>] <location> {obj.put("locati
 
 <determinant> = a | an | the | some | one;
 
-<location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | table | shelf | appliance | seating | entrance | exit;
+<location> = hallway table | kitchen table | kitchen counter | bar | sideboard | stove | couch table | dinner table | bed | left sidetable | right sidetable | sofa | armchair | fridge | waste bin | referee | table | shelf | appliance | seating | entrance | exit;
 
 <garbage>  = <garbage2>;
 

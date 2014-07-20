@@ -25,7 +25,7 @@ it_category:
 
 loc_category:
         table: ["hallway table", "kitchen table", "couch table", "dinner table"]
-        shelf: ["kitchen counter", "bar","sideboard", "left sidetable", "right sidetable"]
+        shelf: ["kitchen counter", "bar", "sideboard", "left sidetable", "right sidetable"]
         seating: ["bed", "sofa", "armchair"]
         appliance: ["stove", "fridge", "waste bin"]
         door: ["exit", "entrance"]
@@ -36,7 +36,7 @@ kitchen_counter_heigh: 1
 bar_heigh: 0.93
 sideboard_heigh: 0.74
 stove_heigh: 0.93
-couch_table_heigh: 0.40
+couch_table_heigh: 0.70
 dinner_table_heigh: 0.87
 bed_heigh: 0.77
 left_sidetable_heigh: 0.77

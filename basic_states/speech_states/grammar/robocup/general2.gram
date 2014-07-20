@@ -1,8 +1,14 @@
 #JSGF V1.0;
 grammar general;
 
+public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
-public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <action>)) | <garbage>;
+<actioncat1>      = <goto> [and] <secondaction>;
+<actioncat2>      = <bringcommand> [me] <determinant> <category> (from|to a) <loccategory> | <give> | point at a <loccategory> | <goto> | <find>;
+<actioncat3>      = <fetch> | <gocommand> to <determinant> <location> and (<introduce> | point at <person>) | <exit> |;
+
+
+<secondaction>    = <goto> [and] ( <goto> | <exit>) | <grasp> [and] ( <goto> | <exit> | <bringit>) | <introduce> [and] (<goto> | <exit> | <follow>) | (<askname>|<recognize>) [and] (<recognize>) | <follow> [and] <exit> | <fetch> [and] <exit> | <findp> [and] (<fetch> | <introduce>) | <find> [and] <grasp>;
 
 
 <action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
@@ -12,24 +18,21 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 <bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
 <askname>= memorize the person | ask the person name;
 <findp>  = <findcommand> a person;
-<get>    = <getcommand> ([the] <item> | it );
 <follow> = follow the person in front of you;
 <find>   = <finditcmd> <determinant> (<item> | <category>);
 <grasp>  = <graspcommand> (the <item> | it);
-<give>   = <givecommand> me <determinant> <category>;
 <recognize> = recognize (him | her| me);
 <introduce> = tell something about yourself | introduce yourself;
-<stay>   = stop here | wait there;
 <exit> =  <exitcommand> the apartment;
+<give>   = <givecommand> me <determinant> <category>;
 
 
 <gocommand>   = go | move | navigate | guide me;
-<fetchcommand>= retrieve | bring;
+<fetchcommand>= retrieve | bring | get;
 <bringcommand>= bring | carry;
-<getcommand>  = retrieve | get | bring;
 <findcommand> = find;
 <finditcmd>   = detect | find | identify;
-<graspcommand>= get | take | grasp;
+<graspcommand>= get | take | grasp | retrieve | get | bring;
 <givecommand> = give | get;
 <exitcommand> = exit | leave;
 
@@ -38,9 +41,9 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 
 <person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
 
-<location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | table | shelf | appliance | seating | entrance | exit;
+<location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | entrance | exit;
 
-<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate_milk | energy_drink | grape_juice | milk | orange_juice | water | chips | biscuits | bread | chocolate_cookies | pringles | strawberry_cookies | baby_food | beans | coffee | crackers | noodles | yest | cleaning_stuff | drink | food | snaks;
+<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate_milk | energy_drink | grape_juice | milk | orange_juice | water | chips | biscuits | bread | chocolate_cookies | pringles | strawberry_cookies | baby_food | beans | coffee | crackers | noodles | yest;
 
 <category> = drink | food | cleaning stuff | snaks;
 

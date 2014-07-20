@@ -191,7 +191,7 @@ def call_guide_to(loc_name,world):
 
 def call_learn_person(pers): #TOTEST   #Recorda que abans sempre busca una persona que encara no coneix, revisar SOAR
 
-    tosay = "I'm going to learn the person in front of me, known as " + pers
+    tosay = "I'm going to learn " + pers
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_learn_person ' + pers)     
@@ -204,13 +204,13 @@ def call_learn_person(pers): #TOTEST   #Recorda que abans sempre busca una perso
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1            
-            sm = learn_face(name_face='donald', name_database='Soar')
+            sm = learn_face(name_face='john', name_database='Soar')
             sm.userdata.name_face = pers
             out = sm.execute()     
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded"
-learn_face
+
 def call_recognize_person(pers): #TODO  PersonName maybe?
 
     tosay = "I'm going to recognize " + pers
@@ -228,7 +228,12 @@ def call_recognize_person(pers): #TODO  PersonName maybe?
             tries = tries+1
             sm = recognize_face()
             sm.userdata.name = pers
-            out = sm.execute()     
+            out = sm.execute()  
+               
+        if out =='succeeded':
+            tosay = "I recognized you, " + pers
+            speak = speaker(tosay)
+            speak.execute()
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded" 
