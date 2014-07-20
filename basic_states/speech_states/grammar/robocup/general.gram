@@ -36,15 +36,16 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 <determinant> = the | an | a | some;
 
 
-<person> = andrew | charles | george | amanda | hannah | donald | frank | james | samuel | deborah | michelle | rebecca | taylor | paul | edward | referee | person;
+<person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
 
-<location> = kitchen table | kitchen counter | kitchen | hallway | bookshelf | living room | armchair | pantry | dinner table | working desk | lift | entrance | exit | referee;
+<location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | table | shelf | appliance | seating | entrance | exit;
 
-<item> = cook book | spoon | coke | soda | chips | biscuits | cheese | seafood | corn flakes | pringles | beer | lemonade | milo | water | spoons | glass;
+<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate_milk | energy_drink | grape_juice | milk | orange_juice | water | chips | biscuits | bread | chocolate_cookies | pringles | strawberry_cookies | baby_food | beans | coffee | crackers | noodles | yest | cleaning_stuff | drink | food | snaks;
 
-<category> = drink | food | utils;
+<category> = drink | food | cleaning stuff | snaks;
 
-<loccategory> = a table | a seat | a shelf | a door;
+<loccategory> = [a] <aloccategory>;
+<aloccategory> = table | seating | shelf | appliance | door;
 
 <garbage>  = <garbage2>;
 
