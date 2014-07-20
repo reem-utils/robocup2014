@@ -12,9 +12,9 @@ public <basic> =  (<bringcmd> [<person>] (<objects>|<objects2>) )| <garbage>  ;
 <anobject> = an energy drink {obj.put("object","energy drink");} | an orange juice {obj.put("object","orange juice");};
 <object>   = cola {obj.put("object","cola");} | beer {obj.put("object","beer");} | chocolate milk {obj.put("object","chocolate milk");} | energy drink {obj.put("object","energy drink");} | grape juice {obj.put("object","grape juice");} | milk {obj.put("object","milk");} | orange juice {obj.put("object","orange juice");} | water {obj.put("object","water");};
 
-<objects2> = [some | the | a ] <object>;
+<objects2> = [some | the | a ] <object2>;
 
-<object>  = chips {obj.put("object","chips");} | biscuits {obj.put("object","biscuits");} | bread {obj.put("object","bread");} | chocolate cookies {obj.put("object","chocolate cookies");} | pringles {obj.put("object","pringles");} | strawberry cookies {obj.put("object","strawberry cookies");};
+<object2>  = chips {obj.put("object","chips");} | biscuits {obj.put("object","biscuits");} | bread {obj.put("object","bread");} | chocolate cookies {obj.put("object","chocolate cookies");} | pringles {obj.put("object","pringles");} | strawberry cookies {obj.put("object","strawberry cookies");};
 
 <garbage>  = <garbage2>;
 
