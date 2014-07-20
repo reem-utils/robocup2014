@@ -5,16 +5,16 @@ grammar what_did_you_say;
 public <basic> = ( <whatquest> | <howquest> | <whoquest> | <whichquest> ) | <garbage> ;
 
 <whatquest> = what ( is the (<capital> | <answer> | <vegetable> | <drug>) | <name> | <time> );
-<howquest> = how many rings has the Olympic flag {obj.put("questionumber","5");};
+<howquest> = how many rings has the olympic flag {obj.put("questionumber","5");};
 <whichquest> = [in] which (<year> | <insect>);
 <whoquest> = who lives in a pineapple under the sea {obj.put("questionumber","10");};
 
 <time> = time is it {obj.put("questionumber","1");};
 <name> = is your name {obj.put("questionumber","2");};
 <capital> = capital of brazil {obj.put("questionumber","3");};
-<answer> = answer to the ultimate question about life, the univers and everything {obj.put("questionumber","6");};
-<vegetable> = world's mot popular green vegetable {obj.put("questionumber","7");};
-<drug> = oldest drug ued on earth {obj.put("questionumber","8");};
+<answer> = answer to the ultimate question about life the universe and everything {obj.put("questionumber","6");};
+<vegetable> = world most popular green vegetable {obj.put("questionumber","7");};
+<drug> = oldest drug used on earth {obj.put("questionumber","8");};
 
 <year> = year was robocup founded {obj.put("questionumber","4");};
 <insect> = insect has the best eyesight {obj.put("questionumber","9");};
