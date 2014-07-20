@@ -28,7 +28,7 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 <preposition>   = in | to;
 
 
-<person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | jhon | luis | paul | richard | robert | steve | person;
+<person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
 
 <location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | table | shelf | appliance | seating | entrance | exit;
 
