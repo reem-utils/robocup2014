@@ -10,11 +10,12 @@ import smach
 import copy
 
 from pal_interaction_msgs.msg import ASREvent
+from speech_states.asr_calibrate import CalibrateASR
 topic_name='/asr_event'
 
 class topic_reader_state(smach.State):
     
-    def __init__(self,topic_time_out):
+    def __init__(self,topic_time_out=30):
         smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'], 
                              output_keys=['topic_output_msg', 'standard_error'])
         self.topic_name = topic_name
@@ -42,12 +43,26 @@ class topic_reader_state(smach.State):
             #time out
             userdata.standard_error = "Topic Reader : TimeOut Error"
             userdata.topic_output_msg = ''
+            print "time out------------------------"
             return 'aborted'
             
     def callback_topic(self,data):
         if data.event_id == ASREvent.EVENT_RECOGNIZED_UTT:
             self.msg_data = data
-        
+class check_calibrate(smach.State):
+    
+    def __init__(self,calibrate):
+        smach.State.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
+                                input_keys=[],
+                                output_keys=['topic_output_msg'])
+        self.calibrate=calibrate
+    def execute(self, userdata):
+        print "helloooooooo"
+        if self.calibrate==False :
+            userdata.topic_output_msg = "error"
+            return 'aborted'
+        else :    
+            return 'succeeded'         
 
 class topic_reader(smach.StateMachine):
     """
@@ -69,7 +84,7 @@ class topic_reader(smach.StateMachine):
         @type String: 
     """ 
     
-    def __init__(self,topic_time_out):
+    def __init__(self,topic_time_out,calibrate=False):
         
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'aborted', 'preempted'], 
                              output_keys=['topic_output_msg', 'standard_error'])
@@ -79,4 +94,17 @@ class topic_reader(smach.StateMachine):
             
             smach.StateMachine.add('Topic_reader_state', 
                                    topic_reader_state(topic_time_out), 
-                                   transitions={'succeeded':'succeeded', 'preempted':'preempted', 'aborted':'aborted'})
+                                   transitions={'succeeded':'succeeded', 'preempted':'calibrate', 
+                                                'aborted':'check_calibrate'})
+            
+                                    # Process asr_event -> asr_userSaid state       
+            smach.StateMachine.add('check_calibrate',
+                    check_calibrate(calibrate),
+                    transitions={'succeeded': 'calibrate', 'aborted': 'aborted'})
+            
+            
+            smach.StateMachine.add(
+                    'calibrate',
+                    CalibrateASR(),
+                    transitions={'succeeded': 'aborted', 'aborted': 'aborted', 
+                    'preempted': 'preempted'})

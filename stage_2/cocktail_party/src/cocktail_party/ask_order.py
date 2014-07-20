@@ -13,6 +13,7 @@ from navigation_states.nav_to_coord import nav_to_coord
 from face_states.detect_faces import detect_face
 from face_states.ask_name_learn_face import SaveFaceSM
 from speech_states.ask_question import AskQuestionSM
+from speech_states.asr_calibrate import CalibrateASR
 
 GRAMMAR_NAME = "robocup/drinks"
 
@@ -129,15 +130,22 @@ class AskOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'ask_order',
                 AskQuestionSM("What would you like to order?", GRAMMAR_NAME),
-                transitions={'succeeded': 'process_order', 'aborted': 'ask_order', 
+                transitions={'succeeded': 'process_order', 'aborted': 'calibrate', # TODO before it was ask_order
                 'preempted': 'preempted'}) 
 
             # Process the answer
             smach.StateMachine.add(
                 'process_order',
                 process_order(),
-                transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order', 
+                transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order',  # TODO before it was ask_order
                 'preempted': 'preempted'}) 
+            
+            smach.StateMachine.add(
+                'calibrate',
+                CalibrateASR(),
+                transitions={'succeeded': 'ask_order', 'aborted': 'ask_order', 
+                'preempted': 'preempted'})
+            
         
             # Say what he ask
             smach.StateMachine.add(
