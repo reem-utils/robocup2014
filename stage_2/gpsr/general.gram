@@ -7,20 +7,20 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 
 <action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
 
-<goto>   = <gocommand> to <determinant> (<location>|<loccategory>);
-<fetch>  = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
-<bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
-<askname>= memorize the person | ask the person name;
-<findp>  = <findcommand> a person;
-<get>    = <getcommand> ([the] <item> | it );
-<follow> = follow the person in front of you;
-<find>   = <finditcmd> <determinant> (<item> | <category>);
-<grasp>  = <graspcommand> (the <item> | it);
-<give>   = <givecommand> me <determinant> <category>;
+<goto>      = <gocommand> to <determinant> (<location>|<loccategory>);
+<fetch>     = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
+<bringit>   = <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
+<askname>   = memorize the person | ask the person name;
+<findp>     = <findcommand> a person;
+<get>       = <getcommand> ([the] <item> | it );
+<follow>    = follow the person in front of you;
+<find>      = <finditcmd> <determinant> (<item> | <category>);
+<grasp>     = <graspcommand> (the <item> | it);
+<give>      = <givecommand> me <determinant> <category>;
 <recognize> = recognize (him | her| me);
 <introduce> = tell something about yourself | introduce yourself;
-<stay>   = stop here | wait there;
-<exit> =  <exitcommand> the apartment;
+<stay>      = stop here | wait there;
+<exit>      =  <exitcommand> the apartment;
 
 
 <gocommand>   = go | move | navigate | guide me;
@@ -54,6 +54,5 @@ public <basic> = ((<action>) | (<action> [then] [and] <action> [and] [then] <act
 <garbage3> = <garbage2> | (_unk _unk _unk);
 <garbage4> = <garbage3> | (_unk _unk _unk _unk);
 <garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
-
 
 

@@ -5,7 +5,7 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 
 <actioncat1>      = <goto> [and] <secondaction>;
 <actioncat2>      = <bringcommand> [me] <determinant> <category> (from|to a) <loccategory> | <give> | point at a <loccategory> | <goto> | <find>;
-<actioncat3>      = <fetch> | <gocommand> to <determinant> <location> and (<introduce> | point at <person>) | <exit> |;
+<actioncat3>      = <fetch> | <gocommand> to <determinant> <location> and (<introduce> | point at <person>) | <exit>;
 
 
 <secondaction>    = <goto> [and] ( <goto> | <exit>) | <grasp> [and] ( <goto> | <exit> | <bringit>) | <introduce> [and] (<goto> | <exit> | <follow>) | (<askname>|<recognize>) [and] (<recognize>) | <follow> [and] <exit> | <fetch> [and] <exit> | <findp> [and] (<fetch> | <introduce>) | <find> [and] <grasp>;
