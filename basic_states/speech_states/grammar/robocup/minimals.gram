@@ -1,40 +1,40 @@
 #JSGF V1.0;
 grammar minimals;
 
-public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
+public <basic> = (<actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
-<actioncat1>      = <golocation> [and] <secondaction>;
-<actioncat2>      = <bringsome> <category> from <loccategory>;
-<actioncat3>      = <bringme> <item> from [the] <location>;
+<actioncat1> = <golocation> [and] <secondaction>;
+<actioncat2> = <bringsome> <category> from <loccategory>;
+<actioncat3> = <bringme> <item> from [the] <location>;
 
-<secondaction>    = <golocation> [and] ( <golocation> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
+<secondaction> = <golocation> [and] ( <golocation> | <leave>) | <grasp> and <bringit> | <findp> and (<introduce> | <guide>);
 
-<golocation>= <gocommand> to the <location>;
-<leave>     = leave the apartment;
-<bringit>   = <bringcommand> it <preposition> [the] (me | <location>);
-<findp>     = <findcommand> a person;
-<guide>     = guide it to the exit;
-<grasp>     = <graspcommand> [the] <item>;
+<golocation> = <gocommand> to the <location>;
+<leave> = leave the apartment;
+<bringit> = <bringcommand> it <preposition> [the] (me | <location>);
+<findp> = <findcommand> a person;
+<guide> = guide it to the exit;
+<grasp> = <graspcommand> [the] <item>;
 <introduce> = introduce yourself;
 
 
-<gocommand>     = move;
-<bringsome>     = bring me some;
-<bringcommand>  = bring | put;
-<bringme>       = bring me the;
-<findcommand>   = find;
-<graspcommand>  = grasp;
+<gocommand> = move;
+<bringsome> = bring me some;
+<bringcommand> = bring | put;
+<bringme> = bring me the;
+<findcommand> = find;
+<graspcommand> = grasp;
 
-<preposition>   = in | to;
+<preposition> = in | to;
 
 
 <person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
 
 <location> = hallway table | kitchen table | kitchen counter | bar | side board | stove | couch table | dinner table | bed | left side table | right side table | sofa | armchair | fridge | waste bin | referee | entrance | exit | hallway | kitchen | bedroom | living room;
 
-<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | pringles | strawberry cookies | baby food | beans | coffee | crackers | noodles | yest;
+<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | pringles | strawberry cookies | baby food | beans | coffee | crackers | noodles | yeast;
 
-<category> = drink | food | cleaning stuff | snaks;
+<category> = drink | food | cleaning stuff | snacks;
 
 <loccategory> = [a] <aloccategory>;
 <aloccategory> = table | seating | shelf | appliance | door;
