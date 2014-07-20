@@ -444,7 +444,7 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
     if person_name == '':
         tosay = "I'm leaving this here, sorry but you asked for a person without name"
     else:
-        tosay = person_name + "would you mind picking this up when I release it?"
+        tosay = person_name + " can you pick this up please?"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to '+person_name)  
@@ -459,7 +459,7 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
             
             person_object_position = PoseStamped()
             person_object_position.header.frame_id = "base_link"
-            person_object_position.pose.position.x = 0.5
+            person_object_position.pose.position.x = 0.25
             person_object_position.pose.position.z = 1.25
             person_object_position.pose.orientation.w = 1.0  
             
@@ -488,7 +488,7 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         
         param_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
         
-        loc_object_position = PoseStamped()
+        loc_object_position = PoseStamped()  #PoseWithCovarianceStamped()
         loc_object_position.header.frame_id = "base_link"
         loc_object_position.pose.position.x = 0.5
         if rospy.has_param(param_name):            
@@ -496,16 +496,21 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         else:
             loc_object_position.pose.position.z = 1.25
         loc_object_position.pose.orientation.w = 1.0  
-    
-        out = 'aborted'
-        tries = 0
-        while(out=='aborted' and tries<3):              
-            
+        
+        current_position = world.get_current_position()    
+        rospy.logwarn(current_position)
+        rospy.logwarn(ROOMS)
+        if current_position in ROOMS:
+            room = rospy.get_param('/robocup_params/room/' + current_position)            
+            call_go_to(room[0].replace(" ","_"),world)                         
+                         
+            sm = place_object_sm(loc_object_position)   
+            out = sm.execute()                  
+        
+        if current_position.replace("_"," ") in TABLES:            
             sm = place_object_sm(loc_object_position)   
             out = sm.execute()                
-            
-            tries = tries+1
-            #realese here
+                
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded" 
