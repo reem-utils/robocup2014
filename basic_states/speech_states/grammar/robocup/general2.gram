@@ -1,14 +1,14 @@
 #JSGF V1.0;
-grammar general;
+grammar general2;
 
 public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
 
 <actioncat1>      = <goto> [and] <secondaction>;
-<actioncat2>      = <bringcommand> [me] <determinant> <category> (from|to a) <loccategory> | <give> | point at a <loccategory> | <goto> | <find>;
+<actioncat2>      = <bringcommand> [me] <determinant> <category> (from|to a) <loccategory> | <give> | point at a <loccategory> | <goto> |  <find>;
 <actioncat3>      = <fetch> | <gocommand> to <determinant> <location> and (<introduce> | point at <person>) | <exit>;
 
 
-<secondaction>    = <goto> [and] ( <goto> | <exit>) | <grasp> [and] ( <goto> | <exit> | <bringit>) | <introduce> [and] (<goto> | <exit> | <follow>) | (<askname>|<recognize>) [and] (<recognize>) | <follow> [and] <exit> | <fetch> [and] <exit> | <findp> [and] (<fetch> | <introduce>) | <find> [and] <grasp>;
+<secondaction>    = <goto> [and] ( <goto> | <exit>) | <grasp> [and] ( <goto> | <exit> | <bringit>) | <introduce> [and] (<goto> | <exit> |  <follow>) | (<askname>|<recognize>) [and] (<recognize>) | <follow> [and] <exit> | <fetch> [and] <exit> | <findp> [and] (<fetch> | <introduce>) | <find> [and] <grasp>;
 
 
 <action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
@@ -43,9 +43,9 @@ public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.p
 
 <location> = hallway table | kitchen table | kitchen counter | bar | side board | stove | couch table | dinner table | bed | left side table | right side table | sofa | armchair | fridge | waste bin | referee | entrance | exit | hallway | kitchen | bedroom | living room;
 
-<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | pringles | strawberry cookies | baby food | beans | coffee | crackers | noodles | yest;
+<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | pringles | strawberry cookies | baby food | beans | coffee | crackers | noodles | yeast;
 
-<category> = drink | food | cleaning stuff | snaks;
+<category> = drink | food | cleaning stuff | snacks;
 
 <loccategory> = [a] <aloccategory>;
 <aloccategory> = table | seating | shelf | appliance | door;
