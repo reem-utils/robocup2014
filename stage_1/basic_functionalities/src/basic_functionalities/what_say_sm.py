@@ -36,7 +36,7 @@ from pal_detection_msgs.msg import FaceDetection
 
 # Constants
 NUMBER_OF_QUESTIONS = 3
-GRAMMAR_NAME = 'robocup/what_did_you_say_2'
+GRAMMAR_NAME = 'robocup/what_did_you_say_robocup'
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -107,11 +107,11 @@ class SelectAnswer(smach.State):
         rospy.loginfo("Question TAGS NUMBER 0 :: " + str(question_number[0]))
         
         for key,value in question_params.iteritems():
-            print "Key: " + str(key)
-            print "Value: " + str(value)
+            rospy.loginfo("Key: " + str(key))
+            rospy.loginfo("Value: " + str(value))
             
             if str(question_number[0].value) == str(value[2]):
-                print "FOUND!"
+                rospy.loginfo("FOUND!")
                 userdata.tts_text = "The answer is " + str(value[3])
                 userdata.tts_wait_before_speaking = 0
                 userdata.standard_error=''

@@ -1,0 +1,31 @@
+#JSGF V1.0;
+
+grammar what_did_you_say;
+
+public <basic> = ( <whatquest> | <howquest> | <whoquest> | <whichquest> ) | <garbage> ;
+
+<whatquest> = what ( is the (<capital> | <answer> | <vegetable> | <drug>) | <name> | <time> );
+<howquest> = how many rings has the Olympic flag {obj.put("questionumber","5");};
+<whichquest> = [in] which (<year> | <insect>);
+<whoquest> = who lives in a pineapple under the sea {obj.put("questionumber","10");};
+
+<time> = time is it {obj.put("questionumber","1");};
+<name> = is your name {obj.put("questionumber","2");};
+<capital> = capital of brazil {obj.put("questionumber","3");};
+<answer> = answer to the ultimate question about life, the univers and everything {obj.put("questionumber","6");};
+<vegetable> = world's mot popular green vegetable {obj.put("questionumber","7");};
+<drug> = oldest drug ued on earth {obj.put("questionumber","8");};
+
+<year> = year was robocup founded {obj.put("questionumber","4");};
+<insect> = insect has the best eyesight {obj.put("questionumber","9");};
+ 
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+ 
