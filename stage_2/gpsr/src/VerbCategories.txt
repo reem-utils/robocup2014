@@ -13,7 +13,6 @@ detect find_object
 identify find_object
 find_person find_person
 grasp grasp
-get grasp
 take grasp
 get grasp
 bring_to bring_to
@@ -22,6 +21,7 @@ give bring_to
 carry bring_to
 carry_to bring_to
 put bring_to
+get grasp_from
 retrieve bring_from
 retrieve_from bring_from
 bring_from bring_from
