@@ -1,0 +1,62 @@
+#JSGF V1.0;
+grammar general;
+
+public <basic> = ( <actioncat1> {obj.put("category","1");} | <actioncat2> {obj.put("category","2");} | <actioncat3> {obj.put("category","3");}) | <garbage>;
+
+<actioncat1>      = <goto> [and] <secondaction>;
+<actioncat2>      = <bringcommand> [me] <determinant> <category> (from|to a) <loccategory> | <give> | point at a <loccategory> | <goto> | <find>;
+<actioncat3>      = <fetch> | <gocommand> to <determinant> <location> and (<introduce> | point at <person>) | <exit> |;
+
+
+<secondaction>    = <goto> [and] ( <goto> | <exit>) | <grasp> [and] ( <goto> | <exit> | <bringit>) | <introduce> [and] (<goto> | <exit> | <follow>) | (<askname>|<recognize>) [and] (<recognize>) | <follow> [and] <exit> | <fetch> [and] <exit> | <findp> [and] (<fetch> | <introduce>) | <find> [and] <grasp>;
+
+
+<action> = <goto> | <fetch> | <bringit> | <askname> | <findp> | <follow> | <find> | <grasp> | <give> | <recognize> | <introduce>| <exit>;
+
+<goto>   = <gocommand> to <determinant> (<location>|<loccategory>);
+<fetch>  = <fetchcommand> <determinant> <item> from <determinant> (<location>|<loccategory>);
+<bringit>= <bringcommand> (it | (<determinant> (<item> | <category>))) to <determinant> (<location>|<loccategory>);
+<askname>= memorize the person | ask the person name;
+<findp>  = <findcommand> a person;
+<follow> = follow the person in front of you;
+<find>   = <finditcmd> <determinant> (<item> | <category>);
+<grasp>  = <graspcommand> (the <item> | it);
+<recognize> = recognize (him | her| me);
+<introduce> = tell something about yourself | introduce yourself;
+<exit> =  <exitcommand> the apartment;
+<give>   = <givecommand> me <determinant> <category>;
+
+
+<gocommand>   = go | move | navigate | guide me;
+<fetchcommand>= retrieve | bring | get;
+<bringcommand>= bring | carry;
+<findcommand> = find;
+<finditcmd>   = detect | find | identify;
+<graspcommand>= get | take | grasp | retrieve | get | bring;
+<givecommand> = give | get;
+<exitcommand> = exit | leave;
+
+<determinant> = the | an | a | some;
+
+
+<person> = anna | beth | carmen | jennifer | jessica | kimberly | kristina | laura | mary | sarah | alfred | charles | daniel | james | john | luis | paul | richard | robert | steve | person;
+
+<location> = hallway_table | kitchen_table | kitchen_counter | bar | sideboard | stove | couch_table | dinner_table | bed | left_sidetable | right_sidetable | sofa | armchair | fridge | waste_bin | referee | entrance | exit;
+
+<item> = brush | detergent | shampoo | sponge | toothpaste | cola | beer | chocolate_milk | energy_drink | grape_juice | milk | orange_juice | water | chips | biscuits | bread | chocolate_cookies | pringles | strawberry_cookies | baby_food | beans | coffee | crackers | noodles | yest;
+
+<category> = drink | food | cleaning stuff | snaks;
+
+<loccategory> = [a] <aloccategory>;
+<aloccategory> = table | seating | shelf | appliance | door;
+
+<garbage>  = <garbage2>;
+
+<garbage1> = _unk;
+<garbage2> = <garbage1> | (_unk _unk);
+<garbage3> = <garbage2> | (_unk _unk _unk);
+<garbage4> = <garbage3> | (_unk _unk _unk _unk);
+<garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
+
+
+
