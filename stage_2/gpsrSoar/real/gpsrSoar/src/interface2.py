@@ -81,8 +81,6 @@ if TEST:
 else:
     SLEEP_TIME = 3
 
-# object_position = PoseStamped()
-
 ROOMS = rospy.get_param('/robocup_params/rooms')
 TABLES = rospy.get_param('/robocup_params/loc_category/table')
 

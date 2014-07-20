@@ -6,11 +6,11 @@ public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ;
 
 <bringcmd> = bring;
 <person> = me ;
-<objects> = <aobject> | <anobject> | <object>;
+<objects> = <aobject> | <anobject> | [the|some] <object>;
 
-<aobject>  = a red bull {obj.put("object","red bull");} | a coke {obj.put("object","coke");} | a beer {obj.put("object","beer");};
-<anobject> = an apple juice {obj.put("object","apple juice");};
-<object>   = juice {obj.put("object","juice");} | beer {obj.put("object","beer");} | water {obj.put("object","water");} | wine {obj.put("object","wine");};
+<aobject>  = a cola {obj.put("object","cola");} | a beer {obj.put("object","beer");};
+<anobject> = an energy drink {obj.put("object","energy drink");} | an orange juice {obj.put("object","orange juice");};
+<object>   = cola {obj.put("object","cola");} | beer {obj.put("object","beer");} | chocolate milk {obj.put("object","chocolate milk");} | energy drink {obj.put("object","energy drink");} | grape juice {obj.put("object","grape juice");} | milk {obj.put("object","milk");} | orange juice {obj.put("object","orange juice");} | water {obj.put("object","water");};
 
 <garbage>  = <garbage2>;
 
@@ -21,4 +21,3 @@ public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ;
 <garbage5> = <garbage4> | (_unk _unk _unk _unk _unk);
 
 
- 

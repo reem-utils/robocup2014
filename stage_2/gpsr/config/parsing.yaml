@@ -1,8 +1,8 @@
 ASR_LOOP: True
-ASR_ON: "False"
+ASR_ON: "True"
 GRAMATICA: "robocup/minimals"
 
-sentence: "move to the kitchen, grasp the pringles and bring it to the exit"
+sentence: "Move to the living room, move to the kitchen, and move to the entrance"
 sentence1: "Go to the kitchen, find a person and guide it to the exit"
 sentence2: "go to the sofa and follow the person in front of you"
 sentence3: "bring the coke to a armchair"
@@ -20,7 +20,7 @@ sentenceT5_CAT1: "Move to the LOCATION, grasp the ITEM, and put it in the trash 
 sentenceT6_CAT1: "Move to the LOCATION, find a person, and introduce yourself"
 sentenceT7_CAT1: "Move to the LOCATION, find a person, and guide it to the exit"
 
-sentenceT8_CAT2: "Bring me some ITEM_CATEGORY from a LOCATION_CATEGORY.
+sentenceT8_CAT2: "Bring me some ITEM_CATEGORY from a LOCATION_CATEGOR"
 
 
 

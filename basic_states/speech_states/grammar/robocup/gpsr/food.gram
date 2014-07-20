@@ -8,7 +8,7 @@ public <basic> =  (<bringcmd> [<person>] <objects> )| <garbage>  ;
 <person> = me ;
 <objects> = [some | the | a ] <object>;
 
-<object>  = pringles {obj.put("object","pringles");} | beans can {obj.put("object","beans can");} | cookies {obj.put("object","cookies");};
+<object>  = baby food {obj.put("object","baby food");} | beans {obj.put("object","beans");} | coffee {obj.put("object","coffee");} | crackers {obj.put("object","crackers");} | noodles {obj.put("object","noodles");} | yeast {obj.put("object","yeast");};
 
 <garbage>  = <garbage2>;
 
