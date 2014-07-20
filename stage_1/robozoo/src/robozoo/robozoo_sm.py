@@ -34,12 +34,12 @@ class dummy_recognize(smach.State):
         
         userdata.object_position = PoseStamped()
         userdata.object_position.header.frame_id = "base_link"
-        userdata.object_position.pose.position.x = 0.5
-        userdata.object_position.pose.position.z = 1.0
+        userdata.object_position.pose.position.x = 0.85
+        userdata.object_position.pose.position.z = 0.95
         userdata.object_position.pose.orientation.w = 1.0
         userdata.pose_to_place = PoseStamped()
         userdata.pose_to_place.header.frame_id = "base_link"
-        userdata.pose_to_place.pose.position.x = 0.4
+        userdata.pose_to_place.pose.position.x = 0.95
         userdata.pose_to_place.pose.position.z = 0.95
         userdata.pose_to_place.pose.orientation.w = 1.0
         userdata.nav_to_poi_name='dinner_table'
@@ -111,21 +111,27 @@ class RoboZooSM(smach.StateMachine):
             smach.StateMachine.add(
                 'object_recognition',
                 dummy_recognize(),
-                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_release_obj', 
+                transitions={'succeeded': 'say_grasp_object', 'aborted': 'say_grasp_object', 
                 'preempted': 'preempted'}) 
             
             # Say grasp object
             smach.StateMachine.add(
                  'say_grasp_object',
-                 text_to_say("I'm going to grasp the object"),
+                 text_to_say("I'm going to grasp the noodles"),
                  transitions={'succeeded': 'grasp_object', 'aborted': 'grasp_object'})
             
             # Grasp the object
             smach.StateMachine.add(
                 'grasp_object',
                 pick_object_sm(),
-                transitions={'succeeded': 'release_object', 'aborted': 'play_motion_state',
+                transitions={'succeeded': 'say_release_object', 'aborted': 'play_motion_state',
                 'preempted': 'preempted'}) 
+            
+            # Say grasp object
+            smach.StateMachine.add(
+                 'say_release_object',
+                 text_to_say("I'm going to release the noodles"),
+                 transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
             
             # Release the object
             smach.StateMachine.add(
