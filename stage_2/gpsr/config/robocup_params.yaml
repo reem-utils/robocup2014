@@ -1,4 +1,4 @@
-locations: ["hallway_table", "kitchen_table", "kitchen_counter", "bar", "sideboard", "stove", "couch_table", "dinner_table", "bed", "left_sidetable", "right_sidetable", "sofa", "armchair", "fridge", "waste_bin", "referee", "table", "shelf", "appliance", "seating", "entrance", "exit", "hallway", "kitchen", "bedroom", "living_room"]
+locations: ["hallway_table", "kitchen_table", "kitchen_counter", "bar", "side_board", "stove", "couch_table", "dinner_table", "bed", "left_side_table", "right_side_table", "sofa", "armchair", "fridge", "waste_bin", "referee", "table", "shelf", "appliance", "seating", "entrance", "exit", "hallway", "kitchen", "bedroom", "living_room"]
 
 items: ["brush", "detergent", "shampoo", "sponge", "toothpaste", "cola", "beer", "chocolate_milk", "energy_drink", "grape_juice", "milk", "orange_juice", "water", "chips", "biscuits", "bread", "chocolate_cookies", "pringles", "strawberry_cookies", "baby_food", "beans", "coffee", "crackers", "noodles", "yest", "cleaning_stuff", "drink", "food", "snaks"]
 
@@ -8,7 +8,7 @@ rooms: ["kitchen", "living room", "hallway"]
 
 room:
     kitchen: ["kitchen counter", "bar"]
-    living room: ["sideboard"]
+    living room: ["side board"]
     hallway: ["hallway table"]
 
 
@@ -25,7 +25,7 @@ it_category:
 
 loc_category:
         table: ["hallway table", "kitchen table", "couch table", "dinner table"]
-        shelf: ["kitchen counter", "bar", "sideboard", "left sidetable", "right sidetable"]
+        shelf: ["kitchen counter", "bar", "side board", "left side table", "right side table"]
         seating: ["bed", "sofa", "armchair"]
         appliance: ["stove", "fridge", "waste bin"]
         door: ["exit", "entrance"]

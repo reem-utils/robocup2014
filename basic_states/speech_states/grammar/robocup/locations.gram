@@ -8,7 +8,7 @@ public <basic> = (it is <prep> <determinant> <location> {obj.put("location",$.$v
 
 <determinant> = a | an | the | some | one;
 
-<location> = hallway table | kitchen table | kitchen counter | bar | sideboard | stove | couch table | dinner table | bed | left sidetable | right sidetable | sofa | armchair | fridge | waste bin | referee | table | shelf | appliance | seating | entrance | exit | hallway | kitchen | bedroom | living room;
+<location> = hallway table | kitchen table | kitchen counter | bar | side board | stove | couch table | dinner table | bed | left side table | right side table | sofa | armchair | fridge | waste bin | referee | table | shelf | appliance | seating | entrance | exit | hallway | kitchen | bedroom | living room;
 
 <garbage>  = <garbage2>;
 
