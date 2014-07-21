@@ -114,14 +114,14 @@ def new_world(loc_list):  #generates a new world
 
   return w  #return this world
 
-def ask_data(Type='LOCATIONS', objectName='coke'):    
+def ask_data(Type='LOCATIONS', objectName='cola'):    
     if TEST:
         return idx2obj(1,Type)
     ad = askMissingInfoSM(Type=Type, objectName=objectName)
     out = ad.execute()
     loc = ad.userdata._data['location_name']
     print "EL loc ES AKET!!!!!!!!!!!!!!!!!!!!!!!!!!!ask_data!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+loc
-    return loc  #-------------------'''
+    return loc
 
 def ask_category(category):
     if TEST:
@@ -162,6 +162,7 @@ class gpsrASAction(object):
     self._goalDonei = 0
     self._goal = []
     self._world = world()
+    self.gpsr_category_flag_hack = 0
 
     if TEST:
         errorfilepath = roslib.packages.get_pkg_dir("gpsr") + "/config/"
@@ -287,7 +288,6 @@ class gpsrASAction(object):
       self._world.item.locId = str(obj2idx(command.location, 'LOCATIONS'))
 
     if self._world.item.locId == '-1' and self._world.item.id != '-1': # If we know the item but not the location we check it and save it in world
-      rospy.logwarn(self.gpsr_category_flag_hack)
       rospy.logwarn('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
       if self.gpsr_category_flag_hack == 1:
         iloc = self._world.robot.locId
