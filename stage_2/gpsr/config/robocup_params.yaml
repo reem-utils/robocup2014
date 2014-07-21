@@ -10,6 +10,7 @@ room:
     kitchen: ["kitchen counter", "bar"]
     living room: ["side board"]
     hallway: ["hallway table"]
+    bedroom: ["right side table"]
 
 
 location:
