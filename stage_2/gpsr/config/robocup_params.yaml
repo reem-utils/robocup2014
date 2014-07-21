@@ -2,7 +2,7 @@ locations: ["hallway_table", "kitchen_table", "kitchen_counter", "bar", "side_bo
 
 items: ["brush", "detergent", "shampoo", "sponge", "toothpaste", "cola", "beer", "chocolate_milk", "energy_drink", "grape_juice", "milk", "orange_juice", "water", "chips", "biscuits", "bread", "chocolate_cookies", "pringles", "strawberry_cookies", "baby_food", "beans", "coffee", "crackers", "noodles", "yeast", "cleaning_stuff", "drink", "food", "snaks"]
 
-persons: [ "anna", "beth", "carmen", "jennifer", "jessica", "kimberly", "kristina", "laura", "mary", "sarah", "alfred", "charles", "daniel", "james", "jhon", "luis", "paul", "richard", "robert", "steve", "person"]
+persons: [ "anna", "beth", "carmen", "jennifer", "jessica", "kimberly", "kristina", "laura", "mary", "sarah", "alfred", "charles", "daniel", "james", "jhon", "luis", "paul", "richard", "robert", "steve", "person", "referee"]
 
 rooms: ["kitchen", "living room", "hallway"]
 

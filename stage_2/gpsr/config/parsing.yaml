@@ -1,8 +1,8 @@
 ASR_LOOP: True
-ASR_ON: "True"
-GRAMATICA: "robocup/minimals"
+ASR_ON: "False"
+GRAMATICA: "robocup/general2"
 
-sentence: "Move to the living room, move to the kitchen, and move to the entrance"
+sentence: "bring a cola to the dinner table"
 
 
 sentenceT1_CAT1: "Move to the LOCATION, move to the LOCATION, and move to the LOCATION"
