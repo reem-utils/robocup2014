@@ -499,17 +499,36 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         
         current_position = world.get_current_position()    
         rospy.logwarn(current_position)
-        rospy.logwarn(ROOMS)
-        if current_position in ROOMS:
-            room = rospy.get_param('/robocup_params/room/' + current_position)            
-            call_go_to(room[0].replace(" ","_"),world)                         
-                         
-            sm = place_object_sm(loc_object_position)   
+        rospy.logwarn(ROOMS)   
+                             
+        if current_position == "kitchen":
+            call_go_to("bar",world)    
+            m = place_object_sm(loc_object_position)   
+            out = sm.execute()               
+        if current_position == "living room":
+            call_go_to("dinner table",world)   
+            m = place_object_sm(loc_object_position)   
+            out = sm.execute()                    
+        if current_position == "hallway":
+            call_go_to("hallway table",world)     
+            m = place_object_sm(loc_object_position)   
             out = sm.execute()                  
+        if current_position == "bedroom":
+            call_go_to("bed",world)   
+            m = place_object_sm(loc_object_position)   
+            out = sm.execute()  
+             
         
         if current_position.replace("_"," ") in TABLES:            
             sm = place_object_sm(loc_object_position)   
-            out = sm.execute()                
+            out = sm.execute()          
+               
+#         if current_position in ROOMS:
+#             room = rospy.get_param('/robocup_params/room/' + current_position)            
+#             call_go_to(room[0].replace(" ","_"),world) 
+#                          
+#             sm = place_object_sm(loc_object_position)   
+#             out = sm.execute()                   
                 
     #############################################################################
     time.sleep(SLEEP_TIME)

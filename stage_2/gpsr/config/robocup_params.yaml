@@ -4,7 +4,7 @@ items: ["brush", "detergent", "shampoo", "sponge", "toothpaste", "cola", "beer",
 
 persons: [ "anna", "beth", "carmen", "jennifer", "jessica", "kimberly", "kristina", "laura", "mary", "sarah", "alfred", "charles", "daniel", "james", "jhon", "luis", "paul", "richard", "robert", "steve", "person", "referee"]
 
-rooms: ["kitchen", "living room", "hallway"]
+rooms: ["kitchen", "living room", "hallway", "bedroom"]
 
 room:
     kitchen: ["kitchen counter", "bar"]
