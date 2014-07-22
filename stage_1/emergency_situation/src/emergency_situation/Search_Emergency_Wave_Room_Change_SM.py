@@ -139,7 +139,7 @@ class Search_Emergency_Wave_Room_Change(smach.StateMachine):
                 'Navigate_to_Room',
                 nav_to_poi(),
                 remapping={'nav_to_poi_name':'nav_to_poi_name_possible'},
-                transitions={'succeeded': 'Search_Wave', 'aborted': 'Navigate_to_Room', 'preempted': 'preempted'})
+                transitions={'succeeded': 'Search_Wave', 'aborted': 'Search_Wave', 'preempted': 'preempted'})
             
             smach.StateMachine.add(
                 'Search_Wave',

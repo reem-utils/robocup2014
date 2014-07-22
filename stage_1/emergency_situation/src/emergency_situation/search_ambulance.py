@@ -307,6 +307,14 @@ class Search_Face_Determined(smach.StateMachine):
             self.userdata.wave_position = None
             self.userdata.wave_yaw_degree = None
             self.userdata.standard_error = ''
+            
+            smach.StateMachine('Dummy',
+                               DummyStateMachine(),
+                               transitions={'succeeded':'Say_follow'})
+            smach.StateMachine('Say_follow',
+                               text_to_say('Follow Me Please, I will guide you to the person'),
+                               transitions={'succeeded':'succeeded', 'aborted':'aborted'})
+            
             smach.StateMachine.add(
                                    'Move_head_prepare',
                                    prepare_move_head(head_position),
@@ -320,14 +328,14 @@ class Search_Face_Determined(smach.StateMachine):
                                                 'aborted':'aborted'})
             smach.StateMachine.add(
                 'Say_Searching',
-                text_to_say(text_for_wave_searching),
+                text_to_say("text_for_wave_searching"),
                 transitions={'succeeded':'face_detection', 'aborted':'face_detection', 'preempted':'face_detection'})
            
             #Hard-coded maximum time in order to detect wave 
             smach.StateMachine.add(
                 'face_detection',
                 detect_face(),
-                transitions={'succeeded': 'Say_Found', 'aborted': 'Move_head_prepare', 
+                transitions={'succeeded': 'Say_Found', 'aborted': 'aborted', #TODO before it was Move_head_prepare
                 'preempted': 'preempted'}) 
             
             smach.StateMachine.add(

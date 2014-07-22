@@ -102,15 +102,16 @@ class Save_People_Emergency(smach.StateMachine):
             self.userdata.emergency_location = []
             self.userdata.tts_lang = 'en_US'
             self.userdata.tts_wait_before_speaking = 0
-
-            #It should be Speech Recognition: ListenTo(?)
-#             smach.StateMachine.add(
-#                 'Prepare_Ask_Status',
-#                 prepare_tts('Are you Ok?'),
-#                 transitions={'succeeded':'Ask_Status', 'aborted':'Ask_Status', 'preempted':'Ask_Status'})
             smach.StateMachine.add(
+
                 'Ask_Status',
                 text_to_say('Are you Ok?'),
+                transitions={'succeeded':'Status_state', 'aborted':'Status_state', 'preempted':'Status_state'})
+            
+            
+            smach.StateMachine.add(
+                'Status_state',
+                DummyStateMachine(),
                 transitions={'succeeded':'Save_Info', 'aborted':'Save_Info', 'preempted':'Save_Info'})
             #TODO: Do we have to add an SayYesOrNoSM?
             # smach.StateMachine.add(
@@ -118,17 +119,17 @@ class Save_People_Emergency(smach.StateMachine):
             #     SayYesOrNoSM(),
             #     transitions={'succeeded':'Register_Position', 'aborted':'Register_Position', 'preempted':'Register_Position'})
             
-            #TODO: Actually Generate the PDF (TODO: Look for USB/Path...)
+            
             #Save_Info(): Saves the emergency info and generates a pdf file
             #input_keys: emergency_location
             smach.StateMachine.add(
                 'Save_Info',
-                DummyStateMachine(),
-                #GeneratePDF_State(),
+                #DummyStateMachine(),
+                GeneratePDF_State(),
                 transitions={'succeeded':'Say_Save', 'aborted':'aborted', 'preempted':'preempted'})
              
             smach.StateMachine.add(
                 'Say_Save',
-                text_to_say('Information Saved, p d f is left to do REMEMBER'),
+                text_to_say('Everything is OK, your information is saved safely.'),
                 transitions={'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
             

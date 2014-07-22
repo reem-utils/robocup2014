@@ -145,7 +145,7 @@ class Search_People_Emergency(smach.StateMachine):
             smach.StateMachine.add(
                 'face_detection',
                 detect_face(),
-                transitions={'succeeded': 'Register_Position', 'aborted': 'Move_head_prepare', 
+                transitions={'succeeded': 'Register_Position', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
             smach.StateMachine.add(

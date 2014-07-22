@@ -460,7 +460,7 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
             person_object_position = PoseStamped()
             person_object_position.header.frame_id = "base_link"
             person_object_position.pose.position.x = 0.25
-            person_object_position.pose.position.z = 1.25
+            person_object_position.pose.position.z = 1.0
             person_object_position.pose.orientation.w = 1.0  
             
             sm = place_object_sm(person_object_position)
@@ -474,10 +474,10 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
 
 def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may be add some human recognition to avoid throwing stuff to the ground
 
-    if location_name == '':
-        tosay = "I'm leaving this here"
-    else:
-        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
+#     if location_name == '':
+    tosay = "I'm leaving this here"
+#     else:
+#         tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to_loc '+location_name)  
@@ -486,15 +486,13 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
-        param_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
+        #param_place_high_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
+        param_place_high_name = "/robocup_params/place/" + location_name.replace(" ","_")
         
         loc_object_position = PoseStamped()  #PoseWithCovarianceStamped()
         loc_object_position.header.frame_id = "base_link"
-        loc_object_position.pose.position.x = 0.5
-        if rospy.has_param(param_name):            
-            loc_object_position.pose.position.z = rospy.get_param(param_name)
-        else:
-            loc_object_position.pose.position.z = 1.25
+        loc_object_position.pose.position.z = 1.25
+        loc_object_position.pose.position.x = 0.25
         loc_object_position.pose.orientation.w = 1.0  
         
         current_position = world.get_current_position()    
@@ -502,34 +500,45 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         rospy.logwarn(ROOMS)   
                              
         if current_position == "kitchen":
+            loc_object_position.pose.position.z = rospy.get_param("/robocup_params/place/bar")[3]
+            loc_object_position.pose.position.x = rospy.get_param("/robocup_params/place/bar")[2]
+                
             call_go_to("bar",world)    
             m = place_object_sm(loc_object_position)   
             out = sm.execute()               
-        if current_position == "living room":
+            
+        if current_position == "living room":       
+            loc_object_position.pose.position.z = rospy.get_param("/robocup_params/place/dinner_table")[3]
+            loc_object_position.pose.position.x = rospy.get_param("/robocup_params/place/dinner_table")[2]
+                
             call_go_to("dinner table",world)   
             m = place_object_sm(loc_object_position)   
-            out = sm.execute()                    
+            out = sm.execute()             
+                   
         if current_position == "hallway":
+            loc_object_position.pose.position.z = rospy.get_param("/robocup_params/place/hallway_table")[3]
+            loc_object_position.pose.position.x = rospy.get_param("/robocup_params/place/hallway_table")[2]
+                
             call_go_to("hallway table",world)     
             m = place_object_sm(loc_object_position)   
-            out = sm.execute()                  
+            out = sm.execute()             
+                 
         if current_position == "bedroom":
+            loc_object_position.pose.position.z = rospy.get_param("/robocup_params/place/bed")[3]
+            loc_object_position.pose.position.x = rospy.get_param("/robocup_params/place/bed")[2]
+                
             call_go_to("bed",world)   
             m = place_object_sm(loc_object_position)   
             out = sm.execute()  
              
         
-        if current_position.replace("_"," ") in TABLES:            
+        if current_position.replace("_"," ") in TABLES:      
+            loc_object_position.pose.position.z = rospy.get_param("/robocup_params/place/"+current_position.replace("_"," "))[3]
+            loc_object_position.pose.position.x = rospy.get_param("/robocup_params/place/"+current_position.replace("_"," "))[2]
+                  
             sm = place_object_sm(loc_object_position)   
             out = sm.execute()          
-               
-#         if current_position in ROOMS:
-#             room = rospy.get_param('/robocup_params/room/' + current_position)            
-#             call_go_to(room[0].replace(" ","_"),world) 
-#                          
-#             sm = place_object_sm(loc_object_position)   
-#             out = sm.execute()                   
-                
+
     #############################################################################
     time.sleep(SLEEP_TIME)
     return "succeeded" 

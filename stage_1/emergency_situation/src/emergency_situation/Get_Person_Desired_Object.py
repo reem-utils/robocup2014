@@ -88,41 +88,40 @@ class Process_Tags(smach.State):
         rospy.loginfo("--------> ASR USER TAGS::::: " + str(object_to_bring) + "--->")
         
         
-        
+        #Nice way to do:
+#         info = rospy.get_param('/mmap/object/information')
+#         if info.has_key(str(object_to_bring[0].value)):
+#             obj_info = info.get(str(object_to_bring[0].value))
+#             rospy.loginfo("In If - Info.get = " + str(obj_info))
+#             userdata.nav_to_poi_name = obj_info[2]
+#             userdata.object_to_grasp = str(object_to_bring[0].value)
+#             return 'succeeded'
+#         return 'aborted'
+    
+    
         #if(userdata.asr_userSaid.find("water")):
         if "water" in object_to_bring[0].value:
             
-            userdata.object_to_grasp = 'Fater'
+            userdata.object_to_grasp = 'water'
             #userdata.object_to_grasp = 'Barritas'
-            userdata.nav_to_poi_name = 'kitchen'
+            userdata.nav_to_poi_name = 'water'
             rospy.loginfo("IF - WATER" + str(userdata.asr_userSaid))
             return 'succeeded'
         #elif(userdata.asr_userSaid.find("kit")):
-        elif "first aid kit" in object_to_bring[0].value:
-            userdata.object_to_grasp = 'First Aid Kit'
+        elif "biscuits" in object_to_bring[0].value:
+            userdata.object_to_grasp = 'biscuits'
             #userdata.object_to_grasp = 'Barritas'
-            userdata.nav_to_poi_name = 'kitchen'
-            rospy.loginfo("IF - FIRST_AID_KIT" + str(userdata.asr_userSaid))
+            userdata.nav_to_poi_name = 'sideboard'
+            rospy.loginfo("IF - BISCUITS" + str(userdata.asr_userSaid))
             return 'succeeded'
         #elif(userdata.asr_userSaid.find("phone")):
-        elif "phone" in object_to_bring[0].value:
-            userdata.object_to_grasp = 'Cell phone'
+        elif "energy drink" in object_to_bring[0].value:
+            userdata.object_to_grasp = 'energy_drink'
             #userdata.object_to_grasp = 'Barritas'
-            userdata.nav_to_poi_name = 'working_desk'
-            rospy.loginfo("IF - CELL PHONE" + str(userdata.asr_userSaid))
+            userdata.nav_to_poi_name = 'bar'
+            rospy.loginfo("IF - ENERGY DRINK" + str(userdata.asr_userSaid))
             return 'succeeded'
-        #elif userdata.asr_userSaid.find("pringles"):
-        elif "pringles" in object_to_bring[0].value:
-            userdata.object_to_grasp = 'Pringles'
-            userdata.nav_to_poi_name = 'kitchen_counter'
-            rospy.loginfo("IF - Pringles" + str(userdata.asr_userSaid))
-            return 'succeeded'
-        #elif userdata.asr_userSaid.find("Barritas"):
-        elif object_to_bring == "Barritas":
-            userdata.object_to_grasp = 'Barritas'
-            rospy.loginfo(userdata.asr_userSaid)
-            return 'succeeded'
-
+        
         return 'aborted'
 
 class Time_State(smach.State):
@@ -232,23 +231,8 @@ class Get_Person_Desired_Object(smach.StateMachine):
             smach.StateMachine.add(
                                    'Ask_Question',
                                    text_to_say(text='What would you like me to bring?'),
-                                    #transitions={'succeeded':'Dummy_Listen_ASR', 'aborted': 'Dummy_Listen_ASR', 'preempted':'Dummy_Listen_ASR'})
                                    transitions={'succeeded':'Listen_Question', 'aborted': 'Ask_Question', 'preempted':'Listen_Question'})
-                                  
-            # Ask for the object to bring to the person
-            # Output: 
-            #   - string 'userSaid'
-            #   - actiontag[] 'asr_userSaid_tags'
-            # TODO: grammar for the Emergency Situation -- Get_Person_Desired_Object
-            smach.StateMachine.add(
-                                   'Dummy_Listen_ASR',
-                                   DummyStateMachine(),
-                                   transitions={'succeeded':'ASR_OK'})
-            smach.StateMachine.add(
-                                   'ASR_OK',
-                                   text_to_say(text='Ok, now I am going to get you Barritas'),
-                                    transitions={'succeeded':'Search_Object'})
-            
+                        
             smach.StateMachine.add(
                 'Listen_Question',
                 ListenToSM(grammar='robocup/emergency'),
