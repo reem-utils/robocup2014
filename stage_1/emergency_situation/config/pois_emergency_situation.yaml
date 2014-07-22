@@ -29,7 +29,7 @@ poi:
 
     emergency_room: [submap_0, emergency_room,-3.349, 1.618,  2.498]
     entry_door_init: [submap_0, entry_door_init, 2.173, -8.837, -3.091]
-    entry_door_exit: [submap_0, entry_door_exit, 0.691, -8.837,  3.113]
+    entry_door_exit: [submap_0, entry_door_exit, 2.173, -8.837, -3.091]
     living_room_1: [submap_0, living_room_1, 4.92, -0.997,  0.89]
     living_room_2: [submap_0, living_room_2, 6.07, -2.487,  0.991]
     living_room_3: [submap_0, living_room_3, 5.937, -2.51,  0.508]

@@ -27,14 +27,14 @@ from geometry_msgs.msg._PoseWithCovarianceStamped import PoseWithCovarianceStamp
 
 robot = os.environ.get('PAL_ROBOT')
 if robot == 'rh2c' or robot == 'rh2m':
-    IMAGE_PATH = roslib.packages.get_pkg_dir('reemh2_maps') + '/config/'
+    IMAGE_PATH = roslib.packages.get_pkg_dir('reemh2_maps') + '/configurations/'
     RH2_PATH = roslib.packages.get_pkg_dir('reemh2_maps')
     paramlist = rosparam.load_file(RH2_PATH+"/config/map.yaml", default_namespace="emergency_situation")
     for params, ns in paramlist:
         rosparam.upload_params(ns, params)
 
 elif robot == 'reemh3c' or robot == 'reemh3m':
-    IMAGE_PATH = roslib.packages.get_pkg_dir('reem_maps') + '/config/'
+    IMAGE_PATH = roslib.packages.get_pkg_dir('reem_maps') + '/configurations/'
     REEMH3_PATH = roslib.packages.get_pkg_dir('reem_maps')
     paramlist = rosparam.load_file(REEMH3_PATH+'/config/map.yaml', default_namespace="emergency_situation")
     for params, ns in paramlist:
@@ -69,7 +69,7 @@ class GeneratePDF_State(smach.State):
         #Creating image from REEM's camera
         image_converter()
         
-        image_created_number = ImageCreator(location_list=[userdata.person_location.pose.pose.position.x, userdata.person_location.pose.pose.position.y], 
+        image_created_number = ImageCreator(location_list=[userdata.person_location.pose.position.x, userdata.person_location.pose.position.y], 
                                         origin=IMAGE_ORIGIN,
                                         scale=RESOLUTION, 
                                         image_name=IMAGE_NAME, 
@@ -95,9 +95,9 @@ def main():
     sm = smach.StateMachine(outcomes=['succeeded', 'preempted', 'aborted'])
     with sm:      
         sm.userdata.person_location = PoseWithCovarianceStamped()
-        sm.userdata.person_location.pose.pose.position.x = 1.0
-        sm.userdata.person_location.pose.pose.position.y = 1.0
-        sm.userdata.person_location.pose.pose.position.z = 0.0
+        sm.userdata.person_location.pose.position.x = 1.0
+        sm.userdata.person_location.pose.position.y = 1.0
+        sm.userdata.person_location.pose.position.z = 0.0
         
         smach.StateMachine.add(
             'GeneratePDF_State',
