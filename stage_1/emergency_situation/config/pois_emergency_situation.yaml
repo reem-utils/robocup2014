@@ -14,6 +14,11 @@ poi:
     point_room_one: [submap_0, point_room_one, 7.910, 6.254, 0.709]
     point_room_two: [submap_0, point_room_two, 8.476, 5.305, -0.767]
     point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
+    living_room_1: [submap_0, living_room_1, 4.92, -0.997,  0.89]
+    living_room_2: [submap_0, living_room_2, 6.07, -2.487,  0.991]
+    living_room_3: [submap_0, living_room_3, 5.937, -2.51,  0.508]
+    living_room_4: [submap_0, living_room_4, 7.84, -2.85,  0.90]
+
 
 object:
   information:
