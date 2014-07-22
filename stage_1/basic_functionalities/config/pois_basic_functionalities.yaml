@@ -9,7 +9,7 @@ poi:
     stove: [submap_0, stove, 2.562, -2.855, -3.113]
     kitchen_counter: [submap_0, kitchen_counter, 2.614, -3.96, -3.091]
     bar: [submap_0, bar, 3.372, -0.385, 1.651]
-    waste_bin: [submap_0, waste_bin, 2.000, -2.004, 3.138]
+    waste_bin: [submap_0, waste_bin, 1.995, -2.004, 3.138]
     bed_room: [submap_0, bed_room, 5.771, -7.169, 0.030]
     right_sidetable: [submap_0, right_sidetable, 6.434, -8.174, -1.461]
     left_sidetable: [submap_0, left_sidetable, 8.050, -8.090, -1.461]
