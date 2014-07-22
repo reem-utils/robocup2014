@@ -37,7 +37,7 @@ from face_states.go_find_person import go_find_person
 from pal_detection_msgs.msg import FaceDetection
 
 # Constants
-NUMBER_OF_QUESTIONS = 3
+NUMBER_OF_QUESTIONS = 1
 GRAMMAR_NAME = 'robocup/what_did_you_say_robocup'
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
@@ -115,8 +115,8 @@ class SelectAnswer(smach.State):
             if str(question_number[0].value) == str(value[2]):
                 rospy.logerr(str(value[2]))
                 if  str(value[2]) == str(1):
-                    t = time.strftime('%H:%M')
-                    userdata.tts_text = "The answer is " + str(t)
+                    t = time.strftime('%M')
+                    userdata.tts_text = "The answer is 10:" + str(t)
                 else:
                     rospy.loginfo("FOUND!")
                     userdata.tts_text = "The answer is " + str(value[3])
@@ -223,7 +223,7 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'home_position_init',
                 play_motion_sm('home'),
-                transitions={'succeeded': 'say_what_did_you_say', 'aborted': 'home_position_init', #TODO: Change aborted to try again
+                transitions={'succeeded': 'ActivateASR', 'aborted': 'home_position_init', #TODO: Change aborted to try again
                 'preempted': 'preempted'}) 
                      
             # Enter room

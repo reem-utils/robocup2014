@@ -64,7 +64,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_start_basic_functionalities',
                  text_to_say("I'm ready to start Basic Functionalities"),
-                 transitions={'succeeded': 'go_to_door', 'aborted': 'say_going_pick_place'}) # TODO before it was say_going_pick_place
+                 transitions={'succeeded': 'say_going_pick_place', 'aborted': 'play_motion_state'}) # TODO before it was say_going_pick_place
             
             # Say Go Pick and Place
             smach.StateMachine.add(
@@ -75,7 +75,7 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             # Cross start door and go to intermediate point 
             smach.StateMachine.add(
                 'enter_start_door',
-                EnterRoomSM('kitchen_counter'),
+                EnterRoomSM('kitchen_table'),
                 transitions={'succeeded': 'pick_timer', 'aborted': 'aborted', 
                 'preempted': 'preempted'})  
             
@@ -188,8 +188,8 @@ class BasicFunctionalitiesSM(smach.StateMachine):
             smach.StateMachine.add(
                 "what_say_timer",
                 ConcurrenceTime(states=STATES, state_name=STATE_NAMES, timeout=180),
-                transitions={'succeeded': 'say_finish_basic_functionalities', 
-                             'aborted':'say_finish_basic_functionalities', 
+                transitions={'succeeded': 'go_to_door', 
+                             'aborted':'go_to_door', 
                              'time_ends': "timeout_what_say"})
             
             # Say TimeOut 

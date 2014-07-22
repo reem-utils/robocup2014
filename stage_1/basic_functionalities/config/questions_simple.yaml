@@ -2,7 +2,7 @@ numberOfSubQuestions: 1
 questions:
   what_say_simple:
     one:   [what_say_simple, one,   1,   Time]
-    two:   [what_say_simple, two,   2,   "Reem Golem"]
+    two:   [what_say_simple, two,   2,   "Reem"]
     three: [what_say_simple, three, 3,   Brasilia]
     four:  [what_say_simple, four,  4,   "1997"]
     five:  [what_say_simple, five,  5,   "5"]
