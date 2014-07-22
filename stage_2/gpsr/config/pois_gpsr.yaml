@@ -22,6 +22,7 @@ poi:
     sofa: [submap_0, sofa, 5.696, 0.090, 0.007]
     entrance: [submap_0, door_A, 0.442, -0.023,  0.016]
     exit: [submap_0, door_exit, 2.426, -8.752, -3.091]
+    door_B: [submap_0, door_B, 0.753, -8.884,  3.113]
     referee: [submap_0, door_A, 0.442, -0.023,  0.016]
     
 
