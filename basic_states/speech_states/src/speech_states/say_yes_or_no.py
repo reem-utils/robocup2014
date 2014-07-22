@@ -78,7 +78,7 @@ class SayYesOrNoSM(smach.StateMachine):
 
     Nothing must be taken into account to use this SM.
     """    
-    def __init__(self, grammar=None):
+    def __init__(self,bucle=True,grammar=None,calibrate=False,Time_calibrate=12):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                         input_keys=[],
                                         output_keys=[])
@@ -93,7 +93,7 @@ class SayYesOrNoSM(smach.StateMachine):
             # Listen 
             smach.StateMachine.add(
                 'listen_info',
-                ReadASR(),
+                ReadASR(bucle=bucle,calibrate=calibrate,Time_calibrate=Time_calibrate),
                 transitions={'succeeded': 'process_command', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

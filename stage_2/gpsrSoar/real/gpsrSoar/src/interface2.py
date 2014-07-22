@@ -460,7 +460,7 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
             person_object_position = PoseStamped()
             person_object_position.header.frame_id = "base_link"
             person_object_position.pose.position.x = 0.25
-            person_object_position.pose.position.z = 1.25
+            person_object_position.pose.position.z = 1.0
             person_object_position.pose.orientation.w = 1.0  
             
             sm = place_object_sm(person_object_position)
@@ -474,10 +474,10 @@ def call_bring_to(person_name): #TODO #Adding realese and reread tosay with some
 
 def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may be add some human recognition to avoid throwing stuff to the ground
 
-    if location_name == '':
-        tosay = "I'm leaving this here"
-    else:
-        tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
+#     if location_name == '':
+    tosay = "I'm leaving this here"
+#     else:
+#         tosay = "I took this item here as requested. Referee I know you are here, if no one else is going to pick this proably you will want to take it before I throw it to the floor, thanks"
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_bring_to_loc '+location_name)  
