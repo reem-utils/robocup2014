@@ -21,7 +21,7 @@ from object_states.recognize_object import recognize_object
 from follow_me.follow_learn import LearnPerson
 from follow_me.follow_operator import FollowOperator
 from navigation_states.nav_to_poi import nav_to_poi
-from face_states.new_database_and_learn import new_database_and_learn as learn_face
+from face_states.new_database_and_learn import learn_face #new_database_and_learn as learn_face
 from face_states.recognize_face import recognize_face
 from face_states.go_find_person import go_find_person as SearchPersonSM
 #from search_person_in_poi import SearchPersonSM
@@ -204,8 +204,10 @@ def call_learn_person(pers): #TOTEST   #Recorda que abans sempre busca una perso
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1            
-            sm = learn_face(name_face='john', name_database='Soar')
-            sm.userdata.name_face = pers
+#             sm = learn_face(name_face='john', name_database='Soar')
+#             sm.userdata.name_face = pers
+            sm = learn_face()
+            sm.userdata.name = pers
             out = sm.execute()     
     #############################################################################
     time.sleep(SLEEP_TIME)
