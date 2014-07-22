@@ -91,7 +91,7 @@ class say_searching_faces(smach.StateMachine):
                                    transitions={'succeeded':'Move_head_Right', 'preempted':'preempted'})
              
             smach.StateMachine.add('Move_head_Right',
-                                   look_to_point(direction="front", min_duration=1),
+                                   look_to_point(direction="front", min_duration=2),
                                    transitions={'succeeded':'Wait_search_3', 'aborted':'aborted'})
              
             smach.StateMachine.add('Wait_search_3', 
@@ -99,7 +99,7 @@ class say_searching_faces(smach.StateMachine):
                                    transitions={'succeeded':'Move_head_Middle', 'preempted':'preempted'})
              
             smach.StateMachine.add('Move_head_Middle',
-                                   look_to_point(direction="right", min_duration=1),
+                                   look_to_point(direction="right", min_duration=2),
                                    transitions={'succeeded':'Wait_search_1', 'aborted':'Wait_search_1'})
      
             
@@ -174,14 +174,14 @@ class go_find_person(smach.StateMachine):
     No io_keys.
 
     """
-    def __init__(self,poi_name=None,time_out=90):
+    def __init__(self,poi_name=None,time_out=10):
         smach.StateMachine.__init__(self, outcomes=['succeeded', 'preempted', 'aborted'],
                                      input_keys=['name', 'nav_to_poi_name', 'face','face_frame'],
                                      output_keys=['face', 'standard_error', 'face_frame'])
         self.poi_name=poi_name
         self.time_out=time_out
         with self:
-
+            self.userdata.name = ''
             self.userdata.num_iterations = 0
             self.userdata.face = None
             self.userdata.wait_time = 5
@@ -198,7 +198,7 @@ class go_find_person(smach.StateMachine):
                                    text_to_say('Right Now I am looking for you.',wait=True),
                                    transitions={'succeeded': 'go_poi', 'aborted': 'aborted', 
                                     'preempted': 'preempted'})
-            
+             
             smach.StateMachine.add(
                                    'go_poi',
                                    nav_to_poi(poi_name),
