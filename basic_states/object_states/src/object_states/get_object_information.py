@@ -62,14 +62,17 @@ class obtain_info(smach.State):
             loc_array = []
             for key, value in pois.iteritems():
                 loc_array.append([value[2],value[1]])
-                
+                print "for"
+                print "KEY: " + str(key) + " Value" + str(value)
                 if prob < value[2]:
                     userdata.object_location = value[1]
                     prob = value[2]
-            aux = sorted(loc_array, key=operator.itemgetter(2))
+            print "LOC ARRAY " + str(loc_array)
+            aux = sorted(loc_array, key=operator.itemgetter(0))
             aux2 = []
             for locc, val in aux:
-                aux2 = locc
+                #aux2 = locc
+                aux2.append(locc)
             userdata.object_location_array = aux2
             
             if prob == 0.0:

@@ -44,6 +44,7 @@ class object_detection_and_grasping_sm(smach.StateMachine):
         
         with self:
             self.userdata.object_detected_name = ''
+            
             smach.StateMachine.add('Search_Object',
                                    SearchObjectSM(),
                                    transitions={'succeeded':'Grasp_object', 
