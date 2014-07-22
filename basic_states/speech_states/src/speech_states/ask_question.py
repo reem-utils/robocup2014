@@ -141,7 +141,7 @@ class AskQuestionSM(smach.StateMachine):
             # Confirm order
             smach.StateMachine.add(
                 'confirm_question',
-                SayYesOrNoSM(bucle=bucle,calibrate=calibrate,Time_calibrate=Time_calibrate),
+                SayYesOrNoSM(bucle=Bucle,calibrate=calibrate,Time_calibrate=time_calibrate),
                 transitions={'succeeded': 'DeactivateASR', 'aborted': 'calibrate', 'preempted': 'preempted'})
 
             # Deactivate the server

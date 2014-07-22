@@ -14,6 +14,8 @@ from move_base_msgs.msg import MoveBaseGoal
 from navigation_states.nav_to_poi import nav_to_poi
 from gpsrSoar.msg import gpsrActionAction
 from speech_states.ask_question import AskQuestionSM
+from speech_states.asr_calibrate import CalibrateASR
+from face_states.new_database_and_learn import new_database_and_learn
 
 
 SENTENCE_SAID = '/parsing/sentence' 
@@ -58,7 +60,25 @@ class ParseSentence(smach.State):
         else:
             print 'parsing returned with ' + str(O.confidence) + ' confidence. \nPlease, repeat the sentence again. \n'
             return 'aborted'
+        
+        
+class RefereeLearner(smach.StateMachine):
 
+    def __init__(self):
+        smach.StateMachine.__init__(self, ['succeeded', 'preempted', 'aborted'])
+        #rospy.init_node("SM_GPSR_ORDERS")
+        with self:
+            
+            smach.StateMachine.add(
+                    'Stand_Still',
+                    text_to_say(text="Please don't move for a moment",wait_before_speaking=0),
+                    transitions={'succeeded': 'DataBase_and_Learn'})
+            
+            smach.StateMachine.add( 
+                    'DataBase_and_Learn',
+                    new_database_and_learn(name_face='referee', name_database='Soar'),
+                    transitions={'succeeded': 'succeeded'})       
+            
 
 class sentence_solved(smach.State):
     def __init__(self):
@@ -205,13 +225,19 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                     'Check_ASR',
                     check_AsrOn(),
-                    transitions={'ASR_ON': 'ASK_QUESTION', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
+                    transitions={'ASR_ON': 'calibrate_action', 'ASR_OFF': 'PARSE_ORDER', 'aborted': 'PARSE_ORDER'},
                     remapping={'i_sentence': 'sentence', 'i_asrOn': 'asrOn', 'o_sentence': 'o_userSaidData'})
 
             smach.StateMachine.add(
                     'TELL_ABORTED_GO_TO',
                     text_to_say(text="Sorry I can't get to the initial point, referee could you come and tell me the command?",wait_before_speaking=0),
                     transitions={'succeeded': 'ASK_QUESTION'})
+            
+            smach.StateMachine.add(
+                    'calibrate_action',
+                    CalibrateASR(),
+                    transitions={'succeeded': 'ASK_QUESTION', 'aborted': 'aborted', 
+                    'preempted': 'aborted'})
 
             smach.StateMachine.add(
                     'ASK_QUESTION',
@@ -228,8 +254,14 @@ class gpsrOrders(smach.StateMachine):
             smach.StateMachine.add(
                     'PARSE_ORDER',
                     ParseSentence(),
-                    transitions={'succeeded': 'ANNOUNCE_LISTENED_SENTECE_RIGHT', 'aborted': 'ANNOUNCE_LISTENED_SENTENCE_WRONG'},
+                    transitions={'succeeded': 'Learne_Referee', 'aborted': 'ANNOUNCE_LISTENED_SENTENCE_WRONG'},
                     remapping={'o_actionSet': 'o_actionSet', 'i_userSaidData': 'o_userSaidData'})
+            
+            smach.StateMachine.add(
+                    'Learne_Referee',
+                    RefereeLearner(),
+                    transitions={'succeeded': 'ANNOUNCE_LISTENED_SENTECE_RIGHT', 'aborted': 'Learne_Referee', 
+                    'preempted': 'aborted'})
 
             smach.StateMachine.add(
                 'ANNOUNCE_LISTENED_SENTECE_RIGHT',

@@ -44,17 +44,17 @@ left_sidetable_heigh: 0.77
 right_sidetable_heigh: 0.77
 
 place:
-  hallway_table: [place, hallway_table, 2.478, 0.90, 1.0]
-  kitchen_table: [place, kitchen_table, 0.75, 0.87, 1.0]
-  kitchen_counter: [place, kitchen_counter, 0.75, 1.0, 1.0]
+  hallway_table: [place, hallway_table, 0.75, 0.91, 1.0]
+  kitchen_table: [place, kitchen_table, 0.80, 0.87, 1.0]
+  kitchen_counter: [place, kitchen_counter, 0.85, 1.0, 1.0]
   bar: [place, bar, 0.75, 0.93, 1.0]
-  sideboard: [place, sideboard, 9.079, 0.74, 1.0]
-  stove: [place, stove, 17.686, 0.93, 1.0]
-  couch_table: [place, couch_table, 9.079, 0.40, 1.0]
-  dinner_table: [place, dinner_table, 9.079, 0.77, 1.0]
-  right_sidetable: [place, right_sidetable, 9.079, 0.77, 1.0]
-  left_sidetable: [place, left_sidetable, 9.079, 0.777, 1.0]
-  bed: [place, bed, 9.079, 0.87, 1.0]
+  side_board: [place, sideboard, 0.85, 0.74, 1.0]
+  stove: [place, stove, 0.80, 0.88, 1.0]
+  couch_table: [place, couch_table, 0.97, 0.40, 1.0]
+  dinner_table: [place, dinner_table, 0.80, 0.87, 1.0]
+  right_side_table: [place, right_sidetable, 0.80, 0.78, 1.0]
+  left_side_table: [place, left_sidetable, 0.65, 0.78, 1.0]
+  bed: [place, bed, 0.80, 0.75, 1.0]
 
 
 

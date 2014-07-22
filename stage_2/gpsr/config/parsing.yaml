@@ -1,5 +1,5 @@
 ASR_LOOP: True
-ASR_ON: "False"
+ASR_ON: "True"
 GRAMATICA: "robocup/general2"
 
 sentence: "bring a cola to the dinner table"
@@ -14,11 +14,10 @@ sentenceT6_CAT1: "Move to the LOCATION, grasp the ITEM, and leave the apartment"
 sentenceT7_CAT1: "Move to the LOCATION, introduce yourself, and exit the apartment"
 sentenceT8_CAT1: "Move to the LOCATION, memorize the person, and recognize him"
 sentenceT9_CAT1: "Move to the LOCATION, tell something about yourself, and follow the person in front of you"
-sentenceT10_CAT1: "Move to the LOCATION, retrive the ITM_CATEGORY from the LOCATION_CATEGORY, and exit the apartment"
-sentenceT11_CAT1: "Move to the LOCATION, retrive the ITM_CATEGORY from the LOCATION_CATEGORY, and exit the apartment"
-sentenceT12_CAT1: "Move to the LOCATION, find a person and introduce yourself"
-sentenceT13_CAT1: "Move to the LOCATION, take the ITEM and carry it to the LOCATION"
-sentenceT14_CAT1: "Move to the LOCATION, find the ITEM and take it"
+sentenceT10_CAT1: "Move to the LOCATION, retrive the ITEM from the LOCATION, and exit the apartment"
+sentenceT11_CAT1: "Move to the LOCATION, find a person and introduce yourself"
+sentenceT12_CAT1: "Move to the LOCATION, take the ITEM and carry it to the LOCATION"
+sentenceT13_CAT1: "Move to the LOCATION, find the ITEM and take it"
 
 
 sentenceT1_CAT2: "Bring ITEM_CATEGORY to a LOCATION_CATEGORY"
