@@ -52,7 +52,7 @@ class dummy_recognize(smach.State):
         userdata.pose_to_place.pose.position.x = 0.4
         userdata.pose_to_place.pose.position.z = 0.95
         userdata.pose_to_place.pose.orientation.w = 1.0
-        userdata.nav_to_poi_name='dinner_table'
+        userdata.nav_to_poi_name='waste_bin'
          
         rospy.sleep(5)
         return 'succeeded'
@@ -103,27 +103,27 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_start_pick_place',
                  text_to_say("I'm going to start Pick and Place test"),
-                 transitions={'succeeded': 'say_go_location', 'aborted': 'say_go_location'}) 
+                 transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_start_obj_recognition'}) 
              
             # Say Going to location
-            smach.StateMachine.add(
-                 'say_go_location',
-                 text_to_say("I'm going to the location where I have to recognize some objects",wait=False),
-                 transitions={'succeeded': 'prepare_location', 'aborted': 'prepare_location'}) 
-             
-            # Prepare the poi for nav_to_poi
-            smach.StateMachine.add(
-                'prepare_location',
-                prepare_location(),
-                transitions={'succeeded': 'go_location', 'aborted': 'prepare_location', 
-                'preempted': 'preempted'})  
- 
-            # Go to the location
-            smach.StateMachine.add(
-                'go_location',
-                nav_to_poi(),
-                transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
-                'preempted': 'preempted'})    
+#             smach.StateMachine.add(
+#                  'say_go_location',
+#                  text_to_say("I'm going to the location where I have to recognize some objects",wait=False),
+#                  transitions={'succeeded': 'prepare_location', 'aborted': 'prepare_location'}) 
+#              
+#             # Prepare the poi for nav_to_poi
+#             smach.StateMachine.add(
+#                 'prepare_location',
+#                 prepare_location(),
+#                 transitions={'succeeded': 'go_location', 'aborted': 'prepare_location', 
+#                 'preempted': 'preempted'})  
+#  
+#             # Go to the location
+#             smach.StateMachine.add(
+#                 'go_location',
+#                 nav_to_poi(),
+#                 transitions={'succeeded': 'say_start_obj_recognition', 'aborted': 'say_go_location', 
+#                 'preempted': 'preempted'})    
  
             # Say start object recognition
             smach.StateMachine.add(
@@ -176,8 +176,15 @@ class PickPlaceSM(smach.StateMachine):
             smach.StateMachine.add(
                  'say_release_obj',
                  text_to_say("I'm going to release the object"),
-                 transitions={'succeeded': 'release_object', 'aborted': 'release_object'})
+                 transitions={'succeeded': 'pregrasp_state', 'aborted': 'pregrasp_state'})
             
+            # Pre-grasp position
+            smach.StateMachine.add(
+                'pregrasp_state',
+                play_motion_sm('pre_grasp', skip_planning=True),
+                transitions={'succeeded': 'play_motion_state', 'preempted':'play_motion_state', 
+                             'aborted':'pregrasp_state'}) 
+        
             # Release the object
             smach.StateMachine.add(
                 'release_object',

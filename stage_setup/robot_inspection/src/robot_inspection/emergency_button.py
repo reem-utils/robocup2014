@@ -26,6 +26,11 @@ class read_emergency_button(smach.State):
         self.push_emer = None
 
     def execute(self, userdata):
+        rospy.logwarn("We are in read_emergency_button execute")
+        rospy.logwarn("...and self.push_emer is: " + str(self.push_emer))
+        if self.preempt_requested():
+            rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in read_emergency_button State')
+            return 'preempted'
         if self.push_emer != None:
             userdata.pressed = self.push_emer
             return 'succeeded'
@@ -35,6 +40,9 @@ class read_emergency_button(smach.State):
         
     def callback_topic(self,data):
         #If Data is not empty
+        if self.preempt_requested():
+            rospy.logwarn('PREEMPT REQUESTED -- Returning Preempted in read_emergency_button State')
+            return 'preempted'
         self.push_emer = data.data
 
 

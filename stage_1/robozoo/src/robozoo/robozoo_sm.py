@@ -36,16 +36,16 @@ class dummy_recognize(smach.State):
         
         userdata.object_position = PoseStamped()
         userdata.object_position.header.frame_id = "base_link"
-        userdata.object_position.pose.position.x = 0.95
+        userdata.object_position.pose.position.x = 0.75
         userdata.object_position.pose.position.z = 1.00
         userdata.object_position.pose.orientation.w = 1.0
         userdata.pose_to_place = PoseStamped()
         userdata.pose_to_place.header.frame_id = "base_link"
-        userdata.pose_to_place.pose.position.x = 0.95
+        userdata.pose_to_place.pose.position.x = 0.85
         userdata.pose_to_place.pose.position.z = 1.00
         userdata.pose_to_place.pose.orientation.w = 1.0
          
-        rospy.sleep(5)
+        #rospy.sleep(5)
         return 'succeeded'
 
 class DummyStateMachine(smach.State):
@@ -147,7 +147,7 @@ class RoboZooSM(smach.StateMachine):
             # Sleep
             smach.StateMachine.add(
                 'sleep_robot',
-                Sleeper(30),
+                Sleeper(15),
                 transitions={'succeeded': 'robot_presentation',
                              'preempted':'robot_presentation', 
                              'aborted':'robot_presentation'})

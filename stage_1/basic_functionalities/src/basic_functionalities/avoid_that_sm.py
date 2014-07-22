@@ -51,7 +51,7 @@ class prepare_Avoid(smach.State):
             output_keys=['nav_to_poi_name','standard_error','time_stamp_init'])
 
     def execute(self,userdata):
-        userdata.nav_to_poi_name='avoid_that'
+        userdata.nav_to_poi_name='what_say'
         userdata.time_stamp_init=rospy.get_time()
         return 'succeeded'
 
@@ -100,7 +100,7 @@ class Avoid_That(smach.StateMachine):
             # Announce going to a place
             smach.StateMachine.add(
                     'say_go_to_poi',
-                    text_to_say(text="I'm going to the Avoid That area."),
+                    text_to_say(text="I'm going to the Avoid That location."),
                     transitions={'succeeded': 'go_to_poi'})
 
             # Go to the POI
@@ -113,7 +113,7 @@ class Avoid_That(smach.StateMachine):
             # Announce arriving to a place
             smach.StateMachine.add(
                     'say_get_to_poi',
-                    text_to_say(text="I've arrived to the destination for Avoid That. The test Avoid That has finished successfully. Thank you."),
+                    text_to_say(text="I've arrived to the final destination for Avoid That."),
                     transitions={'succeeded': 'succeeded'})
 
             # If its time to live, will return aborted, else it will tri again sending de same goal
