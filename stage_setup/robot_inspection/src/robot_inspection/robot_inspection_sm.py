@@ -19,7 +19,8 @@ from util_states.sleeper import Sleeper
 from util_states.state_concurrence import ConcurrenceRobocup
 from manipulation_states.play_motion_sm import play_motion_sm
 from geometry_msgs.msg import PoseWithCovarianceStamped 
-from do_inspection import DoInspection
+from check_button import CheckButton
+from go_to_exit import GoToExit
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -46,6 +47,8 @@ class set_robot_position(smach.State):
 
 
     def execute(self, userdata):
+        rospy.sleep(3)
+        rospy.logwarn("New position!!")
         p = PoseWithCovarianceStamped()
         p.pose = userdata.pose_current
         rospy.loginfo(userdata.pose_current)
@@ -98,7 +101,7 @@ class RobotInspectionSM(smach.StateMachine):
                 'preempted': 'preempted'})    
           
             # Robot presentation: Little talk + wave gesture
-            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave", 10, True)]
+            STATES = [text_to_say("Hi everybody! My name is REEM."), play_motion_sm("wave")]
             STATE_NAMES = ["say_presentation", "salute_wave"]
             outcome_map = {'succeeded': {"say_presentation": 'succeeded', "salute_wave": 'succeeded'}}
         
@@ -111,44 +114,32 @@ class RobotInspectionSM(smach.StateMachine):
             smach.StateMachine.add(
                 'home_position',
                 play_motion_sm(motion='home', skip_planning=True),
-                transitions={'succeeded': 'get_actual_pos', 'aborted': 'home_position', 'preempted': 'succeeded'})
+                transitions={'succeeded': 'wait_inspection', 'aborted': 'home_position', 'preempted': 'succeeded'})
            
-            # Calculate the actual position
+            # Sleep for inspection
             smach.StateMachine.add(
-                'get_actual_pos',
-                get_current_robot_pose(),
-                transitions={'succeeded': 'save_robot_position', 'aborted': 'get_actual_pos', 'preempted': 'succeeded'})
-
-            # Save position
-            smach.StateMachine.add(
-                'save_robot_position',
-                save_robot_position(),
-                transitions={'succeeded': 'say_save_position', 'aborted': 'save_robot_position', 'preempted':'preempted'})
-            
-            # Indicate that we are saving our position
-            smach.StateMachine.add(
-                'say_save_position',
-                text_to_say("You can press the emergency button whenever you want. I will wait for a minute, inspect me please."),
-                transitions= {'succeeded':'do_inspection', 'aborted':'do_inspection', 'preempted':'preempted'})
-            
-            # Test of robot 
-            smach.StateMachine.add(
-                 'do_inspection',
-                 DoInspection(),
-                 transitions={'succeeded': 'say_end_time_inspection', 'aborted': 'say_end_time_inspection'})
-
-            # Indicate that we are ready
-#             smach.StateMachine.add(
-#                 'end_time_inspection',
-#                 text_to_say("The minute is over."),
-#                 transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
-#             
-            # Indicate that we are ready to go
+                'wait_inspection',
+                Sleeper(5),
+                transitions={'succeeded': 'say_end_time_inspection', 'aborted': 'say_end_time_inspection', 'preempted': 'succeeded'})
+           
+            # Indicate that we are ready to go out
             smach.StateMachine.add(
                 'say_end_time_inspection',
                 text_to_say("I hope you are happy with the inspection. I'll leave the room."),
+                transitions= {'succeeded':'go_exit', 'aborted':'go_exit', 'preempted':'preempted'})
+             
+            # Go to the exit
+            smach.StateMachine.add(
+                'go_exit',
+                GoToExit('exit_door'),
                 transitions= {'succeeded':'set_robot_position', 'aborted':'set_robot_position', 'preempted':'preempted'})
-            
+             
+            # Indicate that we are ready to go out
+#             smach.StateMachine.add(
+#                 'say_save_pos',
+#                 text_to_say("Saving position"),
+#                 transitions= {'succeeded':'set_robot_position', 'aborted':'set_robot_position', 'preempted':'preempted'})
+#              
             # Set position
             smach.StateMachine.add(
                 'set_robot_position',
@@ -169,6 +160,44 @@ class RobotInspectionSM(smach.StateMachine):
                 'say_exit',
                 text_to_say("I arrived successfully to the exit location, Robot Inspection Test complete."),
                 transitions= {'succeeded':'succeeded', 'aborted':'aborted', 'preempted':'preempted'})
+            
+#         
+#             smach.StateMachine.add(
+#                 "robot_presentation",
+#                 ConcurrenceRobocup(states=STATES, state_names=STATE_NAMES, outcome_map=outcome_map),
+#                 transitions={'succeeded': 'home_position', 'aborted': "robot_presentation"})
+#             
+#             # Calculate the actual position
+#             smach.StateMachine.add(
+#                 'get_actual_pos',
+#                 get_current_robot_pose(),
+#                 transitions={'succeeded': 'save_robot_position', 'aborted': 'get_actual_pos', 'preempted': 'succeeded'})
+# 
+#             # Save position
+#             smach.StateMachine.add(
+#                 'save_robot_position',
+#                 save_robot_position(),
+#                 transitions={'succeeded': 'say_save_position', 'aborted': 'save_robot_position', 'preempted':'preempted'})
+#             
+#             # Indicate that we are saving our position
+#             smach.StateMachine.add(
+#                 'say_save_position',
+#                 text_to_say("You can press the emergency button whenever you want. I will wait for a minute, inspect me please."),
+#                 transitions= {'succeeded':'do_inspection', 'aborted':'do_inspection', 'preempted':'preempted'})
+#             
+#             # Test of robot 
+#             smach.StateMachine.add(
+#                  'do_inspection',
+#                  DoInspection(),
+#                  transitions={'succeeded': 'say_end_time_inspection', 'aborted': 'say_end_time_inspection'})
+
+            # Indicate that we are ready
+#             smach.StateMachine.add(
+#                 'end_time_inspection',
+#                 text_to_say("The minute is over."),
+#                 transitions= {'succeeded':'say_end_time_inspection', 'aborted':'say_end_time_inspection', 'preempted':'preempted'})
+#              
+
 
                  
 
