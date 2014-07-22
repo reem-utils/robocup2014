@@ -91,7 +91,9 @@ class Ambulance_Detect_And_Go(smach.StateMachine):
             smach.StateMachine.add(
                 'Go_to_Entry_Door',
                 nav_to_poi('entry_door_init'),
-                transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+                transitions={'succeeded':'Say_Ambulance', 'aborted':'Say_Ambulance', 'preempted':'Say_Ambulance'})
+                #transitions={'succeeded':'Wait_for_Ambulance_Person', 'aborted':'Go_to_Entry_Door', 'preempted':'Go_to_Entry_Door'})
+
 
             #What is Wait for Ambulance or People Mean? Person detection?
             smach.StateMachine.add(

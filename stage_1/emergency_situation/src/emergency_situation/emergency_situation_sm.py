@@ -94,7 +94,7 @@ class emergency_situation_sm(smach.StateMachine):
             smach.StateMachine.add(
                 'Say_Init',
                 text_to_say("Initializing and Preparing Emergency Test. Let's go!"),
-                transitions={'succeeded':'Arms_Home'})
+                transitions={'succeeded':'Say_Enter_Successful'}) #Arms_home
             # Put the arms at the 'Home' position, in order improve the security
             # We prepare the information to go to the init door
             self.userdata.manip_motion_to_play = 'home'
