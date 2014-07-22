@@ -79,7 +79,7 @@ SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar"
 if TEST:
     SLEEP_TIME = 0
 else:
-    SLEEP_TIME = 1
+    SLEEP_TIME = 3
 
 ROOMS = rospy.get_param('/robocup_params/rooms')
 TABLES = rospy.get_param('/robocup_params/loc_category/table')
@@ -121,7 +121,7 @@ def call_go_to(loc_name,world):
     if SKILLS :      
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
-        
+         
         out = 'aborted'
         tries = 0       
         while(out=='aborted' and tries<3):
@@ -132,25 +132,25 @@ def call_go_to(loc_name,world):
                 if loc_name == "exit":
                     sm = nav_to_poi(poi_name = "door_B")
                     out = sm.execute() 
-                
+                 
                 sm = nav_to_poi(poi_name = loc_name)
                 out = sm.execute()     
-            
-            
+             
+             
         if out=='aborted':
             tosay = "I can't reach the " + loc_name + ". The door is closed. I'm going to inform"
             speak = speaker(tosay)
             speak.execute()
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
             time.sleep(SLEEP_TIME)
-            
-            
+             
+             
             sm = nav_to_poi(poi_name = 'referee')
             out = sm.execute()     
             tosay = "I can't reach the " + loc_name + ". The door is closed. The sentence is from category 3"
             speak = speaker(tosay)
             speak.execute() 
-            
+             
             return "aborted"
         else:
             tosay = "I arrived to the " + loc_name
@@ -168,19 +168,19 @@ def call_guide_to(loc_name,world):
     speak = speaker(tosay)
     speak.execute()
     rospy.logwarn('call_guide_to '+ loc_name)  
-    #############################################################################
+#     #############################################################################
     if SKILLS :      
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
-        
+         
         out = 'aborted'
         tries = 0
         while(out=='aborted' and tries<3):       
             tries = tries+1
             sm = nav_to_poi(poi_name = loc_name)
             sm.execute()
-            
-            
+             
+             
         if out=='aborted':
             tosay = "I can't reach the " + loc_name + ". The door is closed. The sentence was from category 3"
             speak = speaker(tosay)
@@ -317,6 +317,7 @@ def call_find_object(object_name,world): #TODO
             for table in room :
                 rospy.loginfo('-----------------------------------------')
                 if world.item.object_pose.header.frame_id!='':
+                    rospy.logwarn("NO ESTEM BUSCAN PERK YA HEM TROBAT EL QUE VOLIEM")
                     break
                 call_go_to(table.replace(" ","_"),world)        
                 tries = 0
