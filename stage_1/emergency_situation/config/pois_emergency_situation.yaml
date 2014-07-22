@@ -1,43 +1,48 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
+    hallway: [submap_0, hallway, 3.063, -7.688, 0.566]
+    hallway_table: [submap_0, hallway_table, 2.386, -7,467, -1.461]
+    kitchen: [submap_0, kitchen, 3.119, -1.072, -1.576]
+    kitchen_table: [submap_0, kitchen_table, 2.582, -3.284, -0.027]
+    fridge: [submap_0, fridge, 2.992, -5.278, 3.062]
+    stove: [submap_0, stove, 2.562, -2.855, -3.113]
+    kitchen_counter: [submap_0, kitchen_counter, 2.614, -3.96, -3.091]
+    bar: [submap_0, bar, 3.372, -0.385, 1.651]
+    waste_bin: [submap_0, waste_bin, 2.000, -2.004, 3.138]
+    bed_room: [submap_0, bed_room, 5.771, -7.169, 0.030]
+    right_sidetable: [submap_0, right_sidetable, 6.434, -8.174, -1.461]
+    left_sidetable: [submap_0, left_sidetable, 8.050, -8.090, -1.461]
+    bed: [submap_0, bed, 6.151, -7.779, -0.027]
+    living_room: [submap_0, living_room, 5.704, -2.363, -0.165]
+    dinner_table: [submap_0, dinner_table, 5.275, -4.441, -0.030]
+    sideboard: [submap_0, sideboard, 7.928, -2.516, 0.046]
+    armchair: [submap_0, armchair, 6.080, -1.945, 1.591]
+    couch_table: [submap_0, couch_table, 7.073, -2.086, 1.600]
+    sofa: [submap_0, sofa, 5.696, 0.090, 0.007]
+    door_A: [submap_0, door_A, 0.442, -0.023,  0.016]
+    door_exit: [submap_0, door_exit, 2.173, -8.837, -3.091]
+    door_B: [submap_0, door_B, 0.691, -8.837,  3.113]
+    avoid_that: [submap_0, avoid_that, 4.70, -1.620, -0.027]
+    what_say: [submap_0, what_say, 7.70, -6.453, -3.091]
+
+
     emergency_room: [submap_0, emergency_room,-3.349, 1.618,  2.498]
-    entry_door_init: [submap_0, entry_door_init, 3.213, 3.119,-0.621]
-    entry_door_exit: [submap_0, entry_door_exit, 4.510, 2.366, -0.684]
-    kitchen: [submap_0, kitchen, 12.261, -4.755, -2.117]
-    hallway: [submap_0, hallway, 9.828, -3.047, -2.168]
-    living_room: [submap_0, living_room, 4.815, -0.147, -0.750]
-    working_desk: [submap_0, working_desk, 13.234, -4.326,  0.850]
-    kitchen_counter: [submap_0, kitchen_counter,13.234, -4.326,  0.850]
-    dinner_table: [submap_0, dinner_table, 13.234, -4.326,  0.850]
-    bookshelf: [submap_0, bookshelf, 13.234, -4.326,  0.850]
-    point_room_one: [submap_0, point_room_one, 7.910, 6.254, 0.709]
-    point_room_two: [submap_0, point_room_two, 8.476, 5.305, -0.767]
-    point_room_three: [submap_0, point_room_three, -0.809, 6.411, -1.441]
+    entry_door_init: [submap_0, entry_door_init, 2.173, -8.837, -3.091]
+    entry_door_exit: [submap_0, entry_door_exit, 0.691, -8.837,  3.113]
     living_room_1: [submap_0, living_room_1, 4.92, -0.997,  0.89]
     living_room_2: [submap_0, living_room_2, 6.07, -2.487,  0.991]
     living_room_3: [submap_0, living_room_3, 5.937, -2.51,  0.508]
     living_room_4: [submap_0, living_room_4, 7.84, -2.85,  0.90]
 
-
 object:
   information:
-    Coke: [information, Coke, beverage]
-    Pringles: [information, Pringles, snack]
-    Water: [information, Water, beverage]
-    Barritas: [information, Barritas, snack]
-    Cell_phone: [information, Cell_phone, utils]
-    First_aid_kit: [information, First_aid_kit, utils]
+    water: [information, water, drinks]
+    biscuit: [information, biscuit, snacks]
+    energy_drink: [information, energy_drink, drinks]
   
-  beverage:
-    kitchen_counter: [beverage, kitchen_counter, 0.90]
-    dinner_table: [beverage, dinner_table, 0.00]
+  drinks:
+    bar: [drinks, bar, 0.90]
 
-  snack:
-    kitchen_counter: [snack, kitchen_counter, 0.90]
-    dinner_table: [snack, dinner_table, 0.00]
-
-  utils:
-    kitchen_counter: [utils, kitchen_counter, 0.90]
-    dinner_table: [utils, dinner_table, 0.00]
-
+  snacks:
+    sideboard: [snack, sideboard, 0.90]

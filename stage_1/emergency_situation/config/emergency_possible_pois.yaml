@@ -1,13 +1,8 @@
 numberOfPois: 1
 pois:
   emergency:
-    point_room_one: [emergency, point_room_one, 6,point_room_one]
-    point_room_two: [emergency, point_room_two, 7,point_room_two]
-    point_room_three: [emergency, point_room_three, 8,point_room_three]
-    living_room: [emergency, living_room, 2,living_room]
-    kitchen: [emergency, kitchen, 9,kitchen]
-    working_desk: [emergency, working_desk, 3,working_desk]
-    kitchen_counter: [emergency, kitchen_counter, 9,kitchen_counter]
-    dinner_table: [emergency, dinner_table, 4,dinner_table]
-    bookshelf: [emergency, bookshelf, 5,bookshelf]
-    hallway: [emergency, hallway, 1, hallway]
+    living_room_1: [emergency, living_room_1, 1, living_room_1]
+    living_room_2: [emergency, living_room_2, 2, living_room_2]
+    living_room_3: [emergency, living_room_3, 3, living_room_3]
+    living_room_4: [emergency, living_room_4, 4, living_room_4]
+    living_room_5: [emergency, living_room_5, 5, living_room_5]
