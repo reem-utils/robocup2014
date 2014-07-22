@@ -102,7 +102,7 @@ class SelectAnswer(smach.State):
     def execute(self, userdata):        
         question = userdata.asr_userSaid
         questionTags = userdata.asr_userSaid_tags
-        question_params = rospy.get_param("/questions/what_say_simple")
+        question_params = rospy.get_param("/question_list/questions/what_say_simple")
         question_number = [tag for tag in questionTags if tag.key == 'questionumber']
         rospy.loginfo("Question TAGS :: " + str(questionTags))
         rospy.loginfo("Question TAGS NUMBER:: " + str(question_number))
@@ -223,22 +223,22 @@ class WhatSaySM(smach.StateMachine):
             smach.StateMachine.add(
                 'home_position_init',
                 play_motion_sm('home'),
-                transitions={'succeeded': 'ActivateASR', 'aborted': 'home_position_init', #TODO: Change aborted to try again
+                transitions={'succeeded': 'say_what_did_you_say', 'aborted': 'home_position_init', #TODO: Change aborted to try again
                 'preempted': 'preempted'}) 
                      
             # Enter room
             smach.StateMachine.add(
                  'say_what_did_you_say',
-                 text_to_say("I'm beginning the what did you say test,. I'm going to the place where the referee should be"),
+                 text_to_say("I'm beginning the what did you say test, I'm going to looking for the referee"),
                  #transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
-                 transitions={'succeeded': 'go_location', 'aborted': 'aborted'})
+                 transitions={'succeeded': 'search_face', 'aborted': 'search_face'})
             
-            # Go to the location
-            smach.StateMachine.add(
-                 'go_location',
-                 nav_to_poi("init_what_say"),
-                 transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
-                 'preempted': 'preempted'})    
+#             # Go to the location
+#             smach.StateMachine.add(
+#                  'go_location',
+#                  nav_to_poi("init_what_say"),
+#                  transitions={'succeeded': 'search_face', 'aborted': 'aborted', 
+#                  'preempted': 'preempted'})    
              
 #             smach.StateMachine.add(
 #                  'say_faces',
@@ -248,7 +248,7 @@ class WhatSaySM(smach.StateMachine):
             # Look for a face
             smach.StateMachine.add(
                  'search_face',
-                 go_find_person("init_what_say"),
+                 go_find_person(),
                  transitions={'succeeded': 'Say_Found_Face', 'aborted': 'ask_for_tc', 
                  'preempted': 'preempted'},
                   remapping={'face_frame':'face_frame'})
@@ -260,10 +260,11 @@ class WhatSaySM(smach.StateMachine):
                                    transitions={'succeeded': 'get_current_pose_yaw', 'aborted': 'Say_Found_Face', 
                                                 'preempted': 'preempted'})
             smach.StateMachine.add(
-                                   'get_current_pose_yaw',
-                                   get_current_robot_pose(),
-                                   transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc',
-                                                    'preempted': 'preempted'})
+               'get_current_pose_yaw',
+               get_current_robot_pose(),
+               transitions={'succeeded': 'prepare_coord_person', 'aborted': 'ask_for_tc',
+                                'preempted': 'preempted'})
+            
             smach.StateMachine.add(
                  'prepare_coord_person',
                  prepare_coord_person(),
@@ -276,10 +277,11 @@ class WhatSaySM(smach.StateMachine):
                  nav_to_coord_ud(),
                  transitions={'succeeded': 'say_found', 'aborted': 'Say_person_not_reached',
                  'preempted': 'preempted'})
+            
             smach.StateMachine.add(
-                                   'Say_person_not_reached',
-                                   text_to_say('I Found you, but cannot reach you, can you come to me please?'),
-                                   transitions={'succeeded': 'ActivateASR', 'aborted': 'aborted'})
+               'Say_person_not_reached',
+               text_to_say('I Found you, but cannot reach you, can you come to me please?'),
+               transitions={'succeeded': 'wait_for_tc', 'aborted': 'aborted'})
              
             # Say "I found you!" + Small Talk
             smach.StateMachine.add(

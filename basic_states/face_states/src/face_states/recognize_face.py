@@ -203,7 +203,7 @@ class recognize_face_concurrent(smach.StateMachine):
             
             smach.StateMachine.add(
                                 'detect_face',
-                                detect_face(minConfidence,time_topic=1),
+                                detect_face(minConfidence,time_topic=10),
                                 transitions={'succeeded': 'Process_face', 'aborted': 'check_time', 
                                 'preempted': 'preempted'})
             #Change succeeded:proces_face
