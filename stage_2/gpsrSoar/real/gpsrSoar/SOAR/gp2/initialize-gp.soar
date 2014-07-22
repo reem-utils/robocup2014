@@ -45,15 +45,33 @@ sp {gp*apply*initialize-gp
            ^introduced no
            ^locId 15
            ^id 1
-           ^obj1Id -1)
+           ^obj1Id 8)
 
       (<obj1> ^delivered no
            ^pointed no
-           ^locId 22
+           ^locId 1
            ^toBeGrasped no
-           ^grasped no
+           ^grasped yes
            ^found no
-           ^id 5)
+           ^object_pose header: 
+  seq: 0
+  stamp: 
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+pose: 
+  pose: 
+    position: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+  covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+           ^id 8)
 
       (<pers1> ^followed no
            ^memorized no
@@ -65,14 +83,9 @@ sp {gp*apply*initialize-gp
            ^found no
            ^id 21)
 
-   (<d> ^name bring-to
-        ^person <pp>
-        ^object <ii>
+   (<d> ^name go-to
         ^robot <rr>)
-   (<pp> ^obj1Id 5
-           ^id 21)
-   (<ii> ^delivered yes
-         ^id 5)
-   (<rr> ^id 1)
+   (<rr> ^locId 21
+         ^id 1)
 
 }
