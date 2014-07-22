@@ -213,7 +213,7 @@ class SearchObjectSM(smach.StateMachine):
             smach.StateMachine.add(
                 'fail_object_detection',
                 fail_object_detection_check(),
-                transitions={'aborted':'fail_object_detection_poi',
+                transitions={'aborted':'pick_anything_prepare',
                              'succeeded':'say_re_detect'})
             smach.StateMachine.add(
                 'say_re_detect',

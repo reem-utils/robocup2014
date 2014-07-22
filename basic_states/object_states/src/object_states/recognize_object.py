@@ -111,6 +111,7 @@ class recognize_object(smach.StateMachine):
         
         with self:
             self.userdata.standard_error = ''
+            
             smach.StateMachine.add(
                                    'Look_down',
                                    move_head_form(head_left_right="center", head_up_down="down"),
