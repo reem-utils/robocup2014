@@ -486,15 +486,18 @@ def call_bring_to_loc(location_name): #TODO #Improve toSay, add realese and, may
         if (time.time()-TIME_INIT) > 270:
             return "succeeded"
         
-        param_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
+        #param_place_high_name = "/robocup_params/" + location_name.replace(" ","_") + "_heigh"
+        param_place_high_name = "/robocup_params/place/" + location_name.replace(" ","_")
         
         loc_object_position = PoseStamped()  #PoseWithCovarianceStamped()
         loc_object_position.header.frame_id = "base_link"
-        loc_object_position.pose.position.x = 0.5
-        if rospy.has_param(param_name):            
-            loc_object_position.pose.position.z = rospy.get_param(param_name)
+#         loc_object_position.pose.position.x = 0.5
+        if rospy.has_param(param_place_high_name):            
+            loc_object_position.pose.position.z = rospy.get_param(param_place_high_name)[3]
+            loc_object_position.pose.position.x = rospy.get_param(param_place_high_name)[2]
         else:
             loc_object_position.pose.position.z = 1.25
+            loc_object_position.pose.position.x = 0.25
         loc_object_position.pose.orientation.w = 1.0  
         
         current_position = world.get_current_position()    
