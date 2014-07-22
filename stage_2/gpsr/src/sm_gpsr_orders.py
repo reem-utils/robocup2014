@@ -215,7 +215,7 @@ class gpsrOrders(smach.StateMachine):
 
             smach.StateMachine.add(
                     'ASK_QUESTION',
-                    AskQuestionSM(text="Give me the next order",grammar=GRAMATICA),
+                    AskQuestionSM(text="Give me the next order",grammar=GRAMATICA,calibrate=True,Bucle=False,time_calibrate=30),
                     transitions={'succeeded': 'PARSE_ORDER', 'aborted': 'ASK_QUESTION'},
                     remapping={'asr_answer': 'o_userSaidData'})
  
