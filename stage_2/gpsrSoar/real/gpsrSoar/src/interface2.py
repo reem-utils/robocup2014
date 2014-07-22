@@ -79,7 +79,7 @@ SOAR_GP_PATH = roslib.packages.get_pkg_dir("gpsrSoar") + "/SOAR/gp2.soar"
 if TEST:
     SLEEP_TIME = 0
 else:
-    SLEEP_TIME = 3
+    SLEEP_TIME = 1
 
 ROOMS = rospy.get_param('/robocup_params/rooms')
 TABLES = rospy.get_param('/robocup_params/loc_category/table')
@@ -129,12 +129,16 @@ def call_go_to(loc_name,world):
             if world.get_current_position() == loc_name:  
                 out = 'succeeded'
             else:
+                if loc_name == "exit":
+                    sm = nav_to_poi(poi_name = "door_B")
+                    out = sm.execute() 
+                
                 sm = nav_to_poi(poi_name = loc_name)
                 out = sm.execute()     
             
             
         if out=='aborted':
-            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm going to the referee to inform"
+            tosay = "I can't reach the " + loc_name + ". The door is closed. I'm going to inform"
             speak = speaker(tosay)
             speak.execute()
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
@@ -143,7 +147,7 @@ def call_go_to(loc_name,world):
             
             sm = nav_to_poi(poi_name = 'referee')
             out = sm.execute()     
-            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            tosay = "I can't reach the " + loc_name + ". The door is closed. The sentence is from category 3"
             speak = speaker(tosay)
             speak.execute() 
             
@@ -178,7 +182,7 @@ def call_guide_to(loc_name,world):
             
             
         if out=='aborted':
-            tosay = "I can't reach the " + loc_name + ". The door must be closed. I'm afraid that sentence was from category 3"
+            tosay = "I can't reach the " + loc_name + ". The door is closed. The sentence was from category 3"
             speak = speaker(tosay)
             speak.execute()
             rospy.logwarn('FAIL IN REACHING ' + loc_name)
@@ -366,7 +370,7 @@ def call_find_object(object_name,world): #TODO
             time.sleep(SLEEP_TIME)
             
             call_go_to('referee',world)
-            tosay = "I couldn't find the " + object_name + " you asked for. It isn't there. I'm afraid that sentence was from category 3"
+            tosay = "I couldn't find the " + object_name + " you asked for. It isn't there. This sentence is from category 3"
             speak = speaker(tosay)
             speak.execute() 
             
