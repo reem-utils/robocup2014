@@ -42,7 +42,7 @@ class ExecuteOrder(smach.StateMachine):
             # Go to the party room
             smach.StateMachine.add(
                 'go_to_party',
-                nav_to_poi('party_room'),
+                nav_to_poi('living_room'),
                 transitions={'succeeded': 'deliver_order', 'aborted': 'go_to_party', 
                 'preempted': 'preempted'}) 
 

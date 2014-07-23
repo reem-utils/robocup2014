@@ -73,7 +73,7 @@ class ExecuteAllOrders(smach.StateMachine):
             # Go to the storage_room
             smach.StateMachine.add(
                 'go_to_storage',
-                nav_to_poi("storage_room"),
+                nav_to_poi("bar"),
                 transitions={'succeeded': 'prepare_recognize', 'aborted': 'prepare_recognize', 
                 'preempted': 'preempted'}) 
             

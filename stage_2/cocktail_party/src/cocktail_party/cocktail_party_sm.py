@@ -23,7 +23,7 @@ from execute_all_order import ExecuteAllOrders
 # Constants
 NUMBER_OF_ORDERS = 3
 NUMBER_OF_TRIES = 3
-GRAMMAR_NAME = "robocup/cocktail"
+GRAMMAR_NAME = "robocup/drinks"
 
 # Some color codes for prints, from http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
 ENDC = '\033[0m'
@@ -64,7 +64,7 @@ class CocktailPartySM(smach.StateMachine):
 
             smach.StateMachine.add(
                 'play_motion_state',
-                play_motion_sm('home', skip_planning=True),
+                play_motion_sm('home'),
                 transitions={'succeeded': 'init_cocktail',
                              'preempted':'init_cocktail', 
                              'aborted':'play_motion_state'})   
@@ -72,12 +72,12 @@ class CocktailPartySM(smach.StateMachine):
             smach.StateMachine.add(
                  'init_cocktail',
                  text_to_say("Ready for cocktail party"),
-                 transitions={'succeeded': 'Ask_order', 'aborted': 'Ask_order'}) 
+                 transitions={'succeeded': 'wait_for_door', 'aborted': 'wait_for_door'}) 
                   
             # We wait for open door and go inside
             smach.StateMachine.add(
                  'wait_for_door',
-                 EnterRoomSM("party_room"),
+                 EnterRoomSM("living_room"),
                  transitions={'succeeded': 'Ask_order', 'aborted': 'aborted', 'preempted': 'preempted'}) 
                
             # Ask Order -> Wave + Learn Person + Order

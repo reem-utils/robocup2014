@@ -120,7 +120,7 @@ class GraspOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'object_recognition',
                 dummy_recognize(),
-                transitions={'succeeded': 'select_object', 'aborted': 'select_object', 
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'recognize_object_and_pick', 
                 'preempted': 'preempted'}) 
             
             # Recognize and pick object if found
