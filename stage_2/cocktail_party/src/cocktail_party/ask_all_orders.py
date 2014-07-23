@@ -9,6 +9,7 @@ import smach
 import rospy
 
 from speech_states.say import text_to_say
+from navigation_states.nav_to_poi import nav_to_poi
 from ask_order import AskOrder
 
 NUMBER_OF_ORDERS = 3
@@ -76,7 +77,14 @@ class AskAllOrders(smach.StateMachine):
             smach.StateMachine.add(
                 'process_info',
                 process_info(),
-                transitions={'succeeded': 'check_loop', 'aborted': 'aborted'})
+                transitions={'succeeded': 'go_to_party', 'aborted': 'aborted'})
+            
+            # Go to the party room
+            smach.StateMachine.add(
+                'go_to_party',
+                nav_to_poi('living_room'),
+                transitions={'succeeded': 'check_loop', 'aborted': 'check_loop', 
+                'preempted': 'check_loop'}) 
             
             # End of loop?
             smach.StateMachine.add(

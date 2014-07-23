@@ -1,23 +1,88 @@
 numberOfSubMaps: 1
 poi:
   submap_0:
-    party_room: [submap_0, party_room, 5.672,-8.394, 1.399]
-    storage_room: [submap_0, storage_room,  12.927,-7.445,  1.708]
-    leave_room: [submap_0, leave_room,5.362, -9.159, -1.450]
-    kitchen_counter: [submap_0, kitchen_counter, 10.954, -6.4517,  1.500]
-    dinner_table: [submap_0, dinner_table,10.954, -6.4517,  1.500]
+    hallway: [submap_0, hallway, 3.063, -7.688, 0.566]
+    hallway_table: [submap_0, hallway_table, 2.386, -7,467, -1.461]
+    kitchen: [submap_0, kitchen, 3.119, -1.072, -1.576]
+    kitchen_table: [submap_0, kitchen_table, 2.582, -3.284, -0.027]
+    fridge: [submap_0, fridge, 2.992, -5.278, 3.062]
+    stove: [submap_0, stove, 2.562, -2.855, -3.113]
+    kitchen_counter: [submap_0, kitchen_counter, 2.614, -3.96, -3.091]
+    bar: [submap_0, bar, 3.372, -0.385, 1.651]
+    waste_bin: [submap_0, waste_bin, 1.995, -2.004, 3.138]
+    bed_room: [submap_0, bed_room, 5.771, -7.169, 0.030]
+    right_sidetable: [submap_0, right_sidetable, 6.434, -8.174, -1.461]
+    left_sidetable: [submap_0, left_sidetable, 8.050, -8.090, -1.461]
+    bed: [submap_0, bed, 6.151, -7.779, -0.027]
+    living_room: [submap_0, living_room, 5.704, -2.363, 0.566]
+    dinner_table: [submap_0, dinner_table, 5.275, -4.441, -0.030]
+    sideboard: [submap_0, sideboard, 7.928, -2.516, 0.046]
+    armchair: [submap_0, armchair, 6.080, -1.945, 1.591]
+    couch_table: [submap_0, couch_table, 7.073, -2.086, 1.600]
+    sofa: [submap_0, sofa, 5.696, 0.090, 0.007]
+    door_A: [submap_0, door_A, 0.442, -0.023,  0.016]
+    door_exit: [submap_0, door_exit, 2.173, -8.837, -3.091]
+    door_B: [submap_0, door_B, 0.691, -8.837,  3.113]
+    avoid_that: [submap_0, avoid_that, 4.70, -1.620, -0.027]
+    what_say: [submap_0, what_say, 7.70, -6.453, -3.091]
+
+place:
+  hallway_table: [place, hallway_table, 0.75, 0.91, 1.0]
+  kitchen_table: [place, kitchen_table, 0.80, 0.87, 1.0]
+  kitchen_counter: [place, kitchen_counter, 0.85, 1.0, 1.0]
+  bar: [place, bar, 0.75, 0.93, 1.0]
+  sideboard: [place, sideboard, 0.85, 0.74, 1.0]
+  stove: [place, stove, 0.80, 0.88, 1.0]
+  couch_table: [place, couch_table, 0.97, 0.40, 1.0]
+  dinner_table: [place, dinner_table, 0.80, 0.87, 1.0]
+  right_sidetable: [place, right_sidetable, 0.80, 0.78, 1.0]
+  left_sidetable: [place, left_sidetable, 0.65, 0.78, 1.0]
+  bed: [place, bed, 0.80, 0.75, 1.0]
 
 object:
   information:
-    Coke: [information, Coke, beverage]
-    Pringles: [information, Pringles, snack]
-    Barritas: [information, Barritas, snack]
+    sponge: [information, sponge, pick_and_place, Cleaning_stuff]
+    brush: [information, brush, pick_and_place, Cleaning_stuff]
+    shampoo: [information, shampoo, pick_and_place, Cleaning_stuff]
+    detergent: [information, detergent, pick_and_place, Cleaning_stuff]
+    toothpaste: [information, toothpaste, pick_and_place, Cleaning_stuff]
 
-  beverage:
-    kitchen_counter: [beverage, kitchen_counter, 0.90]
-    dinner_table: [beverage, dinner_table, 0.00]
+    chocolate_milk: [information, chocolate_milk, pick_and_place, Drink]
+    energy_drink: [information, energy_drink, pick_and_place, Drink]
+    milk: [information, milk, pick_and_place, Drink]
+    water: [information, water, pick_and_place, Drink]
+    orange_juice: [information, orange_Juice, pick_and_place, Drink]
+    grape_juice: [information, grape_Juice, pick_and_place, Drink]
+    beer: [information, beer, pick_and_place, Drink]
+    cola: [information, cola, pick_and_place, Drink]
 
-  snack:
-    kitchen_counter: [beverage, kitchen_counter, 0.90]
-    dinner_table: [beverage, dinner_table, 0.00]
+    strawberry_cookies: [information, strawberry_cookies, pick_and_place, Snack]
+    chocolate_cookies: [information, chocolate_cookies, pick_and_place, Snack]
+    pringles: [information, pringles, pick_and_place, Snack]
+    biscuits: [information, biscuits, pick_and_place, Snack]
+    crackers: [information, crackers, pick_and_place, Snack]
+    bread: [information, bread, pick_and_place, Snack]
+    chips: [information, chips, pick_and_place, Snack]
+    noodles: [information, noodles, pick_and_place, Food]
+    beans: [information, beans, pick_and_place, Food]
+    coffee: [information, coffee, pick_and_place, Food]
+    baby_food: [information, baby_food, pick_and_place, Food]
+    yeast: [information, yeast, pick_and_place, Food]    
+    
+  Cleaning_stuff:
+    hallway_table: [Cleaning_stuff, hallway_table, 0.90]
+
+  Drink:
+    bar: [Drink, bar, 0.90]
+
+  Snack:
+    sideboard: [Snack, sideboard, 0.90]
+
+  Food:
+    kitchen_counter: [Food, kitchen_counter, 0.90] 
+ 
+  pick_and_place:
+    pick_and_place: [pick_and_place, pick_and_place, 1]
+
+
 

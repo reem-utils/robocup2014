@@ -36,14 +36,16 @@ class prepare_coord_wave(smach.State):
 class process_order(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted', 'preempted'], 
-                                input_keys=["asr_answer","asr_answer_tags"],
-                                output_keys=['object_name'])
+                                input_keys=["asr_answer","asr_answer_tags", 'name_face', 'object_name'],
+                                output_keys=['object_name', 'tts_text'])
         
     def execute(self, userdata):
     
         tags = [tag for tag in userdata.asr_answer_tags if tag.key == 'object']
         if tags:
             userdata.object_name = tags[0].value
+            userdata.tts_text ="I got it. You, " + userdata.name_face + ", ask for a " + tags[0].value
+            userdata.object_name = userdata.object_name.replace(" ", "_")
             return 'succeeded'
          
         return 'aborted'
@@ -102,22 +104,41 @@ class AskOrder(smach.StateMachine):
             smach.StateMachine.add(
                 'go_to_person_wave',
                 nav_to_coord('/base_link'),
-                transitions={'succeeded': 'learning_person', 'aborted': 'go_to_person_wave', 
+                transitions={'succeeded': 'say_approach_person', 'aborted': 'say_not_approach_person', 
                 'preempted': 'preempted'}) 
+        
+        #FAIL Navigation
+            # Say can't approach person
+            smach.StateMachine.add(
+                 'say_not_approach_person',
+                 text_to_say("I can't reach where you are. Can anyone come to me, please?"),
+                 transitions={'succeeded': 'wait_for_person', 'aborted': 'wait_for_person'}) 
+            
+            # Say approach person
+            smach.StateMachine.add(
+                 'say_approach_person',
+                 text_to_say("I found you. I am looking at you. I will enroll your face."),
+                 transitions={'succeeded': 'wait_for_person', 'aborted': 'wait_for_person'}) 
         
         # FAIL Person Recognize
             # Ask for person if it can see anyone
             smach.StateMachine.add(
                 'ask_for_person',
                 text_to_say("I can't see anyone. Can anyone come to me, please?"),
-                transitions={'succeeded': 'wait_for_person', 'aborted': 'ask_for_person', 
+                transitions={'succeeded': 'wait_for_person', 'aborted': 'wait_for_person', 
                 'preempted': 'preempted'}) 
             
             # Wait for person
             smach.StateMachine.add(
                  'wait_for_person',
                  detect_face(),
-                 transitions={'succeeded': 'learning_person', 'aborted': 'ask_for_person'})
+                 transitions={'succeeded': 'say_learn_person', 'aborted': 'ask_for_person'})
+            
+            # Say approach person
+            smach.StateMachine.add(
+                 'say_learn_person',
+                 text_to_say("I have detected your face."),
+                 transitions={'succeeded': 'learning_person', 'aborted': 'learning_person'}) 
             
             # Learn Person -> Ask name + Face Recognition
             smach.StateMachine.add(
@@ -129,15 +150,15 @@ class AskOrder(smach.StateMachine):
             # Ask for order
             smach.StateMachine.add(
                 'ask_order',
-                AskQuestionSM("What would you like to order?", GRAMMAR_NAME),
-                transitions={'succeeded': 'process_order', 'aborted': 'calibrate', # TODO before it was ask_order
+                AskQuestionSM("What would you like to order?", GRAMMAR_NAME, True),
+                transitions={'succeeded': 'process_order', 'aborted': 'ask_order', 
                 'preempted': 'preempted'}) 
 
             # Process the answer
             smach.StateMachine.add(
                 'process_order',
                 process_order(),
-                transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order',  # TODO before it was ask_order
+                transitions={'succeeded': 'say_got_it', 'aborted': 'ask_order',  
                 'preempted': 'preempted'}) 
             
             smach.StateMachine.add(
@@ -145,11 +166,10 @@ class AskOrder(smach.StateMachine):
                 CalibrateASR(),
                 transitions={'succeeded': 'ask_order', 'aborted': 'ask_order', 
                 'preempted': 'preempted'})
-            
-        
+             
             # Say what he ask
             smach.StateMachine.add(
                 'say_got_it',
-                text_to_say("I got it!"),
+                text_to_say(),
                 transitions={'succeeded': 'succeeded', 'aborted': 'succeeded', 
                 'preempted': 'preempted'}) 
