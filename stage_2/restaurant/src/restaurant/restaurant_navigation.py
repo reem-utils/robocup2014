@@ -68,12 +68,12 @@ class decide_next_object(smach.State):
         userdata.object_loc = userdata.object_array[userdata.object_index][1]
         userdata.delivery_loc = userdata.object_array[userdata.object_index][2]
         
-        userdata.object_name="Pringles" # TODO: delete this line
+        #userdata.object_name="Pringles" # TODO: delete this line
         rospy.loginfo("Object_name: " + userdata.object_name)
         rospy.loginfo("Object_loc: " + userdata.object_loc)
         rospy.loginfo("delivery_loc " + userdata.delivery_loc)
         
-        userdata.tts_text= " i am going to "+userdata.object_loc +" and i will grasp  :" + userdata.object_name + "and bring it to " + userdata.delivery_loc
+        userdata.tts_text= " i am going to "+userdata.object_loc +" and i will grasp the" + userdata.object_name + "and bring it to " + userdata.delivery_loc
         
         return 'succeeded'
 
@@ -118,9 +118,11 @@ class RestaurantNavigation(smach.StateMachine):
         
         pose_place = PoseStamped()
         pose_place.header.frame_id = '/base_link'
-        pose_place.pose.position.x = 0.0
+        pose_place.pose.position.x = 0.90
         pose_place.pose.position.y = 0.0
-        pose_place.pose.position.z = 1.0
+        pose_place.pose.position.z = 1.20
+        pose_place.pose.orientation.w = 1.0
+        
         with self:
             # We must initialize the userdata keys if they are going to be accessed or they won't exist and crash!
             self.userdata.nav_to_poi_name=None
@@ -137,7 +139,8 @@ class RestaurantNavigation(smach.StateMachine):
                 remapping={"object_loc": "nav_to_poi_name"},
                 transitions={'succeeded': 'say_im_going', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
-                        # Deliver object
+            
+            # Deliver object
             smach.StateMachine.add(
                 'say_im_going',
                 text_to_say(),
@@ -154,8 +157,8 @@ class RestaurantNavigation(smach.StateMachine):
             # Grasp Object
             smach.StateMachine.add(
                 'say_grasp_object',
-                text_to_say("Grasping Object"),
-                transitions={'succeeded': 'grasp_object', 'aborted': 'aborted', 
+                text_to_say("I'm going to recognize and grasp the object"),
+                transitions={'succeeded': 'recognize_object_and_pick', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
 #             smach.StateMachine.add(
@@ -186,15 +189,14 @@ class RestaurantNavigation(smach.StateMachine):
                              'fail_grasp':'say_not_grasp',
                              'fail_recognize': 'say_object_not_find'})
     
-                        # Go to the delivery place
-                        # Grasp Object
+            # FAIL Grasp Object
             smach.StateMachine.add(
                 'say_not_grasp',
                 text_to_say("it was impossible to grasp the Object"),
                 transitions={'succeeded': 'decide_next_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             
-                        # Grasp Object
+            # FAIL Recognize Object
             smach.StateMachine.add(
                 'say_object_not_find',
                 text_to_say("it was not possible to find the Object"),
@@ -207,12 +209,13 @@ class RestaurantNavigation(smach.StateMachine):
                 transitions={'succeeded': 'say_going_deliver_object', 'aborted': 'say_going_deliver_object', 
                 'preempted': 'preempted'}) 
             
-         # Deliver object
+            # Deliver object
             smach.StateMachine.add(
                 'say_going_deliver_object',
                 text_to_say("i am going to deliver the object"),
                 transitions={'succeeded': 'go_to_delivery', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
+            
             # Go to the delivery place
             smach.StateMachine.add(
                 'go_to_delivery',
@@ -223,7 +226,7 @@ class RestaurantNavigation(smach.StateMachine):
             # Deliver object
             smach.StateMachine.add(
                 'say_deliver_object',
-                text_to_say("Delivering Object"),
+                text_to_say("I'm going to deliver the object"),
                 transitions={'succeeded': 'deliver_object', 'aborted': 'aborted', 
                 'preempted': 'preempted'}) 
             

@@ -10,7 +10,7 @@ public <basic> = (<carry1> [and] <carry2> {obj.put("action","goto");} | <garbage
 <carrycommand> = bring;
 
 <location> = table (one | two | three);
-<objects> = beer | coke | cookies | fanta | juice | matches | noodles | red bull | water | wine;
+<objects> = cola | wine | chocolate milk | energy drink | grape juice | milk | orange juice | water | chips | biscuits | bread | chocolate cookies | strawberry cookies | pringles ;
 
 <garbage>  = <garbage2>;
 
